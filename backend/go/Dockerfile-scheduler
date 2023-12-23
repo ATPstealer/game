@@ -1,0 +1,9 @@
+FROM golang:1.20 AS builder
+WORKDIR /build
+COPY ./ ./
+RUN CGO_ENABLED=0 go build -o prog scheduler/main.go
+
+FROM alpine:3.18.2
+COPY --from=builder /build/prog /
+USER 65534
+ENTRYPOINT ["/prog"]

@@ -1,0 +1,52 @@
+package include
+
+import (
+	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"strconv"
+)
+
+func StrToInt(c *gin.Context, str string) (int, error) {
+	number, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		log.Println("Can't parse string as int: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as int: " + err.Error()})
+		c.Abort()
+		return 0, err
+	}
+	return int(number), nil
+}
+
+func StrToFloat32(c *gin.Context, str string) (float32, error) {
+	number, err := strconv.ParseFloat(str, 32)
+	if err != nil {
+		log.Println("Can't parse string as float32 : " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as float32 : " + err.Error()})
+		c.Abort()
+		return 0, err
+	}
+	return float32(number), nil
+}
+
+func StrToUInt(c *gin.Context, str string) (uint, error) {
+	number, err := strconv.ParseUint(str, 10, 64)
+	if err != nil {
+		log.Println("Can't parse string as uint : " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as uint : " + err.Error()})
+		c.Abort()
+		return 0, err
+	}
+	return uint(number), nil
+}
+
+func StrToBool(c *gin.Context, str string) (bool, error) {
+	boolean, err := strconv.ParseBool(str)
+	if err != nil {
+		log.Println("Can't parse string as boolean : " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as boolean : " + err.Error()})
+		c.Abort()
+		return false, err
+	}
+	return boolean, nil
+}
