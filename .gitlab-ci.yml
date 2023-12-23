@@ -1,6 +1,9 @@
 stages:
   - build-staging
+  - build-prod
 
+
+### build-staging
 build-backend-api-staging:
   stage: build-staging
   image:
@@ -10,7 +13,7 @@ build-backend-api-staging:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-api"
-      --destination "${CI_REGISTRY_IMAGE}/backend/go/api/staging:${CI_PIPELINE_IID}"
+      --destination "${CI_REGISTRY_IMAGE}/backend-api/staging:${CI_PIPELINE_IID}"
 
 build-backend-scheduler-staging:
   stage: build-staging
@@ -21,7 +24,7 @@ build-backend-scheduler-staging:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-scheduler"
-      --destination "${CI_REGISTRY_IMAGE}/backend/go/scheduler/staging:${CI_PIPELINE_IID}"
+      --destination "${CI_REGISTRY_IMAGE}/backend-scheduler/staging:${CI_PIPELINE_IID}"
 
 build-backend-transform-staging:
   stage: build-staging
@@ -32,4 +35,48 @@ build-backend-transform-staging:
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-transform"
-      --destination "${CI_REGISTRY_IMAGE}/backend/go/transform/staging:${CI_PIPELINE_IID}"
+      --destination "${CI_REGISTRY_IMAGE}/backend-transform/staging:${CI_PIPELINE_IID}"
+
+
+### build-prod
+build-backend-api-prod:
+  stage: build-prod
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [ "" ]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-api"
+      --destination "${CI_REGISTRY_IMAGE}/backend-api/prod:${CI_PIPELINE_IID}"
+  only:
+    variables:
+      - $env == "prod"
+
+build-backend-scheduler-prod:
+  stage: build-prod
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [ "" ]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-scheduler"
+      --destination "${CI_REGISTRY_IMAGE}/backend-scheduler/prod:${CI_PIPELINE_IID}"
+  only:
+    variables:
+      - $env == "prod"
+
+build-backend-transform-prod:
+  stage: build-prod
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [ "" ]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-transform"
+      --destination "${CI_REGISTRY_IMAGE}/backend-transform/prod:${CI_PIPELINE_IID}"
+  only:
+    variables:
+      - $env == "prod"
