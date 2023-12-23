@@ -34,6 +34,30 @@ resource "google_container_node_pool" "gke_node_pool" {
   }
 }
 
+
+resource "google_container_node_pool" "gke_node_pool_high_cpu" {
+  name       = "gke-node-pool-high-cpu"
+  location   = var.region
+  cluster    = google_container_cluster.gke.name
+  node_count = 1
+
+  autoscaling {
+    total_min_node_count = 1
+    total_max_node_count = 1
+  }
+
+  node_config {
+    preemptible  = true
+    machine_type = "e2-highcpu-4"
+    disk_size_gb = 20
+
+    service_account = google_service_account.gke_access.email
+    oauth_scopes    = [
+      "https://www.googleapis.com/auth/cloud-platform"
+    ]
+  }
+}
+
 resource "google_compute_address" "load_balancer_1" {
   name          = "load-balancer-1"
   ip_version    = "IPV4"
