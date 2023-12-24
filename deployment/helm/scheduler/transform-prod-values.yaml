@@ -1,0 +1,29 @@
+cronjob:
+  name: transform-prod
+  period: "0 0 * * *"
+  image:
+    name: registry.gl.atpstealer.com/mav/backend/transform/prod
+    version: 1
+  imagePullSecrets: registry-backend-secrets
+
+env:
+  - name: DB_DATABASE
+    secretKeyRef:
+      name: app
+      key: DB_DATABASE_PROD
+  - name: DB_HOST
+    secretKeyRef:
+      name: app
+      key: DB_HOST
+  - name: DB_PASSWORD
+    secretKeyRef:
+      name: app
+      key: DB_PASSWORD
+  - name: DB_PORT
+    secretKeyRef:
+      name: app
+      key: DB_PORT
+  - name: DB_USER
+    secretKeyRef:
+      name: app
+      key: DB_USER

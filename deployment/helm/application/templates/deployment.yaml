@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.application.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.application.name }}
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.application.name }}
+    spec:
+      containers:
+        - name: {{ .Values.application.name }}
+          image: {{ .Values.application.image.name }}:{{ .Values.application.image.version }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretKeyRef.name }}
+                  key: {{ .secretKeyRef.key }}
+            {{- end }}
+
+      imagePullSecrets:
+        - name: {{ .Values.application.imagePullSecrets}}

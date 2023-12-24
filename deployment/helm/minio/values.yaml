@@ -1,0 +1,25 @@
+application:
+  name: minio
+  image:
+    name: minio/minio
+    version: RELEASE.2021-03-01T04-20-55Z
+
+service:
+  name: minio
+  port: 9000
+
+ingress:
+  enabled: true
+  name: minio-ing
+  host: minio.game.kube.atpstealer.com
+  ip: load-balancer-2
+
+env:
+  - name: MINIO_ACCESS_KEY
+    secretKeyRef:
+      name: minio-secrets
+      key: MINIO_ACCESS_KEY
+  - name: MINIO_SECRET_KEY
+    secretKeyRef:
+      name: minio-secrets
+      key: MINIO_ACCESS_KEY

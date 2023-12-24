@@ -1,7 +1,16 @@
 stages:
+  - infra
   - build-staging
   - build-prod
 
+### infra
+minio:
+  stage: infra
+  image: alpine/helm
+  script:
+    - helm upgrade --install minio -n game
+      --history-max 2
+      ./deployment/helm/minio
 
 ### build-staging
 build-backend-api-staging:
@@ -43,7 +52,7 @@ build-frontend-vue-staging:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [""]
   script:
-    - echo $ENV_FRONTEND_VUE_STAGING | base64 -d > frontend/vue/.env
+    - cp ${ENV_FRONTEND_VUE_STAGING} frontend/vue/.env
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}/frontend/vue"
       --dockerfile "${CI_PROJECT_DIR}/frontend/vue/Dockerfile"
@@ -51,7 +60,6 @@ build-frontend-vue-staging:
   environment:
     name: staging
     url: http://staging.game.kube.atpstealer.com
-
 
 
 

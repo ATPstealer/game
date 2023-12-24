@@ -1,0 +1,29 @@
+cronjob:
+  name: scheduler-staging
+  period: "*/1 * * * *"
+  image:
+    name: registry.gl.atpstealer.com/mav/backend/scheduler/staging
+    version: 1
+  imagePullSecrets: registry-backend-secrets
+
+env:
+  - name: DB_DATABASE
+    secretKeyRef:
+      name: app
+      key: DB_DATABASE_STAGING
+  - name: DB_HOST
+    secretKeyRef:
+      name: app
+      key: DB_HOST
+  - name: DB_PASSWORD
+    secretKeyRef:
+      name: app
+      key: DB_PASSWORD
+  - name: DB_PORT
+    secretKeyRef:
+      name: app
+      key: DB_PORT
+  - name: DB_USER
+    secretKeyRef:
+      name: app
+      key: DB_USER
