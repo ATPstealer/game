@@ -37,6 +37,21 @@ build-backend-transform-staging:
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-transform"
       --destination "${CI_REGISTRY_IMAGE}/backend-transform/staging:${CI_PIPELINE_IID}"
 
+build-frontend-vue-staging:
+  stage: build-staging
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    - echo $ENV_FRONTEND_VUE_STAGING | base64 -d > .env
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}/frontend/vue"
+      --dockerfile "${CI_PROJECT_DIR}/frontend/vue/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/frontend-vue/staging:${CI_PIPELINE_IID}"
+  environment:
+    name: staging
+    url: http://staging.game.kube.atpstealer.com
+
 
 ### build-prod
 build-backend-api-prod:
@@ -46,7 +61,7 @@ build-backend-api-prod:
     entrypoint: [ "" ]
   script:
     - /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
+      --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-api"
       --destination "${CI_REGISTRY_IMAGE}/backend-api/prod:${CI_PIPELINE_IID}"
   only:
@@ -60,8 +75,8 @@ build-backend-scheduler-prod:
     entrypoint: [ "" ]
   script:
     - /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-scheduler"
+      --context "${CI_PROJECT_DIR}/backend/go"
+      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-scheduler"
       --destination "${CI_REGISTRY_IMAGE}/backend-scheduler/prod:${CI_PIPELINE_IID}"
   only:
     variables:
@@ -74,9 +89,11 @@ build-backend-transform-prod:
     entrypoint: [ "" ]
   script:
     - /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile-transform"
+      --context "${CI_PROJECT_DIR}/backend/go"
+      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-transform"
       --destination "${CI_REGISTRY_IMAGE}/backend-transform/prod:${CI_PIPELINE_IID}"
   only:
     variables:
       - $env == "prod"
+
+
