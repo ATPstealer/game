@@ -1,0 +1,10 @@
+application:
+  name: mysql
+  image:
+    name: mysql
+    version: 8.0.33
+
+service:
+  name: mysql-lb
+  port: 3306
+  type: LoadBalancer

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.application.name }}
+spec:
+  selector:
+    app: {{ .Values.application.name }}
+  ports:
+    - name: mysql
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "share-ip-116.203.62.159"
+spec:
+  selector:
+    app: {{ .Values.application.name }}
+  ports:
+    - name: mysql
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+  type: {{ .Values.service.type }}
+  loadBalancerIP: 116.203.62.159

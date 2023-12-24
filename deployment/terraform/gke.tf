@@ -41,9 +41,8 @@ resource "google_compute_address" "load_balancer_1" {
   region        = var.region
 }
 
-resource "google_compute_address" "load_balancer_2" {
+resource "google_compute_global_address" "load_balancer_2" {
   name          = "load-balancer-2"
   ip_version    = "IPV4"
   address_type  = "EXTERNAL"
-  region        = var.region
 }

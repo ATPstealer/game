@@ -1,0 +1,18 @@
+replicaCount: 1
+
+application:
+  name: frontend-vue-staging
+  image:
+    name: registry.gl.atpstealer.com/mav/frontend-vue/game/staging
+    version: 1
+  imagePullSecrets: registry-frontend-vue-secrets
+
+service:
+  name: frontend-vue-staging-srv
+  port: 80
+
+ingress:
+  enabled: true
+  name: frontend-staging-vue-ing
+  host: staging.game.k8s.atpstealer.com
+  tls: false
