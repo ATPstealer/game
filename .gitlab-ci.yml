@@ -1,16 +1,7 @@
 stages:
-  - infra
   - build-staging
-  - build-prod
-
-### infra
-minio:
-  stage: infra
-  image: alpine/helm
-  script:
-    - helm upgrade --install minio -n game
-      --history-max 2
-      ./deployment/helm/minio
+  - deploy-staging
+  - infra
 
 ### build-staging
 build-backend-api-staging:
@@ -61,73 +52,60 @@ build-frontend-vue-staging:
     name: staging
     url: http://staging.game.kube.atpstealer.com
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### build-prod
-build-backend-api-prod:
-  stage: build-prod
-  image:
-    name: gcr.io/kaniko-project/executor:v1.9.0-debug
-    entrypoint: [ "" ]
+### deploy-staging
+frontend-vue-staging:
+  stage: deploy-staging
+  image: alpine/helm
   script:
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/backend/go"
-      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-api"
-      --destination "${CI_REGISTRY_IMAGE}/backend-api/prod:${CI_PIPELINE_IID}"
-  only:
-    variables:
-      - $env == "prod"
+    - helm upgrade --install frontend-vue-staging -n game
+      --set-string application.image.version=${CI_PIPELINE_IID}
+      -f ./deployment/helm/application/frontend-vue-staging-values.yaml
+      --history-max 2
+      ./deployment/helm/application
 
-build-backend-scheduler-prod:
-  stage: build-prod
-  image:
-    name: gcr.io/kaniko-project/executor:v1.9.0-debug
-    entrypoint: [ "" ]
+backend-api-staging:
+  stage: deploy-staging
+  image: alpine/helm
   script:
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/backend/go"
-      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-scheduler"
-      --destination "${CI_REGISTRY_IMAGE}/backend-scheduler/prod:${CI_PIPELINE_IID}"
-  only:
-    variables:
-      - $env == "prod"
+    - helm upgrade --install backend-api-staging -n game
+      --set-string application.image.version=${CI_PIPELINE_IID}
+      -f ./deployment/helm/application/backend-api-staging-values.yaml
+      --history-max 2
+      ./deployment/helm/application
 
-build-backend-transform-prod:
-  stage: build-prod
-  image:
-    name: gcr.io/kaniko-project/executor:v1.9.0-debug
-    entrypoint: [ "" ]
+backend-scheduler-staging:
+  stage: deploy-staging
+  image: alpine/helm
   script:
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}/backend/go"
-      --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-transform"
-      --destination "${CI_REGISTRY_IMAGE}/backend-transform/prod:${CI_PIPELINE_IID}"
-  only:
-    variables:
-      - $env == "prod"
+    - helm upgrade --install backend-scheduler-staging -n game
+      --set-string cronjob.image.version=${CI_PIPELINE_IID}
+      -f ./deployment/helm/scheduler/backend-scheduler-staging-values.yaml
+      --history-max 2
+      ./deployment/helm/scheduler
 
+backend-transform-staging:
+  stage: deploy-staging
+  image: alpine/helm
+  script:
+    - helm upgrade --install backend-transform-staging -n game
+      --set-string cronjob.image.version=${CI_PIPELINE_IID}
+      -f ./deployment/helm/scheduler/backend-transform-staging-values.yaml
+      --history-max 2
+      ./deployment/helm/scheduler
 
+### infra
+minio:
+  stage: infra
+  image: alpine/helm
+  script:
+    - helm upgrade --install minio -n game
+      --history-max 1
+      ./deployment/helm/minio
+
+mysql:
+  stage: infra
+  image: alpine/helm
+  script:
+    - helm upgrade --install mysql -n game
+      --history-max 1
+      ./deployment/helm/mysql

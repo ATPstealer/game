@@ -16,8 +16,13 @@ spec:
         - name: {{ .Values.application.name }}
           image: {{ .Values.application.image.name }}:{{ .Values.application.image.version }}
           env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: {{ .Values.MYSQL_ROOT_PASSWORD }}
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretKeyRef.name }}
+                  key: {{ .secretKeyRef.key }}
+            {{- end }}
           ports:
             - containerPort: 3306
           volumeMounts:

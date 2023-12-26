@@ -3,9 +3,9 @@ replicaCount: 1
 application:
   name: frontend-vue-staging
   image:
-    name: registry.gl.atpstealer.com/mav/frontend-vue/game/staging
+    name: registry.gl.kube.atpstealer.com/mav/game/frontend-vue/staging
     version: 1
-  imagePullSecrets: registry-frontend-vue-secrets
+  imagePullSecrets: image-pull-secrets
 
 service:
   name: frontend-vue-staging-srv
@@ -13,6 +13,7 @@ service:
 
 ingress:
   enabled: true
-  name: frontend-staging-vue-ing
-  host: staging.game.k8s.atpstealer.com
+  path: /
+  name: frontend-vue-staging
+  host: staging.game.kube.atpstealer.com
   tls: false

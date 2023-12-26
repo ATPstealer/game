@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.ingress.name }}
   annotations:
   {{ if .Values.ingress.tls}}
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt
   {{ end }}
 spec:
   ingressClassName: "nginx"
@@ -13,14 +13,7 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.service.name }}
-                port:
-                  number: {{ .Values.service.port }}
-          - path: /*
+          - path: {{ .Values.ingress.path }}
             pathType: Prefix
             backend:
               service:

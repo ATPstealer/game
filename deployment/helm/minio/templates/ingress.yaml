@@ -4,10 +4,12 @@ kind: Ingress
 metadata:
   name: {{ .Values.application.name }}
   annotations:
-    kubernetes.io/ingress.global-static-ip-name: {{ .Values.ingress.ip }}
-    networking.gke.io/managed-certificates: {{ .Values.ingress.host }}-tls
-    ingressClassName: "gce"
+    kubernetes.io/ingress.class: "nginx"
+    {{ if .Values.ingress.tls}}
+    cert-manager.io/cluster-issuer: letsencrypt
+    {{ end }}
 spec:
+  ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
       http:
@@ -19,15 +21,10 @@ spec:
                 name: {{ .Values.service.name }}
                 port:
                   number: {{ .Values.service.port }}
-
----
-
-apiVersion: networking.gke.io/v1
-kind: ManagedCertificate
-metadata:
-  name: {{ .Values.ingress.host }}-tls
-spec:
-  domains:
-    - {{ .Values.ingress.host }}
-
+  {{ if .Values.ingress.tls}}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.name }}-tls
+  {{ end }}
 {{ end }}

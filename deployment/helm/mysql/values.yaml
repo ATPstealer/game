@@ -8,3 +8,9 @@ service:
   name: mysql-lb
   port: 3306
   type: LoadBalancer
+
+env:
+  - name: MYSQL_ROOT_PASSWORD
+    secretKeyRef:
+      name: mysql-secrets
+      key: MYSQL_ROOT_PASSWORD
