@@ -10,9 +10,9 @@ service:
 
 ingress:
   enabled: true
+  tls: true
   name: minio-ing
   host: minio.game.kube.atpstealer.com
-  ip: load-balancer-2
 
 env:
   - name: MINIO_ACCESS_KEY
@@ -22,4 +22,4 @@ env:
   - name: MINIO_SECRET_KEY
     secretKeyRef:
       name: minio-secrets
-      key: MINIO_ACCESS_KEY
+      key: MINIO_SECRET_KEY

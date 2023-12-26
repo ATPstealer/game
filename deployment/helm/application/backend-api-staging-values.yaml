@@ -1,35 +1,36 @@
 replicaCount: 1
 
 application:
-  name: backend-prod
+  name: backend-api-staging
   image:
-    name: registry.gl.atpstealer.com/mav/backend/game/prod
+    name: registry.gl.kube.atpstealer.com/mav/game/backend-api/staging
     version: 1
-  imagePullSecrets: registry-backend-secrets
+  imagePullSecrets: image-pull-secrets
 
 service:
-  name: backend-prod-srv
+  name: backend-api-staging
   port: 8000
 
 ingress:
   enabled: true
-  name: backend-prod-ing
-  host: api.game.k8s.atpstealer.com
-  tls: true
+  path: /api
+  name: backend-api-staging
+  host: staging.game.kube.atpstealer.com
+  tls: false
 
 env:
   - name: DB_DATABASE
     secretKeyRef:
       name: app
-      key: DB_DATABASE_PROD
+      key: DB_DATABASE_STAGING
   - name: DB_HOST
     secretKeyRef:
       name: app
       key: DB_HOST
   - name: DB_PASSWORD
     secretKeyRef:
-      name: app
-      key: DB_PASSWORD
+      name: mysql-secrets
+      key: MYSQL_ROOT_PASSWORD
   - name: DB_PORT
     secretKeyRef:
       name: app
@@ -45,4 +46,5 @@ env:
   - name: GOOGLE_SHEET_ID
     secretKeyRef:
       name: app
-      key: GOOGLE_SHEET_ID_PROD
+      key: GOOGLE_SHEET_ID_STAGING
+

@@ -34,15 +34,23 @@ resource "google_container_node_pool" "gke_node_pool" {
   }
 }
 
-resource "google_compute_address" "load_balancer_1" {
+resource "google_compute_address" "load_balancer_1" { // gitlab
   name          = "load-balancer-1"
   ip_version    = "IPV4"
   address_type  = "EXTERNAL"
   region        = var.region
 }
 
-resource "google_compute_global_address" "load_balancer_2" {
-  name          = "load-balancer-2"
+resource "google_compute_address" "load_balancer_3" { // mysql
+  name          = "load-balancer-3"
   ip_version    = "IPV4"
   address_type  = "EXTERNAL"
+  region        = var.region
+}
+
+resource "google_compute_address" "load_balancer_4" { // ingress
+  name          = "load-balancer-4"
+  ip_version    = "IPV4"
+  address_type  = "EXTERNAL"
+  region        = var.region
 }

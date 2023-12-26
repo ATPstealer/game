@@ -2,9 +2,9 @@ cronjob:
   name: transform-staging
   period: "0 0 * * *"
   image:
-    name: registry.gl.atpstealer.com/mav/backend/transform/staging
+    name: registry.gl.kube.atpstealer.com/mav/game/backend-transform/staging
     version: 1
-  imagePullSecrets: registry-backend-secrets
+  imagePullSecrets: image-pull-secrets
 
 env:
   - name: DB_DATABASE
@@ -17,8 +17,8 @@ env:
       key: DB_HOST
   - name: DB_PASSWORD
     secretKeyRef:
-      name: app
-      key: DB_PASSWORD
+      name: mysql-secrets
+      key: MYSQL_ROOT_PASSWORD
   - name: DB_PORT
     secretKeyRef:
       name: app
