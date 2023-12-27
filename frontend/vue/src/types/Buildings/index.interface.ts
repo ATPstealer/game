@@ -20,6 +20,8 @@ export interface Building {
   workEnd: string;
   productionId: number;
   blueprintName: string;
+  buildingGroup: string;
+  buildingSubGroup: string;
 }
 
 export interface BuildingType {

@@ -31,10 +31,11 @@
         :key="building.id"
       >
         <p class="col-span-1 font-bold text-blue-500 hover:text-blue-700">
-          <router-link :to="{name: 'BuildingId', params: {id: building.id}}">
+          <router-link :to="{name: `Building${building.buildingGroup}Id`, params: {id: building.id}}">
             {{ building.title }} {{ building.level }}x{{ building.square }}
           </router-link>
         </p>
+
         <p class="col-span-1">
           {{ building.x }}x{{ building.y }}
         </p>
