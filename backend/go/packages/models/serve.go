@@ -17,7 +17,8 @@ import (
 func AutoMigrateModel(db *gorm.DB) {
 	models := []interface{}{&User{}, &Token{}, &Cell{}, &LandLord{}, &Building{},
 		&BuildingType{}, &Resource{}, &ResourceType{}, &Logistic{}, &Blueprint{},
-		&Storage{}, &Order{}, &Settings{}, &StoreGoods{}, &EvolutionPrice{}}
+		&Storage{}, &Order{}, &Settings{}, &StoreGoods{}, &EvolutionPrice{},
+		&Production{}}
 
 	for _, model := range models {
 		if err := db.AutoMigrate(model); err != nil {

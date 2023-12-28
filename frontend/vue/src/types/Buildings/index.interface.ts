@@ -18,8 +18,6 @@ export interface Building {
   status: string;
   workStarted: string;
   workEnd: string;
-  productionId: number;
-  blueprintName: string;
   buildingGroup: string;
   buildingSubGroup: string;
 }
