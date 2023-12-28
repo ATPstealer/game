@@ -8,18 +8,18 @@ import (
 type ResourceType struct {
 	gorm.Model
 	Name       string  `json:"name"`
-	Volume     float32 `json:"volume"` // m3
-	Weight     float32 `json:"weight"` // kg
-	Demand     float32 `json:"demand"`
+	Volume     float64 `json:"volume"` // m3
+	Weight     float64 `json:"weight"` // kg
+	Demand     float64 `json:"demand"`
 	StoreGroup string  `json:"storeGroup"`
 }
 
 type ResourceTypeResult struct {
 	ID         uint    `json:"id"`
 	Name       string  `json:"name"`
-	Volume     float32 `json:"volume"`
-	Weight     float32 `json:"weight"`
-	Demand     float32 `json:"demand"`
+	Volume     float64 `json:"volume"`
+	Weight     float64 `json:"weight"`
+	Demand     float64 `json:"demand"`
 	StoreGroup string  `json:"storeGroup"`
 }
 

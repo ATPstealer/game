@@ -12,7 +12,7 @@ type Logistic struct {
 	gorm.Model
 	ResourceTypeID uint      `json:"resourceTypeId"`
 	UserID         uint      `json:"userId"`
-	Amount         float32   `json:"amount"`
+	Amount         float64   `json:"amount"`
 	FromX          int       `json:"fromX"`
 	FromY          int       `json:"fromY"`
 	ToX            int       `json:"toX"`
@@ -20,7 +20,7 @@ type Logistic struct {
 	WorkEnd        time.Time `json:"workEnd"`
 }
 
-func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount float32, fromX int, fromY int, toX int, toY int) error {
+func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount float64, fromX int, fromY int, toX int, toY int) error {
 	resource, err := GetMyResourceInCell(db, resourceTypeID, userID, fromX, fromY)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount floa
 	}
 
 	distance := math.Sqrt(math.Pow(float64(fromX-toX), 2) + math.Pow(float64(fromY-toY), 2))
-	price := (resource.Weight + resource.Volume) * float32(distance) * amount / 1000
+	price := (resource.Weight + resource.Volume) * float64(distance) * amount / 1000
 	if !CheckEnoughMoney(db, userID, price) {
 		return errors.New("not enough money")
 	} else {
@@ -70,14 +70,14 @@ func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount floa
 type LogisticResult struct {
 	ID             uint      `json:"id"`
 	ResourceTypeID uint      `json:"resourceTypeId"`
-	Amount         float32   `json:"amount"`
+	Amount         float64   `json:"amount"`
 	FromX          int       `json:"fromX"`
 	FromY          int       `json:"fromY"`
 	ToX            int       `json:"toX"`
 	ToY            int       `json:"toY"`
 	WorkEnd        time.Time `json:"workEnd"`
 	ResourceName   string    `json:"resourceName"`
-	Volume         float32   `json:"volume"`
+	Volume         float64   `json:"volume"`
 }
 
 func GetMyLogistics(db *gorm.DB, userID uint) ([]LogisticResult, error) {
@@ -93,8 +93,8 @@ func GetMyLogistics(db *gorm.DB, userID uint) ([]LogisticResult, error) {
 	return logistics, res.Error
 }
 
-func GetDestinationVolume(db *gorm.DB, userID uint, toX int, toY int) float32 {
-	var volume float32
+func GetDestinationVolume(db *gorm.DB, userID uint, toX int, toY int) float64 {
+	var volume float64
 	res := db.Model(&Logistic{}).Where("user_id = ? AND to_x = ? AND to_y = ?", userID, toX, toY).
 		Select("SUM(volume * amount) AS total").
 		Joins("left join resource_types on logistics.resource_type_id = resource_types.id").

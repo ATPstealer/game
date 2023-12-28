@@ -43,9 +43,6 @@ func Production(db *gorm.DB) {
 		log.Println(err)
 	}
 
-	log.Println(blueprintResults)
-	log.Println(productions)
-
 	now := time.Now()
 	for _, production := range productions {
 		log.Println(production)
@@ -58,9 +55,6 @@ func Production(db *gorm.DB) {
 		workTime := now.Sub(*production.WorkStarted).Seconds()
 		blueprint := blueprintResults[production.BlueprintID-1]
 
-		log.Println(blueprint)
-		log.Println(workTime)
-
 		// Formula of production pace
 		cycles := int(workTime / blueprint.ProductionTime.Seconds())
 		productionCycles := cycles * production.Level * production.Square
@@ -71,7 +65,7 @@ func Production(db *gorm.DB) {
 
 		enoughResources := true
 		for _, resource := range blueprint.UsedResources {
-			if !models.CheckEnoughResources(db, resource.ResourceID, production.UserID, production.X, production.Y, resource.Amount*float32(productionCycles)) {
+			if !models.CheckEnoughResources(db, resource.ResourceID, production.UserID, production.X, production.Y, resource.Amount*float64(productionCycles)) {
 				db.Model(&models.Building{}).Where("id = ?", production.BuildingID).Update("status", models.ResourcesNeededStatus)
 				db.Model(&models.Production{}).Where("id = ?", production.ID).Update("work_started", &now)
 				enoughResources = false
@@ -82,14 +76,14 @@ func Production(db *gorm.DB) {
 		if enoughResources {
 			for _, resource := range blueprint.UsedResources {
 				err := models.AddResource(db, resource.ResourceID, production.UserID, production.X, production.Y,
-					(-1)*resource.Amount*float32(productionCycles))
+					(-1)*resource.Amount*float64(productionCycles))
 				if err != nil {
 					log.Println(err)
 				}
 			}
 			for _, resource := range blueprint.ProducedResources {
 				err := models.AddResource(db, resource.ResourceID, production.UserID, production.X, production.Y,
-					resource.Amount*float32(productionCycles))
+					resource.Amount*float64(productionCycles))
 				if err != nil {
 					log.Println(err)
 				}
@@ -100,78 +94,6 @@ func Production(db *gorm.DB) {
 		}
 	}
 }
-
-/*
-func Production(db *gorm.DB) {
-	var buildings []models.Building
-	res := db.Model(&models.Building{}).Where("status IN (?)  AND NOW() < work_end",
-		[]models.BuildingStatus{models.ProductionStatus, models.ResourcesNeededStatus, models.StorageNeededStatus}).Scan(&buildings)
-	if res.Error != nil {
-		log.Println(res.Error)
-	}
-
-	var resources []models.Resource
-	res = db.Model(&models.Resource{}).Find(&resources)
-	if res.Error != nil {
-		log.Println(res.Error)
-	}
-
-	blueprintResults, err := models.GetBlueprints(db, 0)
-	if err != nil {
-		log.Println(err)
-	}
-
-	now := time.Now()
-	for _, building := range buildings {
-		if !models.CheckEnoughStorage(db, building.UserID, building.X, building.Y, 0) {
-			building.WorkStarted = &now
-			building.Status = models.StorageNeededStatus
-			db.Save(&building)
-			continue
-		}
-
-		workTime := now.Sub(*building.WorkStarted).Seconds()
-		blueprint := blueprintResults[building.ProductionID-1]
-
-		// Formula of production pace
-		cycles := int(workTime / blueprint.ProductionTime.Seconds())
-		productionCycles := cycles * building.Level * building.Square
-
-		if productionCycles == 0 {
-			continue
-		}
-		enoughResources := true
-		for _, resource := range blueprint.UsedResources {
-			if !models.CheckEnoughResources(db, resource.ResourceID, building.UserID, building.X, building.Y, resource.Amount*float32(productionCycles)) {
-				building.WorkStarted = &now
-				building.Status = models.ResourcesNeededStatus
-				db.Save(&building)
-				enoughResources = false
-				break
-			}
-		}
-		if enoughResources {
-			for _, resource := range blueprint.UsedResources {
-				err := models.AddResource(db, resource.ResourceID, building.UserID, building.X, building.Y,
-					(-1)*resource.Amount*float32(productionCycles))
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			for _, resource := range blueprint.ProducedResources {
-				err := models.AddResource(db, resource.ResourceID, building.UserID, building.X, building.Y,
-					resource.Amount*float32(productionCycles))
-				if err != nil {
-					log.Println(err)
-				}
-			}
-			building.Status = models.ProductionStatus
-			newWorkStarted := building.WorkStarted.Add(time.Duration(cycles) * blueprint.ProductionTime)
-			building.WorkStarted = &newWorkStarted
-			db.Save(building)
-		}
-	}
-}*/
 
 func StopWork(db *gorm.DB) {
 	res := db.Model(&models.Building{}).Where("status IN (?) AND work_end < NOW()",

@@ -37,7 +37,7 @@ func SetStoreGoods(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	price, err := include.StrToFloat32(c, c.Query("price"))
+	price, err := include.StrTofloat64(c, c.Query("price"))
 	if err != nil {
 		return
 	}

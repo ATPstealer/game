@@ -10,24 +10,24 @@ type BuildingType struct {
 	gorm.Model                     // This includes some common fields like ID, CreatedAt, UpdatedAt, and DeletedAt.
 	Title            string        `json:"title"`
 	Description      string        `json:"description"`
-	Cost             float32       `json:"cost"`
+	Cost             float64       `json:"cost"`
 	Requirements     string        `json:"requirements"` // TODO: Resource object
 	BuildTime        time.Duration `json:"buildTime"`
 	BuildingGroup    string        `json:"buildingGroup"`
 	BuildingSubGroup string        `json:"buildingSubGroup"`
-	Capacity         float32       `json:"capacity"`
+	Capacity         float64       `json:"capacity"`
 }
 
 type BuildingTypeResult struct {
 	ID               uint          `json:"id"`
 	Title            string        `json:"title"`
 	Description      string        `json:"description"`
-	Cost             float32       `json:"cost"`
+	Cost             float64       `json:"cost"`
 	Requirements     string        `json:"requirements"`
 	BuildTime        time.Duration `json:"buildTime"`
 	BuildingGroup    string        `json:"buildingGroup"`
 	BuildingSubGroup string        `json:"buildingSubGroup"`
-	Capacity         float32       `json:"capacity"`
+	Capacity         float64       `json:"capacity"`
 }
 
 func GetBuildingTypeByID(db *gorm.DB, typeID uint) (BuildingTypeResult, error) {

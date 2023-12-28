@@ -31,7 +31,7 @@ func StoreSell(db *gorm.DB) error {
 			log.Println(err)
 		}
 
-		if float32(evolutionPrices[epIndex].SellSum) >= evolutionPrices[epIndex].Demand {
+		if float64(evolutionPrices[epIndex].SellSum) >= evolutionPrices[epIndex].Demand {
 			storeGoods[gIndex].Status = models.DemandSatisfied
 			continue
 		}
@@ -42,8 +42,8 @@ func StoreSell(db *gorm.DB) error {
 		}
 
 		// Formula of selling pace
-		workTime := float32(now.Sub(*goods.SellStarted).Seconds())
-		storeCapacity := float32(goods.Capacity * goods.Level * goods.Square)
+		workTime := float64(now.Sub(*goods.SellStarted).Seconds())
+		storeCapacity := float64(goods.Capacity * goods.Level * goods.Square)
 		daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
 		oneSellTime := time.Second * time.Duration(24*60*60/daySells)
 
@@ -53,30 +53,30 @@ func StoreSell(db *gorm.DB) error {
 		}
 		sellCycles := int(daySells * workTime / (24 * 60 * 60))
 
-		if !models.CheckEnoughResources(db, goods.ResourceTypeID, goods.UserID, goods.X, goods.Y, float32(sellCycles)) {
+		if !models.CheckEnoughResources(db, goods.ResourceTypeID, goods.UserID, goods.X, goods.Y, float64(sellCycles)) {
 			storeGoods[gIndex].Status = models.NotEnoughMinerals
 			storeGoods[gIndex].SellStarted = &now
 			continue
 		}
 
-		err = models.AddResource(db, goods.ResourceTypeID, goods.UserID, goods.X, goods.Y, (-1)*float32(sellCycles))
+		err = models.AddResource(db, goods.ResourceTypeID, goods.UserID, goods.X, goods.Y, (-1)*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		err = models.AddMoney(db, goods.UserID, goods.Price*float32(sellCycles))
+		err = models.AddMoney(db, goods.UserID, goods.Price*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
-		err = models.AddCivilSavings(db, goods.X, goods.Y, (-1)*float32(sellCycles)*goods.Price)
+		err = models.AddCivilSavings(db, goods.X, goods.Y, (-1)*float64(sellCycles)*goods.Price)
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		storeGoods[gIndex].SellSum += sellCycles
-		storeGoods[gIndex].Revenue += float32(sellCycles) * goods.Price
+		storeGoods[gIndex].Revenue += float64(sellCycles) * goods.Price
 		evolutionPrices[epIndex].SellSum += sellCycles
-		evolutionPrices[epIndex].RevenueSum += float32(sellCycles) * goods.Price
+		evolutionPrices[epIndex].RevenueSum += float64(sellCycles) * goods.Price
 
 		newWorkStarted := storeGoods[gIndex].SellStarted.Add(time.Duration(sellCycles) * oneSellTime)
 		storeGoods[gIndex].SellStarted = &newWorkStarted
@@ -88,7 +88,7 @@ func StoreSell(db *gorm.DB) error {
 	return nil
 }
 
-func daySellCalc(price float32, priceAverage float32, capacity float32) float32 {
+func daySellCalc(price float64, priceAverage float64, capacity float64) float64 {
 	if price <= 0.5*priceAverage {
 		return capacity
 	}

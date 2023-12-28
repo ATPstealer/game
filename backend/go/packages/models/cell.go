@@ -12,15 +12,15 @@ type Cell struct {
 	Y                int     `json:"y"`
 	SurfaceImagePath string  `json:"surfaceImagePath"`
 	Square           int     `json:"square"`
-	Pollution        float32 `json:"pollution"`
-	Population       float32 `json:"population"`
-	CivilSavings     float32 `json:"civilSavings"`
-	SpendRate        float32 `json:"SpendRate"`
-	Education        float32 `json:"education"`
-	Crime            float32 `json:"crime"`
-	Medicine         float32 `json:"medicine"`
-	ElementarySchool float32 `json:"elementarySchool"`
-	HigherSchool     float32 `json:"higherSchool"`
+	Pollution        float64 `json:"pollution"`
+	Population       float64 `json:"population"`
+	CivilSavings     float64 `json:"civilSavings"`
+	SpendRate        float64 `json:"SpendRate"`
+	Education        float64 `json:"education"`
+	Crime            float64 `json:"crime"`
+	Medicine         float64 `json:"medicine"`
+	ElementarySchool float64 `json:"elementarySchool"`
+	HigherSchool     float64 `json:"higherSchool"`
 }
 
 type CellResult struct {
@@ -30,15 +30,15 @@ type CellResult struct {
 	Y                int     `json:"y"`
 	SurfaceImagePath string  `json:"surfaceImagePath"`
 	Square           int     `json:"square"`
-	Pollution        float32 `json:"pollution"`
-	Population       float32 `json:"population"`
-	CivilSavings     float32 `json:"civilSavings"`
-	SpendRate        float32 `json:"SpendRate"`
-	Education        float32 `json:"education"`
-	Crime            float32 `json:"crime"`
-	Medicine         float32 `json:"medicine"`
-	ElementarySchool float32 `json:"elementarySchool"`
-	HigherSchool     float32 `json:"higherSchool"`
+	Pollution        float64 `json:"pollution"`
+	Population       float64 `json:"population"`
+	CivilSavings     float64 `json:"civilSavings"`
+	SpendRate        float64 `json:"SpendRate"`
+	Education        float64 `json:"education"`
+	Crime            float64 `json:"crime"`
+	Medicine         float64 `json:"medicine"`
+	ElementarySchool float64 `json:"elementarySchool"`
+	HigherSchool     float64 `json:"higherSchool"`
 }
 
 func GetAllCells(db *gorm.DB) []CellResult {
@@ -67,7 +67,7 @@ func CheckEnoughLand(db *gorm.DB, x int, y int, squareForBuy int) bool {
 	return cell.Square >= squareForBuy
 }
 
-func AddCivilSavings(db *gorm.DB, x int, y int, money float32) error {
+func AddCivilSavings(db *gorm.DB, x int, y int, money float64) error {
 	var cell Cell
 	db.Where("x = ? AND y = ?", x, y).First(&cell)
 	cell.CivilSavings += money

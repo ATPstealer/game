@@ -14,8 +14,8 @@ type Order struct {
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 	ResourceTypeID uint    `json:"resourceTypeId"`
-	Amount         float32 `json:"amount"`
-	PriceForUnit   float32 `json:"priceForUnit"`
+	Amount         float64 `json:"amount"`
+	PriceForUnit   float64 `json:"priceForUnit"`
 	Sell           bool    `json:"sell"` // true - sell; false - buy
 }
 
@@ -23,8 +23,8 @@ type CreateOrderPayload struct {
 	ResourceTypeID uint
 	X              int
 	Y              int
-	Amount         float32
-	PriceForUnit   float32
+	Amount         float64
+	PriceForUnit   float64
 	Sell           bool
 }
 
@@ -69,8 +69,8 @@ type OrderResult struct {
 	Y              int     `json:"y"`
 	ResourceTypeID uint    `json:"resourceTypeId"`
 	ResourceName   string  `json:"resourceName"`
-	Amount         float32 `json:"amount"`
-	PriceForUnit   float32 `json:"priceForUnit"`
+	Amount         float64 `json:"amount"`
+	PriceForUnit   float64 `json:"priceForUnit"`
 	Sell           bool    `json:"sell"` // true - sell; false - buy
 }
 
@@ -180,12 +180,12 @@ type OrdersResult struct {
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 	ResourceTypeID uint    `json:"resourceTypeId"`
-	Amount         float32 `json:"amount"`
-	PriceForUnit   float32 `json:"priceForUnit"`
+	Amount         float64 `json:"amount"`
+	PriceForUnit   float64 `json:"priceForUnit"`
 	Sell           bool    `json:"sell"` // true - sell; false - buy
 	ResourceName   string  `json:"resourceName"`
-	Volume         float32 `json:"volume"`
-	Weight         float32 `json:"weight"`
+	Volume         float64 `json:"volume"`
+	Weight         float64 `json:"weight"`
 }
 
 func GetOrders(db *gorm.DB, findOrderParams FindOrderParams) ([]OrdersResult, error) {

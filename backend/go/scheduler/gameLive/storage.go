@@ -82,13 +82,13 @@ func findOrder(storages *[]models.Storage, order models.OrdersResult) {
 func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Building) {
 	for i, storage := range *storages {
 		if storage.UserID == buildingStorage.UserID && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
-			(*storages)[i].VolumeMax += float32(buildingStorage.Level * buildingStorage.Square * 100 * 5)
+			(*storages)[i].VolumeMax += float64(buildingStorage.Level * buildingStorage.Square * 100 * 5)
 			return
 		}
 	}
 	*storages = append(*storages, models.Storage{
 		UserID:    buildingStorage.UserID,
-		VolumeMax: float32(buildingStorage.Level * buildingStorage.Square * 100 * 5),
+		VolumeMax: float64(buildingStorage.Level * buildingStorage.Square * 100 * 5),
 		X:         buildingStorage.X,
 		Y:         buildingStorage.Y,
 	})

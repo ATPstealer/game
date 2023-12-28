@@ -20,7 +20,7 @@ type BuyLandPayload struct {
 	Square int
 }
 
-func BuyLand(db *gorm.DB, userID uint, payload BuyLandPayload) (float32, error) {
+func BuyLand(db *gorm.DB, userID uint, payload BuyLandPayload) (float64, error) {
 	cellLandLords, err := GetCellOwners(db, payload.X, payload.Y)
 	if err != nil {
 		return 0, err
@@ -29,7 +29,7 @@ func BuyLand(db *gorm.DB, userID uint, payload BuyLandPayload) (float32, error) 
 	for _, landLord := range cellLandLords {
 		landOccupied += landLord.Square
 	}
-	price := 10 * (float32(landOccupied)*2 + 1 + float32(payload.Square)) * float32(payload.Square) / 2
+	price := 10 * (float64(landOccupied)*2 + 1 + float64(payload.Square)) * float64(payload.Square) / 2
 
 	if !CheckEnoughMoney(db, userID, price) {
 		return 0, errors.New("not enough money")
