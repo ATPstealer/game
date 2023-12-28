@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col gap-4">
     <MessageBlock
-      v-if="dataMessage"
-      :message="dataMessage"
+        v-if="message"
+        :message="message"
     />
     <p class="text-xl">
       Move
@@ -78,7 +78,7 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 const amount = ref<number>(0)
-const dataMessage = ref<Message>()
+const message = ref<Message | null>(null)
 const { moveResource } = useResources()
 
 const distance = computed(() => {
@@ -97,9 +97,9 @@ const move = () => {
     fromX: props.resource.x,
     fromY: props.resource.y
   }
-  const { onFetchResponse, message } = moveResource(payload)
+  const { onFetchResponse, dataMessage } = moveResource(payload)
   onFetchResponse(() => {
-    dataMessage.value = message.value
+    message.value = dataMessage.value
 
     setTimeout(() => {
       if (dataMessage.value?.status === 'success') {
