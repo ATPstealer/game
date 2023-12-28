@@ -20,14 +20,14 @@ type StoreGoods struct {
 	gorm.Model
 	BuildingID     uint
 	ResourceTypeID uint
-	Price          float32
+	Price          float64
 	SellSum        int
-	Revenue        float32
+	Revenue        float64
 	SellStarted    *time.Time
 	Status         StoreGoodsStatus
 }
 
-func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uint, price float32) error {
+func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uint, price float64) error {
 	building, err := GetBuildingByID(db, buildingID)
 	if err != nil {
 		return err
@@ -64,9 +64,9 @@ type StoreGoodsShortResult struct {
 	ID             uint             `json:"id" gorm:"primary_key"`
 	BuildingID     uint             `json:"buildingId"`
 	ResourceTypeID uint             `json:"resourceTypeId"`
-	Price          float32          `json:"price"`
+	Price          float64          `json:"price"`
 	SellSum        int              `json:"sellSum"`
-	Revenue        float32          `json:"revenue"`
+	Revenue        float64          `json:"revenue"`
 	SellStarted    *time.Time       `json:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status"`
 }
@@ -84,9 +84,9 @@ type StoreGoodsResult struct {
 	ID             uint             `json:"id" gorm:"primary_key"`
 	BuildingID     uint             `json:"buildingId"`
 	ResourceTypeID uint             `json:"resourceTypeId"`
-	Price          float32          `json:"price"`
+	Price          float64          `json:"price"`
 	SellSum        int              `json:"sellSum"`
-	Revenue        float32          `json:"revenue"`
+	Revenue        float64          `json:"revenue"`
 	SellStarted    *time.Time       `json:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status"`
 	X              int              `json:"x"`

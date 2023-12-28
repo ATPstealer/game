@@ -11,7 +11,7 @@ type User struct {
 	NickName     string  `gorm:"unique" json:"nickName"`
 	Email        string  `gorm:"unique" json:"email"`
 	Password     string  `json:"password"`
-	Money        float32 `json:"money"`
+	Money        float64 `json:"money"`
 	Memory       int     `json:"memory"`
 	Intelligence int     `json:"intelligence"`
 	Attention    int     `json:"attention"`
@@ -26,7 +26,7 @@ type UserResult struct {
 	NickName     string  `json:"nickName"`
 	Email        string  `json:"email"`
 	Password     string  `json:"password"`
-	Money        float32 `json:"money"`
+	Money        float64 `json:"money"`
 	Memory       int     `json:"memory"`
 	Intelligence int     `json:"intelligence"`
 	Attention    int     `json:"attention"`
@@ -82,12 +82,12 @@ func GetUserByNickName(db *gorm.DB, nickName string) (User, error) {
 	return user, nil
 }
 
-func CheckEnoughMoney(db *gorm.DB, userID uint, money float32) bool {
+func CheckEnoughMoney(db *gorm.DB, userID uint, money float64) bool {
 	user, _ := GetUserByID(db, userID)
 	return user.Money >= money
 }
 
-func AddMoney(db *gorm.DB, userID uint, money float32) error {
+func AddMoney(db *gorm.DB, userID uint, money float64) error {
 	user, _ := GetUserByID(db, userID)
 	if user.Money+money < 0 {
 		return errors.New("not enough money")

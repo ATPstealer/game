@@ -43,20 +43,20 @@ func sortByTurnover(cellPrices *[]models.EvolutionPrice) {
 	}
 }
 
-func countSpendMax(cellPrices *[]models.EvolutionPrice, moneyAvailable float32) {
+func countSpendMax(cellPrices *[]models.EvolutionPrice, moneyAvailable float64) {
 	arrayLen := len(*cellPrices)
-	var consumptionLevel float32
+	var consumptionLevel float64
 	for i := 0; i < arrayLen; i++ {
-		var lastSpend float32
+		var lastSpend float64
 		if i == 0 {
 			lastSpend = 0
 		} else {
 			lastSpend = (*cellPrices)[i-1].PriceAverage * (*cellPrices)[i-1].Demand
 		}
-		consumptionLevel = ((*cellPrices)[i].Demand*((*cellPrices)[i].PriceAverage) - lastSpend) * float32(arrayLen-i)
+		consumptionLevel = ((*cellPrices)[i].Demand*((*cellPrices)[i].PriceAverage) - lastSpend) * float64(arrayLen-i)
 		if consumptionLevel >= moneyAvailable {
 			for j := i; j < arrayLen; j++ {
-				(*cellPrices)[j].SpendMax = (*cellPrices)[i-1].Demand*(*cellPrices)[i-1].PriceAverage + moneyAvailable/float32(arrayLen-i)
+				(*cellPrices)[j].SpendMax = (*cellPrices)[i-1].Demand*(*cellPrices)[i-1].PriceAverage + moneyAvailable/float64(arrayLen-i)
 			}
 			return
 		} else {

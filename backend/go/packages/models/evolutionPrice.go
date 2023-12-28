@@ -7,11 +7,11 @@ type EvolutionPrice struct {
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 	ResourceTypeID uint    `json:"resourceTypeId"`
-	PriceAverage   float32 `json:"priceAverage"`
-	Demand         float32 `json:"demand"`
+	PriceAverage   float64 `json:"priceAverage"`
+	Demand         float64 `json:"demand"`
 	SellSum        int     `json:"sellSum"`
-	RevenueSum     float32 `json:"revenueSum"`
-	SpendMax       float32 `json:"spendMax"`
+	RevenueSum     float64 `json:"revenueSum"`
+	SpendMax       float64 `json:"spendMax"`
 }
 
 func GetAllEvolutionPrices(db *gorm.DB) ([]EvolutionPrice, error) {

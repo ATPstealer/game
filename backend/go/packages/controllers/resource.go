@@ -41,7 +41,7 @@ func ResourceMove(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	amount, err := include.StrToFloat32(c, c.Query("amount"))
+	amount, err := include.StrTofloat64(c, c.Query("amount"))
 	if err != nil {
 		return
 	}

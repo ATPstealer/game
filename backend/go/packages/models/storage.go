@@ -8,8 +8,8 @@ import (
 type Storage struct {
 	gorm.Model
 	UserID         uint    `json:"userId"`
-	VolumeOccupied float32 `json:"volumeOccupied"`
-	VolumeMax      float32 `json:"volumeMax"`
+	VolumeOccupied float64 `json:"volumeOccupied"`
+	VolumeMax      float64 `json:"volumeMax"`
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 }
@@ -17,8 +17,8 @@ type Storage struct {
 type StorageResult struct {
 	gorm.Model
 	UserID         uint    `json:"userId"`
-	VolumeOccupied float32 `json:"volumeOccupied"`
-	VolumeMax      float32 `json:"volumeMax"`
+	VolumeOccupied float64 `json:"volumeOccupied"`
+	VolumeMax      float64 `json:"volumeMax"`
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 }
@@ -41,7 +41,7 @@ func GetAllStorages(db *gorm.DB) ([]Storage, error) {
 	return allStorages, res.Error
 }
 
-func CheckEnoughStorage(db *gorm.DB, userID uint, x int, y int, addVolume float32) bool {
+func CheckEnoughStorage(db *gorm.DB, userID uint, x int, y int, addVolume float64) bool {
 	var storage Storage
 	res := db.Model(&Storage{}).Where("user_id = ? AND x = ? AND y = ?", userID, x, y).First(&storage)
 	if res.Error != nil {

@@ -171,12 +171,12 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 			buildingType = BuildingType{
 				Title:            row[2].(string),
 				Description:      row[3].(string),
-				Cost:             float32(cost),
+				Cost:             float64(cost),
 				Requirements:     row[5].(string),
 				BuildTime:        time.Second * time.Duration(buildTime),
 				BuildingGroup:    row[7].(string),
 				BuildingSubGroup: row[8].(string),
-				Capacity:         float32(capacity),
+				Capacity:         float64(capacity),
 			}
 			db.Create(&buildingType)
 		} else {
@@ -188,12 +188,12 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				db.Model(&BuildingType{}).Where("id = ?", i+1).First(&buildingType)
 				buildingType.Title = row[2].(string)
 				buildingType.Description = row[3].(string)
-				buildingType.Cost = float32(cost)
+				buildingType.Cost = float64(cost)
 				buildingType.Requirements = row[5].(string)
 				buildingType.BuildTime = time.Second * time.Duration(buildTime)
 				buildingType.BuildingGroup = row[7].(string)
 				buildingType.BuildingSubGroup = row[8].(string)
-				buildingType.Capacity = float32(capacity)
+				buildingType.Capacity = float64(capacity)
 				db.Save(&buildingType)
 			}
 		}
@@ -221,9 +221,9 @@ func resourceTypesImport(db *gorm.DB, rows [][]interface{}) error {
 		if resourceType == (ResourceType{}) {
 			resourceType = ResourceType{
 				Name:       row[2].(string),
-				Volume:     float32(volume),
-				Weight:     float32(weight),
-				Demand:     float32(demand),
+				Volume:     float64(volume),
+				Weight:     float64(weight),
+				Demand:     float64(demand),
 				StoreGroup: row[6].(string),
 			}
 			db.Create(&resourceType)
@@ -235,9 +235,9 @@ func resourceTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				resourceType = ResourceType{}
 				db.Model(&ResourceType{}).Where("id = ?", i+1).First(&resourceType)
 				resourceType.Name = row[2].(string)
-				resourceType.Volume = float32(volume)
-				resourceType.Weight = float32(weight)
-				resourceType.Demand = float32(demand)
+				resourceType.Volume = float64(volume)
+				resourceType.Weight = float64(weight)
+				resourceType.Demand = float64(demand)
 				resourceType.StoreGroup = row[6].(string)
 				db.Save(&resourceType)
 			}

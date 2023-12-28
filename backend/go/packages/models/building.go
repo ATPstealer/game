@@ -51,14 +51,14 @@ func ConstructBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayloa
 	if err != nil {
 		return err
 	}
-	if !CheckEnoughMoney(db, userID, buildingType.Cost*float32(payload.Square)) {
+	if !CheckEnoughMoney(db, userID, float64(buildingType.Cost)*float64(payload.Square)) {
 		return errors.New("not enough money")
 	}
 	return CreateBuilding(db, userID, payload, buildingType.Cost)
 }
 
-func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, cost float32) error {
-	if err := AddMoney(db, userID, (-1)*cost*float32(payload.Square)); err != nil {
+func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, cost float64) error {
+	if err := AddMoney(db, userID, (-1)*cost*float64(payload.Square)); err != nil {
 		return err
 	}
 	buildingType, err := GetBuildingTypeByID(db, payload.TypeID)
