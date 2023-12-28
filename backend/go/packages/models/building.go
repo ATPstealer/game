@@ -12,25 +12,24 @@ import (
 type BuildingStatus string
 
 const (
-	Construction    BuildingStatus = "Construction"
-	Ready           BuildingStatus = "Ready"
-	Production      BuildingStatus = "Production"
-	ResourcesNeeded BuildingStatus = "ResourcesNeeded"
-	StorageNeeded   BuildingStatus = "StorageNeeded"
+	ConstructionStatus    BuildingStatus = "Construction"
+	ReadyStatus           BuildingStatus = "Ready"
+	ProductionStatus      BuildingStatus = "Production"
+	ResourcesNeededStatus BuildingStatus = "ResourcesNeeded"
+	StorageNeededStatus   BuildingStatus = "StorageNeeded"
 )
 
 type Building struct {
 	gorm.Model
-	TypeID       uint           `json:"typeId"`
-	UserID       uint           `json:"userId"`
-	X            int            `json:"x"`
-	Y            int            `json:"y"`
-	Square       int            `json:"square"`
-	Level        int            `json:"level"`
-	Status       BuildingStatus `json:"status"`
-	WorkStarted  *time.Time     `json:"workStarted"`
-	WorkEnd      *time.Time     `json:"workEnd"`
-	ProductionID uint           `json:"productionId"`
+	TypeID      uint           `json:"typeId"`
+	UserID      uint           `json:"userId"`
+	X           int            `json:"x"`
+	Y           int            `json:"y"`
+	Square      int            `json:"square"`
+	Level       int            `json:"level"`
+	Status      BuildingStatus `json:"status"`
+	WorkStarted *time.Time     `json:"workStarted"`
+	WorkEnd     *time.Time     `json:"workEnd"`
 }
 
 type ConstructBuildingPayload struct {
@@ -76,7 +75,7 @@ func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, 
 		Y:           payload.Y,
 		Square:      payload.Square,
 		Level:       1,
-		Status:      Construction,
+		Status:      ConstructionStatus,
 		WorkStarted: &now,
 		WorkEnd:     &end,
 	}
@@ -107,8 +106,6 @@ type MyBuildingsResult struct {
 	Status           string    `json:"status"`
 	WorkStarted      time.Time `json:"workStarted"`
 	WorkEnd          time.Time `json:"workEnd"`
-	ProductionID     uint      `json:"productionId"`
-	BlueprintName    string    `json:"blueprintName"`
 	BuildingGroup    string    `json:"buildingGroup"`
 	BuildingSubGroup string    `json:"buildingSubGroup"`
 }
@@ -121,10 +118,8 @@ func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsRes
 		query = query.Where("buildings.id = ?", buildingID)
 	}
 	res := query.Select("buildings.id", "buildings.type_id", "title", "x", "y", "square", "level",
-		"status", "work_started", "work_end", "production_id", "blueprints.name AS blueprint_name",
-		"building_types.building_group", "building_types.building_sub_group").
+		"status", "buildings.work_started", "buildings.work_end", "building_types.building_group", "building_types.building_sub_group").
 		Joins("left join building_types on buildings.type_id = building_types.id").
-		Joins("left join blueprints on buildings.production_id = blueprints.id").
 		Scan(&myBuildings)
 
 	if res.Error != nil {
@@ -224,53 +219,9 @@ func GetBuildingByID(db *gorm.DB, buildingID uint) (Building, error) {
 	return building, res.Error
 }
 
-type StartWorkPayload struct {
-	BuildingID  uint
-	BlueprintID uint
-	Duration    time.Duration
-}
-
-func StartWork(db *gorm.DB, userID uint, payload StartWorkPayload) error {
-	building, err := GetBuildingByID(db, payload.BuildingID)
-	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
-		return err
-	}
-	if building.Status != Ready {
-		return errors.New("Building not ready. Status is " + string(building.Status))
-	}
-	if building.UserID != userID {
-		err := errors.New("this building don't belong you")
-		log.Println(err)
-		return err
-	}
-	blueprintResult, err := GetBlueprintByID(db, payload.BlueprintID)
-	if blueprintResult.ID == 0 {
-		err := errors.New("invalid blueprint")
-		log.Println(err)
-		return err
-	}
-	if blueprintResult.ProducedInID != building.TypeID {
-		err := errors.New("can't product it here")
-		log.Println(err)
-		return err
-	}
-
-	log.Println(building.WorkStarted)
-	now := time.Now()
-	end := now.Add(payload.Duration)
-	building.WorkStarted = &now
-	building.ProductionID = payload.BlueprintID
-	building.WorkEnd = &end
-	building.Status = Production
-	db.Save(&building)
-
-	return nil
-}
-
 func GetAllReadyStorages(db *gorm.DB) ([]Building, error) {
 	var storages []Building
-	res := db.Model(&Building{}).Where("type_id = ? AND status = ?", 1, Ready).Scan(&storages)
+	res := db.Model(&Building{}).Where("type_id = ? AND status = ?", 1, ReadyStatus).Scan(&storages)
 	if res.Error != nil {
 		log.Println("Can't get storages: " + res.Error.Error())
 	}
