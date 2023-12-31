@@ -47,3 +47,13 @@ export interface SearchBuildingParams {
   y?: string;
   buildingTypeId?: string;
 }
+
+export interface Goods {
+  id: number;
+  buildingId: number;
+  resourceTypeId: number;
+  price: number;
+  sellSum: number;
+  revenue: number;
+  status: string;
+}
