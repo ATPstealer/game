@@ -65,9 +65,31 @@ export const useBuildings = () => {
     }
   }
 
+  const setPrice = async (payload: {buildingId: number; resourceTypeId: number; price: number}) => {
+    const dataMessage = ref<Message | null>(null)
+
+    const { onFetchResponse, isFetching} = useMyFetch(`/store/goods/set?building_id=${payload.buildingId}&resource_type_id=${payload.resourceTypeId}&price=${payload.price}`, {
+      afterFetch: ctx => {
+        dataMessage.value = {
+          text: ctx.data.text,
+          status: ctx.data.status
+        }
+
+        return ctx
+      }
+    }).json()
+
+    return {
+      dataMessage,
+      onFetchResponse,
+      isFetching
+    }
+  }
+
   return {
     constructBuilding,
     getBuildings,
-    startProduction
+    startProduction,
+    setPrice
   }
 }

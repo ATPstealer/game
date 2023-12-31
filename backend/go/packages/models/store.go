@@ -54,7 +54,9 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 
 	now := time.Now()
 	var storeGoods StoreGoods
-	db.FirstOrCreate(&storeGoods, StoreGoods{BuildingID: buildingID, ResourceTypeID: resourceTypeID, SellStarted: &now, Status: Selling})
+	db.Where(StoreGoods{BuildingID: buildingID, ResourceTypeID: resourceTypeID}).
+    	Assign(StoreGoods{SellStarted: &now, Status: Selling}).
+    	FirstOrCreate(&storeGoods)
 	storeGoods.Price = price
 	result := db.Save(&storeGoods)
 	return result.Error

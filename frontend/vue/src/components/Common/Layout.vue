@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col md:flex-row h-full">
     <Button
-      label="Настройки"
+      :label="t('layout.settings')"
       class="fixed bottom-0 md:bottom-auto md:top-1/3 left-0 z-10"
       v-if="!showOptions"
       :pt="{
@@ -31,14 +31,14 @@
         size="small"
         @click="showOptions = false"
       />
-      <span>Настройки</span>
+      <span>{{ t('layout.settings') }}</span>
       <slot name="options" />
     </div>
     <div class="w-full">
       <slot />
     </div>
     <Button
-      label="Справка"
+      :label="t('layout.help')"
       class="fixed bottom-0 md:bottom-auto md:top-1/3 right-0 z-10"
       :pt="{
         label: {
@@ -48,7 +48,7 @@
       @click="showHelp = true"
     />
     <Sidebar v-model:visible="showHelp" position="right">
-      Справка
+      {{ t('layout.help') }}
     </Sidebar>
   </div>
 </template>
@@ -57,9 +57,12 @@
 import Button from 'primevue/button'
 import Sidebar from 'primevue/sidebar'
 import { ref } from 'vue'
+import {useI18n} from "vue-i18n";
 
 const showOptions = ref<boolean>(true)
 const showHelp = ref<boolean>(false)
+
+const {t} = useI18n()
 </script>
 
 <style scoped>

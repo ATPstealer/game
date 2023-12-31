@@ -14,6 +14,9 @@
     "title": "Buildings",
     "type": "Building type",
     "one": "Building",
+    "status": "Status",
+    "finish": "Finish",
+    "construct new building": "Construct New Building",
     "types": {
       "all": "All",
       "storage": "Storage",
@@ -26,6 +29,12 @@
       "refinery": "Refinery",
       "recycling plant": "Recycling plant",
       "grocery store": "Grocery Store"
+    },
+    "store": {
+      "name": "Store",
+      "types": {
+        "grocery": "Grocery"
+      }
     }
   },
   "lands": {
@@ -44,7 +53,8 @@
     "title": "Orders"
   },
   "map": {
-    "title": "Map"
+    "title": "Map",
+    "cell": "Cell"
   },
   "search-building": {
     "title": "Search for buildings"
@@ -63,5 +73,9 @@
     "reset": "Reset",
     "owner": "Owner",
     "square": "Square"
+  },
+  "layout": {
+    "settings": "Settings",
+    "help": "Help"
   }
 }

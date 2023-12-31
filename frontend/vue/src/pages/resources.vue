@@ -48,7 +48,7 @@
   >
     <MoveResource
       :resource="currentResource"
-      @close="moveResourcesModal = false"
+      @close="onCloseMoveModal"
     />
   </Dialog>
   <Dialog
@@ -61,7 +61,7 @@
   >
     <CreateOrderModal
       :resource="currentResource"
-      @close="sellResourcesModal = false"
+      @close="onCloseOrderModal"
     />
   </Dialog>
 </template>
@@ -76,7 +76,7 @@ import MoveResource from '@/components/Resources/MoveResource.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Resource } from '@/types/Resources/index.interface'
 
-const { data: resources, isFetching } = useGetData<Resource[]>('/resource/my')
+const { data: resources, isFetching, execute } = useGetData<Resource[]>('/resource/my')
 
 const moveResourcesModal = ref<boolean>(false)
 const sellResourcesModal = ref<boolean>(false)
@@ -90,6 +90,16 @@ const openMoveResource = (resource: Resource) => {
 const openSellResource = (resource: Resource) => {
   currentResource.value = resource
   sellResourcesModal.value = true
+}
+
+const onCloseOrderModal = () => {
+  sellResourcesModal.value = false
+  execute()
+}
+
+const onCloseMoveModal = () => {
+  moveResourcesModal.value = false
+  execute()
 }
 
 </script>

@@ -21,6 +21,9 @@ import type {
   // route definitions
   RouteRecordInfo,
   ParamValue,
+  ParamValueOneOrMore,
+  ParamValueZeroOrMore,
+  ParamValueZeroOrOne,
 
   // vue-router extensions
   _RouterTyped,

@@ -1,3 +1,29 @@
 <template>
-  store
+  <Layout>
+  <div v-if="!isFetching">
+    <StoreBuilding :building="building" />
+  </div>
+  </Layout>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { useGetData } from '@/composables/useGetData'
+import type { Building } from '@/types/Buildings/index.interface'
+import StoreBuilding from "@/components/Buildings/StoreBuilding/StoreBuilding.vue";
+import Layout from "@/components/Common/Layout.vue";
+
+const route = useRoute()
+const building = ref<Building>({} as Building)
+
+const { data: myBuildings, onFetchResponse, isFetching } = useGetData<Building[]>('/building/my')
+onFetchResponse(() => {
+  building.value = myBuildings.value.find(item => item.id === Number(route.params.id)) as Building
+})
+
+</script>
+
+<style scoped>
+
+</style>
