@@ -93,7 +93,11 @@ const onCellEditComplete = async (event) => {
     price: event.newValue,
   }
   await setPrice(payload)
-  executeGoods()
+  // TODO: Илья пофиксь плз. Нужно чтобы executeGoods() вызывалось после setPrice()
+  setTimeout(() => {
+    executeGoods()
+  }, 1000)
+
 }
 
 const {t} = useI18n()
