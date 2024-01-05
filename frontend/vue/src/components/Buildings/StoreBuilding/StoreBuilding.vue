@@ -15,27 +15,33 @@
   >
     <Column
         field="name"
-        header="Name"
+        :header="t(`buildings.store.columns.name`)"
     />
     <Column
         field="price"
-        header="Price (Click for change)"
+        :header="t(`buildings.store.columns.price`)"
     >
+      <template #body="{ data, field }">
+        <span class="col-span-1 font-bold text-blue-500 hover:text-blue-700">
+          {{ moneyFormat(data[field]) }}
+        </span>
+      </template>
+      <!--  TODO: сделать чтобы не разъезжалось и были ровыне поля при редактировании цены -->>
       <template #editor="{ data, field }">
         <InputNumber v-model="data[field]" autofocus/>
       </template>
     </Column>
     <Column
         field="sellSum"
-        header="Sell Count"
+        :header="t(`buildings.store.columns.sell count`)"
     />
     <Column
         field="revenue"
-        header="Revenue Today"
+        :header="t(`buildings.store.columns.revenue today`)"
     />
     <Column
         field="status"
-        header="Status"
+        :header="t(`buildings.store.columns.status`)"
     />
 
   </DataTable>
@@ -50,6 +56,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import InputNumber from "primevue/inputnumber";
 import {useBuildings} from "@/composables/useBuildings";
+import {moneyFormat} from "@/utils/moneyFormat";
 
 interface Props {
   building: Building;

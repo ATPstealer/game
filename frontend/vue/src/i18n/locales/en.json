@@ -34,7 +34,15 @@
       "name": "Store",
       "types": {
         "grocery": "Grocery"
-      }
+      },
+      "columns": {
+        "name": "Name",
+        "price": "Price",
+        "sell count": "Sell Count",
+        "revenue today": "Revenue Today",
+        "status": "Status"
+      },
+      "help": "Click on price for change. Auto apply."
     }
   },
   "lands": {
