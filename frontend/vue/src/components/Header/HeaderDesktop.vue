@@ -70,7 +70,7 @@
           {{ user?.nickName }}
         </p>
         <p class="header-item">
-          {{ user?.money }} $
+          {{ moneyFormat(user?.money) }}
         </p>
         <Button
           text
@@ -93,6 +93,7 @@ import { useI18n } from 'vue-i18n'
 import LangSelect from '@/components/Header/LangSelect.vue'
 import { User } from '@/types'
 import { MenuItem } from '@/types/Header/index.interface'
+import {moneyFormat} from "@/utils/moneyFormat";
 
 interface Props {
   user: User | undefined;

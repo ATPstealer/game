@@ -5,7 +5,7 @@
         {{ user.nickName }}
       </p>
       <p class="font-bold text-white">
-        {{ user.money }}$
+        {{ moneyFormat(user?.money) }}
       </p>
     </div>
     <div v-else class="flex gap-4">
@@ -81,6 +81,7 @@ import { useI18n } from 'vue-i18n'
 import LangSelect from '@/components/Header/LangSelect.vue'
 import type { User } from '@/types'
 import type { MenuItem } from '@/types/Header/index.interface'
+import {moneyFormat} from "@/utils/moneyFormat";
 
 interface Props {
   user: User | undefined;
