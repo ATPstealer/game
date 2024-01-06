@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div class="flex flex-col items-center justify-center mt-5 space-y-10">
     <span class="text-5xl font-bold">Building Builder</span>
     <MessageBlock v-if="message" :message="message" />
@@ -78,6 +79,7 @@
       </template>
     </Card>
   </div>
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -93,6 +95,7 @@ import { useGetData } from '@/composables/useGetData'
 import type { Message } from '@/types'
 import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
+import Layout from "@/components/Common/Layout.vue";
 
 const { query } = useRoute()
 

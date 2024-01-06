@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div v-if="!isFetching">
     <h2 class="font-bold text-2xl">
       Logistics
@@ -43,6 +44,7 @@
     </div>
   </div>
   <Loading v-else />
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -51,6 +53,7 @@ import { useGetData } from '@/composables/useGetData'
 import type { Logistic } from '@/types'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTimeDiff } from '@/utils/getTimeDiff'
+import Layout from "@/components/Common/Layout.vue";
 
 const { data: logistics, isFetching } = useGetData<Logistic[]>('/resource/my_logistics')
 </script>

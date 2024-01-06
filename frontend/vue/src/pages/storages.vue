@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div v-if="!isFetching">
     <h2 class="font-bold text-2xl">
       Storages
@@ -27,12 +28,14 @@
     <p class="text-white" />
   </div>
   <Loading v-else />
+  </Layout>
 </template>
 
 <script setup lang="ts">
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Storage } from '@/types'
+import Layout from "@/components/Common/Layout.vue";
 
 const { data: storages, isFetching } = useGetData<Storage[]>('/storage/my')
 </script>

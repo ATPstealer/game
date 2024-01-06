@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div v-if="!isFetching">
     <h2 class="font-bold text-2xl">
       Resources
@@ -64,6 +65,7 @@
       @close="onCloseOrderModal"
     />
   </Dialog>
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -75,6 +77,7 @@ import CreateOrderModal from '@/components/Market/CreateOrderModal.vue'
 import MoveResource from '@/components/Resources/MoveResource.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Resource } from '@/types/Resources/index.interface'
+import Layout from "@/components/Common/Layout.vue";
 
 const { data: resources, isFetching, execute } = useGetData<Resource[]>('/resource/my')
 

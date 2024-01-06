@@ -62,7 +62,8 @@
   },
   "map": {
     "title": "Map",
-    "cell": "Cell"
+    "cell": "Cell",
+    "square": "Square"
   },
   "search-building": {
     "title": "Search for buildings"

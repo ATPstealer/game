@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div v-if="!isFetching" class="flex flex-col">
     <div
       v-for="(row, rowIndex) in yArray"
@@ -23,6 +24,7 @@
   >
     <MapCell :square="cell?.square" :cell="cell" />
   </Dialog>
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +33,7 @@ import { ref } from 'vue'
 import Loading from '@/components/Common/Loading.vue'
 import MapCell from '@/components/Map/MapCell.vue'
 import { useMap } from '@/composables/useMap'
+import Layout from "@/components/Common/Layout.vue";
 
 const cell = ref<any>()
 const showModal = ref<boolean>(false)
