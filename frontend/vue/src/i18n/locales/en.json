@@ -49,7 +49,12 @@
     "title": "Lands"
   },
   "resources": {
-    "title": "Resources"
+    "title": "Resources",
+    "columns": {
+      "name": "Resource",
+      "amount": "Amount"
+    },
+    "help": "Resource name click is move. Amount click is sell"
   },
   "logistics": {
     "title": "Logistics"
