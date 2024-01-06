@@ -1,7 +1,9 @@
-import { ref } from 'vue'
+import { EventHookOn } from '@vueuse/core'
+import { Ref, ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
 import type { Message } from '@/types'
 import type { Cell } from '@/types/Map/index.interface'
+import { CellOwners } from '@/types/Map/index.interface'
 
 export const useMap = () => {
   const getMap = () => {
@@ -44,8 +46,8 @@ export const useMap = () => {
     }
   }
 
-  const getCellOwners = ({ x, y }: {x: number; y: number}) => {
-    const { data, onFetchResponse, isFetching } = useMyFetch(`/map/cell_owners?x=${x}&y=${y}`, {
+  const getCellOwners = ({ x, y }: {x: number; y: number}): {data: Ref<CellOwners[]>; onFetchResponse: EventHookOn<Response>; isFetching: Ref<boolean> } => {
+    const { data, onFetchResponse, isFetching } = useMyFetch<CellOwners[]>(`/map/cell_owners?x=${x}&y=${y}`, {
       afterFetch: ctx => {
         ctx.data = ctx.data.data
 

@@ -12,3 +12,10 @@ export interface Cell {
   elementarySchool: number;
   higherSchool: number;
 }
+
+export interface CellOwners {
+  nickName: string;
+  square: number;
+  x: number;
+  y: number;
+}

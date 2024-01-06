@@ -50,7 +50,7 @@
       <p>
         Landlords:
       </p>
-      <p v-for="owner in cellOwners" :key="owner.id">
+      <p v-for="owner in cellOwners" :key="owner.nickName">
         {{ owner.nickName }}: {{ owner.square }} Are
       </p>
     </div>
