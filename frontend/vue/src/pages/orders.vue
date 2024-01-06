@@ -1,4 +1,5 @@
 <template>
+  <Layout>
   <div v-if="!isFetching">
     <h2 class="font-bold text-2xl">
       Orders
@@ -46,6 +47,7 @@
     </div>
   </div>
   <Loading v-else />
+  </Layout>
 </template>
 
 <script setup lang="ts">
@@ -54,6 +56,7 @@ import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
 import { useOrders } from '@/composables/useOrders'
 import type { Order } from '@/types'
+import Layout from "@/components/Common/Layout.vue";
 
 const { data: orders, isFetching } = useGetData<Order[]>('/market/order/my')
 const { closeOrder } = useOrders()

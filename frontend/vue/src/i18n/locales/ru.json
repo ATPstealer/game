@@ -62,7 +62,8 @@
   },
   "map": {
     "title": "Карта",
-    "cell": "Ячейка"
+    "cell": "Ячейка",
+    "square": "Площадь"
   },
   "search-building": {
     "title": "Поиск зданий"
