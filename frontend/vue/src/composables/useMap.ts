@@ -1,34 +1,14 @@
-import { ref } from 'vue'
+import { type Ref, ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
 import type { Message } from '@/types'
 import type { Cell } from '@/types/Map/index.interface'
 
 export const useMap = () => {
-  const getMap = () => {
-    const xArray = ref<number[]>([])
-    const yArray = ref<number[]>([])
-
-    const { data, onFetchResponse, isFetching } = useMyFetch('/map/', {
+  const getMap = (): {data: Ref<Cell[]>; isFetching: Ref<boolean>} => {
+    const { data, isFetching } = useMyFetch('/map/', {
       afterFetch: ctx => {
         if (ctx.data) {
           ctx.data = ctx.data.data
-        }
-
-        const maxX = ctx.data?.reduce((max: number, obj: Cell) => obj.x > max ? obj.x : max, ctx.data[0].x)
-        const maxY = ctx.data?.reduce((max: number, obj: Cell) => obj.y > max ? obj.y : max, ctx.data[0].y)
-        const minX = ctx.data?.reduce((min: number, obj: Cell) => obj.x < min ? obj.x : min, ctx.data[0].x)
-        const minY = ctx.data?.reduce((min: number, obj: Cell) => obj.y < min ? obj.y : min, ctx.data[0].y)
-
-        if (maxX && minX) {
-          for (let i = minX; i <= maxX; i++) {
-            xArray.value.push(i)
-          }
-        }
-
-        if (maxY && minY) {
-          for (let i = maxY; i >= minY; i--) {
-            yArray.value.push(i)
-          }
         }
 
         return ctx
@@ -37,9 +17,6 @@ export const useMap = () => {
 
     return {
       data,
-      xArray,
-      yArray,
-      onFetchResponse,
       isFetching
     }
   }

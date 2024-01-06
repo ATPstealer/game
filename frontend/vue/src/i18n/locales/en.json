@@ -1,95 +1,95 @@
 {
-  "user": {
-    "title": "User",
-    "characteristics": "Characteristics",
-    "memory": "Memory",
-    "intelligence": "Intelligence",
-    "attention": "Attention",
-    "wits": "Wits",
-    "multitasking": "Multitasking",
-    "management": "Management",
-    "planning": "Planning"
-  },
   "buildings": {
-    "title": "Buildings",
-    "type": "Building type",
+    "construct new building": "Construct New Building",
+    "finish": "Finish",
     "one": "Building",
     "status": "Status",
-    "finish": "Finish",
-    "construct new building": "Construct New Building",
-    "types": {
-      "all": "All",
-      "storage": "Storage",
-      "mine": "Mine",
-      "energy plant": "Energy plant",
-      "foundry": "Foundry",
-      "factory": "Factory",
-      "lumbermill": "Lumbermill",
-      "office": "Office",
-      "refinery": "Refinery",
-      "recycling plant": "Recycling plant",
-      "grocery store": "Grocery Store"
-    },
     "store": {
-      "name": "Store",
-      "types": {
-        "grocery": "Grocery"
-      },
       "columns": {
         "name": "Name",
         "price": "Price",
-        "sell count": "Sell Count",
         "revenue today": "Revenue Today",
+        "sell count": "Sell Count",
         "status": "Status"
       },
-      "help": "Click on price for change. Auto apply."
+      "help": "Click on price for change. Auto apply.",
+      "name": "Store",
+      "types": {
+        "grocery": "Grocery"
+      }
+    },
+    "title": "Buildings",
+    "type": "Building type",
+    "types": {
+      "all": "All",
+      "energy plant": "Energy plant",
+      "factory": "Factory",
+      "foundry": "Foundry",
+      "grocery store": "Grocery Store",
+      "lumbermill": "Lumbermill",
+      "mine": "Mine",
+      "office": "Office",
+      "recycling plant": "Recycling plant",
+      "refinery": "Refinery",
+      "storage": "Storage"
     }
+  },
+  "common": {
+    "owner": "Owner",
+    "reset": "Reset",
+    "square": "Square"
   },
   "lands": {
     "title": "Lands"
   },
-  "resources": {
-    "title": "Resources",
-    "columns": {
-      "name": "Resource",
-      "amount": "Amount"
-    },
-    "help": "Resource name click is move. Amount click is sell"
+  "layout": {
+    "help": "Help",
+    "settings": "Settings"
   },
   "logistics": {
     "title": "Logistics"
   },
-  "storages": {
-    "title": "Storages"
-  },
-  "orders": {
-    "title": "Orders"
+  "main": {
+    "title": "Main page"
   },
   "map": {
-    "title": "Map",
     "cell": "Cell",
-    "square": "Square"
-  },
-  "search-building": {
-    "title": "Search for buildings"
+    "square": "Square",
+    "title": "Map"
   },
   "market": {
     "title": "Market"
-  },
-  "main": {
-    "title": "Main page"
   },
   "menu": {
     "business": "Business",
     "world": "World"
   },
-  "common": {
-    "reset": "Reset",
-    "owner": "Owner",
-    "square": "Square"
+  "orders": {
+    "title": "Orders"
   },
-  "layout": {
-    "settings": "Settings",
-    "help": "Help"
+  "resources": {
+    "columns": {
+      "amount": "Amount",
+      "name": "Resource"
+    },
+    "help": "Resource name click is move. Amount click is sell",
+    "title": "Resources"
+  },
+  "search-building": {
+    "title": "Search for buildings"
+  },
+  "storages": {
+    "title": "Storages"
+  },
+  "user": {
+    "attention": "Attention",
+    "characteristics": "Characteristics",
+    "intelligence": "Intelligence",
+    "management": "Management",
+    "memory": "Memory",
+    "multitasking": "Multitasking",
+    "planning": "Planning",
+    "title": "User",
+    "wits": "Wits"
   }
 }

@@ -1,62 +1,71 @@
 <template>
-  <!-- TODO: пофиксить t() -->
-  <h3 class="mb-5 text-center">
-    {{ t(`buildings.store.types.${building.buildingSubGroup?.toLowerCase()}`) }}
+  <h3 class="mb-5 text-center" v-if="building?.buildingSubGroup">
+    {{ t(`buildings.store.types.${building?.buildingSubGroup?.toLowerCase()}`) }}
     {{ t(`buildings.store.name`) }}
   </h3>
 
   <DataTable
-      v-if="tableData?.length"
-      :value="tableData"
-      size="small"
-      striped-rows
-      editMode="cell"
-      @cell-edit-complete="onCellEditComplete"
+    v-if="tableData?.length"
+    :value="tableData"
+    size="small"
+    striped-rows
+    edit-mode="cell"
+    @cell-edit-complete="onCellEditComplete"
+    :pt="{
+      bodyRow: {
+        class: 'h-14'
+      }
+    }"
   >
     <Column
-        field="name"
-        :header="t(`buildings.store.columns.name`)"
+      field="name"
+      :header="t(`buildings.store.columns.name`)"
     />
     <Column
-        field="price"
-        :header="t(`buildings.store.columns.price`)"
+      field="price"
+      :header="t(`buildings.store.columns.price`)"
+      class="min-w-[150px] max-w-[150px]"
     >
       <template #body="{ data, field }">
-        <span class="col-span-1 font-bold text-blue-500 hover:text-blue-700">
-          {{ moneyFormat(data[field]) }}
+        <span class="col-span-1 font-bold text-blue-500 hover:text-blue-700 block">
+          {{ data[field] ? moneyFormat(data[field]) : 'Set price' }}
         </span>
       </template>
       <!--  TODO: сделать чтобы не разъезжалось и были ровыне поля при редактировании цены -->>
       <template #editor="{ data, field }">
-        <InputNumber v-model="data[field]" autofocus/>
+        <InputNumber
+          v-model="data[field]"
+          autofocus
+          input-class="!p-2 !w-1/2"
+          class="!w-1/2"
+        />
       </template>
     </Column>
     <Column
-        field="sellSum"
-        :header="t(`buildings.store.columns.sell count`)"
+      field="sellSum"
+      :header="t(`buildings.store.columns.sell count`)"
     />
     <Column
-        field="revenue"
-        :header="t(`buildings.store.columns.revenue today`)"
+      field="revenue"
+      :header="t(`buildings.store.columns.revenue today`)"
     />
     <Column
-        field="status"
-        :header="t(`buildings.store.columns.status`)"
+      field="status"
+      :header="t(`buildings.store.columns.status`)"
     />
-
   </DataTable>
 </template>
 <script setup lang="ts">
-import {useI18n} from 'vue-i18n'
-import {Building, Goods} from "@/types/Buildings/index.interface";
-import {useGetData} from "@/composables/useGetData";
-import {ResourceType} from "@/types/Resources/index.interface";
-import {computed, ref} from 'vue'
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import InputNumber from "primevue/inputnumber";
-import {useBuildings} from "@/composables/useBuildings";
-import {moneyFormat} from "@/utils/moneyFormat";
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import InputNumber from 'primevue/inputnumber'
+import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useBuildings } from '@/composables/useBuildings'
+import { useGetData } from '@/composables/useGetData'
+import { Building, Goods } from '@/types/Buildings/index.interface'
+import { ResourceType } from '@/types/Resources/index.interface'
+import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
   building: Building;
@@ -66,12 +75,12 @@ const props = defineProps<Props>()
 const resourcesTypes = ref<ResourceType[]>([])
 const goods = ref<Goods[]>([])
 
-const {data, onFetchResponse, isFetching: isFetchingResourcesTypes} = useGetData('/resource/types')
+const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData('/resource/types')
 onFetchResponse(() => {
   resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingSubGroup)
 })
 
-const {data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods} = useGetData('/store/goods/get?building_id=' + props.building.id)
+const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?building_id=${  props.building.id}`)
 onGoodsResponse(() => {
   goods.value = goodsData.value
 })
@@ -84,7 +93,7 @@ const tableData = computed(() => {
       resourceTypeId: item.id,
       sellSum: getGoodsData(item.id)?.sellSum || 0,
       revenue: getGoodsData(item.id)?.revenue || 0,
-      status: getGoodsData(item.id)?.status || "Price not set",
+      status: getGoodsData(item.id)?.status || 'Price not set'
     }
   })
 })
@@ -92,20 +101,19 @@ const getGoodsData = (id: number) => {
   return goods.value.find(item => item.resourceTypeId === id)
 }
 
-const {setPrice} = useBuildings()
-const onCellEditComplete = async (event) => {
+const { setPrice } = useBuildings()
+const onCellEditComplete = (event) => {
   const payload = {
     buildingId: props.building.id,
     resourceTypeId: event.data.resourceTypeId,
-    price: event.newValue,
+    price: event.newValue
   }
-  await setPrice(payload)
-  // TODO: Илья пофиксь плз. Нужно чтобы executeGoods() вызывалось после setPrice()
-  setTimeout(() => {
-    executeGoods()
-  }, 1000)
+  const { onFetchResponse } = setPrice(payload)
 
+  onFetchResponse(() => {
+    executeGoods()
+  })
 }
 
-const {t} = useI18n()
+const { t } = useI18n()
 </script>

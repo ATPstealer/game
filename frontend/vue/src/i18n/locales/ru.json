@@ -1,95 +1,95 @@
 {
-  "user": {
-    "title": "Пользователь",
-    "characteristics": "Характеристики",
-    "memory": "Память",
-    "intelligence": "Интеллект",
-    "attention": "Внимание",
-    "wits": "Остроумие",
-    "multitasking": "Многозадачность",
-    "management": "Управление",
-    "planning": "Планирование"
-  },
   "buildings": {
-    "title": "Здания",
-    "one": "Здание",
-    "type": "Тип здания",
-    "status": "Статус",
-    "finish": "Конец",
     "construct new building": "Построить Новое Здание",
-    "types": {
-      "all": "Все",
-      "storage": "Хранилище",
-      "mine": "Шахта",
-      "energy plant": "Энергетический завод",
-      "foundry": "Литейный завод",
-      "factory": "Фабрика",
-      "lumbermill": "Лесопилка",
-      "office": "Офис",
-      "refinery": "Очистительный завод",
-      "recycling plant": "Завод по переработке",
-      "grocery store": "Продуктовый магазин"
-    },
+    "finish": "Конец",
+    "one": "Здание",
+    "status": "Статус",
     "store": {
-      "name": "Магазин",
-      "types": {
-        "grocery": "Продуктовый"
-      },
       "columns": {
         "name": "Товар",
         "price": "Цена",
-        "sell count": "Количество проданного",
         "revenue today": "Выручка сегодня",
+        "sell count": "Количество проданного",
         "status": "Статус"
       },
-      "help": "Клик на цене для изменения. Применяется автоматически."
+      "help": "Клик на цене для изменения. Применяется автоматически.",
+      "name": "Магазин",
+      "types": {
+        "grocery": "Продуктовый"
+      }
+    },
+    "title": "Здания",
+    "type": "Тип здания",
+    "types": {
+      "all": "Все",
+      "energy plant": "Энергетический завод",
+      "factory": "Фабрика",
+      "foundry": "Литейный завод",
+      "grocery store": "Продуктовый магазин",
+      "lumbermill": "Лесопилка",
+      "mine": "Шахта",
+      "office": "Офис",
+      "recycling plant": "Завод по переработке",
+      "refinery": "Очистительный завод",
+      "storage": "Хранилище"
     }
+  },
+  "common": {
+    "owner": "Владелец",
+    "reset": "Сбросить",
+    "square": "Площадь"
   },
   "lands": {
     "title": "Земли"
   },
-  "resources": {
-    "title": "Ресурсы",
-    "columns": {
-      "name": "Ресурс",
-      "amount": "Количество"
-    },
-    "help": "Кликните на названии ресурсы для перемещения и на количестве для продажи."
+  "layout": {
+    "help": "Справка",
+    "settings": "Настройки"
   },
   "logistics": {
     "title": "Логистика"
   },
-  "storages": {
-    "title": "Хранилища"
-  },
-  "orders": {
-    "title": "Заказы"
+  "main": {
+    "title": "Главная"
   },
   "map": {
-    "title": "Карта",
     "cell": "Ячейка",
-    "square": "Площадь"
-  },
-  "search-building": {
-    "title": "Поиск зданий"
+    "square": "Площадь",
+    "title": "Карта"
   },
   "market": {
     "title": "Рынок"
-  },
-  "main": {
-    "title": "Главная"
   },
   "menu": {
     "business": "Бизнес",
     "world": "Мир"
   },
-  "common": {
-    "reset": "Сбросить",
-    "owner": "Владелец",
-    "square": "Площадь"
+  "orders": {
+    "title": "Заказы"
   },
-  "layout": {
-    "settings": "Настройки",
-    "help": "Справка"
+  "resources": {
+    "columns": {
+      "amount": "Количество",
+      "name": "Ресурс"
+    },
+    "help": "Кликните на названии ресурсы для перемещения и на количестве для продажи.",
+    "title": "Ресурсы"
+  },
+  "search-building": {
+    "title": "Поиск зданий"
+  },
+  "storages": {
+    "title": "Хранилища"
+  },
+  "user": {
+    "attention": "Внимание",
+    "characteristics": "Характеристики",
+    "intelligence": "Интеллект",
+    "management": "Управление",
+    "memory": "Память",
+    "multitasking": "Многозадачность",
+    "planning": "Планирование",
+    "title": "Пользователь",
+    "wits": "Остроумие"
   }
 }

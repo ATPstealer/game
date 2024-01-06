@@ -67,6 +67,9 @@
       </template>
     </Column>
   </DataTable>
+  <div v-if="!orders.length">
+    Этого ресурса на рынке нет
+  </div>
   <Dialog
     v-model:visible="showModal"
     :style="{ width: '25rem' }"

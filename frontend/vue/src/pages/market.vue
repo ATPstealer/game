@@ -79,16 +79,25 @@ import type { MarketParams, ResourceType } from '@/types/Resources/index.interfa
 
 const x = ref<number>()
 const y = ref<number>()
-const currentResource = ref<number>(3)
-const params = ref<MarketParams>({ resource_type_id: 3 } as MarketParams)
+const currentResource = ref<number>(0)
+const params = ref<MarketParams>({} as MarketParams)
 const sellResourcesModal = ref<boolean>(false)
+const resourcesTypes = ref<ResourceType[]>([{ id: 0, name: 'All' }])
 
 const { data: settings } = useGetData<Record<Coords, number>>('/settings')
-const { data: resourcesTypes, onFetchResponse } = useGetData<ResourceType[]>('/resource/types')
+const { data: resourcesTypesData, onFetchResponse } = useGetData<ResourceType[]>('/resource/types')
+
+onFetchResponse(() => {
+  resourcesTypes.value = [...resourcesTypes.value, ...resourcesTypesData.value]
+})
 
 const setParams = ({ key, value }: {key: string; value: number}) => {
   params.value[key] = value
   delete params.value.trigger
+
+  if (!currentResource.value) {
+    delete params.value.resource_type_id
+  }
 }
 
 const reset = () => {

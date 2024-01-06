@@ -19,10 +19,10 @@ export interface ResourceAmount {
 export interface ResourceType {
   id: number;
   name: string;
-  volume: number;
-  weight: number;
-  productionTime: number;
-  producedInId: number;
+  volume?: number;
+  weight?: number;
+  productionTime?: number;
+  producedInId?: number;
 }
 
 export interface MarketParams {
