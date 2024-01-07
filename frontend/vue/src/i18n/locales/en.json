@@ -47,7 +47,15 @@
     "settings": "Settings"
   },
   "logistics": {
-    "title": "Logistics"
+    "columns": {
+      "amount": "Amount",
+      "finish": "Finish",
+      "from": "From",
+      "resource": "Resource",
+      "to": "To"
+    },
+    "title": "Logistics",
+    "help": "On this page, the tasks for cargo transportation are displayed."
   },
   "main": {
     "title": "Main page"
