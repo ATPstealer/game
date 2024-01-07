@@ -14,6 +14,9 @@ build-backend-api-staging:
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-api"
       --destination "${CI_REGISTRY_IMAGE}/backend-api/staging:${CI_PIPELINE_IID}"
+  only:
+    - master
+    - /^ci-.*$/
 
 build-backend-scheduler-staging:
   stage: build-staging
@@ -25,6 +28,9 @@ build-backend-scheduler-staging:
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-scheduler"
       --destination "${CI_REGISTRY_IMAGE}/backend-scheduler/staging:${CI_PIPELINE_IID}"
+  only:
+    - master
+    - /^ci-.*$/
 
 build-backend-transform-staging:
   stage: build-staging
@@ -36,6 +42,9 @@ build-backend-transform-staging:
       --context "${CI_PROJECT_DIR}/backend/go"
       --dockerfile "${CI_PROJECT_DIR}/backend/go/Dockerfile-transform"
       --destination "${CI_REGISTRY_IMAGE}/backend-transform/staging:${CI_PIPELINE_IID}"
+  only:
+    - master
+    - /^ci-.*$/
 
 build-frontend-vue-staging:
   stage: build-staging
@@ -51,6 +60,9 @@ build-frontend-vue-staging:
   environment:
     name: staging
     url: http://staging.game.kube.atpstealer.com
+  only:
+    - master
+    - /^ci-.*$/
 
 ### deploy-staging
 frontend-vue-staging:
@@ -62,6 +74,9 @@ frontend-vue-staging:
       -f ./deployment/helm/application/frontend-vue-staging-values.yaml
       --history-max 2
       ./deployment/helm/application
+  only:
+    - master
+    - /^ci-.*$/
 
 backend-api-staging:
   stage: deploy-staging
@@ -72,6 +87,9 @@ backend-api-staging:
       -f ./deployment/helm/application/backend-api-staging-values.yaml
       --history-max 2
       ./deployment/helm/application
+  only:
+    - master
+    - /^ci-.*$/
 
 backend-scheduler-staging:
   stage: deploy-staging
@@ -82,6 +100,9 @@ backend-scheduler-staging:
       -f ./deployment/helm/scheduler/backend-scheduler-staging-values.yaml
       --history-max 2
       ./deployment/helm/scheduler
+  only:
+    - master
+    - /^ci-.*$/
 
 backend-transform-staging:
   stage: deploy-staging
@@ -92,6 +113,9 @@ backend-transform-staging:
       -f ./deployment/helm/scheduler/backend-transform-staging-values.yaml
       --history-max 2
       ./deployment/helm/scheduler
+  only:
+    - master
+    - /^ci-.*$/
 
 ### infra
 minio:
@@ -101,6 +125,9 @@ minio:
     - helm upgrade --install minio -n game
       --history-max 1
       ./deployment/helm/minio
+  only:
+    - master
+    - /^ci-.*$/
 
 mysql:
   stage: infra
@@ -109,3 +136,6 @@ mysql:
     - helm upgrade --install mysql -n game
       --history-max 1
       ./deployment/helm/mysql
+  only:
+    - master
+    - /^ci-.*$/
