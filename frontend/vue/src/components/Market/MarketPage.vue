@@ -67,7 +67,8 @@
       </template>
     </Column>
   </DataTable>
-  <div v-if="!orders.length">
+  <div v-if="!orders">
+    <!-- TODO: Тут какая то бага. Текст не отображается, а локально вообще не работало  -->
     Этого ресурса на рынке нет
   </div>
   <Dialog
