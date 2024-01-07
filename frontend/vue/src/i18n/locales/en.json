@@ -73,6 +73,13 @@
     "world": "World"
   },
   "orders": {
+    "columns": {
+      "amount": "Amount",
+      "price": "Price per unit",
+      "resource": "Resource",
+      "type": "Type"
+    },
+    "help": "To close an order, click on his type.",
     "title": "Orders"
   },
   "resources": {
