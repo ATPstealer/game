@@ -3,35 +3,34 @@
     {{ t(`lands.title`) }}
   </h2>
   <DataTable
-      v-if="!isFetching"
-      :value="lands"
-      size="small"
-      striped-rows
+    v-if="!isFetching"
+    :value="lands"
+    size="small"
+    striped-rows
   >
     <Column
-        :header="t(`map.cell`)"
+      :header="t(`map.cell`)"
     >
-      <template #body="{data}">
+      <template #body="{data}: {data: Land}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
     <Column
-        field="square"
-        :header="t(`map.square`)"
+      field="square"
+      :header="t(`map.square`)"
     />
   </DataTable>
-  <Loading v-else/>
+  <Loading v-else />
 </template>
 
-
 <script setup lang="ts">
-import Loading from "@/components/Common/Loading.vue";
-import {useGetData} from "@/composables/useGetData";
-import {Land} from "@/types";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import {useI18n} from "vue-i18n";
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import { useI18n } from 'vue-i18n'
+import Loading from '@/components/Common/Loading.vue'
+import { useGetData } from '@/composables/useGetData'
+import { Land } from '@/types'
 
-const {data: lands, isFetching} = useGetData<Land[]>('/map/my')
-const {t} = useI18n()
+const { data: lands, isFetching } = useGetData<Land[]>('/map/my')
+const { t } = useI18n()
 </script>

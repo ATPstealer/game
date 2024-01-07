@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col gap-4">
     <MessageBlock
-        v-if="message"
-        :message="message"
+      v-if="message"
+      :message="message"
     />
     <p class="text-xl">
       Move

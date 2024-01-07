@@ -8,8 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import Layout from "@/components/Common/Layout.vue";
+import { useI18n } from 'vue-i18n'
+import Layout from '@/components/Common/Layout.vue'
 import Resources from '@/components/Resources/Resources.vue'
-import {useI18n} from "vue-i18n";
+
 const { t } = useI18n()
 </script>
