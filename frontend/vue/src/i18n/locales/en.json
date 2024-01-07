@@ -54,8 +54,8 @@
       "resource": "Resource",
       "to": "To"
     },
-    "title": "Logistics",
-    "help": "On this page, the tasks for cargo transportation are displayed."
+    "help": "On this page, the tasks for cargo transportation are displayed.",
+    "title": "Logistics"
   },
   "main": {
     "title": "Main page"
@@ -87,6 +87,10 @@
     "title": "Search for buildings"
   },
   "storages": {
+    "columns": {
+      "volume": "Volume"
+    },
+    "help": "Displays the total volume of resources and storage in sectors.",
     "title": "Storages"
   },
   "user": {
