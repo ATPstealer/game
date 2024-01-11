@@ -89,13 +89,10 @@ func StoreSell(db *gorm.DB) error {
 }
 
 func daySellCalc(price float64, priceAverage float64, capacity float64) float64 {
-	if price <= 0.5*priceAverage {
-		return capacity
-	}
-	if price >= 1.5*priceAverage {
+	if priceAverage == 0 {
 		return 0
 	}
-	return (1.5*priceAverage - price) * capacity / priceAverage
+	return capacity * 0.75 * priceAverage / price
 }
 
 func saveStoreGoods(db *gorm.DB, storeGoodsResult *[]models.StoreGoodsResult) {

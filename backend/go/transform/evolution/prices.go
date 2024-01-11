@@ -46,7 +46,7 @@ func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.Store
 
 func getAveragePrice(demand float64, cellGoods []models.StoreGoodsResult) float64 {
 	if len(cellGoods) == 0 || !goodsPriceExist(cellGoods) {
-		return 0.01 // minimal Price for start selling
+		return 1 // Price for start selling
 	}
 	sort(&cellGoods)
 	soldGoodsCount := float64(0)
@@ -103,5 +103,3 @@ func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, 
 		RevenueSum:     0,
 	})
 }
-
-// TODO: reset count in stores

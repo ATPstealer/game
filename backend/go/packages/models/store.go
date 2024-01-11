@@ -14,6 +14,7 @@ const (
 	HighPrice            StoreGoodsStatus = "HighPrice"
 	NotEnoughMinerals    StoreGoodsStatus = "NotEnoughMinerals"
 	SpendingLimitReached StoreGoodsStatus = "SpendingLimitReached"
+	CapacityReached      StoreGoodsStatus = "CapacityReached"
 )
 
 type StoreGoods struct {
@@ -55,8 +56,8 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 	now := time.Now()
 	var storeGoods StoreGoods
 	db.Where(StoreGoods{BuildingID: buildingID, ResourceTypeID: resourceTypeID}).
-    	Assign(StoreGoods{SellStarted: &now, Status: Selling}).
-    	FirstOrCreate(&storeGoods)
+		Assign(StoreGoods{SellStarted: &now, Status: Selling}).
+		FirstOrCreate(&storeGoods)
 	storeGoods.Price = price
 	result := db.Save(&storeGoods)
 	return result.Error
