@@ -26,6 +26,11 @@ func StoreSell(db *gorm.DB) error {
 			continue
 		}
 
+		if goods.SellSum >= goods.Capacity {
+			storeGoods[gIndex].Status = models.CapacityReached
+			continue
+		}
+
 		epIndex, err := findEvolutionPrice(&evolutionPrices, goods.X, goods.Y, goods.ResourceTypeID)
 		if err != nil {
 			log.Println(err)
