@@ -26,7 +26,7 @@ func StoreSell(db *gorm.DB) error {
 			continue
 		}
 
-		if goods.SellSum >= goods.Capacity*goods.Level {
+		if goods.SellSum >= goods.Capacity*goods.Level*goods.Square {
 			storeGoods[gIndex].Status = models.CapacityReached
 			continue
 		}
