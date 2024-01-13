@@ -86,10 +86,31 @@ export const useBuildings = () => {
     }
   }
 
+  const setHiring = (payload: {buildingId: number; salary: number; hiringNeeds: number}) => {
+    const dataMessage = ref<Message | null>(null)
+
+    const { onFetchResponse } = useMyFetch('/building/hiring', {
+      afterFetch: ctx => {
+        dataMessage.value = {
+          text: ctx.data.text,
+          status: ctx.data.status
+        }
+
+        return ctx
+      }
+    }).post(payload).json()
+
+    return {
+      dataMessage,
+      onFetchResponse
+    }
+  }
+
   return {
     constructBuilding,
     getBuildings,
     startProduction,
-    setPrice
+    setPrice,
+    setHiring
   }
 }

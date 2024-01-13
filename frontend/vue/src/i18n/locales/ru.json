@@ -2,6 +2,13 @@
   "buildings": {
     "construct new building": "Построить Новое Здание",
     "finish": "Конец",
+    "hiring": {
+      "hiring needs": "Потребности в найме",
+      "name": "Найм",
+      "salary": "Зарплата",
+      "set": "Установить",
+      "workers": "Рабочие"
+    },
     "one": "Здание",
     "status": "Статус",
     "store": {

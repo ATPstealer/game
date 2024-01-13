@@ -20,6 +20,9 @@ export interface Building {
   workEnd: string;
   buildingGroup: string;
   buildingSubGroup: string;
+  hiringNeeds: number;
+  salary: number;
+  workers: number;
 }
 
 export interface BuildingType {

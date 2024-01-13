@@ -1,5 +1,8 @@
 <template>
-  <Layout :show-options-prop="false">
+  <Layout>
+    <template #options>
+      <Hiring v-if="!isFetching" :building="building" />
+    </template>
     <template #help>
       {{ t(`buildings.store.help`) }}
     </template>
@@ -13,6 +16,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import Hiring from '@/components/Buildings/Hiring.vue'
 import StoreBuilding from '@/components/Buildings/StoreBuilding/StoreBuilding.vue'
 import Layout from '@/components/Common/Layout.vue'
 import { useGetData } from '@/composables/useGetData'
