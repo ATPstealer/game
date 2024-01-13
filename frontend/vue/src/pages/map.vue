@@ -81,7 +81,7 @@ const filter = ref<string>('pollution')
 const recalculate = ref<boolean>(false)
 const color = ref<string>('175, 27, 27')
 
-const filters = ['pollution', 'population', 'education', 'crime', 'medicine', 'elementaryschool', 'higherschool']
+const filters = ['pollution', 'population', 'education', 'crime', 'medicine', 'elementarySchool', 'higherSchool']
 
 const { getMap } = useMap()
 
