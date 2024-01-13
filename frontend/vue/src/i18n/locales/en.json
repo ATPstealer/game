@@ -2,6 +2,13 @@
   "buildings": {
     "construct new building": "Construct New Building",
     "finish": "Finish",
+    "hiring": {
+      "hiring needs": "Hiring needs",
+      "name": "Hiring",
+      "salary": "Salary",
+      "set": "Set",
+      "workers": "Workers"
+    },
     "one": "Building",
     "status": "Status",
     "store": {
