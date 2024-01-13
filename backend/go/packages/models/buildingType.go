@@ -16,6 +16,7 @@ type BuildingType struct {
 	BuildingGroup    string        `json:"buildingGroup"`
 	BuildingSubGroup string        `json:"buildingSubGroup"`
 	Capacity         float64       `json:"capacity"`
+	Workers          int           `json:"workers"`
 }
 
 type BuildingTypeResult struct {
@@ -28,6 +29,7 @@ type BuildingTypeResult struct {
 	BuildingGroup    string        `json:"buildingGroup"`
 	BuildingSubGroup string        `json:"buildingSubGroup"`
 	Capacity         float64       `json:"capacity"`
+	Workers          int           `json:"workers"`
 }
 
 func GetBuildingTypeByID(db *gorm.DB, typeID uint) (BuildingTypeResult, error) {

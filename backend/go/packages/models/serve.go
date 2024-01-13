@@ -163,7 +163,11 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 		}
 		capacity, err := strconv.ParseInt(row[9].(string), 10, 32)
 		if err != nil {
-			log.Println("Can't get UInt from Google sheet Capacity field: ", err)
+			log.Println("Can't get Int from Google sheet Capacity field: ", err)
+		}
+		workers, err := strconv.ParseInt(row[10].(string), 10, 32)
+		if err != nil {
+			log.Println("Can't get Int from Google sheet Workers field: ", err)
 		}
 
 		db.Unscoped().Model(&BuildingType{}).Where("id = ?", i+1).First(&buildingType)
@@ -177,6 +181,7 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				BuildingGroup:    row[7].(string),
 				BuildingSubGroup: row[8].(string),
 				Capacity:         float64(capacity),
+				Workers:          int(workers),
 			}
 			db.Create(&buildingType)
 		} else {
@@ -194,6 +199,7 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				buildingType.BuildingGroup = row[7].(string)
 				buildingType.BuildingSubGroup = row[8].(string)
 				buildingType.Capacity = float64(capacity)
+				buildingType.Workers = int(workers)
 				db.Save(&buildingType)
 			}
 		}

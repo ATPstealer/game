@@ -30,6 +30,9 @@ type Building struct {
 	Status      BuildingStatus `json:"status"`
 	WorkStarted *time.Time     `json:"workStarted"`
 	WorkEnd     *time.Time     `json:"workEnd"`
+	HiringNeeds int            `json:"hiringNeeds"`
+	Salary      float64        `json:"salary"`
+	Workers     int            `json:"workers"`
 }
 
 type ConstructBuildingPayload struct {
@@ -106,8 +109,12 @@ type MyBuildingsResult struct {
 	Status           string    `json:"status"`
 	WorkStarted      time.Time `json:"workStarted"`
 	WorkEnd          time.Time `json:"workEnd"`
+	HiringNeeds      int       `json:"hiringNeeds"`
+	Salary           float64   `json:"salary"`
+	Workers          int       `json:"workers"`
 	BuildingGroup    string    `json:"buildingGroup"`
 	BuildingSubGroup string    `json:"buildingSubGroup"`
+	MaxWorkers       int       `json:"maxWorkers"`
 }
 
 func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsResult, error) {
@@ -118,7 +125,8 @@ func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsRes
 		query = query.Where("buildings.id = ?", buildingID)
 	}
 	res := query.Select("buildings.id", "buildings.type_id", "title", "x", "y", "square", "level",
-		"status", "buildings.work_started", "buildings.work_end", "building_types.building_group", "building_types.building_sub_group").
+		"status", "hiring_needs", "salary", "buildings.workers", "buildings.work_started", "buildings.work_end",
+		"building_types.building_group", "building_types.building_sub_group", "building_types.workers AS max_workers").
 		Joins("left join building_types on buildings.type_id = building_types.id").
 		Scan(&myBuildings)
 
@@ -226,4 +234,32 @@ func GetAllReadyStorages(db *gorm.DB) ([]Building, error) {
 		log.Println("Can't get storages: " + res.Error.Error())
 	}
 	return storages, res.Error
+}
+
+type HiringPayload struct {
+	BuildingID  uint    `json:"buildingId"`
+	Salary      float64 `json:"salary"`
+	HiringNeeds int     `json:"hiringNeeds"`
+}
+
+func SetHiring(db *gorm.DB, userID uint, payload HiringPayload) error {
+	building, err := GetBuildingByID(db, payload.BuildingID)
+	if err != nil {
+		return err
+	}
+	if userID != building.UserID && building.UserID != 0 {
+		return errors.New("this building doesn't belong to you")
+	}
+	buildingType, err := GetBuildingTypeByID(db, building.TypeID)
+	if err != nil {
+		return err
+	}
+	hiringMax := buildingType.Workers * building.Level * building.Square
+	if payload.HiringNeeds > hiringMax {
+		return errors.New(fmt.Sprintf("hiring needs more that maximum(%d)", hiringMax))
+	}
+	building.Salary = payload.Salary
+	building.HiringNeeds = payload.HiringNeeds
+	db.Save(&building)
+	return nil
 }
