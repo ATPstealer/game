@@ -35,6 +35,15 @@ type Building struct {
 	Workers     int            `json:"workers"`
 }
 
+func GetAllBuildings(db *gorm.DB) ([]Building, error) {
+	var buildings []Building
+	err := db.Model(&Building{}).Find(&buildings).Error
+	if err != nil {
+		return nil, err
+	}
+	return buildings, nil
+}
+
 type ConstructBuildingPayload struct {
 	TypeID uint
 	X      int
@@ -262,4 +271,13 @@ func SetHiring(db *gorm.DB, userID uint, payload HiringPayload) error {
 	building.HiringNeeds = payload.HiringNeeds
 	db.Save(&building)
 	return nil
+}
+
+func GetBuildingsForHiring(db *gorm.DB) ([]Building, error) {
+	var buildings []Building
+	err := db.Model(&Building{}).Where("salary != 0 and hiring_needs != 0").Find(&buildings).Error
+	if err != nil {
+		return nil, err
+	}
+	return buildings, nil
 }

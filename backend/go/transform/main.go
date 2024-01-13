@@ -14,7 +14,8 @@ func main() {
 }
 
 func transform(db *gorm.DB) {
-	evolution.CellAveragePrices(db)
-	evolution.CellSpendMax(db)
-	evolution.ResetStats(db)
+	//evolution.CellAveragePrices(db)
+	//evolution.CellSpendMax(db)
+	//evolution.ResetStats(db)
+	evolution.Hiring(db)
 }
