@@ -1,15 +1,22 @@
 <template>
-  <InlineMessage :severity="message.status === 'success'? 'success' : 'error'" :closable="false">
+  <Message
+    :severity="message.status === 'success'? 'success' : 'error'"
+    :pt="{
+      wrapper: {
+        class: '!p-2'
+      }
+    }"
+  >
     {{ message.text }}
-  </InlineMessage>
+  </Message>
 </template>
 
 <script setup lang="ts">
-import InlineMessage from 'primevue/inlinemessage'
-import type { Message } from '@/types'
+import Message from 'primevue/message'
+import type { DataMessage } from '@/types'
 
 interface Props {
-  message: Message;
+  message: DataMessage;
 }
 
 defineProps<Props>()

@@ -92,7 +92,7 @@ import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
 
@@ -102,7 +102,7 @@ const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
 const buildingType = ref<BuildingType>({} as BuildingType)
 const square = ref<number>(10)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const { data: buildingTypes, onFetchResponse } = useGetData<BuildingType[]>('/building/types')
 onFetchResponse(() => {

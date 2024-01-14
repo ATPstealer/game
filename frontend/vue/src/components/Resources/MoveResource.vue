@@ -66,7 +66,7 @@ import InputNumber from 'primevue/inputnumber'
 import { computed, ref } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useResources } from '@/composables/useResources'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { Resource } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -78,7 +78,7 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 const amount = ref<number>(0)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 const { moveResource } = useResources()
 
 const distance = computed(() => {

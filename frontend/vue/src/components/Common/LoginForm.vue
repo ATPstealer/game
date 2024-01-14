@@ -58,7 +58,7 @@ import Password from 'primevue/password'
 import { ref } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -67,7 +67,7 @@ const emits = defineEmits<{
 
 const nickName = ref<string>('')
 const pass = ref<string>('')
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const { logIn } = useUser()
 const submit = () => {

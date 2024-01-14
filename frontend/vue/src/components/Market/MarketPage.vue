@@ -67,8 +67,7 @@
       </template>
     </Column>
   </DataTable>
-  <div v-if="!orders">
-    <!-- TODO: Тут какая то бага. Текст не отображается, а локально вообще не работало  -->
+  <div v-if="!orders?.length">
     Этого ресурса на рынке нет
   </div>
   <Dialog
@@ -99,7 +98,7 @@ import Dialog from 'primevue/dialog'
 import { ref, toRefs } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useOrders } from '@/composables/useOrders'
-import type { Message, Order } from '@/types'
+import type { DataMessage, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -111,7 +110,7 @@ const { searchParams } = toRefs(props)
 
 const order = ref<Order>({} as Order)
 const showModal = ref<boolean>(false)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const { getOrders, executeOrder } = useOrders()
 const { data: orders, execute } = getOrders(searchParams.value)

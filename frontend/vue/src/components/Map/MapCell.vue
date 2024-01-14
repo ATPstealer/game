@@ -65,7 +65,7 @@ import { computed, ref } from 'vue'
 import Loading from '@/components/Common/Loading.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useMap } from '@/composables/useMap'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { Cell } from '@/types/Map/index.interface'
 
 interface Props {
@@ -79,7 +79,7 @@ const buySquare = ref<number>(0)
 
 const { getCellOwners, buyCellSquare } = useMap()
 const { data: cellOwners, onFetchResponse, isFetching } = getCellOwners({ x: props.cell.x, y: props.cell.y })
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const freeSquare = computed(() => {
   let value = props.square

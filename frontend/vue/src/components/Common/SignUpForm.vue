@@ -124,7 +124,7 @@ import Password from 'primevue/password'
 import { computed, ref } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -135,7 +135,7 @@ const nickName = ref<string>('')
 const email = ref<string>('')
 const pass1 = ref<string>('')
 const pass2 = ref<string>('')
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const nickNameValid = computed(() => !nickName.value || nickName.value.length > 3)
 

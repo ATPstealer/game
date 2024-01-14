@@ -96,7 +96,7 @@ import { computed, ref } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useGetData } from '@/composables/useGetData'
 import { useOrders } from '@/composables/useOrders'
-import { Message } from '@/types'
+import { DataMessage } from '@/types'
 import { Resource, ResourceType } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -108,7 +108,7 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const amount = ref<number>(0)
 const priceForUnit = ref<number>(0)
 const sell = ref<boolean>(true)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 const resourceTypes = ref<ResourceType[]>([])
 const resourceTypeId = ref<number>()
 const x = ref<number>(0)

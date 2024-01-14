@@ -59,7 +59,7 @@ export interface Logistic {
   resourceName: string;
 }
 
-export interface Message {
+export interface DataMessage {
   status: string;
   text: string;
 }

@@ -1,7 +1,7 @@
 import type { EventHookOn } from '@vueuse/core'
 import { type Ref, ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { Cell, CellOwners } from '@/types/Map/index.interface'
 
 export const useMap = () => {
@@ -39,7 +39,7 @@ export const useMap = () => {
   }
 
   const buyCellSquare = (payload: {x: number; y: number; square: number}) => {
-    const dataMessage = ref<Message | null>(null)
+    const dataMessage = ref<DataMessage | null>(null)
     const { data, onFetchResponse } = useMyFetch('/map/buy_land', {
       afterFetch: ctx => {
         dataMessage.value = {
