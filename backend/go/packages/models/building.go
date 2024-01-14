@@ -17,7 +17,6 @@ const (
 	ProductionStatus      BuildingStatus = "Production"
 	ResourcesNeededStatus BuildingStatus = "ResourcesNeeded"
 	StorageNeededStatus   BuildingStatus = "StorageNeeded"
-	OnStrike              BuildingStatus = "OnStrike"
 )
 
 type Building struct {
@@ -34,6 +33,7 @@ type Building struct {
 	HiringNeeds int            `json:"hiringNeeds"`
 	Salary      float64        `json:"salary"`
 	Workers     int            `json:"workers"`
+	OnStrike    bool           `json:"onStrike"`
 }
 
 func GetAllBuildings(db *gorm.DB) ([]Building, error) {
@@ -125,6 +125,7 @@ type MyBuildingsResult struct {
 	BuildingGroup    string    `json:"buildingGroup"`
 	BuildingSubGroup string    `json:"buildingSubGroup"`
 	MaxWorkers       int       `json:"maxWorkers"`
+	OnStrike         bool      `json:"onStrike"`
 }
 
 func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsResult, error) {
@@ -135,7 +136,7 @@ func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsRes
 		query = query.Where("buildings.id = ?", buildingID)
 	}
 	res := query.Select("buildings.id", "buildings.type_id", "title", "x", "y", "square", "level",
-		"status", "hiring_needs", "salary", "buildings.workers", "buildings.work_started", "buildings.work_end",
+		"status", "hiring_needs", "salary", "on_strike", "buildings.workers", "buildings.work_started", "buildings.work_end",
 		"building_types.building_group", "building_types.building_sub_group", "building_types.workers AS max_workers").
 		Joins("left join building_types on buildings.type_id = building_types.id").
 		Scan(&myBuildings)
@@ -239,7 +240,7 @@ func GetBuildingByID(db *gorm.DB, buildingID uint) (Building, error) {
 
 func GetAllReadyStorages(db *gorm.DB) ([]Building, error) {
 	var storages []Building
-	res := db.Model(&Building{}).Where("type_id = ? AND status = ?", 1, ReadyStatus).Scan(&storages)
+	res := db.Model(&Building{}).Where("type_id = ? AND status = ? AND on_strike = ?", 1, ReadyStatus, false).Scan(&storages)
 	if res.Error != nil {
 		log.Println("Can't get storages: " + res.Error.Error())
 	}

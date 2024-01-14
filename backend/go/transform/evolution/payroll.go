@@ -14,12 +14,13 @@ func Payroll(db *gorm.DB) {
 	}
 	for bIndex, building := range buildings {
 		if models.AddMoney(db, building.UserID, (-1)*float64(building.Workers)*building.Salary) != nil {
-			buildings[bIndex].Status = models.OnStrike
+			buildings[bIndex].OnStrike = true
 			continue
 		}
 		if err := models.AddCivilSavings(db, building.X, building.Y, float64(building.Workers)*building.Salary); err != nil {
 			fmt.Println(err)
 		}
+		buildings[bIndex].OnStrike = false
 	}
 	db.Save(&buildings)
 }

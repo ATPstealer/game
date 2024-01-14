@@ -96,7 +96,7 @@ func GetMyLogistics(db *gorm.DB, userID uint) ([]LogisticResult, error) {
 func GetDestinationVolume(db *gorm.DB, userID uint, toX int, toY int) float64 {
 	var volume float64
 	res := db.Model(&Logistic{}).Where("user_id = ? AND to_x = ? AND to_y = ?", userID, toX, toY).
-		Select("SUM(volume * amount) AS total").
+		Select("COALESCE(SUM(volume * amount), 0) AS total").
 		Joins("left join resource_types on logistics.resource_type_id = resource_types.id").
 		Scan(&volume)
 
