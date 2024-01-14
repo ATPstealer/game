@@ -3,13 +3,14 @@ package evolution
 import (
 	"backend/packages/models"
 	"gorm.io/gorm"
+	"log"
 )
 
-func CellSpendMax(db *gorm.DB) error {
+func CellSpendMax(db *gorm.DB) {
 	cells := models.GetAllCells(db)
 	evolutionPrices, err := models.GetAllEvolutionPrices(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	var cellPrices []models.EvolutionPrice
 	var newCellPrices []models.EvolutionPrice
@@ -20,7 +21,6 @@ func CellSpendMax(db *gorm.DB) error {
 		newCellPrices = append(newCellPrices, cellPrices...)
 	}
 	db.Save(&newCellPrices)
-	return nil
 }
 
 func findCellPrices(evolutionPrices *[]models.EvolutionPrice, x int, y int) []models.EvolutionPrice {

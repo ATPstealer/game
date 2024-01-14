@@ -3,21 +3,22 @@ package evolution
 import (
 	"backend/packages/models"
 	"gorm.io/gorm"
+	"log"
 )
 
-func CellAveragePrices(db *gorm.DB) error {
+func CellAveragePrices(db *gorm.DB) {
 	cells := models.GetAllCells(db)
 	allResourceTypes, err := models.GetAllResourceTypes(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	storeGoods, err := models.GetAllStoreGoods(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	evolutionPrices, err := models.GetAllEvolutionPrices(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	for _, cell := range cells {
 		for _, resourceType := range allResourceTypes {
@@ -31,7 +32,6 @@ func CellAveragePrices(db *gorm.DB) error {
 		}
 	}
 	db.Save(&evolutionPrices)
-	return nil
 }
 
 func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsResult) []models.StoreGoodsResult {
