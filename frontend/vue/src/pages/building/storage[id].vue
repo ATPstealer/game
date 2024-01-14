@@ -9,10 +9,13 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import Hiring from '@/components/Buildings/Hiring.vue'
 import Layout from '@/components/Common/Layout.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Building } from '@/types/Buildings/index.interface'
+
+const route = useRoute()
 
 const building = ref<Building>({} as Building)
 
