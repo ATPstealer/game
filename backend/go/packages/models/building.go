@@ -17,6 +17,7 @@ const (
 	ProductionStatus      BuildingStatus = "Production"
 	ResourcesNeededStatus BuildingStatus = "ResourcesNeeded"
 	StorageNeededStatus   BuildingStatus = "StorageNeeded"
+	OnStrike              BuildingStatus = "OnStrike"
 )
 
 type Building struct {

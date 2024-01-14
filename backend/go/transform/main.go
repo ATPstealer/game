@@ -18,4 +18,5 @@ func transform(db *gorm.DB) {
 	evolution.CellSpendMax(db)
 	evolution.ResetStats(db)
 	evolution.Hiring(db)
+	evolution.Payroll(db)
 }
