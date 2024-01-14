@@ -121,17 +121,17 @@ const computedFilter = computed(() => {
 })
 
 const getMapFilter = (row, column) => {
-  const cell = map.value.filter(item => item.y === row && item.x === column)[0]
+  const cell = map.value.filter(item => item.y === column && item.x === row)[0]
   const { min, max } = computedFilter.value
   const range = max - min
 
-  return ((cell[filter.value] - min) / range) * 0.7
+  return ((cell[filter.value] - min) / range) * 0.6
 }
 
 watch(filter, () => {
   color.value = '175, 27, 27'
   if (!['pollution', 'crime'].includes(filter.value)) {
-    color.value = '21, 213, 19'
+    color.value = '30, 137, 19'
   }
   recalculate.value = true
   setTimeout(() => {
