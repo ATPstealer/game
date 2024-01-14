@@ -19,14 +19,19 @@ type ProductionResult struct {
 	Square      int
 	Level       int
 	Status      string
+	OnStrike    bool
+	Workers     int
+	WorkersNeed int
 }
 
 func Production(db *gorm.DB) {
 	var productions []ProductionResult
 	res := db.Model(&models.Production{}).Select("productions.id", "productions.building_id",
 		"productions.blueprint_id", "productions.work_started", "productions.work_end", "buildings.user_id",
-		"buildings.x", "buildings.y", "buildings.square", "buildings.level", "buildings.status").
+		"buildings.x", "buildings.y", "buildings.square", "buildings.level", "buildings.status", "buildings.on_strike",
+		"buildings.workers AS workers", "building_types.workers AS workers_need").
 		Joins("left join buildings on buildings.id = productions.building_id").
+		Joins("left join building_types on buildings.type_id = building_types.id").
 		Where("NOW() < productions.work_end").Scan(&productions)
 	if res.Error != nil {
 		log.Println(res.Error)
@@ -45,7 +50,6 @@ func Production(db *gorm.DB) {
 
 	now := time.Now()
 	for _, production := range productions {
-		log.Println(production)
 		if !models.CheckEnoughStorage(db, production.UserID, production.X, production.Y, 0) {
 			db.Model(&models.Building{}).Where("id = ?", production.BuildingID).Update("status", models.StorageNeededStatus)
 			db.Model(&models.Production{}).Where("id = ?", production.ID).Update("work_started", &now)
@@ -56,10 +60,15 @@ func Production(db *gorm.DB) {
 		blueprint := blueprintResults[production.BlueprintID-1]
 
 		// Formula of production pace
-		cycles := int(workTime / blueprint.ProductionTime.Seconds())
-		productionCycles := cycles * production.Level * production.Square
+		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * float64(production.Workers) / float64(production.WorkersNeed)) // here the level and square are taken into account through workers
+		blueprintCycles := float64(productionCycles) * float64(production.WorkersNeed) / float64(production.Workers)
 
 		if productionCycles == 0 {
+			continue
+		}
+
+		if production.OnStrike {
+			db.Model(&models.Production{}).Where("id = ?", production.ID).Update("work_started", &now)
 			continue
 		}
 
@@ -89,7 +98,7 @@ func Production(db *gorm.DB) {
 				}
 			}
 			db.Model(&models.Building{}).Where("id = ?", production.BuildingID).Update("status", models.ProductionStatus)
-			newWorkStarted := production.WorkStarted.Add(time.Duration(cycles) * blueprint.ProductionTime)
+			newWorkStarted := production.WorkStarted.Add(time.Duration(blueprintCycles) * blueprint.ProductionTime)
 			db.Model(&models.Production{}).Where("id = ?", production.ID).Update("work_started", &newWorkStarted)
 		}
 	}
