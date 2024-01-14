@@ -33,7 +33,7 @@ export const useUser = () => {
         const ttl = Number(data.value?.data.ttl)
         const date = new Date()
         date.setTime(date.getTime() + ttl*1000)
-        document.cookie = `secureToken=${data.value?.data.token};expires=${date};domain=.${import.meta.env.VITE_DOMAIN}`
+        document.cookie = `secureToken=${data.value?.data.token};expires=${date};domain=.${import.meta.env.VITE_DOMAIN};path=/`
       }
     })
 
