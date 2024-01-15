@@ -155,6 +155,7 @@ func SetHiring(c *gin.Context) {
 	}
 	if hiringPayload.HiringNeeds < 0 || hiringPayload.Salary < 0 {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't set < 0"})
+		return
 	}
 
 	err = models.SetHiring(db.DB, userID, hiringPayload)
