@@ -4,7 +4,9 @@
       <Hiring v-if="!isFetching" :building="building" />
     </template>
     <template #help>
-      {{ t(`buildings.store.help`) }}
+      <p>{{ t(`buildings.store.help`) }}</p>
+      <hr />
+      <p>{{ t(`buildings.hiring.help`) }}</p>
     </template>
     <div v-if="!isFetching">
       <StoreBuilding :building="building" />

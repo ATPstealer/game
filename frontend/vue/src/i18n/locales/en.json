@@ -3,7 +3,9 @@
     "construct new building": "Construct New Building",
     "finish": "Finish",
     "hiring": {
+      "help": "Hiring is carried out once a day. At 00:00Z. The higher the salary, the more workers will come to your enterprise. Set the required number of employees in the “Hiring needs” column.",
       "hiring needs": "Hiring needs",
+      "max workers": "Maximum workers",
       "name": "Hiring",
       "salary": "Salary",
       "set": "Set",

@@ -23,6 +23,7 @@ export interface Building {
   hiringNeeds: number;
   salary: number;
   workers: number;
+  maxWorkers: number;
 }
 
 export interface BuildingType {

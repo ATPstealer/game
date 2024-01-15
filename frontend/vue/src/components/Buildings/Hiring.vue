@@ -8,8 +8,11 @@
     <p class="font-bold">
       {{ t(`buildings.hiring.name`) }}
     </p>
-    <p class="font-bold">
-      {{ t(`buildings.hiring.workers`) }} / {{ t(`buildings.hiring.hiring needs`) }}
+    <p>
+      {{ t(`buildings.hiring.max workers`) }}: {{ building.maxWorkers*building.level*building.square }}
+    </p>
+    <p>
+      {{ t(`buildings.hiring.workers`) }} / {{ t(`buildings.hiring.hiring needs`) }}:
     </p>
     <div class="flex items-center gap-1 h-10">
       <p class="whitespace-nowrap">
@@ -44,8 +47,8 @@
       </div>
     </div>
     <div>
-      <p class="font-bold">
-        {{ t(`buildings.hiring.salary`) }}
+      <p>
+        {{ t(`buildings.hiring.salary`) }}:
       </p>
       <span
         v-if="!editSalary"
