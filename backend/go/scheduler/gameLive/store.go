@@ -47,7 +47,7 @@ func StoreSell(db *gorm.DB) error {
 		}
 
 		// Formula of selling pace
-		workTime := float64(now.Sub(*goods.SellStarted).Seconds())
+		workTime := now.Sub(*goods.SellStarted).Seconds()
 		storeCapacity := float64(goods.Capacity * goods.Level * goods.Square)
 		daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
 		oneSellTime := time.Second * time.Duration(24*60*60/daySells)
