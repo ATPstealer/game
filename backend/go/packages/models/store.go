@@ -98,6 +98,9 @@ type StoreGoodsResult struct {
 	Level          int              `json:"level"`
 	Capacity       int              `json:"capacity"`
 	UserID         uint             `json:"userID"`
+	OnStrike       bool             `json:"onStrike"`
+	Workers        int              `json:"workers"`
+	MaxWorkers     int              `json:"maxWorkers"`
 }
 
 func GetAllStoreGoods(db *gorm.DB) ([]StoreGoodsResult, error) {
@@ -105,11 +108,13 @@ func GetAllStoreGoods(db *gorm.DB) ([]StoreGoodsResult, error) {
 	res := db.Model(&StoreGoods{}).
 		Select("store_goods.id", "building_id", "resource_type_id", "price", "sell_sum", "revenue",
 			"sell_started", "store_goods.status", "x", "y", "square", "level", "building_types.capacity AS capacity",
-			"users.id AS user_id").
+			"users.id AS user_id", "buildings.on_strike AS on_strike", "buildings.workers",
+			"building_types.workers AS max_workers").
 		Joins("left join buildings on store_goods.building_id = buildings.id").
 		Joins("left join building_types on buildings.type_id = building_types.id").
 		Joins("left join users on users.id = buildings.user_id").
-		Scan(&storeGoodsResult)
+		Where("on_strike = ?", false).
+		Find(&storeGoodsResult)
 	if res.Error != nil {
 		return nil, res.Error
 	}

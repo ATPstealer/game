@@ -12,6 +12,9 @@ import (
 
 func StoreSell(db *gorm.DB) error {
 	storeGoods, err := models.GetAllStoreGoods(db)
+
+	log.Println("asdfa")
+	log.Println(storeGoods)
 	if err != nil {
 		return err
 	}
@@ -48,8 +51,9 @@ func StoreSell(db *gorm.DB) error {
 
 		// Formula of selling pace
 		workTime := now.Sub(*goods.SellStarted).Seconds()
-		storeCapacity := float64(goods.Capacity * goods.Level * goods.Square)
+		storeCapacity := float64(goods.Capacity*goods.Workers) / float64(goods.MaxWorkers) // square and level in Workers count
 		daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
+		log.Println(daySells)
 		oneSellTime := time.Second * time.Duration(24*60*60/daySells)
 
 		if daySells == 0 {

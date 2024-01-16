@@ -36,11 +36,11 @@ func StoragesUpdate(db *gorm.DB) {
 		log.Println(err)
 	}
 
+	// Storage size depend on workers count
 	storageBuildingType, _ := models.GetBuildingTypeByID(db, 1) // 1 = Storage
 	for _, buildingStorage := range buildingStorages {
 		findBuildingStorage(&storages, buildingStorage, float64(storageBuildingType.Workers))
 	}
-	log.Println(storages)
 	db.Save(&storages)
 }
 
