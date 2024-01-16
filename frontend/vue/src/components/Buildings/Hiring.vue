@@ -8,6 +8,9 @@
     <p class="font-bold">
       {{ t(`buildings.hiring.name`) }}
     </p>
+    <p class="italic">
+      {{ t(`buildings.hiring.on strike`) }}
+    </p>
     <p>
       {{ t(`buildings.hiring.max workers`) }}: {{ building.maxWorkers*building.level*building.square }}
     </p>

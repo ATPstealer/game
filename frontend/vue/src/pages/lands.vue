@@ -1,5 +1,5 @@
 <template>
-  <Layout>
+  <Layout :show-options-prop="false">
     <Lands />
   </Layout>
 </template>

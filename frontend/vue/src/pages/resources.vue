@@ -1,5 +1,5 @@
 <template>
-  <Layout>
+  <Layout :show-options-prop="false">
     <Resources />
     <template #help>
       {{ t(`resources.help`) }}
