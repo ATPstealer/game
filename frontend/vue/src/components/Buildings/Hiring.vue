@@ -8,7 +8,7 @@
     <p class="font-bold">
       {{ t(`buildings.hiring.name`) }}
     </p>
-    <p class="italic">
+    <p class="italic" v-if="building.onStrike">
       {{ t(`buildings.hiring.on strike`) }}
     </p>
     <p>

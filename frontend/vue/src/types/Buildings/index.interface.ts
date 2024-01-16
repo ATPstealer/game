@@ -24,6 +24,7 @@ export interface Building {
   salary: number;
   workers: number;
   maxWorkers: number;
+  onStrike: boolean;
 }
 
 export interface BuildingType {
