@@ -40,9 +40,16 @@ func GetAllResources(db *gorm.DB) ([]ResourceResult, error) {
 	return allResources, res.Error
 }
 
-func GetMyResources(db *gorm.DB, userID uint) ([]ResourceResult, error) {
+func GetMyResources(db *gorm.DB, userID uint, x *int, y *int) ([]ResourceResult, error) {
 	var resources []ResourceResult
-	res := db.Model(&Resource{}).Where("user_id", userID).
+	query := db.Model(&Resource{}).Where("user_id", userID)
+	if x != nil {
+		query = query.Where("x = ?", *x)
+	}
+	if y != nil {
+		query = query.Where("y = ?", *y)
+	}
+	res := query.
 		Select("resources.id", "resource_type_id", "amount", "x", "y", "name", "volume", "weight").
 		Joins("left join resource_types on resources.resource_type_id = resource_types.id").
 		Scan(&resources)
