@@ -13,8 +13,6 @@ import (
 func StoreSell(db *gorm.DB) error {
 	storeGoods, err := models.GetAllStoreGoods(db)
 
-	log.Println("asdfa")
-	log.Println(storeGoods)
 	if err != nil {
 		return err
 	}
@@ -54,6 +52,8 @@ func StoreSell(db *gorm.DB) error {
 		storeCapacity := float64(goods.Capacity*goods.Workers) / float64(goods.MaxWorkers) // square and level in Workers count
 		daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
 		log.Println(daySells)
+		log.Println(goods)
+
 		oneSellTime := time.Second * time.Duration(24*60*60/daySells)
 
 		if daySells == 0 {
@@ -61,10 +61,16 @@ func StoreSell(db *gorm.DB) error {
 			continue
 		}
 		sellCycles := int(daySells * workTime / (24 * 60 * 60))
+		if sellCycles == 0 {
+			continue
+		}
 
 		if !models.CheckEnoughResources(db, goods.ResourceTypeID, goods.UserID, goods.X, goods.Y, float64(sellCycles)) {
+			log.Println(goods)
 			storeGoods[gIndex].Status = models.NotEnoughMinerals
 			storeGoods[gIndex].SellStarted = &now
+			log.Println(goods)
+
 			continue
 		}
 
