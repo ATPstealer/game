@@ -10,7 +10,7 @@
       <template #body="{data}: {data: Building}">
         <p class="col-span-1 font-bold">
           <router-link :to="{name: `Building${data.buildingGroup}Id`, params: {id: data.id}}" class="link">
-            {{ data.title }} {{ data.level }}x{{ data.square }}
+            {{ t(`buildings.types.${data.title.toLowerCase()}`) }} {{ data.level }}x{{ data.square }}
           </router-link>
         </p>
       </template>
@@ -23,9 +23,12 @@
       </template>
     </Column>
     <Column
-      field="status"
       :header="t(`buildings.status`)"
-    />
+    >
+      <template #body="{data}: {data: Building}">
+        {{ t(`status.${data.status.toLowerCase()}`) }}
+      </template>
+    </Column>
     <Column
       :header="t(`buildings.finish`)"
     >

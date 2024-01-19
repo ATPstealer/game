@@ -53,13 +53,13 @@
     <div class="flex items-center gap-8">
       <div v-if="!user?.nickName" class="flex gap-4">
         <Button
-          label="Login"
+          :label="t('account.login')"
           @click="emits('show-login')"
           class="text-white"
           severity="success"
         />
         <Button
-          label="Sign Up"
+          :label="t('account.signup')"
           @click="emits('show-signup')"
           class="text-white"
           severity="info"
@@ -74,7 +74,7 @@
         </p>
         <Button
           text
-          label="Logout"
+          :label="t('account.logout')"
           class="header-item p-0"
           @click="emits('sign-out')"
         />

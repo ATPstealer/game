@@ -20,7 +20,11 @@
     <Column
       field="name"
       :header="t(`buildings.store.columns.name`)"
-    />
+    >
+      <template #body="{data}:{data: ResourceType}">
+        {{ t(`resources.types.${data.name.toLowerCase()}`) }}
+      </template>
+    </Column>
     <Column
       field="price"
       :header="t(`buildings.store.columns.price`)"
@@ -28,7 +32,7 @@
     >
       <template #body="{ data, field }">
         <span class="col-span-1 font-bold text-blue-500 hover:text-blue-700 block">
-          {{ data[field] ? moneyFormat(data[field]) : 'Set price' }}
+          {{ data[field] ? moneyFormat(data[field]) : t('buildings.store.setPrice') }}
         </span>
       </template>
       <!--  TODO: сделать чтобы не разъезжалось и были ровыне поля при редактировании цены -->>
@@ -50,9 +54,12 @@
       :header="t(`buildings.store.columns.revenue today`)"
     />
     <Column
-      field="status"
       :header="t(`buildings.store.columns.status`)"
-    />
+    >
+      <template #body="{data}: {data: Goods}">
+        {{ t(`buildings.store.status.${data.status.toLowerCase()}`) }}
+      </template>
+    </Column>
   </DataTable>
 </template>
 <script setup lang="ts">
@@ -93,7 +100,7 @@ const tableData = computed(() => {
       resourceTypeId: item.id,
       sellSum: getGoodsData(item.id)?.sellSum || 0,
       revenue: getGoodsData(item.id)?.revenue || 0,
-      status: getGoodsData(item.id)?.status || 'Price not set'
+      status: getGoodsData(item.id)?.status || 'notSet'
     }
   })
 })
