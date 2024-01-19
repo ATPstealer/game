@@ -40,7 +40,7 @@ const changeLang = (event: DropdownChangeEvent) => {
 
 <style scoped>
 .lang {
-  @apply border-b border-solid border-b-white rounded-none bg-gray-500 border-gray-500 items-baseline;
+  @apply border-b border-solid border-b-white rounded-none bg-gray-500 border-gray-500 items-baseline relative z-[9999];
 }
 
 .p-dropdown:not(.p-disabled).p-focus {
