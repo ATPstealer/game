@@ -20,7 +20,7 @@ func MakeRouter() *gin.Engine {
 	user.POST("/login", controllers.Login)
 	// Secure aria
 	user.Use(AuthMiddleware())
-	user.GET("/logout", controllers.Logout)
+	user.DELETE("/logout", controllers.Logout) // DELETE
 	user.GET("/data", controllers.GetUserData)
 
 	building := router.Group("/api/v1/building")
@@ -46,7 +46,7 @@ func MakeRouter() *gin.Engine {
 	resource.GET("/types", controllers.GetResourceTypes)
 	resource.Use(AuthMiddleware())
 	resource.GET("/my", controllers.GetMyResources)
-	resource.GET("/move", controllers.ResourceMove)
+	resource.GET("/move", controllers.ResourceMove) // POST
 	resource.GET("/my_logistics", controllers.GetMyLogistics)
 
 	storage := router.Group("/api/v1/storage")
@@ -58,13 +58,13 @@ func MakeRouter() *gin.Engine {
 	market.Use(AuthMiddleware())
 	market.POST("/order/create", controllers.CreateOrder)
 	market.GET("/order/my", controllers.GetMyOrders)
-	market.GET("/order/close", controllers.CloseMyOrder)
-	market.GET("/order/execute", controllers.ExecuteOrder)
+	market.GET("/order/close", controllers.CloseMyOrder)   // DELETE
+	market.GET("/order/execute", controllers.ExecuteOrder) // POST
 
 	store := router.Group("/api/v1/store")
 	store.GET("/goods/get", controllers.GetStoreGoods)
 	store.Use(AuthMiddleware())
-	store.GET("/goods/set", controllers.SetStoreGoods)
+	store.GET("/goods/set", controllers.SetStoreGoods) // POST
 
 	data := router.Group("/api/v1/data")
 	data.GET("users_by_prefix", controllers.GetUserNamesByPrefix)
