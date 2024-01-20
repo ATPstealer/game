@@ -68,7 +68,7 @@ export const useBuildings = () => {
   const setPrice = (payload: {buildingId: number; resourceTypeId: number; price: number}) => {
     const dataMessage = ref<DataMessage | null>(null)
 
-    const { onFetchResponse, isFetching } = useMyFetch(`/store/goods/set?building_id=${payload.buildingId}&resource_type_id=${payload.resourceTypeId}&price=${payload.price}`, {
+    const { onFetchResponse, isFetching } = useMyFetch('/store/goods/set', {
       afterFetch: ctx => {
         dataMessage.value = {
           text: ctx.data.text,
@@ -77,7 +77,7 @@ export const useBuildings = () => {
 
         return ctx
       }
-    }).json()
+    }).post(payload).json()
 
     return {
       dataMessage,
