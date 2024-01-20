@@ -58,8 +58,8 @@ func MakeRouter() *gin.Engine {
 	market.Use(AuthMiddleware())
 	market.POST("/order/create", controllers.CreateOrder)
 	market.GET("/order/my", controllers.GetMyOrders)
-	market.GET("/order/close", controllers.CloseMyOrder)   // DELETE
-	market.GET("/order/execute", controllers.ExecuteOrder) // POST
+	market.DELETE("/order/close", controllers.CloseMyOrder)
+	market.POST("/order/execute", controllers.ExecuteOrder)
 
 	store := router.Group("/api/v1/store")
 	store.GET("/goods/get", controllers.GetStoreGoods)

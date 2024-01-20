@@ -9,7 +9,7 @@ import type { MarketParams } from '@/types/Resources/index.interface'
 export const useOrders = () => {
   const closeOrder = (orderId: number) => {
     const { data, onFetchResponse, isFetching } = useFetch(`${import.meta.env.VITE_API}/market/order/close?order_id=${orderId}`,
-      { credentials: 'include' })
+      { credentials: 'include' }).delete()
 
     return {
       data,
@@ -48,10 +48,10 @@ export const useOrders = () => {
     }
   }
 
-  const executeOrder = (id: number) => {
+  const executeOrder = (payload: {orderID: number; amount: number}) => {
     const dataMessage = ref<DataMessage | null>(null)
 
-    const { onFetchResponse } = useMyFetch(`/market/order/execute?order_id=${id}`, {
+    const { onFetchResponse } = useMyFetch('/market/order/execute', {
       afterFetch: ctx => {
         dataMessage.value = {
           text: ctx.data.text,
@@ -60,7 +60,7 @@ export const useOrders = () => {
 
         return ctx
       }
-    }).json()
+    }).post(payload).json()
 
     return {
       dataMessage,
