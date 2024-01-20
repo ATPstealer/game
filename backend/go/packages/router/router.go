@@ -64,7 +64,7 @@ func MakeRouter() *gin.Engine {
 	store := router.Group("/api/v1/store")
 	store.GET("/goods/get", controllers.GetStoreGoods)
 	store.Use(AuthMiddleware())
-	store.GET("/goods/set", controllers.SetStoreGoods) // POST
+	store.POST("/goods/set", controllers.SetStoreGoods)
 
 	data := router.Group("/api/v1/data")
 	data.GET("users_by_prefix", controllers.GetUserNamesByPrefix)

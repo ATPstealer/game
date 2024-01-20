@@ -28,8 +28,14 @@ type StoreGoods struct {
 	Status         StoreGoodsStatus
 }
 
-func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uint, price float64) error {
-	building, err := GetBuildingByID(db, buildingID)
+type StoreGoodsPayload struct {
+	BuildingID     uint    `json:"buildingID"`
+	ResourceTypeID uint    `json:"resourceTypeID"`
+	Price          float64 `json:"price"`
+}
+
+func SetStoreGoods(db *gorm.DB, userID uint, payload StoreGoodsPayload) error {
+	building, err := GetBuildingByID(db, payload.BuildingID)
 	if err != nil {
 		return err
 	}
@@ -45,7 +51,7 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 		return errors.New("this is not a store")
 	}
 
-	resourceType, err := GetResourceTypesByID(db, resourceTypeID)
+	resourceType, err := GetResourceTypesByID(db, payload.ResourceTypeID)
 	if err != nil {
 		return err
 	}
@@ -55,10 +61,10 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 
 	now := time.Now()
 	var storeGoods StoreGoods
-	db.Where(StoreGoods{BuildingID: buildingID, ResourceTypeID: resourceTypeID}).
+	db.Where(StoreGoods{BuildingID: payload.BuildingID, ResourceTypeID: payload.ResourceTypeID}).
 		Assign(StoreGoods{SellStarted: &now, Status: Selling}).
 		FirstOrCreate(&storeGoods)
-	storeGoods.Price = price
+	storeGoods.Price = payload.Price
 	result := db.Save(&storeGoods)
 	return result.Error
 }
