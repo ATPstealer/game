@@ -23,7 +23,7 @@
     <Dialog
       v-model:visible="loginModal"
       modal
-      header="Login"
+      :header="t('account.login')"
       :style="{ width: '25rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
@@ -32,7 +32,7 @@
     <Dialog
       v-model:visible="signUpModal"
       modal
-      header="Sign Up"
+      :header="t('account.signup')"
       :style="{ width: '25rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >

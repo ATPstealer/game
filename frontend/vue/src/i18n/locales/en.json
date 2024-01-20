@@ -1,4 +1,20 @@
 {
+  "account": {
+    "confirmPass": "Confirm Password",
+    "email": "Email",
+    "errors": {
+      "email": "Enter correct email address",
+      "nickname": "Fill in the field nickname",
+      "passMatch": "Passwords doesn't match",
+      "password": "Password must include lowercase and uppercase later, digits and be more than 8 symbols"
+    },
+    "haveAccount": "Already have an account? Log in",
+    "login": "Login",
+    "logout": "Logout",
+    "nickname": "Nickname",
+    "password": "Password",
+    "signup": "Sign Up"
+  },
   "buildings": {
     "construct new building": "Construct New Building",
     "finish": "Finish",
@@ -24,6 +40,11 @@
       },
       "help": "Click on price for change. Auto apply.",
       "name": "Store",
+      "setPrice": "Set price",
+      "status": {
+        "notset": "Price not set",
+        "selling": "Selling"
+      },
       "types": {
         "grocery": "Grocery"
       }
@@ -45,9 +66,18 @@
     }
   },
   "common": {
+    "amount": "Amount",
+    "buy": "Buy",
+    "create": "Create",
+    "from": "from",
+    "in": "in",
+    "move": "Move",
     "owner": "Owner",
     "reset": "Reset",
-    "square": "Square"
+    "resource": "Resource",
+    "sell": "Sell",
+    "square": "Square",
+    "to": "to"
   },
   "lands": {
     "title": "Lands"
@@ -89,19 +119,62 @@
       "resource": "Resource",
       "type": "Type"
     },
+    "create": {
+      "header": "Create order",
+      "type": "Order type"
+    },
     "help": "To close an order, click on his type.",
     "title": "Orders"
   },
   "resources": {
+    "choose": "Сhoose resource",
     "columns": {
       "amount": "Amount",
       "name": "Resource"
     },
     "help": "Resource name click is move. Amount click is sell",
-    "title": "Resources"
+    "move": {
+      "header": "Move resource",
+      "price": "Estimate price",
+      "time": "Estimate time"
+    },
+    "resourceType": "Resource type",
+    "sell": {
+      "header": "Sell resource",
+      "price": "Price per unit"
+    },
+    "title": "Resources",
+    "types": {
+      "all": "All",
+      "beef": "Beef",
+      "bread": "Bread",
+      "butter": "Butter",
+      "chicken": "Chicken",
+      "diesel": "Diesel",
+      "eggs": "Eggs",
+      "energy": "Energy",
+      "gas": "Gas",
+      "gear": "Gear",
+      "iron": "Iron",
+      "iron ore": "Iron ore",
+      "milk": "Milk",
+      "oil": "Oil",
+      "petrol": "Petrol",
+      "rice": "Rice",
+      "schlack": "Schlack",
+      "soda": "Soda",
+      "wood": "Wood"
+    }
   },
   "search-building": {
-    "title": "Search for buildings"
+    "title": "Search for buildings",
+    "chooseUser": "Choose user"
+  },
+  "status": {
+    "construction": "Construction",
+    "production": "Production",
+    "ready": "Ready",
+    "storageneeded": "Storage needed"
   },
   "storages": {
     "columns": {

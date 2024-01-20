@@ -34,23 +34,22 @@
       <Dropdown
         v-if="resourcesTypes?.length"
         :options="resourcesTypes"
-        option-label="name"
+        :option-label="event => t(`resources.types.${event.name.toLowerCase()}`)"
         option-value="id"
         v-model="currentResource"
-        placeholder="Choose resource type"
         @change="event => setParams({key: 'resource_type_id', value: event.value})"
       />
-      <Button label="Reset" @click="reset" />
+      <Button :label="t('common.reset')" @click="reset" />
       <Button
         severity="info"
-        label="Create order"
+        :label="t('orders.create.header')"
         @click="sellResourcesModal= true"
         class="mb-8"
       />
       <Dialog
         v-model:visible="sellResourcesModal"
         modal
-        header="Create order"
+        :header="t('orders.create.header')"
         :style="{ width: '25rem' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         :dismissable-mask="true"
@@ -70,6 +69,7 @@ import Dialog from 'primevue/dialog'
 import Dropdown from 'primevue/dropdown'
 import Slider from 'primevue/slider'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Layout from '@/components/Common/Layout.vue'
 import CreateOrderModal from '@/components/Market/CreateOrderModal.vue'
 import MarketPage from '@/components/Market/MarketPage.vue'
@@ -86,6 +86,7 @@ const resourcesTypes = ref<ResourceType[]>([{ id: 0, name: 'All' }])
 
 const { data: settings } = useGetData<Record<Coords, number>>('/settings')
 const { data: resourcesTypesData, onFetchResponse } = useGetData<ResourceType[]>('/resource/types')
+const { t } = useI18n()
 
 onFetchResponse(() => {
   resourcesTypes.value = [...resourcesTypes.value, ...resourcesTypesData.value]

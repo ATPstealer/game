@@ -51,6 +51,7 @@
         @complete="searchUsers"
         @item-select="event => setParams({key: 'nickName', value: event.value})"
         dropdown
+        :placeholder="t('search-building.chooseUser')"
       />
 
       <Button :label="t('common.reset')" @click="clearParams" />
@@ -89,7 +90,7 @@ onFetchResponse(() => {
 const { data: coords } = useGetData<Record<Coords, number>>('/settings')
 
 const getBuildingTypeName = (type: BuildingType) => {
-  return t(`buildings.types.${type?.title.toLocaleLowerCase()}`)
+  return t(`buildings.types.${type?.title.toLowerCase()}`)
 }
 
 const searchUsers = () => {
