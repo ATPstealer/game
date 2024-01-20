@@ -31,3 +31,12 @@ export interface MarketParams {
   resource_type_id: number;
   trigger?: number;
 }
+
+export interface ResourceMovePayload {
+  resourceTypeId: number;
+  amount: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+}

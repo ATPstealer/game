@@ -68,7 +68,7 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useResources } from '@/composables/useResources'
 import type { DataMessage } from '@/types'
-import type { Resource } from '@/types/Resources/index.interface'
+import type { Resource, ResourceMovePayload } from '@/types/Resources/index.interface'
 
 interface Props {
   resource: Resource;
@@ -92,7 +92,7 @@ const price = computed(() => {
 })
 
 const move = () => {
-  const payload = {
+  const payload: ResourceMovePayload = {
     toX: x.value,
     toY: y.value,
     amount: amount.value,

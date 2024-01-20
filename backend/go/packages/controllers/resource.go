@@ -53,39 +53,21 @@ func ResourceMove(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id"))
-	if err != nil {
-		return
-	}
-	amount, err := include.StrTofloat64(c, c.Query("amount"))
-	if err != nil {
-		return
-	}
-	fromX, err := include.StrToInt(c, c.Query("from_x"))
-	if err != nil {
-		return
-	}
-	fromY, err := include.StrToInt(c, c.Query("from_y"))
-	if err != nil {
-		return
-	}
-	toX, err := include.StrToInt(c, c.Query("to_x"))
-	if err != nil {
-		return
-	}
-	toY, err := include.StrToInt(c, c.Query("to_y"))
-	if err != nil {
+
+	var logisticPayload models.LogisticPayload
+	if err := include.GetPayload(c, &logisticPayload); err != nil {
 		return
 	}
 
-	err = models.StartLogisticJob(db.DB, resourceTypeID, userID, amount, fromX, fromY, toX, toY)
+	err = models.StartLogisticJob(db.DB, userID, logisticPayload)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Logistics company took you order for transfer " + fmt.Sprintf("%.1f", amount) +
-		" from " + strconv.Itoa(fromX) + ":" + strconv.Itoa(fromY) + " to " + strconv.Itoa(toX) + ":" + strconv.Itoa(toY) + ". They didn't ask what was inside."})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Logistics company took you order for transfer " + fmt.Sprintf("%.1f", logisticPayload.Amount) +
+		" from " + strconv.Itoa(logisticPayload.FromX) + ":" + strconv.Itoa(logisticPayload.FromY) + " to " + strconv.Itoa(logisticPayload.ToX) + ":" +
+		strconv.Itoa(logisticPayload.ToY) + ". They didn't ask what was inside."})
 }
 
 func GetMyLogistics(c *gin.Context) {

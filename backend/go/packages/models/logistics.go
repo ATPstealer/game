@@ -20,25 +20,35 @@ type Logistic struct {
 	WorkEnd        time.Time `json:"workEnd"`
 }
 
-func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount float64, fromX int, fromY int, toX int, toY int) error {
-	resource, err := GetMyResourceInCell(db, resourceTypeID, userID, fromX, fromY)
+type LogisticPayload struct {
+	ResourceTypeID uint    `json:"resourceTypeId"`
+	Amount         float64 `json:"amount"`
+	FromX          int     `json:"fromX"`
+	FromY          int     `json:"fromY"`
+	ToX            int     `json:"toX"`
+	ToY            int     `json:"toY"`
+}
+
+func StartLogisticJob(db *gorm.DB, userID uint, logisticPayload LogisticPayload) error {
+	resource, err := GetMyResourceInCell(db, logisticPayload.ResourceTypeID, userID, logisticPayload.FromX, logisticPayload.FromY)
 	if err != nil {
 		return err
 	}
-	if resource.Amount < amount {
+	if resource.Amount < logisticPayload.Amount {
 		return errors.New("not enough resources in this cell")
 	}
 
-	resourceType, err := GetResourceTypesByID(db, resourceTypeID)
+	resourceType, err := GetResourceTypesByID(db, logisticPayload.ResourceTypeID)
 	if err != nil {
 		return errors.New("can't get resource type")
 	}
-	if !CheckEnoughStorage(db, userID, toX, toY, amount*resourceType.Volume) {
+	if !CheckEnoughStorage(db, userID, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
 		return errors.New("there is not enough storage capacity in the destination sector")
 	}
 
-	distance := math.Sqrt(math.Pow(float64(fromX-toX), 2) + math.Pow(float64(fromY-toY), 2))
-	price := (resource.Weight + resource.Volume) * float64(distance) * amount / 1000
+	// FORMULA: logistic
+	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
+	price := (resource.Weight + resource.Volume) * distance * logisticPayload.Amount / 1000
 	if !CheckEnoughMoney(db, userID, price) {
 		return errors.New("not enough money")
 	} else {
@@ -48,18 +58,18 @@ func StartLogisticJob(db *gorm.DB, resourceTypeID uint, userID uint, amount floa
 	}
 
 	log.Println(price)
-	if err := AddResource(db, resource.ResourceTypeID, userID, fromX, fromY, (-1)*amount); err != nil {
+	if err := AddResource(db, resource.ResourceTypeID, userID, logisticPayload.FromX, logisticPayload.FromY, (-1)*logisticPayload.Amount); err != nil {
 		return err
 	}
 
 	logistic := Logistic{
-		ResourceTypeID: resourceTypeID,
+		ResourceTypeID: logisticPayload.ResourceTypeID,
 		UserID:         userID,
-		Amount:         amount,
-		FromX:          fromX,
-		FromY:          fromY,
-		ToX:            toX,
-		ToY:            toY,
+		Amount:         logisticPayload.Amount,
+		FromX:          logisticPayload.FromX,
+		FromY:          logisticPayload.FromY,
+		ToX:            logisticPayload.ToX,
+		ToY:            logisticPayload.ToY,
 		WorkEnd:        time.Now().Add(time.Second * time.Duration(distance*600)), // TODO: come up with a duration
 	}
 	db.Create(&logistic)
