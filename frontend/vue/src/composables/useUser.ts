@@ -50,7 +50,7 @@ export const useUser = () => {
 
         return ctx
       }
-    })
+    }).delete()
   }
 
   const signUp = (payload: {nickName: string; email: string; password: string}) => {
