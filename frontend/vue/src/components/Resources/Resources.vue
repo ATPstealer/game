@@ -10,7 +10,7 @@
     >
       <template #body="{data}: {data: Resource}">
         <span class="clickable-item" @click="openMoveResource(data)">
-          {{ data.name }}
+          {{ t(`resources.types.${data.name.toLowerCase()}`) }}
         </span>
       </template>
     </Column>
@@ -36,7 +36,7 @@
   <Dialog
     v-model:visible="moveResourcesModal"
     modal
-    header="Move resource"
+    :header="t('resources.move.header')"
     :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :dismissable-mask="true"
@@ -50,7 +50,7 @@
   <Dialog
     v-model:visible="sellResourcesModal"
     modal
-    header="Sell resource"
+    :header="t('resources.sell.header')"
     :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :dismissable-mask="true"
