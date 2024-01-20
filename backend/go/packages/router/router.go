@@ -20,12 +20,12 @@ func MakeRouter() *gin.Engine {
 	user.POST("/login", controllers.Login)
 	// Secure aria
 	user.Use(AuthMiddleware())
-	user.DELETE("/logout", controllers.Logout) // DELETE
+	user.DELETE("/logout", controllers.Logout)
 	user.GET("/data", controllers.GetUserData)
 
 	building := router.Group("/api/v1/building")
 	building.GET("/types", controllers.GetBuildingsTypes)
-	building.POST("/get", controllers.GetBuildings)
+	building.POST("/get", controllers.GetBuildings) // GET
 	building.GET("/blueprints", controllers.GetBlueprints)
 	building.Use(AuthMiddleware())
 	building.POST("/construct", controllers.CreateBuilding)
@@ -46,7 +46,7 @@ func MakeRouter() *gin.Engine {
 	resource.GET("/types", controllers.GetResourceTypes)
 	resource.Use(AuthMiddleware())
 	resource.GET("/my", controllers.GetMyResources)
-	resource.GET("/move", controllers.ResourceMove) // POST
+	resource.POST("/move", controllers.ResourceMove)
 	resource.GET("/my_logistics", controllers.GetMyLogistics)
 
 	storage := router.Group("/api/v1/storage")
