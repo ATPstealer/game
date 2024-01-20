@@ -145,11 +145,18 @@ func ExecuteOrder(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	orderID, err := include.StrToUInt(c, c.Query("order_id"))
-	if err != nil {
+
+	var payload models.ExecuteOrderPayload
+	if err := include.GetPayload(c, &payload); err != nil {
 		return
 	}
-	err = models.ExecuteOrder(db.DB, userID, orderID)
+
+	if payload.Amount <= 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		return
+	}
+
+	err = models.ExecuteOrder(db.DB, userID, payload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't execute order: " + err.Error()})
 		log.Println("Can't execute order: " + err.Error())

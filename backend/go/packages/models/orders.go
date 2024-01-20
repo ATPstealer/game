@@ -114,48 +114,63 @@ func CloseMyOrder(db *gorm.DB, userID uint, OrderID uint) error {
 	return nil
 }
 
-func ExecuteOrder(db *gorm.DB, userID uint, OrderID uint) error {
+type ExecuteOrderPayload struct {
+	OrderID uint
+	Amount  float64
+}
+
+func ExecuteOrder(db *gorm.DB, userID uint, payload ExecuteOrderPayload) error {
 	var order Order
-	res := db.Model(&Order{}).Where("id = ?", OrderID).First(&order)
+	res := db.Model(&Order{}).Where("id = ?", payload.OrderID).First(&order)
 	if res.Error != nil {
 		log.Println("Can't get order: " + res.Error.Error())
 		return res.Error
 	}
+
+	if order.Amount < payload.Amount {
+		return errors.New("requested quantity is greater than available quantity")
+	}
+
 	if order.Sell {
-		if err := AddMoney(db, userID, (-1)*order.Amount*order.PriceForUnit); err != nil {
+		if err := AddMoney(db, userID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
 			return err
 		}
-		if err := AddResource(db, order.ResourceTypeID, userID, order.X, order.Y, order.Amount); err != nil {
+		if err := AddResource(db, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount); err != nil {
 			return err
 		}
 		if order.PriceForUnit > 0 {
-			if err := AddMoney(db, order.UserID, order.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(db, order.UserID, payload.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
 
 	} else {
-		if !CheckEnoughResources(db, order.ResourceTypeID, userID, order.X, order.Y, order.Amount) {
+		if !CheckEnoughResources(db, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount) {
 			return errors.New("not enough resources in this cell")
 		}
 		// AddMoney checks enough money if price < 0
-		if err := AddMoney(db, userID, order.Amount*order.PriceForUnit); err != nil {
+		if err := AddMoney(db, userID, payload.Amount*order.PriceForUnit); err != nil {
 			return err
 		}
 		if order.PriceForUnit < 0 {
-			if err := AddMoney(db, order.UserID, (-1)*order.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(db, order.UserID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
-		if err := AddResource(db, order.ResourceTypeID, userID, order.X, order.Y, (-1)*order.Amount); err != nil {
+		if err := AddResource(db, order.ResourceTypeID, userID, order.X, order.Y, (-1)*payload.Amount); err != nil {
 			return err
 		}
-		if err := AddResource(db, order.ResourceTypeID, order.UserID, order.X, order.Y, order.Amount); err != nil {
+		if err := AddResource(db, order.ResourceTypeID, order.UserID, order.X, order.Y, payload.Amount); err != nil {
 			return err
 		}
 
 	}
-	db.Delete(&order)
+	if order.Amount == payload.Amount {
+		db.Delete(&order)
+	} else {
+		order.Amount -= payload.Amount
+		db.Save(&order)
+	}
 	return nil
 }
 

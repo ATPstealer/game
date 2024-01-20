@@ -59,8 +59,12 @@ func ResourceMove(c *gin.Context) {
 		return
 	}
 
-	err = models.StartLogisticJob(db.DB, userID, logisticPayload)
+	if logisticPayload.Amount <= 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		return
+	}
 
+	err = models.StartLogisticJob(db.DB, userID, logisticPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
 		return
