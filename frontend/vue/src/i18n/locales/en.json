@@ -55,14 +55,19 @@
       "all": "All",
       "energy plant": "Energy plant",
       "factory": "Factory",
+      "farm": "Farm",
+      "field": "Field",
+      "food factory": "Food factory",
       "foundry": "Foundry",
+      "gas station": "Gas Station",
       "grocery store": "Grocery Store",
       "lumbermill": "Lumbermill",
       "mine": "Mine",
       "office": "Office",
       "recycling plant": "Recycling plant",
       "refinery": "Refinery",
-      "storage": "Storage"
+      "storage": "Storage",
+      "water pump": "Water Pump"
     }
   },
   "common": {
@@ -147,28 +152,37 @@
     "types": {
       "all": "All",
       "beef": "Beef",
+      "beef meat": "Beef meat",
+      "bird": "Bird",
       "bread": "Bread",
       "butter": "Butter",
+      "cereals": "Cereals",
+      "cheese": "Cheese",
       "chicken": "Chicken",
       "diesel": "Diesel",
       "eggs": "Eggs",
       "energy": "Energy",
+      "fruits": "Fruits",
       "gas": "Gas",
       "gear": "Gear",
       "iron": "Iron",
       "iron ore": "Iron ore",
+      "livestock": "Livestock",
       "milk": "Milk",
       "oil": "Oil",
+      "pasta": "Pasta",
       "petrol": "Petrol",
+      "poultry meat": "Poultry meat",
       "rice": "Rice",
       "schlack": "Schlack",
       "soda": "Soda",
+      "vegetables": "Vegetables",
       "wood": "Wood"
     }
   },
   "search-building": {
-    "title": "Search for buildings",
-    "chooseUser": "Choose user"
+    "chooseUser": "Choose user",
+    "title": "Search for buildings"
   },
   "status": {
     "construction": "Construction",
