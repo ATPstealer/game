@@ -19,8 +19,13 @@ type Cell struct {
 	Education        float64 `json:"education"`
 	Crime            float64 `json:"crime"`
 	Medicine         float64 `json:"medicine"`
-	ElementarySchool float64 `json:"elementarySchool"`
-	HigherSchool     float64 `json:"higherSchool"`
+	AverageSalary    float64 `json:"averageSalary"`
+}
+
+func GetCells(db *gorm.DB) []Cell {
+	var cells []Cell
+	db.Model(&Cell{}).Find(&cells)
+	return cells
 }
 
 type CellResult struct {
@@ -37,8 +42,7 @@ type CellResult struct {
 	Education        float64 `json:"education"`
 	Crime            float64 `json:"crime"`
 	Medicine         float64 `json:"medicine"`
-	ElementarySchool float64 `json:"elementarySchool"`
-	HigherSchool     float64 `json:"higherSchool"`
+	AverageSalary    float64 `json:"averageSalary"`
 }
 
 func GetAllCells(db *gorm.DB) []CellResult {

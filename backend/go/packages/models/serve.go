@@ -94,8 +94,6 @@ func generateMap(db *gorm.DB) {
 				Education:        10,
 				Crime:            10,
 				Medicine:         10,
-				ElementarySchool: 10,
-				HigherSchool:     10,
 			}
 			db.Create(&newMapCell)
 		}
