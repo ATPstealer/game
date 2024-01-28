@@ -55,14 +55,19 @@
       "all": "Все",
       "energy plant": "Энергетический завод",
       "factory": "Фабрика",
+      "farm": "Ферма",
+      "field": "Поле",
+      "food factory": "Пищевой завод",
       "foundry": "Литейный завод",
+      "gas station": "Заправка",
       "grocery store": "Продуктовый магазин",
       "lumbermill": "Лесопилка",
       "mine": "Шахта",
       "office": "Офис",
       "recycling plant": "Завод по переработке",
       "refinery": "Очистительный завод",
-      "storage": "Хранилище"
+      "storage": "Хранилище",
+      "water pump": "Водонапорная Башня"
     }
   },
   "common": {
@@ -147,28 +152,38 @@
     "types": {
       "all": "Все",
       "beef": "Говядина",
+      "beef meat": "Говядина",
+      "bird": "Птица",
       "bread": "Хлеб",
       "butter": "Масло",
+      "cereals": "Зерна",
+      "cheese": "Сыр",
       "chicken": "Курица",
       "diesel": "Дизель",
       "eggs": "Яйца",
       "energy": "Энергия",
+      "fruits": "Фрукты",
       "gas": "Газ",
       "gear": "Gear",
       "iron": "Железо",
       "iron ore": "Железная руда",
+      "livestock": "Скот",
       "milk": "Молоко",
       "oil": "Нефть",
+      "pasta": "Макароны",
       "petrol": "Бензин",
+      "poultry meat": "Мясо птицы",
       "rice": "Рис",
       "schlack": "Шлак",
       "soda": "Сода",
+      "vegetables": "Овощи",
+      "water": "Вода",
       "wood": "Дерево"
     }
   },
   "search-building": {
-    "title": "Поиск зданий",
-    "chooseUser": "Выберите пользователя"
+    "chooseUser": "Выберите пользователя",
+    "title": "Поиск зданий"
   },
   "status": {
     "construction": "Строится",

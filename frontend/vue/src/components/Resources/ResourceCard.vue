@@ -18,7 +18,7 @@
             :key="resource.resourceId"
             class="ml-4"
           >
-            {{ findResourceName(resourceTypes, resource.resourceId) }} {{ resource.amount }}
+            {{ t(`resources.types.${findResourceName(resourceTypes, resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
           </p>
         </div>
         <p class="font-bold">
@@ -30,7 +30,7 @@
             :key="resource.resourceId"
             class="ml-4"
           >
-            {{ findResourceName(resourceTypes, resource.resourceId) }} {{ resource.amount }}
+            {{ t(`resources.types.${findResourceName(resourceTypes, resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
           </p>
         </div>
         <p><span class="font-bold">1 cycle time</span>: {{ blueprint.productionTime / 1000000000 }}s</p>
@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import Card from 'primevue/card'
+import { useI18n } from 'vue-i18n'
 import type { Blueprint } from '@/types/Buildings/index.interface'
 import type { ResourceType } from '@/types/Resources/index.interface'
 import { findResourceName } from '@/utils/findResourceName'
@@ -57,6 +58,7 @@ interface Props {
   selectedBlueprint: number | undefined;
 }
 
+const { t } = useI18n()
 const props = defineProps<Props>()
 
 const emits = defineEmits<{(e: 'select', value: number)}>()
