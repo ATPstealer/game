@@ -84,7 +84,7 @@
     </div>
     <div>
       {{ t(`buildings.coefficient efficiency`) }}:
-      {{ (building.maxWorkers*building.level*building.square / building.maxWorkers).toFixed(2) }}
+      {{ (building.workers / building.maxWorkers).toFixed(2) }}
     </div>
     <hr />
     <div v-if="!isMapFetching">
