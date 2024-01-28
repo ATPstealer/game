@@ -42,7 +42,7 @@
         <span class="absolute -bottom-6 left-1/2 -translate-x-1/2" v-if="computedFilter?.max-computedFilter?.min">
           {{ Math.floor((computedFilter?.max-computedFilter?.min)/2) }}
         </span>
-        <span class="absolute -bottom-6 left-full -translate-x-full">{{ computedFilter?.max }}</span>
+        <span class="absolute -bottom-6 left-full -translate-x-full">{{ Math.floor(computedFilter?.max) }}</span>
         <div
           class="h-10 w-10"
           v-for="item in 10"
@@ -81,7 +81,7 @@ const filter = ref<string>('pollution')
 const recalculate = ref<boolean>(false)
 const color = ref<string>('175, 27, 27')
 
-const filters = ['pollution', 'population', 'education', 'crime', 'medicine', 'elementarySchool', 'higherSchool']
+const filters = ['pollution', 'population', 'education', 'crime', 'medicine', 'averageSalary']
 
 const { getMap } = useMap()
 

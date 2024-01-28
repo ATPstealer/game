@@ -9,8 +9,7 @@ export interface Cell {
   education: number;
   crime: number;
   medicine: number;
-  elementarySchool: number;
-  higherSchool: number;
+  averageSalary: number;
 }
 
 export interface CellOwners {

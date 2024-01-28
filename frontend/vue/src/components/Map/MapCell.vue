@@ -25,25 +25,22 @@
 
     <div class="font-bold">
       <p class="mt-4">
-        Pollution: {{ cell.pollution }}
+        Pollution: {{ Math.floor(cell.pollution) }}
       </p>
       <p>
-        Population: {{ cell.population }}
+        Population: {{ Math.floor(cell.population) }}
       </p>
       <p>
-        Education: {{ cell.education }}
+        Education: {{ Math.floor(cell.education) }}
       </p>
       <p>
-        Crime: {{ cell.crime }}
+        Crime: {{ Math.floor(cell.crime) }}
       </p>
       <p>
-        Medicine: {{ cell.medicine }}
+        Medicine: {{ Math.floor(cell.medicine) }}
       </p>
       <p>
-        ElementarySchool: {{ cell.elementarySchool }}
-      </p>
-      <p>
-        HigherSchool: {{ cell.higherSchool }}
+        AverageSalary: {{ Math.floor(cell.averageSalary) }}
       </p>
     </div>
     <div v-if="cellOwners">
