@@ -82,6 +82,15 @@
         />
       </div>
     </div>
+    <div>
+      {{ t(`buildings.coefficient efficiency`) }}:
+      {{ (building.maxWorkers*building.level*building.square / building.maxWorkers).toFixed(2) }}
+    </div>
+    <hr />
+    <div v-if="!isMapFetching">
+      {{ t(`buildings.hiring.average salary`) }}:
+      {{ moneyFormat(getAverageSalary()) }}
+    </div>
   </div>
 </template>
 
@@ -92,6 +101,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
+import { useMap } from '@/composables/useMap'
 import { DataMessage } from '@/types'
 import { Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
@@ -111,6 +121,15 @@ const message = ref<DataMessage | null>(null)
 
 const { setHiring } = useBuildings()
 const { t } = useI18n()
+const { getMap } = useMap()
+const { data: map, isFetching: isMapFetching } = getMap()
+const getAverageSalary = () => {
+  if (map.value?.length) {
+    return  map.value.filter(item => item.x === props.building.x && item.y === props.building.y)[0].averageSalary
+  }
+
+  return 0
+}
 
 const setHiringData = (value, option: HiringOptions) => {
   const isSalary = option === 'salary'

@@ -16,9 +16,11 @@
     "signup": "Sign Up"
   },
   "buildings": {
+    "coefficient efficiency": "Coefficient efficiency",
     "construct new building": "Construct New Building",
     "finish": "Finish",
     "hiring": {
+      "average salary": "Average salary",
       "help": "Hiring is carried out once a day. At 00:00Z. The higher the salary, the more workers will come to your enterprise. Set the required number of employees in the “Hiring needs” column.",
       "hiring needs": "Hiring needs",
       "max workers": "Maximum workers",
@@ -165,6 +167,7 @@
       "fruits": "Fruits",
       "gas": "Gas",
       "gear": "Gear",
+      "hydrocarbons": "Hydrocarbons",
       "iron": "Iron",
       "iron ore": "Iron ore",
       "livestock": "Livestock",
@@ -172,6 +175,7 @@
       "oil": "Oil",
       "pasta": "Pasta",
       "petrol": "Petrol",
+      "plastics": "Plastics",
       "poultry meat": "Poultry meat",
       "rice": "Rice",
       "schlack": "Schlack",
