@@ -67,7 +67,8 @@ func MakeRouter() *gin.Engine {
 	store.POST("/goods/set", controllers.SetStoreGoods)
 
 	data := router.Group("/api/v1/data")
-	data.GET("users_by_prefix", controllers.GetUserNamesByPrefix)
+	data.GET("/users_by_prefix", controllers.GetUserNamesByPrefix)
+	data.GET("/evolution/prices", controllers.GetEvolutionPrices)
 
 	return router
 }

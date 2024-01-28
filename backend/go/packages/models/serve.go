@@ -54,7 +54,7 @@ func Init(db *gorm.DB, config cfg.Vars) {
 }
 
 func loadSettings(db *gorm.DB) {
-	settings := [4]Settings{
+	settings := [5]Settings{
 		{
 			Key:   "mapMinX",
 			Value: -2,
@@ -70,6 +70,10 @@ func loadSettings(db *gorm.DB) {
 		{
 			Key:   "mapMaxY",
 			Value: 2,
+		},
+		{
+			Key:   "interestRate",
+			Value: 0.5,
 		},
 	}
 	db.Save(&settings)
