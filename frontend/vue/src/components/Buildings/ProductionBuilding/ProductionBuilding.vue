@@ -45,7 +45,7 @@
     <h3 class="text-center">
       Choose resource for creating:
     </h3>
-    <div v-if="blueprints?.length && resourceTypes?.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div v-if="blueprints?.length && resourceTypes?.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <ResourceCard
         v-for="blueprint in blueprints"
         :key="blueprint.id"
@@ -68,7 +68,7 @@ import MessageBlock from '@/components/Common/MessageBlock.vue'
 import ResourceCard from '@/components/Resources/ResourceCard.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { ResourceType } from '@/types/Resources/index.interface'
 
@@ -81,7 +81,7 @@ const props = defineProps<Props>()
 const blueprints = ref<Blueprint[]>([])
 const duration = ref<number>(3600)
 const selectedBlueprint = ref<number>(0)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
 const { data, onFetchResponse } = useGetData('/building/blueprints')
 onFetchResponse(() => {

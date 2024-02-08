@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 import type { ConstructBuildingPayload, SearchBuildingParams } from '@/types/Buildings/index.interface'
 
 export const useBuildings = () => {
   const constructBuilding = (payload: ConstructBuildingPayload) => {
-    const dataMessage = ref<Message | null>(null)
+    const dataMessage = ref<DataMessage | null>(null)
     const { onFetchFinally } = useMyFetch('/building/construct',
       {
         afterFetch: ctx => {
@@ -47,8 +47,49 @@ export const useBuildings = () => {
   }
 
   const startProduction = (payload: {buildingId: number; blueprintId: number; duration: number}) => {
-    const dataMessage = ref<Message | null>(null)
+    const dataMessage = ref<DataMessage | null>(null)
     const { onFetchResponse } = useMyFetch('/building/start_work', {
+      afterFetch: ctx => {
+        dataMessage.value = {
+          text: ctx.data.text,
+          status: ctx.data.status
+        }
+
+        return ctx
+      }
+    }).post(payload).json()
+
+    return {
+      dataMessage,
+      onFetchResponse
+    }
+  }
+
+  const setPrice = (payload: {buildingId: number; resourceTypeId: number; price: number}) => {
+    const dataMessage = ref<DataMessage | null>(null)
+
+    const { onFetchResponse, isFetching } = useMyFetch('/store/goods/set', {
+      afterFetch: ctx => {
+        dataMessage.value = {
+          text: ctx.data.text,
+          status: ctx.data.status
+        }
+
+        return ctx
+      }
+    }).post(payload).json()
+
+    return {
+      dataMessage,
+      onFetchResponse,
+      isFetching
+    }
+  }
+
+  const setHiring = (payload: {buildingId: number; salary: number; hiringNeeds: number}) => {
+    const dataMessage = ref<DataMessage | null>(null)
+
+    const { onFetchResponse } = useMyFetch('/building/hiring', {
       afterFetch: ctx => {
         dataMessage.value = {
           text: ctx.data.text,
@@ -68,6 +109,8 @@ export const useBuildings = () => {
   return {
     constructBuilding,
     getBuildings,
-    startProduction
+    startProduction,
+    setPrice,
+    setHiring
   }
 }

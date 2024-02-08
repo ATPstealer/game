@@ -19,7 +19,7 @@ resource "google_container_node_pool" "gke_node_pool" {
 
   autoscaling {
     total_min_node_count = 1
-    total_max_node_count = 4
+    total_max_node_count = 3
   }
 
   node_config {

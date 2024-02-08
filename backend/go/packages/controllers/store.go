@@ -29,20 +29,12 @@ func SetStoreGoods(c *gin.Context) {
 		return
 	}
 
-	buildingID, err := include.StrToUInt(c, c.Query("building_id"))
-	if err != nil {
-		return
-	}
-	resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id"))
-	if err != nil {
-		return
-	}
-	price, err := include.StrToFloat32(c, c.Query("price"))
-	if err != nil {
+	var storeGoodsPayload models.StoreGoodsPayload
+	if err := include.GetPayload(c, &storeGoodsPayload); err != nil {
 		return
 	}
 
-	err = models.SetStoreGoods(db.DB, userID, buildingID, resourceTypeID, price)
+	err = models.SetStoreGoods(db.DB, userID, storeGoodsPayload)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't set price: " + err.Error()})

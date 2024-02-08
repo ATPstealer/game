@@ -53,13 +53,13 @@
     <div class="flex items-center gap-8">
       <div v-if="!user?.nickName" class="flex gap-4">
         <Button
-          label="Login"
+          :label="t('account.login')"
           @click="emits('show-login')"
           class="text-white"
           severity="success"
         />
         <Button
-          label="Sign Up"
+          :label="t('account.signup')"
           @click="emits('show-signup')"
           class="text-white"
           severity="info"
@@ -70,11 +70,11 @@
           {{ user?.nickName }}
         </p>
         <p class="header-item">
-          {{ user?.money }} $
+          {{ moneyFormat(user?.money) }}
         </p>
         <Button
           text
-          label="Logout"
+          :label="t('account.logout')"
           class="header-item p-0"
           @click="emits('sign-out')"
         />
@@ -93,6 +93,7 @@ import { useI18n } from 'vue-i18n'
 import LangSelect from '@/components/Header/LangSelect.vue'
 import { User } from '@/types'
 import { MenuItem } from '@/types/Header/index.interface'
+import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
   user: User | undefined;

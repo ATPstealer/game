@@ -3,21 +3,22 @@ package evolution
 import (
 	"backend/packages/models"
 	"gorm.io/gorm"
+	"log"
 )
 
-func CellAveragePrices(db *gorm.DB) error {
+func CellAveragePrices(db *gorm.DB) {
 	cells := models.GetAllCells(db)
 	allResourceTypes, err := models.GetAllResourceTypes(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	storeGoods, err := models.GetAllStoreGoods(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	evolutionPrices, err := models.GetAllEvolutionPrices(db)
 	if err != nil {
-		return err
+		log.Fatalln(err)
 	}
 	for _, cell := range cells {
 		for _, resourceType := range allResourceTypes {
@@ -31,7 +32,6 @@ func CellAveragePrices(db *gorm.DB) error {
 		}
 	}
 	db.Save(&evolutionPrices)
-	return nil
 }
 
 func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsResult) []models.StoreGoodsResult {
@@ -44,22 +44,22 @@ func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.Store
 	return cellGoods
 }
 
-func getAveragePrice(demand float32, cellGoods []models.StoreGoodsResult) float32 {
+func getAveragePrice(demand float64, cellGoods []models.StoreGoodsResult) float64 {
 	if len(cellGoods) == 0 || !goodsPriceExist(cellGoods) {
-		return 0.01 // minimal Price for start selling
+		return 1 // Price for start selling
 	}
 	sort(&cellGoods)
-	soldGoodsCount := float32(0)
-	revenueCount := float32(0)
+	soldGoodsCount := float64(0)
+	revenueCount := float64(0)
 	for _, cg := range cellGoods {
-		if soldGoodsCount+float32(cg.SellSum) <= demand {
+		if soldGoodsCount+float64(cg.SellSum) <= demand {
 			revenueCount += cg.Revenue
-			soldGoodsCount += float32(cg.SellSum)
+			soldGoodsCount += float64(cg.SellSum)
 		} else {
-			if soldGoodsCount+float32(cg.SellSum) == demand {
+			if soldGoodsCount+float64(cg.SellSum) == demand {
 				break
 			}
-			revenueCount += (cg.Revenue / float32(cg.SellSum)) * (demand - soldGoodsCount)
+			revenueCount += (cg.Revenue / float64(cg.SellSum)) * (demand - soldGoodsCount)
 			soldGoodsCount = demand
 		}
 	}
@@ -78,14 +78,14 @@ func goodsPriceExist(cellGoods []models.StoreGoodsResult) bool {
 func sort(cellGoods *[]models.StoreGoodsResult) {
 	for j := 0; j < len(*cellGoods); j++ {
 		for k := j + 1; k < len(*cellGoods); k++ {
-			if (*cellGoods)[j].Revenue/float32((*cellGoods)[j].SellSum) > (*cellGoods)[k].Revenue/float32((*cellGoods)[k].SellSum) {
+			if (*cellGoods)[j].Revenue/float64((*cellGoods)[j].SellSum) > (*cellGoods)[k].Revenue/float64((*cellGoods)[k].SellSum) {
 				(*cellGoods)[j], (*cellGoods)[k] = (*cellGoods)[k], (*cellGoods)[j]
 			}
 		}
 	}
 }
 
-func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint, averagePrice float32, demand float32) {
+func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint, averagePrice float64, demand float64) {
 	for i, evolutionPrice := range *evolutionPrices {
 		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeID == resourceTypeID {
 			(*evolutionPrices)[i].PriceAverage = averagePrice
@@ -103,5 +103,3 @@ func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, 
 		RevenueSum:     0,
 	})
 }
-
-// TODO: reset count in stores

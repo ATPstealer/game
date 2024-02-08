@@ -10,7 +10,7 @@
         for="nickname"
         class="block text-gray-700 text-sm font-medium"
       >
-        nickName
+        {{ t('account.nickname') }}
       </label>
       <InputText
         v-model="nickName"
@@ -24,7 +24,7 @@
         id="nickname-help"
         class="text-red-500"
       >
-        Fill in the field nickname
+        {{ t('account.errors.nickname') }}
       </small>
     </div>
     <div class="flex flex-col gap-1">
@@ -32,7 +32,7 @@
         for="email"
         class="block text-gray-700 text-sm font-medium"
       >
-        Email
+        {{ t('account.email') }}
       </label>
       <InputText
         v-model="email"
@@ -46,7 +46,7 @@
         id="email-help"
         class="text-red-500"
       >
-        Enter correct email address
+        {{ t('account.errors.email') }}
       </small>
     </div>
     <div class="flex flex-col gap-1">
@@ -54,7 +54,7 @@
         for="password"
         class="block text-gray-700 text-sm font-medium"
       >
-        Password
+        {{ t('account.password') }}
       </label>
       <Password
         v-model="pass1"
@@ -70,7 +70,7 @@
         id="pass-help"
         class="text-red-500"
       >
-        Password must include lowercase and uppercase later, digits and be more than 8 symbols
+        {{ t('account.errors.password') }}
       </small>
     </div>
     <div class="flex flex-col gap-1">
@@ -78,7 +78,7 @@
         for="confirm"
         class="block text-gray-700 text-sm font-medium"
       >
-        Confirm Password
+        {{ t('account.confirmPass') }}
       </label>
       <Password
         v-model="pass2"
@@ -94,23 +94,23 @@
         id="confirm-help"
         class="text-red-500"
       >
-        Passwords doesn't match
+        {{ t('account.errors.passMatch') }}
       </small>
     </div>
     <div class="flex gap-8 items-center justify-between">
       <Button
         type="submit"
         severity="info"
-        label="SignUp"
+        :label="t('account.signup')"
         @click="submit"
         :disabled="!validForm"
       />
       <Button
         severity="info"
         text
-        label="Already have an account? Log in"
+        :label="t('account.haveAccount')"
         @click="emits('log-in')"
-        class="text-xs md:text-sm"
+        class="text-xs md:text-sm max-w-[50%]"
       />
     </div>
   </div>
@@ -122,9 +122,10 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -135,7 +136,9 @@ const nickName = ref<string>('')
 const email = ref<string>('')
 const pass1 = ref<string>('')
 const pass2 = ref<string>('')
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
+
+const { t } = useI18n()
 
 const nickNameValid = computed(() => !nickName.value || nickName.value.length > 3)
 

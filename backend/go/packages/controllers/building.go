@@ -131,8 +131,6 @@ func DestroyBuilding(c *gin.Context) {
 		return
 	}
 
-	log.Println(c.Query("id"))
-
 	buildingID, err := include.StrToUInt(c, c.Query("id"))
 	if err != nil {
 		return
@@ -144,4 +142,28 @@ func DestroyBuilding(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Building has been destroyed :("})
 
+}
+
+func SetHiring(c *gin.Context) {
+	var hiringPayload models.HiringPayload
+	if err := include.GetPayload(c, &hiringPayload); err != nil {
+		return
+	}
+	userID, err := include.GetUserIDFromContext(c)
+	if err != nil {
+		return
+	}
+	if hiringPayload.HiringNeeds < 0 || hiringPayload.Salary < 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't set < 0"})
+		return
+	}
+
+	err = models.SetHiring(db.DB, userID, hiringPayload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't change hiring details: " + err.Error()})
+		log.Println("Can't change hiring details: " + err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("Hiring details changed")})
 }

@@ -10,7 +10,7 @@ type Resource struct {
 	gorm.Model
 	ResourceTypeID uint    `json:"resourceTypeId"`
 	UserID         uint    `json:"userId"`
-	Amount         float32 `json:"amount"`
+	Amount         float64 `json:"amount"`
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 }
@@ -19,12 +19,12 @@ type ResourceResult struct {
 	ID             uint    `json:"id"`
 	UserID         uint    `json:"userId"`
 	ResourceTypeID uint    `json:"resourceTypeId"`
-	Amount         float32 `json:"amount"`
+	Amount         float64 `json:"amount"`
 	X              int     `json:"x"`
 	Y              int     `json:"y"`
 	Name           string  `json:"name"`
-	Volume         float32 `json:"volume"`
-	Weight         float32 `json:"weight"`
+	Volume         float64 `json:"volume"`
+	Weight         float64 `json:"weight"`
 }
 
 func GetAllResources(db *gorm.DB) ([]ResourceResult, error) {
@@ -40,9 +40,16 @@ func GetAllResources(db *gorm.DB) ([]ResourceResult, error) {
 	return allResources, res.Error
 }
 
-func GetMyResources(db *gorm.DB, userID uint) ([]ResourceResult, error) {
+func GetMyResources(db *gorm.DB, userID uint, x *int, y *int) ([]ResourceResult, error) {
 	var resources []ResourceResult
-	res := db.Model(&Resource{}).Where("user_id", userID).
+	query := db.Model(&Resource{}).Where("user_id", userID)
+	if x != nil {
+		query = query.Where("x = ?", *x)
+	}
+	if y != nil {
+		query = query.Where("y = ?", *y)
+	}
+	res := query.
 		Select("resources.id", "resource_type_id", "amount", "x", "y", "name", "volume", "weight").
 		Joins("left join resource_types on resources.resource_type_id = resource_types.id").
 		Scan(&resources)
@@ -67,7 +74,7 @@ func GetMyResourceInCell(db *gorm.DB, resourceTypeID uint, userID uint, x int, y
 	return resource, res.Error
 }
 
-func AddResource(db *gorm.DB, resourceTypeID uint, userID uint, x int, y int, amount float32) error {
+func AddResource(db *gorm.DB, resourceTypeID uint, userID uint, x int, y int, amount float64) error {
 	newResource := Resource{
 		ResourceTypeID: resourceTypeID,
 		UserID:         userID,
@@ -90,7 +97,7 @@ func AddResource(db *gorm.DB, resourceTypeID uint, userID uint, x int, y int, am
 	return nil
 }
 
-func CheckEnoughResources(db *gorm.DB, resourceTypeID uint, userID uint, x int, y int, amount float32) bool {
+func CheckEnoughResources(db *gorm.DB, resourceTypeID uint, userID uint, x int, y int, amount float64) bool {
 	var resource Resource
 	result := db.Model(&Resource{}).Where("resource_type_id =? AND user_id = ? AND x = ? AND y = ?", resourceTypeID, userID, x, y).
 		First(&resource)

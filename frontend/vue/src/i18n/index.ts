@@ -10,5 +10,8 @@ export default createI18n({
   messages: {
     en,
     ru
+  },
+  missing: (locale, key, instance) => {
+    return key.split('.').pop()
   }
 })

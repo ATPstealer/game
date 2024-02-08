@@ -5,18 +5,18 @@
         {{ user.nickName }}
       </p>
       <p class="font-bold text-white">
-        {{ user.money }}$
+        {{ moneyFormat(user?.money) }}
       </p>
     </div>
     <div v-else class="flex gap-4">
       <Button
-        label="Login"
+        :label="t('account.login')"
         @click="emits('show-login')"
         class="text-white"
         severity="success"
       />
       <Button
-        label="Sign Up"
+        :label="t('account.signup')"
         @click="emits('show-signup')"
         class="text-white"
         severity="info"
@@ -59,7 +59,7 @@
         </div>
         <div class="mt-16 flex justify-between items-center w-full">
           <Button
-            label="Logout"
+            :label="t('account.logout')"
             text
             severity="secondary"
             @click="emits('sign-out')"
@@ -81,6 +81,7 @@ import { useI18n } from 'vue-i18n'
 import LangSelect from '@/components/Header/LangSelect.vue'
 import type { User } from '@/types'
 import type { MenuItem } from '@/types/Header/index.interface'
+import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
   user: User | undefined;

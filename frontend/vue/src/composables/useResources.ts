@@ -1,19 +1,18 @@
 import { ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
+import type { ResourceMovePayload } from '@/types/Resources/index.interface'
 
 export const useResources = () => {
-  const moveResource = (payload: any) => {
-    const { toX, toY, amount, resourceTypeId, fromX, fromY } = payload
-    const dataMessage = ref<Message | null>(null)
-    const { onFetchResponse } = useMyFetch(`/resource/move?resource_type_id=${resourceTypeId}&amount=${amount
-    }&from_x=${fromX}&from_y=${fromY}&to_x=${toX}&to_y=${toY}`, {
+  const moveResource = (payload: ResourceMovePayload) => {
+    const dataMessage = ref<DataMessage | null>(null)
+    const { onFetchResponse } = useMyFetch('/resource/move', {
       afterFetch: ctx => {
         dataMessage.value = ctx.data
 
         return ctx
       }
-    }).json()
+    }).post(payload).json()
 
     return {
       onFetchResponse,

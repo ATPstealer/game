@@ -7,13 +7,13 @@ import (
 type Settings struct {
 	gorm.Model
 	Key   string  `json:"key"`
-	Value float32 `json:"value"`
+	Value float64 `json:"value"`
 }
 
-func GetSettingsMap(db *gorm.DB) map[string]float32 {
+func GetSettingsMap(db *gorm.DB) map[string]float64 {
 	var settings []Settings
 	db.Find(&settings)
-	settingsMap := make(map[string]float32)
+	settingsMap := make(map[string]float64)
 	for _, set := range settings {
 		settingsMap[set.Key] = set.Value
 	}

@@ -1,19 +1,19 @@
 <template>
   <div class="flex flex-col gap-4">
     <MessageBlock
-      v-if="dataMessage"
-      :message="dataMessage"
+      v-if="message"
+      :message="message"
     />
     <p class="text-xl">
-      Move
+      {{ t('common.move') }}
       <span class="font-bold">
-        {{ resource.name }}
+        {{ t(`resources.types.${resource.name.toLowerCase()}`) }}
       </span>
-      from
+      {{ t('common.from') }}
       <span class="font-bold">
         {{ resource.x }}:{{ resource.y }}
       </span>
-      to
+      {{ t('common.to') }}
     </p>
     <div class="flex gap-4">
       <div class="flex flex-col">
@@ -38,7 +38,7 @@
       </div>
     </div>
     <div class="flex flex-col">
-      <label class="font-bold text-xl">Amount:</label>
+      <label class="font-bold text-xl">{{ t('common.amount') }}:</label>
       <InputNumber
         v-model="amount"
         show-buttons
@@ -47,13 +47,13 @@
       />
     </div>
     <p class="font-bold">
-      Estimate price: {{ price }}
+      {{ t('resources.move.price') }}: {{ price }}
     </p>
     <p class="font-bold">
-      Estimate time: {{ distance }}
+      {{ t('resources.move.time') }}: {{ distance }}
     </p>
     <Button
-      label="Move"
+      :label="t('common.move')"
       @click="move"
       class="w-1/2 self-center mt-4"
     />
@@ -64,10 +64,11 @@
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useResources } from '@/composables/useResources'
-import type { Message } from '@/types'
-import type { Resource } from '@/types/Resources/index.interface'
+import type { DataMessage } from '@/types'
+import type { Resource, ResourceMovePayload } from '@/types/Resources/index.interface'
 
 interface Props {
   resource: Resource;
@@ -78,8 +79,10 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 const amount = ref<number>(0)
-const dataMessage = ref<Message>()
+const message = ref<DataMessage | null>(null)
+
 const { moveResource } = useResources()
+const { t } = useI18n()
 
 const distance = computed(() => {
   return ((props.resource.x-x.value)**2 + (props.resource.y-y.value)**2)**(0.5)
@@ -89,7 +92,7 @@ const price = computed(() => {
 })
 
 const move = () => {
-  const payload = {
+  const payload: ResourceMovePayload = {
     toX: x.value,
     toY: y.value,
     amount: amount.value,
@@ -97,9 +100,9 @@ const move = () => {
     fromX: props.resource.x,
     fromY: props.resource.y
   }
-  const { onFetchResponse, message } = moveResource(payload)
+  const { onFetchResponse, dataMessage } = moveResource(payload)
   onFetchResponse(() => {
-    dataMessage.value = message.value
+    message.value = dataMessage.value
 
     setTimeout(() => {
       if (dataMessage.value?.status === 'success') {

@@ -18,7 +18,7 @@ type Blueprint struct {
 
 type ResourceAmount struct {
 	ResourceID uint    `json:"resourceId"`
-	Amount     float32 `json:"amount"`
+	Amount     float64 `json:"amount"`
 }
 
 type BlueprintResult struct {

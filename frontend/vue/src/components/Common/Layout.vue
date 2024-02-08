@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col md:flex-row h-full">
     <Button
-      label="Настройки"
-      class="fixed bottom-0 md:bottom-auto md:top-1/3 left-0 z-10"
       v-if="!showOptions"
+      :label="t('layout.settings')"
+      class="fixed bottom-0 md:bottom-auto md:top-1/3 left-0 z-10"
       :pt="{
         label: {
           class: 'md:w-[1px] whitespace-pre-line break-all -ml-1.5'
@@ -12,8 +12,8 @@
       @click="showOptions = true"
     />
     <div
-      class="options-sidebar"
-      :class="{'show' : showOptions}"
+      class="sidebar options-sidebar"
+      :class="{'show-options' : showOptions}"
     >
       <Button
         v-if="showOptions"
@@ -31,14 +31,15 @@
         size="small"
         @click="showOptions = false"
       />
-      <span>Настройки</span>
+      <span class="font-bold text-xl">{{ t('layout.settings') }}</span>
       <slot name="options" />
     </div>
     <div class="w-full">
       <slot />
     </div>
     <Button
-      label="Справка"
+      v-if="!showHelp"
+      :label="t('layout.help')"
       class="fixed bottom-0 md:bottom-auto md:top-1/3 right-0 z-10"
       :pt="{
         label: {
@@ -47,30 +48,74 @@
       }"
       @click="showHelp = true"
     />
-    <Sidebar v-model:visible="showHelp" position="right">
-      Справка
-    </Sidebar>
+    <div
+      :class="showHelp ? 'sidebar help-sidebar show-help' : 'hidden'"
+    >
+      <Button
+        v-if="showHelp"
+        icon="pi pi-angle-double-right"
+        class="hide-button top-1/2 -left-4 hidden md:block"
+        rounded
+        size="small"
+        @click="showHelp = false"
+      />
+      <Button
+        v-if="showHelp"
+        icon="pi pi-angle-double-down"
+        class="hide-button -top-4 right-1/2 translate-x-1/2 md:hidden"
+        rounded
+        size="small"
+        @click="showHelp = false"
+      />
+      <span class="font-bold text-xl">{{ t('layout.help') }}</span>
+      <div>
+        <slot name="help" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import Button from 'primevue/button'
-import Sidebar from 'primevue/sidebar'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const showOptions = ref<boolean>(true)
-const showHelp = ref<boolean>(false)
+interface Props {
+  showOptionsProp?: boolean;
+  showHelpProp?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showOptionsProp: true,
+  showHelpProp: false
+})
+
+const showOptions = ref<boolean>(props.showOptionsProp)
+const showHelp = ref<boolean>(props.showHelpProp)
+
+const { t } = useI18n()
 </script>
 
 <style scoped>
-.options-sidebar {
-  @apply  flex-col gap-8 border-0 border-b border-solid border-gray-200 p-4 pb-8 hidden
-  md:flex md:pr-8 md:pb-4 md:border-r md:border-b-0 md:mr-16 relative transition-all md:w-[280px] md:min-w-[280px] md:-ml-[344px];
+.sidebar {
+  @apply flex-col gap-8 border-0  border-solid border-gray-200 p-4 pb-8 hidden
+  md:flex md:pr-8 md:pb-4 relative transition-all md:w-[280px] md:min-w-[280px];
 }
 
-.show {
-  @apply flex md:-ml-16 md:mr-4 ;
+.options-sidebar {
+  @apply md:border-r md:mr-16 md:-ml-[344px] border-b md:border-b-0 mb-8 md:mb-0;
+}
 
+.help-sidebar {
+  @apply md:border-l md:ml-16 md:-mr-[344px] border-t md:border-t-0 mt-8 md:mt-0;
+}
+
+.show-options {
+  @apply flex md:-ml-16 md:mr-4 ;
+}
+
+.show-help {
+  @apply flex md:-mr-16 md:ml-4 ;
 }
 
 .hide-button {

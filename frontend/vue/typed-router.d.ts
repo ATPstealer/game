@@ -40,7 +40,9 @@ import type {
 declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     'Root': RouteRecordInfo<'Root', '/', Record<never, never>, Record<never, never>>,
-    'BuildingId': RouteRecordInfo<'BuildingId', '/building/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'BuildingProductionId': RouteRecordInfo<'BuildingProductionId', '/building/production:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'BuildingStorageId': RouteRecordInfo<'BuildingStorageId', '/building/storage:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    'BuildingStoreId': RouteRecordInfo<'BuildingStoreId', '/building/store:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'Buildings': RouteRecordInfo<'Buildings', '/buildings', Record<never, never>, Record<never, never>>,
     'ConstructBuilding': RouteRecordInfo<'ConstructBuilding', '/construct-building', Record<never, never>, Record<never, never>>,
     'Lands': RouteRecordInfo<'Lands', '/lands', Record<never, never>, Record<never, never>>,

@@ -1,67 +1,216 @@
 {
-  "user": {
-    "title": "User",
-    "characteristics": "Characteristics",
-    "memory": "Memory",
-    "intelligence": "Intelligence",
-    "attention": "Attention",
-    "wits": "Wits",
-    "multitasking": "Multitasking",
-    "management": "Management",
-    "planning": "Planning"
+  "account": {
+    "confirmPass": "Confirm Password",
+    "email": "Email",
+    "errors": {
+      "email": "Enter correct email address",
+      "nickname": "Fill in the field nickname",
+      "passMatch": "Passwords doesn't match",
+      "password": "Password must include lowercase and uppercase later, digits and be more than 8 symbols"
+    },
+    "haveAccount": "Already have an account? Log in",
+    "login": "Login",
+    "logout": "Logout",
+    "nickname": "Nickname",
+    "password": "Password",
+    "signup": "Sign Up"
   },
   "buildings": {
+    "coefficient efficiency": "Coefficient efficiency",
+    "construct new building": "Construct New Building",
+    "finish": "Finish",
+    "hiring": {
+      "average salary": "Average salary",
+      "help": "Hiring is carried out once a day. At 00:00Z. The higher the salary, the more workers will come to your enterprise. Set the required number of employees in the “Hiring needs” column.",
+      "hiring needs": "Hiring needs",
+      "max workers": "Maximum workers",
+      "name": "Hiring",
+      "on strike": "On strike",
+      "salary": "Salary",
+      "set": "Set",
+      "workers": "Workers"
+    },
+    "one": "Building",
+    "status": "Status",
+    "store": {
+      "columns": {
+        "name": "Name",
+        "price": "Price",
+        "revenue today": "Revenue Today",
+        "sell count": "Sell Count",
+        "status": "Status"
+      },
+      "help": "Click on price for change. Auto apply.",
+      "name": "Store",
+      "setPrice": "Set price",
+      "status": {
+        "notset": "Price not set",
+        "selling": "Selling"
+      },
+      "types": {
+        "grocery": "Grocery"
+      }
+    },
     "title": "Buildings",
     "type": "Building type",
-    "one": "Building",
     "types": {
       "all": "All",
-      "storage": "Storage",
-      "mine": "Mine",
       "energy plant": "Energy plant",
-      "foundry": "Foundry",
       "factory": "Factory",
+      "farm": "Farm",
+      "field": "Field",
+      "food factory": "Food factory",
+      "foundry": "Foundry",
+      "gas station": "Gas Station",
+      "grocery store": "Grocery Store",
       "lumbermill": "Lumbermill",
+      "mine": "Mine",
       "office": "Office",
-      "refinery": "Refinery",
       "recycling plant": "Recycling plant",
-      "grocery store": "Grocery Store"
+      "refinery": "Refinery",
+      "storage": "Storage",
+      "water pump": "Water Pump"
     }
+  },
+  "common": {
+    "amount": "Amount",
+    "buy": "Buy",
+    "create": "Create",
+    "from": "from",
+    "in": "in",
+    "move": "Move",
+    "owner": "Owner",
+    "reset": "Reset",
+    "resource": "Resource",
+    "sell": "Sell",
+    "square": "Square",
+    "to": "to"
   },
   "lands": {
     "title": "Lands"
   },
-  "resources": {
-    "title": "Resources"
+  "layout": {
+    "help": "Help",
+    "settings": "Settings"
   },
   "logistics": {
+    "columns": {
+      "amount": "Amount",
+      "finish": "Finish",
+      "from": "From",
+      "resource": "Resource",
+      "to": "To"
+    },
+    "help": "On this page, the tasks for cargo transportation are displayed.",
     "title": "Logistics"
-  },
-  "storages": {
-    "title": "Storages"
-  },
-  "orders": {
-    "title": "Orders"
-  },
-  "map": {
-    "title": "Map"
-  },
-  "search-building": {
-    "title": "Search for buildings"
-  },
-  "market": {
-    "title": "Market"
   },
   "main": {
     "title": "Main page"
+  },
+  "map": {
+    "cell": "Cell",
+    "square": "Square",
+    "title": "Map"
+  },
+  "market": {
+    "title": "Market"
   },
   "menu": {
     "business": "Business",
     "world": "World"
   },
-  "common": {
-    "reset": "Reset",
-    "owner": "Owner",
-    "square": "Square"
+  "orders": {
+    "columns": {
+      "amount": "Amount",
+      "price": "Price per unit",
+      "resource": "Resource",
+      "type": "Type"
+    },
+    "create": {
+      "header": "Create order",
+      "type": "Order type"
+    },
+    "help": "To close an order, click on his type.",
+    "title": "Orders"
+  },
+  "resources": {
+    "choose": "Сhoose resource",
+    "columns": {
+      "amount": "Amount",
+      "name": "Resource"
+    },
+    "help": "Resource name click is move. Amount click is sell",
+    "move": {
+      "header": "Move resource",
+      "price": "Estimate price",
+      "time": "Estimate time"
+    },
+    "resourceType": "Resource type",
+    "sell": {
+      "header": "Sell resource",
+      "price": "Price per unit"
+    },
+    "title": "Resources",
+    "types": {
+      "all": "All",
+      "beef": "Beef",
+      "beef meat": "Beef meat",
+      "bird": "Bird",
+      "bread": "Bread",
+      "butter": "Butter",
+      "cereals": "Cereals",
+      "cheese": "Cheese",
+      "chicken": "Chicken",
+      "diesel": "Diesel",
+      "eggs": "Eggs",
+      "energy": "Energy",
+      "fruits": "Fruits",
+      "gas": "Gas",
+      "gear": "Gear",
+      "hydrocarbons": "Hydrocarbons",
+      "iron": "Iron",
+      "iron ore": "Iron ore",
+      "livestock": "Livestock",
+      "milk": "Milk",
+      "oil": "Oil",
+      "pasta": "Pasta",
+      "petrol": "Petrol",
+      "plastics": "Plastics",
+      "poultry meat": "Poultry meat",
+      "rice": "Rice",
+      "schlack": "Schlack",
+      "soda": "Soda",
+      "vegetables": "Vegetables",
+      "water": "Water",
+      "wood": "Wood"
+    }
+  },
+  "search-building": {
+    "chooseUser": "Choose user",
+    "title": "Search for buildings"
+  },
+  "status": {
+    "construction": "Construction",
+    "production": "Production",
+    "ready": "Ready",
+    "storageneeded": "Storage needed"
+  },
+  "storages": {
+    "columns": {
+      "volume": "Volume"
+    },
+    "help": "Displays the total volume of resources and storage in sectors.",
+    "title": "Storages"
+  },
+  "user": {
+    "attention": "Attention",
+    "characteristics": "Characteristics",
+    "intelligence": "Intelligence",
+    "management": "Management",
+    "memory": "Memory",
+    "multitasking": "Multitasking",
+    "planning": "Planning",
+    "title": "User",
+    "wits": "Wits"
   }
 }

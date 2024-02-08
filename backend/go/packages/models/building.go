@@ -12,25 +12,37 @@ import (
 type BuildingStatus string
 
 const (
-	Construction    BuildingStatus = "Construction"
-	Ready           BuildingStatus = "Ready"
-	Production      BuildingStatus = "Production"
-	ResourcesNeeded BuildingStatus = "ResourcesNeeded"
-	StorageNeeded   BuildingStatus = "StorageNeeded"
+	ConstructionStatus    BuildingStatus = "Construction"
+	ReadyStatus           BuildingStatus = "Ready"
+	ProductionStatus      BuildingStatus = "Production"
+	ResourcesNeededStatus BuildingStatus = "ResourcesNeeded"
+	StorageNeededStatus   BuildingStatus = "StorageNeeded"
 )
 
 type Building struct {
 	gorm.Model
-	TypeID       uint           `json:"typeId"`
-	UserID       uint           `json:"userId"`
-	X            int            `json:"x"`
-	Y            int            `json:"y"`
-	Square       int            `json:"square"`
-	Level        int            `json:"level"`
-	Status       BuildingStatus `json:"status"`
-	WorkStarted  *time.Time     `json:"workStarted"`
-	WorkEnd      *time.Time     `json:"workEnd"`
-	ProductionID uint           `json:"productionId"`
+	TypeID      uint           `json:"typeId"`
+	UserID      uint           `json:"userId"`
+	X           int            `json:"x"`
+	Y           int            `json:"y"`
+	Square      int            `json:"square"`
+	Level       int            `json:"level"`
+	Status      BuildingStatus `json:"status"`
+	WorkStarted *time.Time     `json:"workStarted"`
+	WorkEnd     *time.Time     `json:"workEnd"`
+	HiringNeeds int            `json:"hiringNeeds"`
+	Salary      float64        `json:"salary"`
+	Workers     int            `json:"workers"`
+	OnStrike    bool           `json:"onStrike"`
+}
+
+func GetAllBuildings(db *gorm.DB) ([]Building, error) {
+	var buildings []Building
+	err := db.Model(&Building{}).Find(&buildings).Error
+	if err != nil {
+		return nil, err
+	}
+	return buildings, nil
 }
 
 type ConstructBuildingPayload struct {
@@ -52,14 +64,14 @@ func ConstructBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayloa
 	if err != nil {
 		return err
 	}
-	if !CheckEnoughMoney(db, userID, buildingType.Cost*float32(payload.Square)) {
+	if !CheckEnoughMoney(db, userID, float64(buildingType.Cost)*float64(payload.Square)) {
 		return errors.New("not enough money")
 	}
 	return CreateBuilding(db, userID, payload, buildingType.Cost)
 }
 
-func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, cost float32) error {
-	if err := AddMoney(db, userID, (-1)*cost*float32(payload.Square)); err != nil {
+func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, cost float64) error {
+	if err := AddMoney(db, userID, (-1)*cost*float64(payload.Square)); err != nil {
 		return err
 	}
 	buildingType, err := GetBuildingTypeByID(db, payload.TypeID)
@@ -76,7 +88,7 @@ func CreateBuilding(db *gorm.DB, userID uint, payload ConstructBuildingPayload, 
 		Y:           payload.Y,
 		Square:      payload.Square,
 		Level:       1,
-		Status:      Construction,
+		Status:      ConstructionStatus,
 		WorkStarted: &now,
 		WorkEnd:     &end,
 	}
@@ -107,10 +119,13 @@ type MyBuildingsResult struct {
 	Status           string    `json:"status"`
 	WorkStarted      time.Time `json:"workStarted"`
 	WorkEnd          time.Time `json:"workEnd"`
-	ProductionID     uint      `json:"productionId"`
-	BlueprintName    string    `json:"blueprintName"`
+	HiringNeeds      int       `json:"hiringNeeds"`
+	Salary           float64   `json:"salary"`
+	Workers          int       `json:"workers"`
 	BuildingGroup    string    `json:"buildingGroup"`
 	BuildingSubGroup string    `json:"buildingSubGroup"`
+	MaxWorkers       int       `json:"maxWorkers"`
+	OnStrike         bool      `json:"onStrike"`
 }
 
 func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsResult, error) {
@@ -121,10 +136,9 @@ func GetMyBuildings(db *gorm.DB, userID uint, buildingID uint) ([]MyBuildingsRes
 		query = query.Where("buildings.id = ?", buildingID)
 	}
 	res := query.Select("buildings.id", "buildings.type_id", "title", "x", "y", "square", "level",
-		"status", "work_started", "work_end", "production_id", "blueprints.name AS blueprint_name",
-		"building_types.building_group", "building_types.building_sub_group").
+		"status", "hiring_needs", "salary", "on_strike", "buildings.workers", "buildings.work_started", "buildings.work_end",
+		"building_types.building_group", "building_types.building_sub_group", "building_types.workers AS max_workers").
 		Joins("left join building_types on buildings.type_id = building_types.id").
-		Joins("left join blueprints on buildings.production_id = blueprints.id").
 		Scan(&myBuildings)
 
 	if res.Error != nil {
@@ -224,55 +238,48 @@ func GetBuildingByID(db *gorm.DB, buildingID uint) (Building, error) {
 	return building, res.Error
 }
 
-type StartWorkPayload struct {
-	BuildingID  uint
-	BlueprintID uint
-	Duration    time.Duration
-}
-
-func StartWork(db *gorm.DB, userID uint, payload StartWorkPayload) error {
-	building, err := GetBuildingByID(db, payload.BuildingID)
-	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
-		return err
-	}
-	if building.Status != Ready {
-		return errors.New("Building not ready. Status is " + string(building.Status))
-	}
-	if building.UserID != userID {
-		err := errors.New("this building don't belong you")
-		log.Println(err)
-		return err
-	}
-	blueprintResult, err := GetBlueprintByID(db, payload.BlueprintID)
-	if blueprintResult.ID == 0 {
-		err := errors.New("invalid blueprint")
-		log.Println(err)
-		return err
-	}
-	if blueprintResult.ProducedInID != building.TypeID {
-		err := errors.New("can't product it here")
-		log.Println(err)
-		return err
-	}
-
-	log.Println(building.WorkStarted)
-	now := time.Now()
-	end := now.Add(payload.Duration)
-	building.WorkStarted = &now
-	building.ProductionID = payload.BlueprintID
-	building.WorkEnd = &end
-	building.Status = Production
-	db.Save(&building)
-
-	return nil
-}
-
 func GetAllReadyStorages(db *gorm.DB) ([]Building, error) {
 	var storages []Building
-	res := db.Model(&Building{}).Where("type_id = ? AND status = ?", 1, Ready).Scan(&storages)
+	res := db.Model(&Building{}).Where("type_id = ? AND status = ? AND on_strike = ?", 1, ReadyStatus, false).Scan(&storages)
 	if res.Error != nil {
 		log.Println("Can't get storages: " + res.Error.Error())
 	}
 	return storages, res.Error
+}
+
+type HiringPayload struct {
+	BuildingID  uint    `json:"buildingId"`
+	Salary      float64 `json:"salary"`
+	HiringNeeds int     `json:"hiringNeeds"`
+}
+
+func SetHiring(db *gorm.DB, userID uint, payload HiringPayload) error {
+	building, err := GetBuildingByID(db, payload.BuildingID)
+	if err != nil {
+		return err
+	}
+	if userID != building.UserID && building.UserID != 0 {
+		return errors.New("this building doesn't belong to you")
+	}
+	buildingType, err := GetBuildingTypeByID(db, building.TypeID)
+	if err != nil {
+		return err
+	}
+	hiringMax := buildingType.Workers * building.Level * building.Square
+	if payload.HiringNeeds > hiringMax {
+		return errors.New(fmt.Sprintf("hiring needs more that maximum(%d)", hiringMax))
+	}
+	building.Salary = payload.Salary
+	building.HiringNeeds = payload.HiringNeeds
+	db.Save(&building)
+	return nil
+}
+
+func GetBuildingsForHiring(db *gorm.DB) ([]Building, error) {
+	var buildings []Building
+	err := db.Model(&Building{}).Where("salary != 0 and hiring_needs != 0").Find(&buildings).Error
+	if err != nil {
+		return nil, err
+	}
+	return buildings, nil
 }

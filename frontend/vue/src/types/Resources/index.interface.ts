@@ -19,10 +19,10 @@ export interface ResourceAmount {
 export interface ResourceType {
   id: number;
   name: string;
-  volume: number;
-  weight: number;
-  productionTime: number;
-  producedInId: number;
+  volume?: number;
+  weight?: number;
+  productionTime?: number;
+  producedInId?: number;
 }
 
 export interface MarketParams {
@@ -30,4 +30,13 @@ export interface MarketParams {
   y?: number;
   resource_type_id: number;
   trigger?: number;
+}
+
+export interface ResourceMovePayload {
+  resourceTypeId: number;
+  amount: number;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
 }

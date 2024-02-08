@@ -35,10 +35,12 @@ func StoragesUpdate(db *gorm.DB) {
 	if err != nil {
 		log.Println(err)
 	}
+
+	// Storage size depend on workers count
+	storageBuildingType, _ := models.GetBuildingTypeByID(db, 1) // 1 = Storage
 	for _, buildingStorage := range buildingStorages {
-		findBuildingStorage(&storages, buildingStorage)
+		findBuildingStorage(&storages, buildingStorage, float64(storageBuildingType.Workers))
 	}
-	log.Println(storages)
 	db.Save(&storages)
 }
 
@@ -79,16 +81,16 @@ func findOrder(storages *[]models.Storage, order models.OrdersResult) {
 	})
 }
 
-func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Building) {
+func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Building, workersNeeded float64) {
 	for i, storage := range *storages {
 		if storage.UserID == buildingStorage.UserID && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
-			(*storages)[i].VolumeMax += float32(buildingStorage.Level * buildingStorage.Square * 100 * 5)
+			(*storages)[i].VolumeMax += float64(buildingStorage.Workers) * 100 * 5 / workersNeeded
 			return
 		}
 	}
 	*storages = append(*storages, models.Storage{
 		UserID:    buildingStorage.UserID,
-		VolumeMax: float32(buildingStorage.Level * buildingStorage.Square * 100 * 5),
+		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
 		X:         buildingStorage.X,
 		Y:         buildingStorage.Y,
 	})

@@ -17,7 +17,8 @@ import (
 func AutoMigrateModel(db *gorm.DB) {
 	models := []interface{}{&User{}, &Token{}, &Cell{}, &LandLord{}, &Building{},
 		&BuildingType{}, &Resource{}, &ResourceType{}, &Logistic{}, &Blueprint{},
-		&Storage{}, &Order{}, &Settings{}, &StoreGoods{}, &EvolutionPrice{}}
+		&Storage{}, &Order{}, &Settings{}, &StoreGoods{}, &EvolutionPrice{},
+		&Production{}}
 
 	for _, model := range models {
 		if err := db.AutoMigrate(model); err != nil {
@@ -53,7 +54,7 @@ func Init(db *gorm.DB, config cfg.Vars) {
 }
 
 func loadSettings(db *gorm.DB) {
-	settings := [4]Settings{
+	settings := [5]Settings{
 		{
 			Key:   "mapMinX",
 			Value: -2,
@@ -69,6 +70,10 @@ func loadSettings(db *gorm.DB) {
 		{
 			Key:   "mapMaxY",
 			Value: 2,
+		},
+		{
+			Key:   "interestRate",
+			Value: 0.5,
 		},
 	}
 	db.Save(&settings)
@@ -93,8 +98,6 @@ func generateMap(db *gorm.DB) {
 				Education:        10,
 				Crime:            10,
 				Medicine:         10,
-				ElementarySchool: 10,
-				HigherSchool:     10,
 			}
 			db.Create(&newMapCell)
 		}
@@ -162,7 +165,11 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 		}
 		capacity, err := strconv.ParseInt(row[9].(string), 10, 32)
 		if err != nil {
-			log.Println("Can't get UInt from Google sheet Capacity field: ", err)
+			log.Println("Can't get Int from Google sheet Capacity field: ", err)
+		}
+		workers, err := strconv.ParseInt(row[10].(string), 10, 32)
+		if err != nil {
+			log.Println("Can't get Int from Google sheet Workers field: ", err)
 		}
 
 		db.Unscoped().Model(&BuildingType{}).Where("id = ?", i+1).First(&buildingType)
@@ -170,12 +177,13 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 			buildingType = BuildingType{
 				Title:            row[2].(string),
 				Description:      row[3].(string),
-				Cost:             float32(cost),
+				Cost:             float64(cost),
 				Requirements:     row[5].(string),
 				BuildTime:        time.Second * time.Duration(buildTime),
 				BuildingGroup:    row[7].(string),
 				BuildingSubGroup: row[8].(string),
-				Capacity:         float32(capacity),
+				Capacity:         float64(capacity),
+				Workers:          int(workers),
 			}
 			db.Create(&buildingType)
 		} else {
@@ -187,12 +195,13 @@ func buildingTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				db.Model(&BuildingType{}).Where("id = ?", i+1).First(&buildingType)
 				buildingType.Title = row[2].(string)
 				buildingType.Description = row[3].(string)
-				buildingType.Cost = float32(cost)
+				buildingType.Cost = float64(cost)
 				buildingType.Requirements = row[5].(string)
 				buildingType.BuildTime = time.Second * time.Duration(buildTime)
 				buildingType.BuildingGroup = row[7].(string)
 				buildingType.BuildingSubGroup = row[8].(string)
-				buildingType.Capacity = float32(capacity)
+				buildingType.Capacity = float64(capacity)
+				buildingType.Workers = int(workers)
 				db.Save(&buildingType)
 			}
 		}
@@ -220,9 +229,9 @@ func resourceTypesImport(db *gorm.DB, rows [][]interface{}) error {
 		if resourceType == (ResourceType{}) {
 			resourceType = ResourceType{
 				Name:       row[2].(string),
-				Volume:     float32(volume),
-				Weight:     float32(weight),
-				Demand:     float32(demand),
+				Volume:     float64(volume),
+				Weight:     float64(weight),
+				Demand:     float64(demand),
 				StoreGroup: row[6].(string),
 			}
 			db.Create(&resourceType)
@@ -234,9 +243,9 @@ func resourceTypesImport(db *gorm.DB, rows [][]interface{}) error {
 				resourceType = ResourceType{}
 				db.Model(&ResourceType{}).Where("id = ?", i+1).First(&resourceType)
 				resourceType.Name = row[2].(string)
-				resourceType.Volume = float32(volume)
-				resourceType.Weight = float32(weight)
-				resourceType.Demand = float32(demand)
+				resourceType.Volume = float64(volume)
+				resourceType.Weight = float64(weight)
+				resourceType.Demand = float64(demand)
 				resourceType.StoreGroup = row[6].(string)
 				db.Save(&resourceType)
 			}

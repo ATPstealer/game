@@ -15,7 +15,7 @@
         for="nickname"
         class="block text-gray-700 text-sm font-medium"
       >
-        nickName
+        {{ t('account.nickname') }}
       </label>
     </div>
     <div class="p-float-label">
@@ -30,20 +30,20 @@
         for="password"
         class="block text-gray-700 text-sm font-medium"
       >
-        Password
+        {{ t('account.password') }}
       </label>
     </div>
     <div class="flex items-center justify-between">
       <Button
         type="submit"
         severity="info"
-        label="Login"
+        :label="t('account.login')"
         @click="submit"
       />
       <Button
         severity="info"
         text
-        label="Sign up"
+        :label="t('account.signup')"
         @click="emits('sign-up')"
       />
     </div>
@@ -56,9 +56,10 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { Message } from '@/types'
+import type { DataMessage } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -67,8 +68,9 @@ const emits = defineEmits<{
 
 const nickName = ref<string>('')
 const pass = ref<string>('')
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
 
+const { t } = useI18n()
 const { logIn } = useUser()
 const submit = () => {
   message.value = null

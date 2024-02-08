@@ -67,21 +67,32 @@
       </template>
     </Column>
   </DataTable>
+  <div v-if="!orders?.length">
+    Этого ресурса на рынке нет
+  </div>
   <Dialog
     v-model:visible="showModal"
     :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-    :header="order.sell ? 'You\'ll sell' : 'You\'ll buy'"
+    :header="!order.sell ? 'You\'ll sell' : 'You\'ll buy'"
   >
     <div class="flex flex-col gap-4">
       <MessageBlock :message="message" v-if="message" />
       <p><span class="font-bold">{{ order.resourceName }}</span></p>
-      <p>Amount: <span class="font-bold">{{ order.amount }}</span></p>
-      <p>Price: <span class="font-bold">{{ order.priceForUnit * order.amount }}</span></p>
+      <p>
+        Amount:
+        <InputNumber
+          input-class="w-28"
+          class="h-8"
+          show-buttons
+          v-model="amount"
+        />
+      </p>
+      <p>Price: <span class="font-bold">{{ order.priceForUnit * amount }}</span></p>
       <Button
         @click="execOrder"
-        :label="order.sell ? 'Sell' : 'Buy'"
-        :severity="order.sell ? 'danger' : 'primary'"
+        :label="!order.sell ? 'Sell' : 'Buy'"
+        :severity="!order.sell ? 'danger' : 'primary'"
       />
     </div>
   </Dialog>
@@ -92,10 +103,11 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable, { DataTableRowClickEvent } from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
+import InputNumber from 'primevue/inputnumber'
 import { ref, toRefs } from 'vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useOrders } from '@/composables/useOrders'
-import type { Message, Order } from '@/types'
+import type { DataMessage, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -107,7 +119,8 @@ const { searchParams } = toRefs(props)
 
 const order = ref<Order>({} as Order)
 const showModal = ref<boolean>(false)
-const message = ref<Message | null>(null)
+const message = ref<DataMessage | null>(null)
+const amount = ref<number>(0)
 
 const { getOrders, executeOrder } = useOrders()
 const { data: orders, execute } = getOrders(searchParams.value)
@@ -132,7 +145,7 @@ const sellRowClass = (data) => {
 }
 
 const execOrder = () => {
-  const { onFetchResponse, dataMessage } = executeOrder(order.value.id)
+  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value.id, amount: amount.value } )
   onFetchResponse(() => {
     message.value = dataMessage.value
 
@@ -143,6 +156,7 @@ const execOrder = () => {
     }, 2000)
   })
 }
+
 </script>
 
 <style scoped>

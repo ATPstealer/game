@@ -14,21 +14,28 @@ const (
 	HighPrice            StoreGoodsStatus = "HighPrice"
 	NotEnoughMinerals    StoreGoodsStatus = "NotEnoughMinerals"
 	SpendingLimitReached StoreGoodsStatus = "SpendingLimitReached"
+	CapacityReached      StoreGoodsStatus = "CapacityReached"
 )
 
 type StoreGoods struct {
 	gorm.Model
 	BuildingID     uint
 	ResourceTypeID uint
-	Price          float32
+	Price          float64
 	SellSum        int
-	Revenue        float32
+	Revenue        float64
 	SellStarted    *time.Time
 	Status         StoreGoodsStatus
 }
 
-func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uint, price float32) error {
-	building, err := GetBuildingByID(db, buildingID)
+type StoreGoodsPayload struct {
+	BuildingID     uint    `json:"buildingID"`
+	ResourceTypeID uint    `json:"resourceTypeID"`
+	Price          float64 `json:"price"`
+}
+
+func SetStoreGoods(db *gorm.DB, userID uint, payload StoreGoodsPayload) error {
+	building, err := GetBuildingByID(db, payload.BuildingID)
 	if err != nil {
 		return err
 	}
@@ -44,7 +51,7 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 		return errors.New("this is not a store")
 	}
 
-	resourceType, err := GetResourceTypesByID(db, resourceTypeID)
+	resourceType, err := GetResourceTypesByID(db, payload.ResourceTypeID)
 	if err != nil {
 		return err
 	}
@@ -54,8 +61,10 @@ func SetStoreGoods(db *gorm.DB, userID uint, buildingID uint, resourceTypeID uin
 
 	now := time.Now()
 	var storeGoods StoreGoods
-	db.FirstOrCreate(&storeGoods, StoreGoods{BuildingID: buildingID, ResourceTypeID: resourceTypeID, SellStarted: &now, Status: Selling})
-	storeGoods.Price = price
+	db.Where(StoreGoods{BuildingID: payload.BuildingID, ResourceTypeID: payload.ResourceTypeID}).
+		Assign(StoreGoods{SellStarted: &now, Status: Selling}).
+		FirstOrCreate(&storeGoods)
+	storeGoods.Price = payload.Price
 	result := db.Save(&storeGoods)
 	return result.Error
 }
@@ -64,9 +73,9 @@ type StoreGoodsShortResult struct {
 	ID             uint             `json:"id" gorm:"primary_key"`
 	BuildingID     uint             `json:"buildingId"`
 	ResourceTypeID uint             `json:"resourceTypeId"`
-	Price          float32          `json:"price"`
+	Price          float64          `json:"price"`
 	SellSum        int              `json:"sellSum"`
-	Revenue        float32          `json:"revenue"`
+	Revenue        float64          `json:"revenue"`
 	SellStarted    *time.Time       `json:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status"`
 }
@@ -84,9 +93,9 @@ type StoreGoodsResult struct {
 	ID             uint             `json:"id" gorm:"primary_key"`
 	BuildingID     uint             `json:"buildingId"`
 	ResourceTypeID uint             `json:"resourceTypeId"`
-	Price          float32          `json:"price"`
+	Price          float64          `json:"price"`
 	SellSum        int              `json:"sellSum"`
-	Revenue        float32          `json:"revenue"`
+	Revenue        float64          `json:"revenue"`
 	SellStarted    *time.Time       `json:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status"`
 	X              int              `json:"x"`
@@ -95,6 +104,9 @@ type StoreGoodsResult struct {
 	Level          int              `json:"level"`
 	Capacity       int              `json:"capacity"`
 	UserID         uint             `json:"userID"`
+	OnStrike       bool             `json:"onStrike"`
+	Workers        int              `json:"workers"`
+	MaxWorkers     int              `json:"maxWorkers"`
 }
 
 func GetAllStoreGoods(db *gorm.DB) ([]StoreGoodsResult, error) {
@@ -102,11 +114,13 @@ func GetAllStoreGoods(db *gorm.DB) ([]StoreGoodsResult, error) {
 	res := db.Model(&StoreGoods{}).
 		Select("store_goods.id", "building_id", "resource_type_id", "price", "sell_sum", "revenue",
 			"sell_started", "store_goods.status", "x", "y", "square", "level", "building_types.capacity AS capacity",
-			"users.id AS user_id").
+			"users.id AS user_id", "buildings.on_strike AS on_strike", "buildings.workers",
+			"building_types.workers AS max_workers").
 		Joins("left join buildings on store_goods.building_id = buildings.id").
 		Joins("left join building_types on buildings.type_id = building_types.id").
 		Joins("left join users on users.id = buildings.user_id").
-		Scan(&storeGoodsResult)
+		Where("on_strike = ?", false).
+		Find(&storeGoodsResult)
 	if res.Error != nil {
 		return nil, res.Error
 	}

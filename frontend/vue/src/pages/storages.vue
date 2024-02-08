@@ -1,42 +1,20 @@
 <template>
-  <div v-if="!isFetching">
-    <h2 class="font-bold text-2xl">
-      Storages
-    </h2>
-    <div class="grid grid-cols-3 gap-2 font-bold">
-      <h3 class="col-span-1">
-        Cell
-      </h3>
-      <h3 class="col-span-1">
-        Volumes
-      </h3>
-    </div>
-
-    <div
-      v-for="storage in storages"
-      class="grid grid-cols-3 "
-      :key="storage.id"
-    >
-      <p class="col-span-1">
-        {{ storage.x }}:{{ storage.y }}
-      </p>
-      <p :class="{'font-bold text-red-600': storage.volumeOccupied > storage.volumeMax}">
-        {{ storage.volumeOccupied }}/{{ storage.volumeMax }}
-      </p>
-    </div>
-    <p class="text-white" />
-  </div>
-  <Loading v-else />
+  <Layout :show-options-prop="false">
+    <Storages />
+    <template #help>
+      {{ t(`storages.help`) }}
+    </template>
+  </Layout>
 </template>
 
 <script setup lang="ts">
-import Loading from '@/components/Common/Loading.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Storage } from '@/types'
+import { useI18n } from 'vue-i18n'
+import Layout from '@/components/Common/Layout.vue'
+import Storages from '@/components/Storages/Storages.vue'
 
-const { data: storages, isFetching } = useGetData<Storage[]>('/storage/my')
+const { t } = useI18n()
+
 </script>
-
 <style scoped>
 
 </style>

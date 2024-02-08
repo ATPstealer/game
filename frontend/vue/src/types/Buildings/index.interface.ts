@@ -18,8 +18,13 @@ export interface Building {
   status: string;
   workStarted: string;
   workEnd: string;
-  productionId: number;
-  blueprintName: string;
+  buildingGroup: string;
+  buildingSubGroup: string;
+  hiringNeeds: number;
+  salary: number;
+  workers: number;
+  maxWorkers: number;
+  onStrike: boolean;
 }
 
 export interface BuildingType {
@@ -46,4 +51,14 @@ export interface SearchBuildingParams {
   x?: string;
   y?: string;
   buildingTypeId?: string;
+}
+
+export interface Goods {
+  id: number;
+  buildingId: number;
+  resourceTypeId: number;
+  price: number;
+  sellSum: number;
+  revenue: number;
+  status: string;
 }

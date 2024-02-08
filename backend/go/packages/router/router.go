@@ -20,17 +20,18 @@ func MakeRouter() *gin.Engine {
 	user.POST("/login", controllers.Login)
 	// Secure aria
 	user.Use(AuthMiddleware())
-	user.GET("/logout", controllers.Logout)
+	user.DELETE("/logout", controllers.Logout)
 	user.GET("/data", controllers.GetUserData)
 
 	building := router.Group("/api/v1/building")
 	building.GET("/types", controllers.GetBuildingsTypes)
-	building.POST("/get", controllers.GetBuildings)
+	building.POST("/get", controllers.GetBuildings) // GET
 	building.GET("/blueprints", controllers.GetBlueprints)
 	building.Use(AuthMiddleware())
 	building.POST("/construct", controllers.CreateBuilding)
 	building.GET("/my", controllers.GetMyBuildings)
 	building.POST("/start_work", controllers.StartWork)
+	building.POST("/hiring", controllers.SetHiring)
 	building.DELETE("/destroy", controllers.DestroyBuilding)
 
 	mapCell := router.Group("/api/v1/map")
@@ -45,7 +46,7 @@ func MakeRouter() *gin.Engine {
 	resource.GET("/types", controllers.GetResourceTypes)
 	resource.Use(AuthMiddleware())
 	resource.GET("/my", controllers.GetMyResources)
-	resource.GET("/move", controllers.ResourceMove)
+	resource.POST("/move", controllers.ResourceMove)
 	resource.GET("/my_logistics", controllers.GetMyLogistics)
 
 	storage := router.Group("/api/v1/storage")
@@ -57,16 +58,17 @@ func MakeRouter() *gin.Engine {
 	market.Use(AuthMiddleware())
 	market.POST("/order/create", controllers.CreateOrder)
 	market.GET("/order/my", controllers.GetMyOrders)
-	market.GET("/order/close", controllers.CloseMyOrder)
-	market.GET("/order/execute", controllers.ExecuteOrder)
+	market.DELETE("/order/close", controllers.CloseMyOrder)
+	market.POST("/order/execute", controllers.ExecuteOrder)
 
 	store := router.Group("/api/v1/store")
 	store.GET("/goods/get", controllers.GetStoreGoods)
 	store.Use(AuthMiddleware())
-	store.GET("/goods/set", controllers.SetStoreGoods)
+	store.POST("/goods/set", controllers.SetStoreGoods)
 
 	data := router.Group("/api/v1/data")
-	data.GET("users_by_prefix", controllers.GetUserNamesByPrefix)
+	data.GET("/users_by_prefix", controllers.GetUserNamesByPrefix)
+	data.GET("/evolution/prices", controllers.GetEvolutionPrices)
 
 	return router
 }
