@@ -1,0 +1,7 @@
+replicaCount: 3
+auth:
+  enabled: true
+  existingSecret: mongodb-secrets
+service:
+  type: LoadBalancer
+  loadBalancerIP: 104.199.89.66

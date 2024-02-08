@@ -41,6 +41,13 @@ resource "google_compute_address" "load_balancer_1" { // gitlab
   region        = var.region
 }
 
+resource "google_compute_address" "load_balancer_2" { // mongo
+  name          = "load-balancer-2"
+  ip_version    = "IPV4"
+  address_type  = "EXTERNAL"
+  region        = var.region
+}
+
 resource "google_compute_address" "load_balancer_3" { // mysql
   name          = "load-balancer-3"
   ip_version    = "IPV4"

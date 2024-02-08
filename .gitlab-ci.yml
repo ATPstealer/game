@@ -109,3 +109,14 @@ mysql:
     - helm upgrade --install mysql -n game
       --history-max 1
       ./deployment/helm/mysql
+
+mongodb:
+  stage: infra
+  image: alpine/helm
+  script:
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
+    - helm repo update
+    - helm upgrade --install -n game 
+      mongodb bitnami/mongodb 
+      --history-max 1
+      -f ./deployment/helm/mongo/values.yaml
