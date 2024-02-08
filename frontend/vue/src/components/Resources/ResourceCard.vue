@@ -10,7 +10,7 @@
     <template #content>
       <div class="flex flex-col gap-2">
         <p class="font-bold">
-          Produce:
+          {{ t('buildings.production.produce') }}:
         </p>
         <div>
           <p
@@ -22,7 +22,7 @@
           </p>
         </div>
         <p class="font-bold">
-          Use:
+          {{ t('buildings.production.use') }}:
         </p>
         <div>
           <p
@@ -33,7 +33,7 @@
             {{ t(`resources.types.${findResourceName(resourceTypes, resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
           </p>
         </div>
-        <p><span class="font-bold">1 cycle time</span>: {{ blueprint.productionTime / 1000000000 }}s</p>
+        <p><span class="font-bold">{{ t('buildings.production.cycle') }}</span>: {{ blueprint.productionTime / 1000000000 }}s</p>
         <img
           class="max-h-[64px] absolute top-4 right-4"
           :src="getMinioURL(`/resource/${buildingIcon}`)"

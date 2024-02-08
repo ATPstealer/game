@@ -1,48 +1,57 @@
 <template>
   <Layout :show-options-prop="false">
-    <div class="flex flex-col items-center justify-center mt-5 space-y-10">
-      <span class="text-5xl font-bold">Building Builder</span>
+    <div class="flex flex-col gap-4 items-center justify-center">
+      <h2>{{ t('buildings.builder') }}</h2>
       <MessageBlock v-if="message" :message="message" />
-      <Card>
+      <Card v-if="buildingTypes">
         <template #content>
           <div class="flex flex-col gap-4">
-            <p class="label">
-              Where:
+            <p class="label !mb-0">
+              {{ t('common.where') }}:
             </p>
             <div class="flex gap-4 w-full">
-              <div class="flex flex-col flex-1">
+              <div class="coordinate">
                 <label for="x" class="label">X:</label>
                 <InputNumber
                   show-buttons
                   v-model="x"
                   input-id="x"
+                  input-class="max-w-[70px] md:max-w-[unset]"
                 />
               </div>
-              <div class="flex flex-col flex-1">
+              <div class="coordinate">
                 <label for="y" class="label">Y:</label>
                 <InputNumber
                   show-buttons
                   v-model="y"
                   input-id="y"
+                  input-class="max-w-[70px] md:max-w-[unset]"
                 />
               </div>
             </div>
-            <div class="flex gap-4 w-full">
+            <div class="flex flex-col md:flex-row gap-4 w-full">
               <div class="flex-1">
-                <label for="type_id" class="label">Build:</label>
+                <label class="label">{{ t('common.build') }}:</label>
                 <Dropdown
                   :options="buildingTypes"
                   v-model="buildingType"
                   option-label="title"
                   class="w-full"
-                />
+                >
+                  <template #option="{option}: {option: BuildingType}">
+                    {{ getTranslation({parent: 'buildings.types', child: option.title}) }}
+                  </template>
+                  <template #value="{value}: {value: BuildingType}">
+                    {{ getTranslation({parent: 'buildings.types', child: value.title}) }}
+                  </template>
+                </Dropdown>
               </div>
-              <div class="flex-1 self-center text-xl">
-                {{ buildingType.description }}
-              </div>
+              <p class="flex-1 self-start md:self-end text-xl md:pb-3">
+                {{ getTranslation({parent: 'buildings.typesDescriptions', child: buildingType.title}) }}
+              </p>
             </div>
             <div class="flex flex-col">
-              <label for="square" class="label">Square:</label>
+              <label for="square" class="label">{{ t('common.square') }}:</label>
               <InputNumber
                 show-buttons
                 v-model="square"
@@ -53,7 +62,7 @@
               <div class="flex flex-col">
                 <div class="flex gap-4">
                   <p class="label">
-                    Cost:
+                    {{ t('common.cost') }}:
                   </p>
                   <p class="text-xl underline">
                     {{ buildingType.cost * square }}$
@@ -61,7 +70,7 @@
                 </div>
                 <div class="flex gap-4">
                   <p class="label">
-                    Time:
+                    {{ t('common.time') }}:
                   </p>
                   <p class="text-xl underline">
                     {{ formatDuration(buildingType.buildTime * square / 1000000000) }}
@@ -70,7 +79,7 @@
               </div>
             </div>
             <Button
-              label="Construct"
+              :label="t('common.construct')"
               class="bg-indigo-500"
               @click="construct"
             />
@@ -87,6 +96,7 @@ import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
@@ -95,6 +105,7 @@ import { useGetData } from '@/composables/useGetData'
 import type { DataMessage } from '@/types'
 import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
+import { getTranslation } from '@/utils/getTranslation'
 
 const { query } = useRoute()
 
@@ -104,12 +115,14 @@ const buildingType = ref<BuildingType>({} as BuildingType)
 const square = ref<number>(10)
 const message = ref<DataMessage | null>(null)
 
+const { constructBuilding } = useBuildings()
+const { t } = useI18n()
+
 const { data: buildingTypes, onFetchResponse } = useGetData<BuildingType[]>('/building/types')
+
 onFetchResponse(() => {
   buildingType.value = buildingTypes.value[0]
 })
-
-const { constructBuilding } = useBuildings()
 
 const construct = () => {
   message.value = null
@@ -122,6 +135,7 @@ const construct = () => {
   }
 
   const { dataMessage, onFetchFinally } = constructBuilding(payload)
+
   onFetchFinally(() => {
     message.value = dataMessage.value
   })
@@ -132,5 +146,9 @@ const construct = () => {
 <style scoped>
 .label {
   @apply block text-xl font-bold mb-2;
+}
+
+.coordinate {
+  @apply flex flex-row md:flex-col items-center md:items-start gap-4 md:gap-0 flex-1;
 }
 </style>

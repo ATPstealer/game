@@ -7,11 +7,11 @@
         v-model="buildingType"
         @change="event => setParams({key: 'buildingTypeId', value: event.value.id})"
       >
-        <template #option="{option}">
-          {{ getBuildingTypeName(option) }}
+        <template #option="{option}: {option: BuildingType}">
+          {{ getTranslation({parent: 'buildings.types', child: option.title}) }}
         </template>
-        <template #value="{value}">
-          {{ getBuildingTypeName(value) }}
+        <template #value="{value}: {value: BuildingType}">
+          {{ getTranslation({parent: 'buildings.types', child: value.title}) }}
         </template>
       </Dropdown>
       <div class="slider">
@@ -72,6 +72,7 @@ import Layout from '@/components/Common/Layout.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Coords } from '@/types'
 import type { BuildingType, SearchBuildingParams } from '@/types/Buildings/index.interface'
+import { getTranslation } from '@/utils/getTranslation'
 
 const buildingType = ref<BuildingType>({ id: 0, title: 'All' })
 const buildingTypes = ref<BuildingType[]>([{ id: 0, title: 'All' }])
@@ -88,10 +89,6 @@ onFetchResponse(() => {
 })
 
 const { data: coords } = useGetData<Record<Coords, number>>('/settings')
-
-const getBuildingTypeName = (type: BuildingType) => {
-  return t(`buildings.types.${type?.title.toLowerCase()}`)
-}
 
 const searchUsers = () => {
   const { data, onFetchResponse } = useGetData<string[]>(`/data/users_by_prefix?prefix=${userSearch.value}`)

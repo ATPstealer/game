@@ -1,26 +1,29 @@
-export const timeValues = [
+import { computed } from 'vue'
+import i18n from '@/i18n'
+
+export const timeValues = computed(() => [
   {
     value: 3600 * 1000000000,
-    label: '1 hour'
+    label: `${i18n.global.t('common.hour', 1)}`
   },
   {
     value: 7200 * 1000000000,
-    label: '2 hours'
+    label: `${i18n.global.t('common.hour', 2)}`
   },
   {
     value: 18000 * 1000000000,
-    label: '5 hours'
+    label: `${i18n.global.t('common.hour', 5)}`
   },
   {
     value: 86400 * 1000000000,
-    label: '24 hours'
+    label: `${i18n.global.t('common.hour', 24)}`
   },
   {
     value: 604800 * 1000000000,
-    label: '7 days'
+    label: `${i18n.global.t('common.day', 7)}`
   },
   {
     value: 2592000 * 1000000000,
-    label: '30 days'
+    label: `${i18n.global.t('common.day', 30)}`
   }
-]
+])

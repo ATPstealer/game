@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-4" v-if="building?.title">
     <h1 class="text-center">
-      Production
+      {{ t('common.production') }}
     </h1>
     <MessageBlock
       :message="message"
@@ -13,7 +13,7 @@
         <template #content>
           <div class="flex flex-col gap-4">
             <div class="font-bold">
-              Start work:
+              {{ t('buildings.production.startWork') }}:
             </div>
             <Dropdown
               v-model="duration"
@@ -24,26 +24,26 @@
             <Button
               :disabled="!selectedBlueprint"
               @click="start"
-              label="Start work"
+              :label="t('buildings.production.startWork')"
               class-name="w-full"
             />
           </div>
         </template>
       </Card>
-      <Card class="w-full max-w-md">
+      <Card class="w-full max-w-md building-card">
         <template #content>
           <span class="font-bold">
-            Building:
+            {{ t('buildings.one') }}:
           </span>
-          <p>Type: {{ building?.title }}</p>
-          <p>Status: {{ building?.status }}</p>
-          <p>Coordinates: {{ building?.x }}:{{ building?.y }}</p>
-          <p>Level x Square: {{ building?.level }}x{{ building?.square }}</p>
+          <p><span>{{ t('common.type') }}</span>: {{ getTranslation({parent: 'buildings.types', child: building?.title}) }}</p>
+          <p><span>{{ t('common.status') }}</span>: {{ building?.status }}</p>
+          <p><span>{{ t('common.coordinates') }}</span>: {{ building?.x }}:{{ building?.y }}</p>
+          <p><span>{{ t('common.level') }}</span> x <span>{{ t('common.square') }}</span>: {{ building?.level }}x{{ building?.square }}</p>
         </template>
       </Card>
     </div>
     <h3 class="text-center">
-      Choose resource for creating:
+      {{ t('buildings.production.chooseResource') }}
     </h3>
     <div v-if="blueprints?.length && resourceTypes?.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <ResourceCard
@@ -63,6 +63,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { timeValues } from '@/components/Buildings/ProductionBuilding/constants'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import ResourceCard from '@/components/Resources/ResourceCard.vue'
@@ -71,6 +72,7 @@ import { useGetData } from '@/composables/useGetData'
 import type { DataMessage } from '@/types'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { ResourceType } from '@/types/Resources/index.interface'
+import { getTranslation } from '@/utils/getTranslation'
 
 interface Props {
   building: Building;
@@ -79,9 +81,11 @@ interface Props {
 const props = defineProps<Props>()
 
 const blueprints = ref<Blueprint[]>([])
-const duration = ref<number>(3600)
+const duration = ref<number>(3600 * 1000000000)
 const selectedBlueprint = ref<number>(0)
 const message = ref<DataMessage | null>(null)
+
+const { t } = useI18n()
 
 const { data, onFetchResponse } = useGetData('/building/blueprints')
 onFetchResponse(() => {
@@ -120,5 +124,7 @@ const start = () => {
 </script>
 
 <style scoped>
-
+.building-card span {
+  @apply capitalize;
+}
 </style>
