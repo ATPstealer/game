@@ -10,7 +10,7 @@ export interface ConstructBuildingPayload {
 export interface Building {
   id: number;
   typeId: number;
-  title: number;
+  title: string;
   square: number;
   x: number;
   y: number;

@@ -16,6 +16,7 @@
     "signup": "Sign Up"
   },
   "buildings": {
+    "builder": "Building Builder",
     "coefficient efficiency": "Coefficient efficiency",
     "construct new building": "Construct New Building",
     "finish": "Finish",
@@ -31,6 +32,13 @@
       "workers": "Workers"
     },
     "one": "Building",
+    "production": {
+      "chooseResource": "Choose resource for creating:",
+      "cycle": "1 cycle time",
+      "produce": "Produce",
+      "startWork": "Start work",
+      "use": "Use"
+    },
     "status": "Status",
     "store": {
       "columns": {
@@ -70,21 +78,45 @@
       "refinery": "Refinery",
       "storage": "Storage",
       "water pump": "Water Pump"
+    },
+    "typesDescriptions": {
+      "energy plant": "Provide energy",
+      "farm": "Food production",
+      "field": "Grows food",
+      "food factory": "Food production",
+      "gas station": "Sells energy carriers",
+      "grocery store": "Sells essential products",
+      "mine": "Mining resources",
+      "refinery": "Oil refining",
+      "storage": "Store something",
+      "water pump": "Provide water"
     }
   },
   "common": {
     "amount": "Amount",
+    "build": "Build",
     "buy": "Buy",
+    "construct": "Construct",
+    "coordinates": "coordinates",
+    "cost": "Cost",
     "create": "Create",
+    "day": "{n} day | {n} days",
     "from": "from",
+    "hour": "{n} hour | {n} hours",
     "in": "in",
+    "level": "level",
     "move": "Move",
     "owner": "Owner",
+    "production": "Production",
     "reset": "Reset",
     "resource": "Resource",
     "sell": "Sell",
     "square": "Square",
-    "to": "to"
+    "status": "status",
+    "time": "Time",
+    "to": "to",
+    "type": "type",
+    "where": "Where"
   },
   "lands": {
     "title": "Lands"
