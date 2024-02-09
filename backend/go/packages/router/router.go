@@ -70,5 +70,9 @@ func MakeRouter() *gin.Engine {
 	data.GET("/users_by_prefix", controllers.GetUserNamesByPrefix)
 	data.GET("/evolution/prices", controllers.GetEvolutionPrices)
 
+	// MONGO
+
+	router.GET("/api/v2/settings", controllers.GetSettingsMongo)
+
 	return router
 }

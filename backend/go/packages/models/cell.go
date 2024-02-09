@@ -78,3 +78,21 @@ func AddCivilSavings(db *gorm.DB, x int, y int, money float64) error {
 	res := db.Save(&cell)
 	return res.Error
 }
+
+// mongo
+
+type CellMongo struct {
+	CellName         string  `bson:"cellName" json:"cellName"`
+	X                int     `bson:"x" json:"x"`
+	Y                int     `bson:"y" json:"y"`
+	SurfaceImagePath string  `bson:"surfaceImagePath" json:"surfaceImagePath"`
+	Square           int     `bson:"square" json:"square"`
+	Pollution        float64 `bson:"pollution" json:"pollution"`
+	Population       float64 `bson:"population" json:"population"`
+	CivilSavings     float64 `bson:"civilSavings" json:"civilSavings"`
+	SpendRate        float64 `bson:"spendRate" json:"SpendRate"`
+	Education        float64 `bson:"education" json:"education"`
+	Crime            float64 `bson:"crime" json:"crime"`
+	Medicine         float64 `bson:"medicine" json:"medicine"`
+	AverageSalary    float64 `bson:"averageSalary" json:"averageSalary"`
+}
