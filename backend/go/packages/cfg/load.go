@@ -17,6 +17,11 @@ type Vars struct {
 	GoogleAPI     string `env:"GOOGLE_API"`
 	GoogleSheetID string `env:"GOOGLE_SHEET_ID"`
 	Init          bool   `env:"INIT" default:"true"` // change to separate run
+	MongoUser     string `env:"MONGO_USER" default:"root"`
+	MongoPassword string `env:"MONGO_PASSWORD"`
+	MongoHost     string `env:"MONGO_HOST" default:"localhost"`
+	MongoDatabase string `env:"MONGO_DATABASE"`
+	MongoPort     string `env:"MONGO_PORT"  default:"27017"`
 }
 
 var (
@@ -74,5 +79,21 @@ func LoadConfig() {
 	} else {
 		Config.Init = true
 	}
-
+	if mongoUser := os.Getenv("MONGO_USER"); mongoUser != "" {
+		Config.MongoUser = mongoUser
+	}
+	if mongoPassword := os.Getenv("MONGO_PASSWORD"); mongoPassword != "" {
+		Config.MongoPassword = mongoPassword
+	}
+	if mongoHost := os.Getenv("MONGO_HOST"); mongoHost != "" {
+		Config.MongoHost = mongoHost
+	}
+	if mongoDatabase := os.Getenv("MONGO_DATABASE"); mongoDatabase != "" {
+		Config.MongoDatabase = mongoDatabase
+	}
+	if mongoPort := os.Getenv("MONGO_PORT"); mongoPort != "" {
+		Config.MongoPort = mongoPort
+	} else {
+		Config.MongoPort = "27017"
+	}
 }

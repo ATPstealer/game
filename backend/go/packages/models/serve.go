@@ -4,6 +4,9 @@ import (
 	"backend/packages/cfg"
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
@@ -293,4 +296,74 @@ func productionBlueprintsImport(db *gorm.DB, rows [][]interface{}) error {
 		}
 	}
 	return nil
+}
+
+// MONGO
+
+func InitMongo(m *mongo.Database, config cfg.Vars) {
+	if config.Init {
+		count, err := m.Collection("settings").CountDocuments(context.TODO(), bson.M{})
+		if err != nil {
+			log.Fatal(err)
+		}
+		if count == 0 {
+			loadSettingsMongo(m)
+		}
+		count, err = m.Collection("cells").CountDocuments(context.TODO(), bson.M{})
+		if err != nil {
+			log.Fatal(err)
+		}
+		if count == 0 {
+			generateMapMongo(m)
+		}
+	}
+}
+
+func loadSettingsMongo(m *mongo.Database) {
+	settings := []SettingsMongo{
+		{Key: "mapMinX", Value: -2},
+		{Key: "mapMaxX", Value: 2},
+		{Key: "mapMinY", Value: -2},
+		{Key: "mapMaxY", Value: 2},
+		{Key: "interestRate", Value: 0.5},
+	}
+	collection := m.Collection("settings")
+	for _, setting := range settings {
+		filter := bson.D{{"key", setting.Key}}
+		update := bson.D{{"$set", setting}}
+		_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+		if err != nil {
+			log.Fatal("Error while updating setting:", err)
+		}
+	}
+}
+
+func generateMapMongo(m *mongo.Database) {
+	settings, _ := GetSettingsMongo(m)
+	var newMapCell CellMongo
+	for y := int(settings["mapMinY"]); y <= int(settings["mapMaxY"]); y++ {
+		for x := int(settings["mapMinX"]); x <= int(settings["mapMaxX"]); x++ {
+			newMapCell = CellMongo{
+				CellName:         strconv.Itoa(x) + "x" + strconv.Itoa(y),
+				X:                x,
+				Y:                y,
+				SurfaceImagePath: "/map/grass/land" + strconv.Itoa(x) + "x" + strconv.Itoa(y) + ".png",
+				Square:           10000,
+				Pollution:        1000,
+				Population:       10000,
+				CivilSavings:     456345,
+				SpendRate:        0.1,
+				Education:        10,
+				Crime:            10,
+				Medicine:         10,
+			}
+			collection := m.Collection("cells")
+			filter := bson.D{{"X", newMapCell.X}, {"Y", newMapCell.Y}}
+			update := bson.D{{"$set", newMapCell}}
+			_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+			if err != nil {
+				log.Fatal("Error while updating cells:", err)
+			}
+		}
+	}
 }
