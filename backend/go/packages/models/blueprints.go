@@ -1,7 +1,10 @@
 package models
 
 import (
+	"context"
 	"github.com/goccy/go-json"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -81,4 +84,37 @@ func BlueprintToBlueprintResult(blueprint Blueprint) (blueprintResult BlueprintR
 		ProducedInID:      blueprint.ProducedInID,
 		ProductionTime:    blueprint.ProductionTime,
 	}, nil
+}
+
+//mongo
+
+type BlueprintMongo struct {
+	ID                uint                  `json:"id" bson:"id"`
+	Name              string                `json:"name" bson:"name"`
+	ProducedResources []ResourceAmountMongo `json:"producedResources" bson:"producedResources"`
+	UsedResources     []ResourceAmountMongo `json:"usedResources" bson:"usedResources"`
+	ProducedInID      uint                  `json:"producedInId" bson:"producedInId"`
+	ProductionTime    time.Duration         `json:"productionTime" bson:"productionTime"`
+}
+
+type ResourceAmountMongo struct {
+	ResourceID uint    `json:"resourceId" bson:"resourceId"`
+	Amount     float64 `json:"amount" bson:"amount"`
+}
+
+func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, error) {
+	var blueprints []BlueprintMongo
+	filter := bson.M{}
+	if blueprintID != 0 {
+		filter["id"] = blueprintID
+	}
+	cur, err := m.Collection("blueprints").Find(context.TODO(), filter)
+	if err != nil {
+		log.Println("Can't get blueprints: " + err.Error())
+		return nil, err
+	}
+	defer cur.Close(context.TODO())
+
+	err = cur.All(context.TODO(), &blueprints)
+	return blueprints, err
 }

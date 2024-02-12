@@ -11,6 +11,8 @@ func GetSettings(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": models.GetSettingsMap(db.DB)})
 }
 
+// mongo
+
 func GetSettingsMongo(c *gin.Context) {
 	settings, err := models.GetSettingsMongo(db.M)
 	if err != nil {

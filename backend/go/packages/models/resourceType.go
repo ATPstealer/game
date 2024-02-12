@@ -40,3 +40,14 @@ func GetResourceTypesByID(db *gorm.DB, typeID uint) (ResourceTypeResult, error) 
 	}
 	return resourceType, res.Error
 }
+
+// mongo
+
+type ResourceTypeMongo struct {
+	ID         uint    `json:"id" bson:"id"`
+	Name       string  `json:"name" bson:"name"`
+	Volume     float64 `json:"volume" bson:"volume"` // m3
+	Weight     float64 `json:"weight" bson:"weight"` // kg
+	Demand     float64 `json:"demand" bson:"demand"`
+	StoreGroup string  `json:"storeGroup" bson:"storeGroup"`
+}

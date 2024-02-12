@@ -13,8 +13,9 @@ func main() {
 	db.MongoConnect(cfg.Config)        // global db.M
 	db.ConnectToDatabase(cfg.Config)   // global db.DB
 	models.AutoMigrateModel(db.DB)     // migrate database models
-	models.InitMongo(db.M, cfg.Config) // Init mongoDB vars
 	models.Init(db.DB, cfg.Config)     // Init database during first run
+	models.InitMongo(db.M, cfg.Config) // Init mongoDB vars
+	models.MongoIndex(db.M)
 	models.DeleteObsoleteTokens(db.DB)
 
 	r := router.MakeRouter()               // register controllers
