@@ -1,7 +1,11 @@
 package models
 
 import (
+	"context"
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 )
@@ -108,4 +112,54 @@ func GetUserNamesByPrefix(db *gorm.DB, prefix string) ([]string, error) {
 		names = append(names, user.NickName)
 	}
 	return names, nil
+}
+
+// mongo
+
+type UserMongo struct {
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	NickName     string             `json:"nickName" bson:"nickName"`
+	Email        string             `json:"email" bson:"email"`
+	Password     string             `json:"password" bson:"password"`
+	Money        float64            `json:"money" bson:"money"`
+	Memory       int                `json:"memory" bson:"memory"`
+	Intelligence int                `json:"intelligence" bson:"intelligence"`
+	Attention    int                `json:"attention" bson:"attention"`
+	Wits         int                `json:"wits" bson:"wits"`
+	Multitasking int                `json:"multitasking" bson:"multitasking"`
+	Management   int                `json:"management" bson:"management"`
+	Planning     int                `json:"planning" bson:"planning"`
+}
+
+func CreateUserMongo(m *mongo.Database, nickName string, email string, password string) error {
+	userMongo := UserMongo{
+		NickName:     nickName,
+		Email:        email,
+		Password:     password,
+		Money:        1000000,
+		Memory:       3,
+		Intelligence: 3,
+		Attention:    3,
+		Wits:         3,
+		Multitasking: 3,
+		Management:   3,
+		Planning:     3,
+	}
+	_, err := m.Collection("users").InsertOne(context.TODO(), userMongo)
+	return err
+}
+
+func GetUserByNickNameMongo(m *mongo.Database, nickName string) (UserMongo, error) {
+	var user UserMongo
+	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"nickName", nickName}}).Decode(&user)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func GetUserDataMongo(m *mongo.Database, userID primitive.ObjectID) (UserMongo, error) {
+	var user UserMongo
+	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"_id", userID}}).Decode(&user)
+	return user, err
 }

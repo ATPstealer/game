@@ -167,3 +167,21 @@ func SetHiring(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("Hiring details changed")})
 }
+
+//mongo
+
+func GetBlueprintsMongo(c *gin.Context) {
+	var blueprintID uint
+	var err error
+	if c.Query("id") != "" {
+		blueprintID, err = include.StrToUInt(c, c.Query("id"))
+		if err != nil {
+			return
+		}
+	}
+	blueprints, err := models.GetBlueprintsMongo(db.M, blueprintID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 11, "text": "Can't get blueprints: " + err.Error()})
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": blueprints})
+}

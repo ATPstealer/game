@@ -49,3 +49,18 @@ func GetAllBuildingTypes(db *gorm.DB) ([]BuildingTypeResult, error) {
 	}
 	return buildingTypes, res.Error
 }
+
+// mongo
+
+type BuildingTypeMongo struct {
+	ID               uint          `bson:"id" json:"id"`
+	Title            string        `bson:"title" json:"title"`
+	Description      string        `bson:"description" json:"description"`
+	Cost             float64       `bson:"cost" json:"cost"`
+	Requirements     string        `bson:"requirements" json:"requirements"`
+	BuildTime        time.Duration `bson:"buildTime" json:"buildTime"`
+	BuildingGroup    string        `bson:"buildingGroup" json:"buildingGroup"`
+	BuildingSubGroup string        `bson:"buildingSubGroup" json:"buildingSubGroup"`
+	Capacity         float64       `bson:"capacity" json:"capacity"`
+	Workers          int           `bson:"workers" json:"workers"`
+}
