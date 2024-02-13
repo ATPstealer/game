@@ -20,7 +20,7 @@ func MakeRouter() *gin.Engine {
 	user.POST("/login", controllers.Login)
 	// Secure aria
 	user.Use(AuthMiddleware())
-	user.DELETE("/logout", controllers.Logout)
+	user.DELETE("/login", controllers.Logout)
 	user.GET("/data", controllers.GetUserData)
 
 	building := router.Group("/api/v1/building")
@@ -78,6 +78,7 @@ func MakeRouter() *gin.Engine {
 	userMongo.POST("/create", controllers.CreateUserMongo)
 	userMongo.POST("/login", controllers.LoginMongo)
 	userMongo.Use(AuthMiddlewareMongo())
+	userMongo.DELETE("/login", controllers.LogoutMongo)
 	userMongo.GET("/data", controllers.GetUserDataMongo)
 
 	buildingMongo := router.Group("/api/v2/building")

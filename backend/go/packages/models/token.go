@@ -101,3 +101,8 @@ func GetUserIDByTokenMongo(m *mongo.Database, secureToken string) (primitive.Obj
 	}
 	return token.UserID, nil
 }
+
+func DeleteTokenMongo(m *mongo.Database, token string) error {
+	_, err := m.Collection("tokens").DeleteOne(context.TODO(), bson.M{"token": token})
+	return err
+}

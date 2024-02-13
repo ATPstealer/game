@@ -163,3 +163,18 @@ func GetUserDataMongo(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": user})
 }
+
+func LogoutMongo(c *gin.Context) {
+	secureToken, err := c.Cookie("secureToken")
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 9, "test": "Token cookie is required" + err.Error()})
+		return
+	}
+	if err := models.DeleteTokenMongo(db.M, secureToken); err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 12, "text": "Can't delete token: " + err.Error()})
+		log.Println("Can't delete token: ", err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": -2, "text": "You logout"})
+}

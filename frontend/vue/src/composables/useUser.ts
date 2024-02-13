@@ -44,7 +44,7 @@ export const useUser = () => {
   }
 
   const logOut = () => {
-    useMyFetch('/user/logout', {
+    useMyFetch('/user/login', {
       onFetchError: ctx => {
         console.log(ctx.error.message)
 

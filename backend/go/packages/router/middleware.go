@@ -11,7 +11,7 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		secureToken, err := c.Cookie("secureToken")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "Token cookie is required"}) // TODO: передалать все так
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "Token cookie is required"})
 			c.Abort()
 			return
 		}

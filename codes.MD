@@ -1,3 +1,4 @@
+-2 Logout successful
 -1 user %nickName registered with email %email
 0 OK   
 1 Can't make this now  
@@ -11,7 +12,7 @@
 9 Token cookie is required
 10 Token incorrect
 11 Can't get blueprints
-
+12 Can't delete token
 
 
 100001 database error
