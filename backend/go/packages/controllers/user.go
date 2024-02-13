@@ -178,3 +178,13 @@ func LogoutMongo(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": -2, "text": "You logout"})
 }
+
+func GetUserNamesByPrefixMongo(c *gin.Context) {
+	names, err := models.GetUserNamesByPrefixMongo(db.M, c.Query("prefix"))
+	if err != nil {
+		log.Println("Can't get users ", err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 13, "text": "Can't get users " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": names})
+}

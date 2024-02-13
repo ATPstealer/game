@@ -163,3 +163,22 @@ func GetUserDataMongo(m *mongo.Database, userID primitive.ObjectID) (UserMongo, 
 	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"_id", userID}}).Decode(&user)
 	return user, err
 }
+
+func GetUserNamesByPrefixMongo(m *mongo.Database, prefix string) ([]string, error) {
+	cursor, err := m.Collection("users").Find(context.TODO(), bson.M{"nickName": bson.M{"$regex": prefix}})
+	if err != nil {
+		return nil, err
+	}
+	var names []string
+
+	for cursor.Next(context.TODO()) {
+		var user UserMongo
+		err := cursor.Decode(&user)
+		if err != nil {
+			return nil, err
+		}
+		names = append(names, user.NickName)
+	}
+
+	return names, nil
+}

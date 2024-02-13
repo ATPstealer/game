@@ -84,5 +84,8 @@ func MakeRouter() *gin.Engine {
 	buildingMongo := router.Group("/api/v2/building")
 	buildingMongo.GET("/blueprints", controllers.GetBlueprintsMongo)
 
+	dataMongo := router.Group("/api/v2/data")
+	dataMongo.GET("/users_by_prefix", controllers.GetUserNamesByPrefixMongo)
+
 	return router
 }
