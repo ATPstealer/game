@@ -87,5 +87,8 @@ func MakeRouter() *gin.Engine {
 	dataMongo := router.Group("/api/v2/data")
 	dataMongo.GET("/users_by_prefix", controllers.GetUserNamesByPrefixMongo)
 
+	mapCellMongo := router.Group("/api/v2/map")
+	mapCellMongo.GET("/cell_owners", controllers.GetCellOwnersMongo)
+
 	return router
 }

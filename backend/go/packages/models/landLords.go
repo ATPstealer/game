@@ -1,7 +1,12 @@
 package models
 
 import (
+	"context"
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 )
@@ -133,4 +138,51 @@ func CheckEnoughLandForBuilding(db *gorm.DB, userID uint, square int, x int, y i
 		freeLand -= building.Square
 	}
 	return freeLand >= square, nil
+}
+
+// mongo
+
+type LandLordMongo struct {
+	ID     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserID primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"`
+	Square int                `json:"square"`
+	X      int                `json:"x"`
+	Y      int                `json:"y"`
+}
+
+// BuyLandMongo Нужно сделать логику покуки
+func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandPayload) (float64, error) {
+	m.Collection("landLords").UpdateOne(context.TODO(),
+		bson.M{
+			"userId": userID,
+			"x":      payload.X,
+			"y":      payload.Y,
+		},
+		bson.M{
+			"$inc": bson.M{
+				"square": payload.Square,
+			},
+			"$setOnInsert": bson.M{
+				"userId": userID,
+				"x":      payload.X,
+				"y":      payload.Y,
+			},
+		},
+		options.Update().SetUpsert(true))
+	return 0, nil
+}
+
+func GetCellOwnersMongo(m *mongo.Database, x int, y int) ([]LandLordMongo, error) {
+	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"x": x, "y": y})
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.Background())
+
+	var landLords []LandLordMongo
+	if err = cursor.All(context.TODO(), &landLords); err != nil {
+		return nil, err
+	}
+
+	return landLords, nil
 }

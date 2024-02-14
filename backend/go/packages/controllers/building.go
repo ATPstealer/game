@@ -185,3 +185,30 @@ func GetBlueprintsMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": blueprints})
 }
+
+/*
+func CreateBuildingMongo(c *gin.Context) {
+	var constructBuildingPayload models.ConstructBuildingPayload
+	if err := include.GetPayload(c, &constructBuildingPayload); err != nil {
+		return
+	}
+
+	userID, err := include.GetUserIDFromContext(c)
+	if err != nil {
+		return
+	}
+
+	if constructBuildingPayload.Square <= 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 14, "text": "In this building, people will suffer from lack of air."})
+		return
+	}
+
+	err = models.ConstructBuildingMongo(db.M, userID, constructBuildingPayload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create building: " + err.Error()})
+		log.Println("Can't create building: " + err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You start to construct building")})
+}*/

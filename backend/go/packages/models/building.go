@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 	"log"
 	"strings"
@@ -282,4 +283,23 @@ func GetBuildingsForHiring(db *gorm.DB) ([]Building, error) {
 		return nil, err
 	}
 	return buildings, nil
+}
+
+// mongo
+
+type BuildingMongo struct {
+	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	TypeID      uint               `json:"typeId"`
+	UserID      uint               `json:"userId"`
+	X           int                `json:"x"`
+	Y           int                `json:"y"`
+	Square      int                `json:"square"`
+	Level       int                `json:"level"`
+	Status      BuildingStatus     `json:"status"`
+	WorkStarted *time.Time         `json:"workStarted"`
+	WorkEnd     *time.Time         `json:"workEnd"`
+	HiringNeeds int                `json:"hiringNeeds"`
+	Salary      float64            `json:"salary"`
+	Workers     int                `json:"workers"`
+	OnStrike    bool               `json:"onStrike"`
 }
