@@ -14,5 +14,7 @@
 11 Can't get blueprints
 12 Can't delete token
 13 Can't get users
+14 In this building, people will suffer from lack of air
+15 Can't get Cell Owners
 
 100001 database error

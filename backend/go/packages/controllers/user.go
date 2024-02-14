@@ -154,7 +154,7 @@ func GetUserDataMongo(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	user, err := models.GetUserDataMongo(db.M, userID)
+	user, err := models.GetUserByIDMongo(db.M, userID)
 	if err != nil {
 		log.Println("Can't get user ", err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 6, "text": "Can't get user " + err.Error()})

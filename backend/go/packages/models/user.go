@@ -158,7 +158,7 @@ func GetUserByNickNameMongo(m *mongo.Database, nickName string) (UserMongo, erro
 	return user, nil
 }
 
-func GetUserDataMongo(m *mongo.Database, userID primitive.ObjectID) (UserMongo, error) {
+func GetUserByIDMongo(m *mongo.Database, userID primitive.ObjectID) (UserMongo, error) {
 	var user UserMongo
 	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"_id", userID}}).Decode(&user)
 	return user, err
@@ -181,4 +181,16 @@ func GetUserNamesByPrefixMongo(m *mongo.Database, prefix string) ([]string, erro
 	}
 
 	return names, nil
+}
+
+func AddMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) error {
+	user, err := GetUserByIDMongo(m, userID)
+	if err != nil {
+		return err
+	}
+	if user.Money+money < 0 {
+		return errors.New("not enough money")
+	}
+	_, err = m.Collection("users").UpdateOne(context.TODO(), bson.M{"_id": userID}, bson.M{"$inc": bson.M{"money": money}})
+	return err
 }

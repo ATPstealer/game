@@ -76,3 +76,20 @@ func BuyLand(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You bought %d ares in %dx%d cell by %.2f$",
 		buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
 }
+
+func GetCellOwnersMongo(c *gin.Context) {
+	x, err := include.StrToInt(c, c.Query("x"))
+	if err != nil {
+		return
+	}
+	y, err := include.StrToInt(c, c.Query("y"))
+	if err != nil {
+		return
+	}
+	cellOwners, err := models.GetCellOwnersMongo(db.M, x, y)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 15, "text": "Can't get Cell Owners: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
+}
