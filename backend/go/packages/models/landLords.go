@@ -151,7 +151,6 @@ type LandLordMongo struct {
 	Y      int                `json:"y"`
 }
 
-// BuyLandMongo Нужно сделать логику покуки
 func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandPayload) (float64, error) {
 	occupiedLand, err := GetCellOccupiedLandMongo(m, payload.X, payload.Y)
 	if err != nil {
@@ -203,6 +202,36 @@ func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandP
 
 func GetCellOwnersMongo(m *mongo.Database, x int, y int) ([]LandLordMongo, error) {
 	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"x": x, "y": y})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var landLords []LandLordMongo
+	if err = cursor.All(context.TODO(), &landLords); err != nil {
+		return nil, err
+	}
+
+	return landLords, nil
+}
+
+func GetAllLandLordsMongo(m *mongo.Database) ([]LandLordMongo, error) {
+	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
+	}
+	defer cursor.Close(context.Background())
+
+	var landLords []LandLordMongo
+	if err = cursor.All(context.TODO(), &landLords); err != nil {
+		return nil, err
+	}
+
+	return landLords, nil
+}
+
+func GetMyLandsMongo(m *mongo.Database, userID primitive.ObjectID) ([]LandLordMongo, error) {
+	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"userId": userID})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
 	}

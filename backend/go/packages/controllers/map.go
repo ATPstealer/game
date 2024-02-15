@@ -144,3 +144,27 @@ func GetMapMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": mapCells})
 }
+
+func GetAllLandLordsMongo(c *gin.Context) {
+	cellOwners, err := models.GetAllLandLordsMongo(db.M)
+	if err != nil {
+		log.Println("Can't get Land Lords: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
+}
+
+func GetMyLandMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	myLands, err := models.GetMyLandsMongo(db.M, userID)
+	if err != nil {
+		log.Println("Can't get Land Lords: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": myLands})
+}

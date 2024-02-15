@@ -87,11 +87,13 @@ func MakeRouter() *gin.Engine {
 	dataMongo := router.Group("/api/v2/data")
 	dataMongo.GET("/users_by_prefix", controllers.GetUserNamesByPrefixMongo)
 
-	mapCellMongo := router.Group("/api/v2/map")
+	mapCellMongo := router.Group("/api/v2/map") // MAP DONE
 	mapCellMongo.GET("/cell_owners", controllers.GetCellOwnersMongo)
 	mapCellMongo.GET("/", controllers.GetMapMongo)
+	mapCellMongo.GET("/all_land_lords", controllers.GetAllLandLordsMongo)
 	mapCellMongo.Use(AuthMiddlewareMongo())
 	mapCellMongo.POST("/buy_land", controllers.BuyLandMongo)
+	mapCellMongo.GET("/my", controllers.GetMyLandMongo)
 
 	return router
 }
