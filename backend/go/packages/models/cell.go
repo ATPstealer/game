@@ -152,3 +152,17 @@ func AddCivilSavingsMongo(m *mongo.Database, x int, y int, money float64) error 
 		})
 	return err
 }
+
+func GetAllCellsMongo(m *mongo.Database) ([]CellMongo, error) {
+	var cells []CellMongo
+
+	cursor, err := m.Collection("cells").Find(context.TODO(), bson.M{})
+	if err != nil {
+		log.Println("Can't get all cells: " + err.Error())
+		return cells, err
+	}
+	defer cursor.Close(context.TODO())
+
+	err = cursor.All(context.TODO(), &cells)
+	return cells, err
+}

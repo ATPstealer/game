@@ -134,3 +134,13 @@ func BuyLandMongo(c *gin.Context) {
 		"text": fmt.Sprintf("You bought %d ares in %dx%d cell by %.2f$",
 			buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
 }
+
+func GetMapMongo(c *gin.Context) {
+	mapCells, err := models.GetAllCellsMongo(db.M)
+	if err != nil {
+		log.Println("Can't get map cells: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 18, "text": "Can't get map cells: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": mapCells})
+}
