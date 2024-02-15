@@ -194,3 +194,11 @@ func AddMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) 
 	_, err = m.Collection("users").UpdateOne(context.TODO(), bson.M{"_id": userID}, bson.M{"$inc": bson.M{"money": money}})
 	return err
 }
+
+func CheckEnoughMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) bool {
+	user, err := GetUserByIDMongo(m, userID)
+	if err != nil {
+		log.Println(err)
+	}
+	return user.Money >= money
+}

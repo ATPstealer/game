@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"errors"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,9 +21,9 @@ type LandLord struct {
 }
 
 type BuyLandPayload struct {
-	X      int
-	Y      int
-	Square int
+	X      int `json:"x"`
+	Y      int `json:"y"`
+	Square int `json:"square"`
 }
 
 func BuyLand(db *gorm.DB, userID uint, payload BuyLandPayload) (float64, error) {
@@ -152,7 +153,32 @@ type LandLordMongo struct {
 
 // BuyLandMongo Нужно сделать логику покуки
 func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandPayload) (float64, error) {
-	m.Collection("landLords").UpdateOne(context.TODO(),
+	occupiedLand, err := GetCellOccupiedLandMongo(m, payload.X, payload.Y)
+	if err != nil {
+		return 0, err
+	}
+	price := 10 * (float64(occupiedLand)*2 + 1 + float64(payload.Square)) * float64(payload.Square) / 2
+
+	if !CheckEnoughMoneyMongo(m, userID, price) {
+		return 0, errors.New("not enough money")
+	}
+	enoughLand, err := CheckEnoughLandMongo(m, payload.X, payload.Y, payload.Square)
+	if err != nil {
+		return 0, err
+	}
+	if !enoughLand {
+		return 0, errors.New("not enough land")
+	}
+
+	if err := AddMoneyMongo(m, userID, (-1)*price); err != nil {
+		return 0, err
+	}
+
+	if err := AddCivilSavingsMongo(m, payload.X, payload.Y, price); err != nil {
+		log.Println("Can't add civil money" + err.Error())
+	}
+
+	_, err = m.Collection("landLords").UpdateOne(context.TODO(),
 		bson.M{
 			"userId": userID,
 			"x":      payload.X,
@@ -169,13 +195,16 @@ func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandP
 			},
 		},
 		options.Update().SetUpsert(true))
-	return 0, nil
+	if err != nil {
+		return 0, err
+	}
+	return price, nil
 }
 
 func GetCellOwnersMongo(m *mongo.Database, x int, y int) ([]LandLordMongo, error) {
 	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"x": x, "y": y})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
 	}
 	defer cursor.Close(context.Background())
 

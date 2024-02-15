@@ -1,6 +1,10 @@
 package models
 
 import (
+	"context"
+	"errors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 )
@@ -95,4 +99,56 @@ type CellMongo struct {
 	Crime            float64 `bson:"crime" json:"crime"`
 	Medicine         float64 `bson:"medicine" json:"medicine"`
 	AverageSalary    float64 `bson:"averageSalary" json:"averageSalary"`
+}
+
+func CheckEnoughLandMongo(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {
+	if squareForBuy <= 0 {
+		return false, errors.New("square < 0")
+	}
+
+	occupiedLand, err := GetCellOccupiedLandMongo(m, x, y)
+	if err != nil {
+		return false, errors.New("can't get cell occupied land")
+	}
+
+	cell, err := GetCellMongo(m, x, y)
+	if err != nil {
+		return false, errors.New("can't get cell")
+	}
+
+	return cell.Square-occupiedLand >= squareForBuy, nil
+}
+
+func GetCellMongo(m *mongo.Database, x int, y int) (CellMongo, error) {
+	var cell CellMongo
+	err := m.Collection("cells").FindOne(context.TODO(),
+		bson.M{"x": x, "y": y}).Decode(&cell)
+	return cell, err
+}
+
+func GetCellOccupiedLandMongo(m *mongo.Database, x int, y int) (int, error) {
+	landLords, err := GetCellOwnersMongo(m, x, y)
+	if err != nil {
+		return 0, errors.New("can't get cell owners")
+	}
+
+	occupiedLand := 0
+	for _, landLord := range landLords {
+		occupiedLand += landLord.Square
+	}
+	return occupiedLand, nil
+}
+
+func AddCivilSavingsMongo(m *mongo.Database, x int, y int, money float64) error {
+	_, err := m.Collection("cells").UpdateOne(context.TODO(),
+		bson.M{
+			"x": x,
+			"y": y,
+		},
+		bson.M{
+			"$inc": bson.M{
+				"civilSavings": money,
+			},
+		})
+	return err
 }

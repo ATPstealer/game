@@ -89,6 +89,8 @@ func MakeRouter() *gin.Engine {
 
 	mapCellMongo := router.Group("/api/v2/map")
 	mapCellMongo.GET("/cell_owners", controllers.GetCellOwnersMongo)
+	mapCellMongo.Use(AuthMiddlewareMongo())
+	mapCellMongo.POST("/buy_land", controllers.BuyLandMongo)
 
 	return router
 }
