@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type LandLord struct {
@@ -243,4 +244,47 @@ func GetMyLandsMongo(m *mongo.Database, userID primitive.ObjectID) ([]LandLordMo
 	}
 
 	return landLords, nil
+}
+
+func CheckEnoughLandForBuildingMongo(m *mongo.Database, userID primitive.ObjectID, square int, x int, y int) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	var myLandInCell LandLordMongo
+	err := m.Collection("landLords").FindOne(ctx,
+		bson.M{
+			"userId": userID,
+			"x":      x,
+			"y":      y,
+		}).Decode(&myLandInCell)
+	if err != nil {
+		log.Println("Can't get my cell lands: " + err.Error())
+		return false, err
+	}
+
+	var myBuildingsInCell []BuildingMongo
+
+	cursor, err := m.Collection("buildings").Find(ctx,
+		bson.M{
+			"userId": userID,
+			"x":      x,
+			"y":      y,
+		})
+	if err != nil {
+		log.Println("Can't get Buildings in Cell: " + err.Error())
+		return false, err
+	}
+
+	if err = cursor.All(context.TODO(), &myBuildingsInCell); err != nil {
+		return false, err
+	}
+
+	cursor.Close(ctx)
+
+	freeLand := myLandInCell.Square
+	for _, building := range myBuildingsInCell {
+		freeLand -= building.Square
+	}
+
+	return freeLand >= square, nil
 }

@@ -1,9 +1,11 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 	"strings"
@@ -289,17 +291,59 @@ func GetBuildingsForHiring(db *gorm.DB) ([]Building, error) {
 
 type BuildingMongo struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	TypeID      uint               `json:"typeId"`
-	UserID      uint               `json:"userId"`
-	X           int                `json:"x"`
-	Y           int                `json:"y"`
-	Square      int                `json:"square"`
-	Level       int                `json:"level"`
-	Status      BuildingStatus     `json:"status"`
-	WorkStarted *time.Time         `json:"workStarted"`
-	WorkEnd     *time.Time         `json:"workEnd"`
-	HiringNeeds int                `json:"hiringNeeds"`
-	Salary      float64            `json:"salary"`
-	Workers     int                `json:"workers"`
-	OnStrike    bool               `json:"onStrike"`
+	TypeID      uint               `json:"typeId" bson:"typeId"`
+	UserID      primitive.ObjectID `json:"userId" bson:"userId"`
+	X           int                `json:"x" bson:"x"`
+	Y           int                `json:"y" bson:"y"`
+	Square      int                `json:"square" bson:"square"`
+	Level       int                `json:"level" bson:"level"`
+	Status      BuildingStatus     `json:"status" bson:"status"`
+	WorkStarted *time.Time         `json:"workStarted" bson:"workStarted"`
+	WorkEnd     *time.Time         `json:"workEnd" bson:"workEnd"`
+	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
+	Salary      float64            `json:"salary" bson:"salary"`
+	Workers     int                `json:"workers" bson:"workers"`
+	OnStrike    bool               `json:"onStrike" bson:"onStrike"`
+}
+
+func ConstructBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload) error {
+	enoughLand, err := CheckEnoughLandForBuildingMongo(m, userID, payload.Square, payload.X, payload.Y)
+	if !enoughLand {
+		return errors.New("not enough land")
+	}
+	if err != nil {
+		return err
+	}
+
+	buildingType, err := GetBuildingTypeByIDMongo(m, payload.TypeID)
+	if err != nil {
+		return err
+	}
+	if !CheckEnoughMoneyMongo(m, userID, buildingType.Cost*float64(payload.Square)) {
+		return errors.New("not enough money")
+	}
+	return CreateBuildingMongo(m, userID, payload, buildingType)
+}
+
+func CreateBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingTypeMongo) error {
+	if err := AddMoneyMongo(m, userID, (-1)*buildingType.Cost*float64(payload.Square)); err != nil {
+		return err
+	}
+
+	now := time.Now()
+	end := now.Add(time.Duration(float64(buildingType.BuildTime) * float64(payload.Square)))
+	building := BuildingMongo{
+		TypeID:      payload.TypeID,
+		UserID:      userID,
+		X:           payload.X,
+		Y:           payload.Y,
+		Square:      payload.Square,
+		Level:       1,
+		Status:      ConstructionStatus,
+		WorkStarted: &now,
+		WorkEnd:     &end,
+	}
+
+	_, err := m.Collection("buildings").InsertOne(context.TODO(), building)
+	return err
 }

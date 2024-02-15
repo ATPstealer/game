@@ -1,6 +1,9 @@
 package models
 
 import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -63,4 +66,23 @@ type BuildingTypeMongo struct {
 	BuildingSubGroup string        `bson:"buildingSubGroup" json:"buildingSubGroup"`
 	Capacity         float64       `bson:"capacity" json:"capacity"`
 	Workers          int           `bson:"workers" json:"workers"`
+}
+
+func GetAllBuildingTypesMongo(m *mongo.Database) ([]BuildingTypeMongo, error) {
+	var buildingTypes []BuildingTypeMongo
+	cursor, err := m.Collection("buildingTypes").Find(context.Background(), bson.M{})
+	if err != nil {
+		return buildingTypes, err
+	}
+	defer cursor.Close(context.Background())
+
+	err = cursor.All(context.TODO(), &buildingTypes)
+	return buildingTypes, err
+}
+
+func GetBuildingTypeByIDMongo(m *mongo.Database, typeID uint) (BuildingTypeMongo, error) {
+	var buildingType BuildingTypeMongo
+	res := m.Collection("buildingTypes").FindOne(context.Background(), bson.M{"id": typeID})
+	err := res.Decode(&buildingType)
+	return buildingType, err
 }

@@ -186,20 +186,29 @@ func GetBlueprintsMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": blueprints})
 }
 
-/*
-func CreateBuildingMongo(c *gin.Context) {
+func GetBuildingsTypesMongo(c *gin.Context) {
+	buildingTypes, err := models.GetAllBuildingTypesMongo(db.M)
+	if err != nil {
+		log.Println("Can't get building types: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get building types: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": buildingTypes})
+}
+
+func ConstructBuildingMongo(c *gin.Context) {
 	var constructBuildingPayload models.ConstructBuildingPayload
 	if err := include.GetPayload(c, &constructBuildingPayload); err != nil {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContext(c)
+	userID, err := include.GetUserIDFromContextMongo(c)
 	if err != nil {
 		return
 	}
 
 	if constructBuildingPayload.Square <= 0 {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 14, "text": "In this building, people will suffer from lack of air."})
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "In this room, people will suffer from lack of air."})
 		return
 	}
 
@@ -211,4 +220,4 @@ func CreateBuildingMongo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You start to construct building")})
-}*/
+}

@@ -199,6 +199,7 @@ func CheckEnoughMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money f
 	user, err := GetUserByIDMongo(m, userID)
 	if err != nil {
 		log.Println(err)
+		return false
 	}
 	return user.Money >= money
 }
