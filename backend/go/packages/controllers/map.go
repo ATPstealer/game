@@ -4,6 +4,7 @@ import (
 	"backend/packages/controllers/include"
 	"backend/packages/db"
 	"backend/packages/models"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -110,11 +111,26 @@ func BuyLandMongo(c *gin.Context) {
 
 	price, err := models.BuyLandMongo(db.M, userID, buyLandPayload)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't buy land: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 16, "text": "Can't buy land: " + err.Error()})
 		log.Println("Can't buy land: " + err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You bought %d ares in %dx%d cell by %.2f$",
-		buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
+	values := map[string]interface{}{
+		"square": buyLandPayload.Square,
+		"x":      buyLandPayload.X,
+		"y":      buyLandPayload.Y,
+		"price":  price,
+	}
+
+	valuesJson, err := json.Marshal(values)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 17, "text": "Can't make JSON: " + err.Error()})
+		log.Println(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": -3, "values": string(valuesJson),
+		"text": fmt.Sprintf("You bought %d ares in %dx%d cell by %.2f$",
+			buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
 }

@@ -1,3 +1,4 @@
+-3 You bought %square ares in %x x %y cell by %price$
 -2 Logout successful
 -1 user %nickName registered with email %email
 0 OK   
@@ -16,5 +17,7 @@
 13 Can't get users
 14 In this building, people will suffer from lack of air
 15 Can't get Cell Owners
+16 Can't buy land
+17 Can't make JSON
 
 100001 database error

@@ -108,13 +108,13 @@ func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, 
 	if blueprintID != 0 {
 		filter["id"] = blueprintID
 	}
-	cur, err := m.Collection("blueprints").Find(context.TODO(), filter)
+	cursor, err := m.Collection("blueprints").Find(context.TODO(), filter)
 	if err != nil {
 		log.Println("Can't get blueprints: " + err.Error())
 		return nil, err
 	}
-	defer cur.Close(context.TODO())
+	defer cursor.Close(context.TODO())
 
-	err = cur.All(context.TODO(), &blueprints)
+	err = cursor.All(context.TODO(), &blueprints)
 	return blueprints, err
 }
