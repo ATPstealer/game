@@ -8,9 +8,8 @@ export interface ConstructBuildingPayload {
 }
 
 export interface Building {
-  id: number;
+  _id: string;
   typeId: number;
-  title: string;
   square: number;
   x: number;
   y: number;
@@ -18,13 +17,11 @@ export interface Building {
   status: string;
   workStarted: string;
   workEnd: string;
-  buildingGroup: string;
-  buildingSubGroup: string;
   hiringNeeds: number;
   salary: number;
   workers: number;
-  maxWorkers: number;
   onStrike: boolean;
+  buildingType: BuildingType;
 }
 
 export interface BuildingType {
@@ -34,6 +31,11 @@ export interface BuildingType {
   cost?: number;
   requirements?: string;
   buildTime?: number;
+  buildingGroup?: string;
+  buildingSubGroup?: string;
+  capacity?: number;
+  workers?: number;
+
 }
 
 export interface Blueprint {

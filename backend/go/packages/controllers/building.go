@@ -253,8 +253,8 @@ func GetMyBuildingsMongo(c *gin.Context) {
 		return
 	}
 	var buildingID primitive.ObjectID
-	if c.Query("id") != "" {
-		buildingID, err = include.StrToPrimObjId(c, c.Query("id"))
+	if c.Query("_id") != "" {
+		buildingID, err = include.StrToPrimObjId(c, c.Query("_id"))
 		if err != nil {
 			return
 		}

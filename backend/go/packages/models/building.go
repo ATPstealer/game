@@ -437,7 +437,7 @@ func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingI
 	filter := bson.D{}
 	filter = append(filter, bson.E{Key: "userId", Value: userID})
 	if buildingID != primitive.NilObjectID {
-		filter = append(filter, bson.E{Key: "buildings._id", Value: buildingID})
+		filter = append(filter, bson.E{Key: "_id", Value: buildingID})
 	}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -452,17 +452,6 @@ func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingI
 		{"path", "$buildingType"},
 		{"preserveNullAndEmptyArrays", true},
 	}}}
-
-	//projectStage := bson.D{{"$project", bson.D{
-	//	{"_id", "$buildings._id"},
-	//	{"title", "$buildingType.title"},
-	//	{"typeId", 1},
-	//	{"x", 1},
-	//	{"y", 1},
-	//	{"level", 1},
-	//	{"status", 1},
-	//	{"square", 1},
-	//}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
 	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)

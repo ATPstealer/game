@@ -9,8 +9,8 @@
     >
       <template #body="{data}: {data: Building}">
         <p class="col-span-1 font-bold">
-          <router-link :to="{name: `Building${data.buildingGroup}Id`, params: {id: data.id}}" class="link">
-            {{ t(`buildings.types.${data.title.toLowerCase()}`) }} {{ data.level }}x{{ data.square }}
+          <router-link :to="{name: `Building${data.buildingType.buildingGroup}Id`, params: {id: data._id}}" class="link">
+            {{ t(`buildings.types.${data.buildingType.title.toLowerCase()}`) }} {{ data.level }}x{{ data.square }}
           </router-link>
         </p>
       </template>
