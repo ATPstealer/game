@@ -428,7 +428,53 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 
 	var buildings []bson.M
 	if err = cursor.All(context.TODO(), &buildings); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return buildings, nil
+}
+
+func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]bson.M, error) {
+	filter := bson.D{}
+	filter = append(filter, bson.E{Key: "userId", Value: userID})
+	if buildingID != primitive.NilObjectID {
+		filter = append(filter, bson.E{Key: "buildings._id", Value: buildingID})
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	//projectStage := bson.D{{"$project", bson.D{
+	//	{"_id", "$buildings._id"},
+	//	{"title", "$buildingType.title"},
+	//	{"typeId", 1},
+	//	{"x", 1},
+	//	{"y", 1},
+	//	{"level", 1},
+	//	{"status", 1},
+	//	{"square", 1},
+	//}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get buildings: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var myBuildings []bson.M
+	if err = cursor.All(context.TODO(), &myBuildings); err != nil {
+		log.Println(err)
+	}
+	return myBuildings, nil
 }

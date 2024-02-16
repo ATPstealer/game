@@ -6,6 +6,7 @@ import (
 	"backend/packages/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"net/http"
 )
@@ -244,4 +245,24 @@ func GetBuildingsMongo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": buildings})
+}
+
+func GetMyBuildingsMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	var buildingID primitive.ObjectID
+	if c.Query("id") != "" {
+		buildingID, err = include.StrToPrimObjId(c, c.Query("id"))
+		if err != nil {
+			return
+		}
+	}
+	myBuildings, err := models.GetMyBuildingsMongo(db.M, userID, buildingID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get buildings: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": myBuildings})
 }

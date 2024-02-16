@@ -2,6 +2,7 @@ package include
 
 import (
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"net/http"
 	"strconv"
@@ -49,4 +50,15 @@ func StrToBool(c *gin.Context, str string) (bool, error) {
 		return false, err
 	}
 	return boolean, nil
+}
+
+func StrToPrimObjId(c *gin.Context, str string) (primitive.ObjectID, error) {
+	objectID, err := primitive.ObjectIDFromHex(str)
+	if err != nil {
+		log.Println("Can't parse string as objectID : " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't parse string as uint : " + err.Error()})
+		c.Abort()
+		return primitive.NilObjectID, err
+	}
+	return objectID, nil
 }
