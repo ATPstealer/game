@@ -221,3 +221,27 @@ func ConstructBuildingMongo(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You start to construct building")})
 }
+
+func GetBuildingsMongo(c *gin.Context) {
+	var findBuildingsParamsMongo models.FindBuildingParamsMongo
+	if err := include.GetPayload(c, &findBuildingsParamsMongo); err != nil {
+		return
+	}
+
+	if findBuildingsParamsMongo.NickName != nil {
+		User, err := models.GetUserByNickNameMongo(db.M, *findBuildingsParamsMongo.NickName)
+		if err != nil {
+			c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 13, "text": "Can't get user: " + err.Error()})
+			return
+		}
+		findBuildingsParamsMongo.UserID = &User.ID
+	}
+
+	buildings, err := models.GetBuildingsMongo(db.M, findBuildingsParamsMongo)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 19, "text": "Can't get buildings: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": buildings})
+}

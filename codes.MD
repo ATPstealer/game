@@ -20,5 +20,6 @@
 16 Can't buy land  
 17 Can't make JSON  
 18 Can't get map cells
+19 Can't get buildings
 
 100001 database error

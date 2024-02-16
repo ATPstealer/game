@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
@@ -346,4 +347,88 @@ func CreateBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload C
 
 	_, err := m.Collection("buildings").InsertOne(context.TODO(), building)
 	return err
+}
+
+type FindBuildingParamsMongo struct {
+	ID             *primitive.ObjectID `json:"id"`
+	UserID         *primitive.ObjectID `json:"userId"`
+	NickName       *string             `json:"nickName"`
+	X              *int                `json:"x"`
+	Y              *int                `json:"y"`
+	BuildingTypeID *uint               `json:"buildingTypeId"`
+	Limit          *int                `json:"limit"`
+	OrderField     *string             `json:"orderField"`
+	Order          *string             `json:"order"`
+	Page           *int                `json:"page"`
+}
+
+func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsMongo) ([]bson.M, error) {
+	// create filter for match stage
+	filter := bson.D{}
+	if findBuildingParams.ID != nil {
+		filter = append(filter, bson.E{Key: "buildings._id", Value: *findBuildingParams.ID})
+	}
+	if findBuildingParams.UserID != nil {
+		filter = append(filter, bson.E{Key: "userId", Value: *findBuildingParams.UserID})
+	}
+	if findBuildingParams.BuildingTypeID != nil {
+		filter = append(filter, bson.E{Key: "typeId", Value: *findBuildingParams.BuildingTypeID})
+	}
+	if findBuildingParams.X != nil {
+		filter = append(filter, bson.E{Key: "x", Value: *findBuildingParams.X})
+	}
+	if findBuildingParams.Y != nil {
+		filter = append(filter, bson.E{Key: "y", Value: *findBuildingParams.Y})
+	}
+
+	// Create aggregation stages
+	matchStage := bson.D{{"$match", filter}}
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+	lookupUser := bson.D{{"$lookup", bson.D{
+		{"from", "users"},
+		{"localField", "userId"},
+		{"foreignField", "_id"},
+		{"as", "user"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+	unwindUser := bson.D{{"$unwind", bson.D{
+		{"path", "$user"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	// Change fields as per requirements
+	projectStage := bson.D{{"$project", bson.D{
+		{"title", "$buildingType.title"},
+		{"typeId", 1},
+		{"x", 1},
+		{"y", 1},
+		{"level", 1},
+		{"status", 1},
+		{"square", 1},
+		{"nickName", "$user.nickName"},
+	}}}
+
+	// Connect the pipeline stages and execute
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, lookupUser, unwindBuildingType, unwindUser, projectStage}
+	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get buildings: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var buildings []bson.M
+	if err = cursor.All(context.TODO(), &buildings); err != nil {
+		log.Fatal(err)
+	}
+	return buildings, nil
 }
