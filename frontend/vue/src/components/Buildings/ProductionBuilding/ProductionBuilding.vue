@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4" v-if="building?.title">
+  <div class="flex flex-col gap-4" v-if="building?.buildingType.title">
     <h1 class="text-center">
       {{ t('common.production') }}
     </h1>
@@ -35,7 +35,7 @@
           <span class="font-bold">
             {{ t('buildings.one') }}:
           </span>
-          <p><span>{{ t('common.type') }}</span>: {{ getTranslation({parent: 'buildings.types', child: building?.title}) }}</p>
+          <p><span>{{ t('common.type') }}</span>: {{ getTranslation({parent: 'buildings.types', child: building?.buildingType.title}) }}</p>
           <p><span>{{ t('common.status') }}</span>: {{ building?.status }}</p>
           <p><span>{{ t('common.coordinates') }}</span>: {{ building?.x }}:{{ building?.y }}</p>
           <p><span>{{ t('common.level') }}</span> x <span>{{ t('common.square') }}</span>: {{ building?.level }}x{{ building?.square }}</p>
@@ -110,7 +110,7 @@ const start = () => {
   const { startProduction } = useBuildings()
 
   const payload = {
-    buildingId: props.building.id,
+    buildingId: props.building._id,
     blueprintId: selectedBlueprint.value,
     duration: duration.value
   }

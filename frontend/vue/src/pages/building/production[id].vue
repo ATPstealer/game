@@ -29,7 +29,7 @@ const { t } = useI18n()
 const { data: myBuildings, onFetchResponse, isFetching } = useGetData<Building[]>('/building/my')
 
 onFetchResponse(() => {
-  building.value = myBuildings.value.find(item => item.id === Number(route.params.id)) as Building
+  building.value = myBuildings.value.find(item => item._id === route.params.id) as Building
 })
 
 </script>

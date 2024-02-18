@@ -84,7 +84,7 @@ const goods = ref<Goods[]>([])
 
 const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData('/resource/types')
 onFetchResponse(() => {
-  resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingSubGroup)
+  resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingType.buildingSubGroup)
 })
 
 const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?building_id=${  props.building.id}`)
