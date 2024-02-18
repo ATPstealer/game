@@ -1,8 +1,12 @@
 package models
 
 import (
+	"context"
 	"errors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 )
@@ -115,4 +119,26 @@ type ResourceMongo struct {
 	Amount         float64            `json:"amount" bson:"amount"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
+}
+
+func AddResourceMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
+	_, err := m.Collection("resources").UpdateOne(context.TODO(),
+		bson.M{
+			"userId":         userID,
+			"x":              x,
+			"y":              y,
+			"resourceTypeId": resourceTypeID,
+		},
+		bson.M{
+			"$inc": bson.M{
+				"amount": amount,
+			},
+			"$setOnInsert": bson.M{
+				"userId": userID,
+				"x":      x,
+				"y":      y,
+			},
+		},
+		options.Update().SetUpsert(true))
+	return err
 }
