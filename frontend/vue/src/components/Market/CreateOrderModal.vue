@@ -8,7 +8,7 @@
   <p v-if="resource">
     {{ t('common.sell') }}
     <span class="font-bold">
-      {{ t(`resources.types.${resource?.name.toLowerCase()}`) }}
+      {{ t(`resources.types.${resource?.resourceType.name.toLowerCase()}`) }}
     </span>
     {{ t('common.in') }}
     <span class="font-bold">

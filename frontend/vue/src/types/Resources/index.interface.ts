@@ -1,14 +1,10 @@
 export interface Resource {
-  id: number;
+  _id: string;
   resourceTypeId: number;
   amount: number;
   x: number;
   y: number;
-  name: string;
-  volume: number;
-  weight: number;
-  productionTime: number;
-  producedInId: number;
+  resourceType: ResourceType;
 }
 
 export interface ResourceAmount {
@@ -19,10 +15,9 @@ export interface ResourceAmount {
 export interface ResourceType {
   id: number;
   name: string;
-  volume?: number;
-  weight?: number;
-  productionTime?: number;
-  producedInId?: number;
+  volume: number;
+  weight: number;
+  storeGroup: string;
 }
 
 export interface MarketParams {

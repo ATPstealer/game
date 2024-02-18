@@ -10,7 +10,7 @@
     >
       <template #body="{data}: {data: Resource}">
         <span class="clickable-item" @click="openMoveResource(data)">
-          {{ t(`resources.types.${data.name.toLowerCase()}`) }}
+          {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
         </span>
       </template>
     </Column>

@@ -142,3 +142,42 @@ func AddResourceMongo(m *mongo.Database, resourceTypeID uint, userID primitive.O
 		options.Update().SetUpsert(true))
 	return err
 }
+
+func GetMyResourcesMongo(m *mongo.Database, userID primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
+	filter := bson.D{}
+	filter = append(filter, bson.E{Key: "userId", Value: userID})
+	if x != nil {
+		filter = append(filter, bson.E{Key: "x", Value: *x})
+	}
+	if y != nil {
+		filter = append(filter, bson.E{Key: "y", Value: *y})
+	}
+
+	matchStage := bson.D{{"$match", filter}}
+	lookupResourceType := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+
+	unwindResourceType := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	// Connect the pipeline stages and execute
+	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
+	cursor, err := m.Collection("resources").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var resources []bson.M
+	if err = cursor.All(context.TODO(), &resources); err != nil {
+		log.Println(err)
+	}
+	return resources, nil
+}

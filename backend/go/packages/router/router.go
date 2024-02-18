@@ -105,6 +105,8 @@ func MakeRouter() *gin.Engine {
 
 	resourceMongo := router.Group("/api/v2/resource")
 	resourceMongo.GET("/types", controllers.GetResourceTypesMongo)
+	resourceMongo.Use(AuthMiddlewareMongo())
+	resourceMongo.GET("/my", controllers.GetMyResourcesMongo)
 
 	return router
 }

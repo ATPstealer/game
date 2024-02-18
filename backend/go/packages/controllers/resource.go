@@ -97,3 +97,32 @@ func GetResourceTypesMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": resourceTypes})
 }
+
+func GetMyResourcesMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	var xPointer, yPointer *int
+	if c.Query("x") != "" {
+		x, err := include.StrToInt(c, c.Query("x"))
+		if err != nil {
+			return
+		}
+		xPointer = &x
+	}
+	if c.Query("y") != "" {
+		y, err := include.StrToInt(c, c.Query("y"))
+		if err != nil {
+			return
+		}
+		yPointer = &y
+	}
+
+	myResources, err := models.GetMyResourcesMongo(db.M, userID, xPointer, yPointer)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resources: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myResources})
+}

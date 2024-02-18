@@ -7,7 +7,7 @@
     <p class="text-xl">
       {{ t('common.move') }}
       <span class="font-bold">
-        {{ t(`resources.types.${resource.name.toLowerCase()}`) }}
+        {{ t(`resources.types.${resource.resourceType.name.toLowerCase()}`) }}
       </span>
       {{ t('common.from') }}
       <span class="font-bold">
@@ -88,7 +88,7 @@ const distance = computed(() => {
   return ((props.resource.x-x.value)**2 + (props.resource.y-y.value)**2)**(0.5)
 })
 const price = computed(() => {
-  return (props.resource.weight + props.resource.volume) * distance.value * amount.value / 1000
+  return (props.resource.resourceType.weight + props.resource.resourceType.volume) * distance.value * amount.value / 1000
 })
 
 const move = () => {
