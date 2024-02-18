@@ -512,3 +512,24 @@ func SetHiringMongo(m *mongo.Database, userID primitive.ObjectID, payload Hiring
 	}
 	return err
 }
+
+func DestroyBuildingMongo(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) error {
+	building, err := GetBuildingByIDMongo(m, buildingID)
+	if userID != building.UserID && building.UserID != primitive.NilObjectID {
+		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
+	}
+	if err != nil {
+		log.Println("Can't destroy building: " + err.Error())
+		return err
+	}
+
+	log.Println(buildingID, userID)
+	res, err := m.Collection("buildings").DeleteOne(context.TODO(), bson.M{"_id": buildingID, "userId": userID})
+	log.Println(res)
+	if err != nil {
+		log.Println("Failed to delete building: " + err.Error())
+		return err
+	}
+
+	return nil
+}

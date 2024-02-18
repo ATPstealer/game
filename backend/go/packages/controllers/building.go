@@ -142,7 +142,6 @@ func DestroyBuilding(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Building has been destroyed :("})
-
 }
 
 func SetHiring(c *gin.Context) {
@@ -309,4 +308,22 @@ func SetHiringMongo(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("Hiring details changed")})
+}
+
+func DestroyBuildingMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+
+	buildingID, err := include.StrToPrimObjId(c, c.Query("_id"))
+	if err != nil {
+		return
+	}
+	err = models.DestroyBuildingMongo(db.M, userID, buildingID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't destroy building: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Building has been destroyed :("})
 }

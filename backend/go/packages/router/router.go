@@ -81,7 +81,7 @@ func MakeRouter() *gin.Engine {
 	userMongo.DELETE("/login", controllers.LogoutMongo)
 	userMongo.GET("/data", controllers.GetUserDataMongo)
 
-	buildingMongo := router.Group("/api/v2/building")
+	buildingMongo := router.Group("/api/v2/building") // buildings DONE
 	buildingMongo.GET("/types", controllers.GetBuildingsTypesMongo)
 	buildingMongo.GET("/blueprints", controllers.GetBlueprintsMongo)
 	buildingMongo.POST("/get", controllers.GetBuildingsMongo) // GET
@@ -90,6 +90,7 @@ func MakeRouter() *gin.Engine {
 	buildingMongo.GET("/my", controllers.GetMyBuildingsMongo)
 	buildingMongo.POST("/start_work", controllers.StartWorkMongo)
 	buildingMongo.POST("/hiring", controllers.SetHiringMongo)
+	buildingMongo.DELETE("/destroy", controllers.DestroyBuildingMongo)
 
 	dataMongo := router.Group("/api/v2/data")
 	dataMongo.GET("/users_by_prefix", controllers.GetUserNamesByPrefixMongo)
