@@ -118,3 +118,13 @@ func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, 
 	err = cursor.All(context.TODO(), &blueprints)
 	return blueprints, err
 }
+
+func GetBlueprintByIDMongo(m *mongo.Database, blueprintID uint) (BlueprintMongo, error) {
+	var blueprint BlueprintMongo
+	err := m.Collection("blueprints").FindOne(context.TODO(),
+		bson.M{"id": blueprintID}).Decode(&blueprint)
+	if err != nil {
+		log.Println("Can't get blueprint by ID: " + err.Error())
+	}
+	return blueprint, err
+}

@@ -467,3 +467,13 @@ func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingI
 	}
 	return myBuildings, nil
 }
+
+func GetBuildingByIDMongo(m *mongo.Database, buildingID primitive.ObjectID) (BuildingMongo, error) {
+	var building BuildingMongo
+	err := m.Collection("buildings").FindOne(context.TODO(),
+		bson.M{"_id": buildingID}).Decode(&building)
+	if err != nil {
+		log.Println("Can't get building by ID: " + err.Error())
+	}
+	return building, err
+}

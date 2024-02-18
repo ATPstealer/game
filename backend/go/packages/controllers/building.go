@@ -266,3 +266,23 @@ func GetMyBuildingsMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": myBuildings})
 }
+
+func StartWorkMongo(c *gin.Context) {
+	var startWorkPayload models.StartWorkPayloadMongo
+	var err error
+	if err = include.GetPayload(c, &startWorkPayload); err != nil {
+		return
+	}
+
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+
+	err = models.StartWorkMongo(db.M, userID, startWorkPayload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't start job: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Job was stared"})
+}
