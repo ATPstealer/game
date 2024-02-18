@@ -1,6 +1,9 @@
 package models
 
 import (
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 )
@@ -50,4 +53,16 @@ type ResourceTypeMongo struct {
 	Weight     float64 `json:"weight" bson:"weight"` // kg
 	Demand     float64 `json:"demand" bson:"demand"`
 	StoreGroup string  `json:"storeGroup" bson:"storeGroup"`
+}
+
+func GetAllResourceTypesMongo(m *mongo.Database) ([]ResourceTypeMongo, error) {
+	var resourceTypes []ResourceTypeMongo
+	cursor, err := m.Collection("resourceTypes").Find(context.Background(), bson.M{})
+	if err != nil {
+		return resourceTypes, err
+	}
+	defer cursor.Close(context.Background())
+
+	err = cursor.All(context.TODO(), &resourceTypes)
+	return resourceTypes, err
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gorm.io/gorm"
 	"log"
 )
@@ -105,4 +106,13 @@ func CheckEnoughResources(db *gorm.DB, resourceTypeID uint, userID uint, x int, 
 		return false
 	}
 	return resource.Amount >= amount
+}
+
+type ResourceMongo struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	X              int                `json:"x" bson:"x"`
+	Y              int                `json:"y" bson:"y"`
 }

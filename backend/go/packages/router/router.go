@@ -101,5 +101,8 @@ func MakeRouter() *gin.Engine {
 	mapCellMongo.POST("/buy_land", controllers.BuyLandMongo)
 	mapCellMongo.GET("/my", controllers.GetMyLandMongo)
 
+	resourceMongo := router.Group("/api/v2/resource")
+	resourceMongo.GET("/types", controllers.GetResourceTypes)
+
 	return router
 }
