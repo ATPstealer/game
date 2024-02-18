@@ -86,7 +86,7 @@ export const useBuildings = () => {
     }
   }
 
-  const setHiring = (payload: {buildingId: number; salary: number; hiringNeeds: number}) => {
+  const setHiring = (payload: {buildingId: string; salary: number; hiringNeeds: number}) => {
     const dataMessage = ref<DataMessage | null>(null)
 
     const { onFetchResponse } = useMyFetch('/building/hiring', {

@@ -343,6 +343,9 @@ func CreateBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload C
 		Status:      ConstructionStatus,
 		WorkStarted: &now,
 		WorkEnd:     &end,
+		HiringNeeds: 0,
+		Salary:      0,
+		Workers:     0,
 	}
 
 	_, err := m.Collection("buildings").InsertOne(context.TODO(), building)
@@ -476,4 +479,36 @@ func GetBuildingByIDMongo(m *mongo.Database, buildingID primitive.ObjectID) (Bui
 		log.Println("Can't get building by ID: " + err.Error())
 	}
 	return building, err
+}
+
+type HiringPayloadMongo struct {
+	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	Salary      float64            `json:"salary" bson:"salary"`
+	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
+}
+
+func SetHiringMongo(m *mongo.Database, userID primitive.ObjectID, payload HiringPayloadMongo) error {
+	building, err := GetBuildingByIDMongo(m, payload.BuildingID)
+	if err != nil {
+		return err
+	}
+	if userID != building.UserID && building.UserID != primitive.NilObjectID {
+		return errors.New("this building doesn't belong to you")
+	}
+	buildingType, err := GetBuildingTypeByIDMongo(m, building.TypeID)
+	if err != nil {
+		return err
+	}
+	hiringMax := buildingType.Workers * building.Level * building.Square
+	if payload.HiringNeeds > hiringMax {
+		return errors.New(fmt.Sprintf("hiring needs more that maximum(%d)", hiringMax))
+	}
+
+	_, err = m.Collection("buildings").UpdateOne(context.TODO(),
+		bson.M{"_id": building.ID},
+		bson.M{"$set": bson.M{"salary": payload.Salary, "hiringNeeds": payload.HiringNeeds}})
+	if err != nil {
+		log.Println("Can't update building: " + err.Error())
+	}
+	return err
 }

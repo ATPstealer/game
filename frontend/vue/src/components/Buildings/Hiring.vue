@@ -135,7 +135,7 @@ const setHiringData = (value, option: HiringOptions) => {
   const isSalary = option === 'salary'
 
   const payload = {
-    buildingId: props.building.id,
+    buildingId: props.building._id,
     salary: isSalary ? value : salary.value,
     hiringNeeds: !isSalary ? value : hiringNeeds.value
   }

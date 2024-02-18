@@ -89,6 +89,7 @@ func MakeRouter() *gin.Engine {
 	buildingMongo.POST("/construct", controllers.ConstructBuildingMongo)
 	buildingMongo.GET("/my", controllers.GetMyBuildingsMongo)
 	buildingMongo.POST("/start_work", controllers.StartWorkMongo)
+	buildingMongo.POST("/hiring", controllers.SetHiringMongo)
 
 	dataMongo := router.Group("/api/v2/data")
 	dataMongo.GET("/users_by_prefix", controllers.GetUserNamesByPrefixMongo)
