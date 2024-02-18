@@ -102,7 +102,7 @@ func MakeRouter() *gin.Engine {
 	mapCellMongo.GET("/my", controllers.GetMyLandMongo)
 
 	resourceMongo := router.Group("/api/v2/resource")
-	resourceMongo.GET("/types", controllers.GetResourceTypes)
+	resourceMongo.GET("/types", controllers.GetResourceTypesMongo)
 
 	return router
 }

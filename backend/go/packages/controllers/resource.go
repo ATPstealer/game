@@ -86,3 +86,14 @@ func GetMyLogistics(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myLogistics})
 }
+
+// mongo
+
+func GetResourceTypesMongo(c *gin.Context) {
+	resourceTypes, err := models.GetAllResourceTypesMongo(db.M)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resource types: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": resourceTypes})
+}
