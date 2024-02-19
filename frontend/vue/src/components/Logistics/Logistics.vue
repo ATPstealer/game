@@ -9,9 +9,12 @@
     striped-rows
   >
     <Column
-      field="resourceName"
       :header="t(`logistics.columns.resource`)"
-    />
+    >
+      <template #body="{data}: {data: Logistic}">
+        {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
+      </template>
+    </Column>
     <Column
       :header="t(`logistics.columns.from`)"
     >

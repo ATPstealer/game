@@ -1,3 +1,5 @@
+import type {ResourceType} from "@/types/Resources/index.interface";
+
 export interface Characteristics {
   memory?: number;
   intelligence?: number;
@@ -56,7 +58,7 @@ export interface Logistic {
   toX: number;
   toY: number;
   workEnd: string;
-  resourceName: string;
+  resourceType: ResourceType;
 }
 
 export interface DataMessage {

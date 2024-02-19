@@ -126,3 +126,42 @@ func GetMyResourcesMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myResources})
 }
+
+func ResourceMoveMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+
+	var logisticPayload models.LogisticPayload
+	if err := include.GetPayload(c, &logisticPayload); err != nil {
+		return
+	}
+
+	if logisticPayload.Amount <= 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		return
+	}
+
+	err = models.StartLogisticJobMongo(db.M, userID, logisticPayload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Logistics company took you order for transfer " + fmt.Sprintf("%.1f", logisticPayload.Amount) +
+		" from " + strconv.Itoa(logisticPayload.FromX) + ":" + strconv.Itoa(logisticPayload.FromY) + " to " + strconv.Itoa(logisticPayload.ToX) + ":" +
+		strconv.Itoa(logisticPayload.ToY) + ". They didn't ask what was inside."})
+}
+
+func GetMyLogisticsMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	myLogistics, err := models.GetMyLogisticsMongo(db.M, userID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get logistics: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myLogistics})
+}

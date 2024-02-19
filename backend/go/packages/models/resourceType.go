@@ -66,3 +66,12 @@ func GetAllResourceTypesMongo(m *mongo.Database) ([]ResourceTypeMongo, error) {
 	err = cursor.All(context.TODO(), &resourceTypes)
 	return resourceTypes, err
 }
+
+func GetResourceTypesByIDMongo(m *mongo.Database, typeID uint) (ResourceTypeMongo, error) {
+	var resourceType ResourceTypeMongo
+	err := m.Collection("resourceTypes").FindOne(context.Background(), bson.M{"id": typeID}).Decode(&resourceType)
+	if err != nil {
+		log.Println("Can't get resource type: " + err.Error())
+	}
+	return resourceType, err
+}

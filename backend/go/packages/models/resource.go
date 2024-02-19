@@ -112,6 +112,8 @@ func CheckEnoughResources(db *gorm.DB, resourceTypeID uint, userID uint, x int, 
 	return resource.Amount >= amount
 }
 
+// mongo
+
 type ResourceMongo struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
@@ -180,4 +182,34 @@ func GetMyResourcesMongo(m *mongo.Database, userID primitive.ObjectID, x *int, y
 		log.Println(err)
 	}
 	return resources, nil
+}
+
+func GetResourceInCellMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int) (ResourceMongo, error) {
+	var resource ResourceMongo
+	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
+		"userId":         userID,
+		"x":              x,
+		"y":              y,
+		"resourceTypeId": resourceTypeID,
+	}).Decode(&resource)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+	}
+	return resource, err
+}
+
+func CheckEnoughResourcesMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) bool {
+	var resource ResourceMongo
+
+	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
+		"userId":         userID,
+		"x":              x,
+		"y":              y,
+		"resourceTypeId": resourceTypeID,
+	}).Decode(&resource)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+	}
+
+	return resource.Amount >= amount
 }
