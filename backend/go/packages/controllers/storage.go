@@ -20,3 +20,18 @@ func GetMyStorages(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myStorages})
 }
+
+//mongo
+
+func GetMyStoragesMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	myStorages, err := models.GetMyStoragesMongo(db.M, userID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get storages: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myStorages})
+}

@@ -123,6 +123,46 @@ type ResourceMongo struct {
 	Y              int                `json:"y" bson:"y"`
 }
 
+type ResourceWithTypeMongo struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	X              int                `json:"x" bson:"x"`
+	Y              int                `json:"y" bson:"y"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+}
+
+func GetAllResourcesMongo(m *mongo.Database) ([]ResourceWithTypeMongo, error) {
+	filter := bson.D{}
+	matchStage := bson.D{{"$match", filter}}
+	lookupResourceType := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+
+	unwindResourceType := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
+	cursor, err := m.Collection("resources").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var resourcesAndTypes []ResourceWithTypeMongo
+	if err = cursor.All(context.TODO(), &resourcesAndTypes); err != nil {
+		log.Println(err)
+	}
+	return resourcesAndTypes, nil
+}
+
 func AddResourceMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
 	_, err := m.Collection("resources").UpdateOne(context.TODO(),
 		bson.M{

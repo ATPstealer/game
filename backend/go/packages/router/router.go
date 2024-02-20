@@ -110,5 +110,9 @@ func MakeRouter() *gin.Engine {
 	resourceMongo.POST("/move", controllers.ResourceMoveMongo)
 	resourceMongo.GET("/my_logistics", controllers.GetMyLogisticsMongo)
 
+	storageMongo := router.Group("/api/v2/storage")
+	storageMongo.Use(AuthMiddlewareMongo())
+	storageMongo.GET("/my", controllers.GetMyStoragesMongo)
+
 	return router
 }

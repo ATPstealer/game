@@ -533,3 +533,17 @@ func DestroyBuildingMongo(m *mongo.Database, userID primitive.ObjectID, building
 
 	return nil
 }
+
+func GetAllReadyStoragesMongo(m *mongo.Database) ([]BuildingMongo, error) {
+	var readyStorages []BuildingMongo
+
+	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1}
+	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
+	if err != nil {
+		return readyStorages, err
+	}
+	defer cursor.Close(context.TODO())
+
+	err = cursor.All(context.TODO(), &readyStorages)
+	return readyStorages, nil
+}

@@ -2,6 +2,11 @@ package gameLive
 
 import (
 	"backend/packages/models"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 )
@@ -89,6 +94,93 @@ func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Buil
 		}
 	}
 	*storages = append(*storages, models.Storage{
+		UserID:    buildingStorage.UserID,
+		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
+		X:         buildingStorage.X,
+		Y:         buildingStorage.Y,
+	})
+}
+
+// mongo
+
+func StoragesUpdateMongo(m *mongo.Database) {
+	storages, err := models.GetAllStoragesMongo(m)
+	if err != nil {
+		log.Println(err)
+	}
+	cleanStorageMongo(&storages)
+
+	resources, err := models.GetAllResourcesMongo(m)
+	if err != nil {
+		log.Println(err)
+	}
+	for _, resource := range resources {
+		findResourceMongo(&storages, resource)
+	}
+
+	buildingStorages, err := models.GetAllReadyStoragesMongo(m)
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println(buildingStorages)
+
+	// Storage size depend on workers count
+	storageBuildingType, _ := models.GetBuildingTypeByIDMongo(m, 1) // 1 = Storage
+	for _, buildingStorage := range buildingStorages {
+		findBuildingStorageMongo(&storages, buildingStorage, float64(storageBuildingType.Workers))
+	}
+
+	for _, storage := range storages {
+		log.Println(storage)
+	}
+
+	// TODO: collect orders volumes
+
+	for _, storage := range storages {
+		if storage.ID == primitive.NilObjectID {
+			storage.ID = primitive.NewObjectID()
+		}
+		_, err := m.Collection("storages").UpdateOne(context.TODO(),
+			bson.M{"_id": storage.ID},
+			bson.M{"$set": storage},
+			options.Update().SetUpsert(true))
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+func cleanStorageMongo(storages *[]models.StorageMongo) {
+	for i := 0; i < len(*storages); i++ {
+		(*storages)[i].VolumeMax = 0
+		(*storages)[i].VolumeOccupied = 0
+	}
+}
+
+func findResourceMongo(storages *[]models.StorageMongo, resource models.ResourceWithTypeMongo) {
+	for i, storage := range *storages {
+		if storage.UserID == resource.UserID && storage.X == resource.X && storage.Y == resource.Y {
+			(*storages)[i].VolumeOccupied += resource.ResourceType.Volume * resource.Amount
+			return
+		}
+	}
+	*storages = append(*storages, models.StorageMongo{
+		UserID:         resource.UserID,
+		VolumeOccupied: resource.ResourceType.Volume * resource.Amount,
+		X:              resource.X,
+		Y:              resource.Y,
+	})
+}
+
+func findBuildingStorageMongo(storages *[]models.StorageMongo, buildingStorage models.BuildingMongo, workersNeeded float64) {
+	for i, storage := range *storages {
+		if storage.UserID == buildingStorage.UserID && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
+			(*storages)[i].VolumeMax += float64(buildingStorage.Workers) * 100 * 5 / workersNeeded
+			return
+		}
+	}
+	*storages = append(*storages, models.StorageMongo{
 		UserID:    buildingStorage.UserID,
 		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
 		X:         buildingStorage.X,
