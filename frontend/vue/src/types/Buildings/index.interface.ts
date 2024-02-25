@@ -27,14 +27,14 @@ export interface Building {
 export interface BuildingType {
   id: number;
   title: string;
-  description?: string;
-  cost?: number;
+  description: string;
+  cost: number;
   requirements?: string;
-  buildTime?: number;
-  buildingGroup?: string;
-  buildingSubGroup?: string;
-  capacity?: number;
-  workers?: number;
+  buildTime: number;
+  buildingGroup: string;
+  buildingSubGroup: string;
+  capacity: number;
+  workers: number;
 
 }
 

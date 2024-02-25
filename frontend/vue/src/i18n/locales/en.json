@@ -56,7 +56,8 @@
         "selling": "Selling"
       },
       "types": {
-        "grocery": "Grocery"
+        "grocery": "Grocery",
+        "gas station": "Gas station"
       }
     },
     "title": "Buildings",

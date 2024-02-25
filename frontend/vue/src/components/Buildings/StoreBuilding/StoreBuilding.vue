@@ -1,6 +1,6 @@
 <template>
-  <h3 class="mb-5 text-center" v-if="building?.buildingType.buildingSubGroup">
-    {{ t(`buildings.store.types.${building?.buildingType.buildingSubGroup?.toLowerCase()}`) }}
+  <h3 class="mb-5 text-center" v-if="building && building.buildingType && building.buildingType.buildingSubGroup">
+    {{ t(`buildings.store.types.${building.buildingType.buildingSubGroup.toLowerCase()}`) }}
     {{ t(`buildings.store.name`) }}
   </h3>
 
@@ -82,12 +82,12 @@ const props = defineProps<Props>()
 const resourcesTypes = ref<ResourceType[]>([])
 const goods = ref<Goods[]>([])
 
-const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData('/resource/types')
+const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData<ResourceType[]>('/resource/types')
 onFetchResponse(() => {
   resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingType.buildingSubGroup)
 })
 
-const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?building_id=${  props.building.id}`)
+const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?building_id=${ props.building._id}`)
 onGoodsResponse(() => {
   goods.value = goodsData.value
 })
@@ -105,13 +105,17 @@ const tableData = computed(() => {
   })
 })
 const getGoodsData = (id: number) => {
-  return goods.value.find(item => item.resourceTypeId === id)
+  if (goods.value) {
+    return goods.value.find(item => item.resourceTypeId === id)
+  }
+
+  return null
 }
 
 const { setPrice } = useBuildings()
 const onCellEditComplete = (event) => {
   const payload = {
-    buildingId: props.building.id,
+    buildingId: props.building._id,
     resourceTypeId: event.data.resourceTypeId,
     price: event.newValue
   }
