@@ -281,3 +281,28 @@ func GetOrdersMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": orders})
 }
+
+func ExecuteOrderMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+
+	var payload models.ExecuteOrderPayloadMongo
+	if err := include.GetPayload(c, &payload); err != nil {
+		return
+	}
+
+	if payload.Amount <= 0 {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		return
+	}
+
+	err = models.ExecuteOrderMongo(db.M, userID, payload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't execute order: " + err.Error()})
+		log.Println("Can't execute order: " + err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You executed order")})
+}

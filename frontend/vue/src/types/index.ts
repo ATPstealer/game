@@ -35,7 +35,7 @@ export interface Storage {
 }
 
 export interface Order {
-  id: number;
+  _id: string;
   userId: number;
   nickName: string;
   x: number;

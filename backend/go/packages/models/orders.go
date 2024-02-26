@@ -507,5 +507,84 @@ func GetOrdersMongo(m *mongo.Database, findOrderParams FindOrderParamsMongo) ([]
 		log.Println(err)
 	}
 	return orders, nil
+}
 
+type ExecuteOrderPayloadMongo struct {
+	OrderID primitive.ObjectID
+	Amount  float64
+}
+
+func GetOrderByIDMongo(m *mongo.Database, orderID primitive.ObjectID) (OrderMongo, error) {
+	var order OrderMongo
+	err := m.Collection("orders").FindOne(context.TODO(),
+		bson.M{"_id": orderID}).Decode(&order)
+	if err != nil {
+		log.Println("Can't get building by ID: " + err.Error())
+	}
+	return order, err
+}
+
+func ExecuteOrderMongo(m *mongo.Database, userID primitive.ObjectID, payload ExecuteOrderPayloadMongo) error {
+	order, err := GetOrderByIDMongo(m, payload.OrderID)
+	if err != nil {
+		log.Println("Can't get order: " + err.Error())
+		return err
+	}
+
+	if order.Amount < payload.Amount {
+		return errors.New("requested quantity is greater than available quantity")
+	}
+
+	if order.Sell {
+		if err := AddMoneyMongo(m, userID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
+			return err
+		}
+		if err := AddResourceMongo(m, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount); err != nil {
+			return err
+		}
+		if order.PriceForUnit > 0 {
+			if err := AddMoneyMongo(m, order.UserID, payload.Amount*order.PriceForUnit); err != nil {
+				return err
+			}
+		}
+
+	} else {
+		if !CheckEnoughResourcesMongo(m, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount) {
+			return errors.New("not enough resources in this cell")
+		}
+		// AddMoney checks enough money if price < 0
+		if err := AddMoneyMongo(m, userID, payload.Amount*order.PriceForUnit); err != nil {
+			return err
+		}
+		if order.PriceForUnit < 0 {
+			if err := AddMoneyMongo(m, order.UserID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
+				return err
+			}
+		}
+		if err := AddResourceMongo(m, order.ResourceTypeID, userID, order.X, order.Y, (-1)*payload.Amount); err != nil {
+			return err
+		}
+		if err := AddResourceMongo(m, order.ResourceTypeID, order.UserID, order.X, order.Y, payload.Amount); err != nil {
+			return err
+		}
+
+	}
+
+	if order.Amount == payload.Amount {
+		_, err := m.Collection("orders").DeleteOne(context.TODO(), bson.M{"_id": order.ID})
+		if err != nil {
+			return err
+		}
+	} else {
+		update := bson.M{
+			"$inc": bson.M{
+				"amount": -payload.Amount,
+			},
+		}
+		_, err := m.Collection("orders").UpdateOne(context.TODO(), bson.M{"_id": order.ID}, update)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

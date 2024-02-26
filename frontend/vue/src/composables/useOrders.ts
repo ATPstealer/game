@@ -48,7 +48,7 @@ export const useOrders = () => {
     }
   }
 
-  const executeOrder = (payload: {orderID: number; amount: number}) => {
+  const executeOrder = (payload: {orderID: string; amount: number}) => {
     const dataMessage = ref<DataMessage | null>(null)
 
     const { onFetchResponse } = useMyFetch('/market/order/execute', {

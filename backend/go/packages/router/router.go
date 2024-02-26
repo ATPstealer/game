@@ -124,6 +124,7 @@ func MakeRouter() *gin.Engine {
 	marketMongo.Use(AuthMiddlewareMongo())
 	marketMongo.POST("/order/create", controllers.CreateOrderMongo)
 	marketMongo.GET("/order/my", controllers.GetMyOrdersMongo)
+	marketMongo.POST("/order/execute", controllers.ExecuteOrderMongo)
 
 	return router
 }

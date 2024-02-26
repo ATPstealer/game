@@ -176,7 +176,7 @@ const sellRowClass = (data) => {
 }
 
 const execOrder = () => {
-  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value.id, amount: amount.value })
+  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value._id, amount: amount.value })
   onFetchResponse(() => {
     message.value = dataMessage.value
 
