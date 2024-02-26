@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: Сделать перевод; x,y в одну колонку;  -->
   <DataTable
     v-if="orders?.filter(item => item.sell).length"
     :value="orders?.filter(item => item.sell)"
@@ -8,24 +9,33 @@
     :row-class="sellRowClass"
   >
     <Column
-      field="resourceName"
-      header="Name"
-    />
+      :header="t(`orders.columns.resource`)"
+      class="w-1/3"
+    >
+      <template #body="{data}: {data: Order}">
+        {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
+      </template>
+    </Column>
+
     <Column
       field="amount"
       header="Amount"
+      class="w-1/6"
     />
     <Column
       field="priceForUnit"
       header="Price"
+      class="w-1/6"
     />
     <Column
       field="x"
       header="X"
+      class="w-1/6"
     />
     <Column
       field="y"
       header="Y"
+      class="w-1/6"
     />
   </DataTable>
   <DataTable
@@ -41,27 +51,45 @@
       },
     }"
   >
-    <Column field="resourceName">
+    <Column
+      class="w-1/3"
+    >
       <template #header>
-        <span class="invisible">Name</span>
+        <span class="invisible">Amount</span>
+      </template>
+      <template #body="{data}: {data: Order}">
+        {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
       </template>
     </Column>
-    <Column field="amount">
+
+    <Column
+      field="amount"
+      class="w-1/6"
+    >
       <template #header>
         <span class="invisible">Amount</span>
       </template>
     </Column>
-    <Column field="priceForUnit">
+    <Column
+      field="priceForUnit"
+      class="w-1/6"
+    >
       <template #header>
         <span class="invisible">Price</span>
       </template>
     </Column>
-    <Column field="x">
+    <Column
+      field="x"
+      class="w-1/6"
+    >
       <template #header>
         <span class="invisible">X</span>
       </template>
     </Column>
-    <Column field="y">
+    <Column
+      field="y"
+      class="w-1/6"
+    >
       <template #header>
         <span class="invisible">Y</span>
       </template>
@@ -78,7 +106,7 @@
   >
     <div class="flex flex-col gap-4">
       <MessageBlock :message="message" v-if="message" />
-      <p><span class="font-bold">{{ order.resourceName }}</span></p>
+      <p><span class="font-bold">{{ order.resourceType.name }}</span></p>
       <p>
         Amount:
         <InputNumber
@@ -105,14 +133,17 @@ import DataTable, { DataTableRowClickEvent } from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
 import InputNumber from 'primevue/inputnumber'
 import { ref, toRefs } from 'vue'
+import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useOrders } from '@/composables/useOrders'
 import type { DataMessage, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 interface Props {
- searchParams: MarketParams;
+  searchParams: MarketParams;
 }
+
+const { t } = useI18n()
 
 const props = defineProps<Props>()
 const { searchParams } = toRefs(props)
@@ -132,20 +163,20 @@ const showOrder = (event: DataTableRowClickEvent) => {
 
 const buyRowClass = (data) => {
   const index = orders.value.filter(item => !item.sell).findIndex(item => item.id === data.id)
-  const bg =  index % 2 === 0 ? 'bg-green-50' : 'bg-green-100'
+  const bg = index % 2 === 0 ? 'bg-green-50' : 'bg-green-100'
 
   return [bg, 'cursor-pointer hover:bg-gray-100']
 }
 
 const sellRowClass = (data) => {
   const index = orders.value.filter(item => item.sell).findIndex(item => item.id === data.id)
-  const bg =  index % 2 === 0 ? 'bg-red-50' : 'bg-red-100'
+  const bg = index % 2 === 0 ? 'bg-red-50' : 'bg-red-100'
 
   return [bg, 'cursor-pointer hover:bg-gray-100']
 }
 
 const execOrder = () => {
-  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value.id, amount: amount.value } )
+  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value.id, amount: amount.value })
   onFetchResponse(() => {
     message.value = dataMessage.value
 

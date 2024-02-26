@@ -429,7 +429,7 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 	}
 	defer cursor.Close(context.TODO())
 
-	var buildings []bson.M
+	var buildings []bson.M // TODO: paginator
 	if err = cursor.All(context.TODO(), &buildings); err != nil {
 		log.Println(err)
 	}

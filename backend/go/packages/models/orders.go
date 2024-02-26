@@ -309,7 +309,7 @@ func CreateOrderMongo(m *mongo.Database, userID primitive.ObjectID, payload Orde
 	return err
 }
 
-type OrderMongoWithResourceType struct {
+type OrderMongoWithData struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
 	X              int                `json:"x" bson:"x"`
@@ -318,10 +318,11 @@ type OrderMongoWithResourceType struct {
 	Amount         float64            `json:"amount" bson:"amount"`
 	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
 	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
-	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+	ResourceType   ResourceTypeMongo  `json:"resourceType" bson:"resourceType"`
+	NickName       string             `json:"nickName" bson:"nickName"`
 }
 
-func GetMyOrdersMongo(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWithResourceType, error) {
+func GetMyOrdersMongo(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWithData, error) {
 	filter := bson.D{}
 	if userID != primitive.NilObjectID {
 		filter = append(filter, bson.E{Key: "userId", Value: userID})
@@ -340,7 +341,37 @@ func GetMyOrdersMongo(m *mongo.Database, userID primitive.ObjectID) ([]OrderMong
 		{"preserveNullAndEmptyArrays", true},
 	}}}
 
-	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, unwindResourceTypes}
+	lookupUser := bson.D{{"$lookup", bson.D{
+		{"from", "users"},
+		{"localField", "userId"},
+		{"foreignField", "_id"},
+		{"as", "user"},
+	}}}
+
+	unwindUser := bson.D{{"$unwind", bson.D{
+		{"path", "$user"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	project := bson.D{{"$project", bson.D{
+		{"id", 1},
+		{"userId", 1},
+		{"x", 1},
+		{"y", 1},
+		{"resourceTypeId", 1},
+		{"amount", 1},
+		{"priceForUnit", 1},
+		{"sell", 1},
+		{"resourceType.id", 1},
+		{"resourceType.name", 1},
+		{"resourceType.volume", 1},
+		{"resourceType.weight", 1},
+		{"resourceType.demand", 1},
+		{"resourceType.storeGroup", 1},
+		{"nickName", "$user.nickName"},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes, unwindUser, project}
 	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		log.Println("Can't get orders: " + err.Error())
@@ -348,9 +379,103 @@ func GetMyOrdersMongo(m *mongo.Database, userID primitive.ObjectID) ([]OrderMong
 	}
 	defer cursor.Close(context.TODO())
 
-	var orders []OrderMongoWithResourceType
+	var orders []OrderMongoWithData
 	if err = cursor.All(context.TODO(), &orders); err != nil {
 		log.Println(err)
 	}
 	return orders, nil
+}
+
+type FindOrderParamsMongo struct {
+	ID             *primitive.ObjectID
+	UserID         *primitive.ObjectID
+	X              *int
+	Y              *int
+	ResourceTypeID *uint
+	Sell           *bool
+	Limit          *int
+	OrderField     *string
+	Order          *string
+	Page           *int
+}
+
+func GetOrdersMongo(m *mongo.Database, findOrderParams FindOrderParamsMongo) ([]OrderMongoWithData, error) {
+	// create filter for match stage
+	filter := bson.D{}
+	if findOrderParams.ID != nil {
+		filter = append(filter, bson.E{Key: "orders._id", Value: *findOrderParams.ID})
+	}
+	if findOrderParams.UserID != nil {
+		filter = append(filter, bson.E{Key: "userId", Value: *findOrderParams.UserID})
+	}
+	if findOrderParams.X != nil {
+		filter = append(filter, bson.E{Key: "x", Value: *findOrderParams.X})
+	}
+	if findOrderParams.Y != nil {
+		filter = append(filter, bson.E{Key: "y", Value: *findOrderParams.Y})
+	}
+	if findOrderParams.ResourceTypeID != nil {
+		filter = append(filter, bson.E{Key: "resourceTypeId", Value: *findOrderParams.ResourceTypeID})
+	}
+	if findOrderParams.Sell != nil {
+		filter = append(filter, bson.E{Key: "sell", Value: *findOrderParams.Sell})
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupResourceTypes := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+
+	unwindResourceTypes := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	lookupUser := bson.D{{"$lookup", bson.D{
+		{"from", "users"},
+		{"localField", "userId"},
+		{"foreignField", "_id"},
+		{"as", "user"},
+	}}}
+
+	unwindUser := bson.D{{"$unwind", bson.D{
+		{"path", "$user"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	project := bson.D{{"$project", bson.D{
+		{"id", 1},
+		{"userId", 1},
+		{"x", 1},
+		{"y", 1},
+		{"resourceTypeId", 1},
+		{"amount", 1},
+		{"priceForUnit", 1},
+		{"sell", 1},
+		{"resourceType.id", 1},
+		{"resourceType.name", 1},
+		{"resourceType.volume", 1},
+		{"resourceType.weight", 1},
+		{"resourceType.demand", 1},
+		{"resourceType.storeGroup", 1},
+		{"nickName", "$user.nickName"},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes, unwindUser, project}
+	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get orders: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var orders []OrderMongoWithData // TODO: paginator
+	if err = cursor.All(context.TODO(), &orders); err != nil {
+		log.Println(err)
+	}
+	return orders, nil
+
 }

@@ -202,3 +202,79 @@ func GetMyOrdersMongo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myOrders})
 }
+
+func GetOrdersMongo(c *gin.Context) {
+	var findOrdersParams models.FindOrderParamsMongo
+	if c.Query("id") != "" {
+		id, err := include.StrToPrimObjId(c, c.Query("id"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.ID = &id
+	}
+	if c.Query("user_id") != "" {
+		userID, err := include.StrToPrimObjId(c, c.Query("user_id"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.UserID = &userID
+	}
+	if c.Query("x") != "" {
+		x, err := include.StrToInt(c, c.Query("x"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.X = &x
+	}
+	if c.Query("y") != "" {
+		y, err := include.StrToInt(c, c.Query("y"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.Y = &y
+	}
+	if c.Query("resource_type_id") != "" {
+		resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.ResourceTypeID = &resourceTypeID
+	}
+	if c.Query("sell") != "" {
+		sell, err := include.StrToBool(c, c.Query("sell"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.Sell = &sell
+	}
+	if c.Query("limit") != "" {
+		limit, err := include.StrToInt(c, c.Query("limit"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.Limit = &limit
+	}
+	if c.Query("order") != "" {
+		order := c.Query("order")
+		findOrdersParams.Order = &order
+	}
+	if c.Query("order_field") != "" {
+		orderField := c.Query("order_field")
+		findOrdersParams.OrderField = &orderField
+	}
+	if c.Query("page") != "" {
+		page, err := include.StrToInt(c, c.Query("page"))
+		if err != nil {
+			return
+		}
+		findOrdersParams.Page = &page
+	}
+
+	orders, err := models.GetOrdersMongo(db.M, findOrdersParams)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": orders})
+}
