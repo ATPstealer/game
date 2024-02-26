@@ -44,7 +44,7 @@
       class="w-1/5"
     >
       <template #body="{data}: {data: Order}">
-        <p class="font-bold text-red-500 hover:text-red-700 block" @click="closeOrder(data.id)">
+        <p class="font-bold text-red-500 hover:text-red-700 block" @click="closeOrder(data._id)">
           {{ data.sell ? 'sell' : 'buy' }}
         </p>
       </template>

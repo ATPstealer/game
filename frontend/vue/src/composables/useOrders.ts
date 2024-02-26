@@ -7,7 +7,7 @@ import type { DataMessage, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 export const useOrders = () => {
-  const closeOrder = (orderId: number) => {
+  const closeOrder = (orderId: string) => {
     const { data, onFetchResponse, isFetching } = useFetch(`${import.meta.env.VITE_API}/market/order/close?order_id=${orderId}`,
       { credentials: 'include' }).delete()
 

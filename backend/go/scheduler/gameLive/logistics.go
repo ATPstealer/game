@@ -20,5 +20,4 @@ func LogisticsDone(db *gorm.DB) {
 		}
 		db.Delete(&logistic)
 	}
-
 }

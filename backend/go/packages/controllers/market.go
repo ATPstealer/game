@@ -282,6 +282,24 @@ func GetOrdersMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": orders})
 }
 
+func CloseMyOrderMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	orderID, err := include.StrToPrimObjId(c, c.Query("order_id"))
+	if err != nil {
+		return
+	}
+	err = models.CloseMyOrderMongo(db.M, userID, orderID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't close order: " + err.Error()})
+		log.Println("Can't close order: " + err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You closed order")})
+}
+
 func ExecuteOrderMongo(c *gin.Context) {
 	userID, err := include.GetUserIDFromContextMongo(c)
 	if err != nil {

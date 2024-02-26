@@ -588,3 +588,32 @@ func ExecuteOrderMongo(m *mongo.Database, userID primitive.ObjectID, payload Exe
 	}
 	return nil
 }
+
+func CloseMyOrderMongo(m *mongo.Database, userID primitive.ObjectID, orderID primitive.ObjectID) error {
+	order, err := GetOrderByIDMongo(m, orderID)
+	if err != nil {
+		return err
+	}
+	if order.UserID != userID {
+		return errors.New("you are not the owner of this order")
+	}
+
+	if order.Sell {
+		if err := AddResourceMongo(m, order.ResourceTypeID, order.UserID, order.X, order.Y, order.Amount); err != nil {
+			return err
+		}
+		if order.PriceForUnit < 0 {
+			if err := AddMoneyMongo(m, order.UserID, (-1)*order.Amount*order.PriceForUnit); err != nil {
+				return err
+			}
+		}
+	} else {
+		if order.PriceForUnit > 0 {
+			if err := AddMoneyMongo(m, order.UserID, order.Amount*order.PriceForUnit); err != nil {
+				return err
+			}
+		}
+	}
+	_, err = m.Collection("orders").DeleteOne(context.TODO(), bson.M{"_id": orderID})
+	return err
+}
