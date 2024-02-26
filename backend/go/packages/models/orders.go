@@ -482,8 +482,19 @@ func GetOrdersMongo(m *mongo.Database, findOrderParams FindOrderParamsMongo) ([]
 		sortStage = bson.D{{"$sort", bson.D{{"_id", -1}}}}
 	}
 
+	limit := 20
+	if findOrderParams.Limit != nil {
+		limit = *findOrderParams.Limit
+	}
+	limitStage := bson.D{{"$limit", limit}}
+
+	skipStage := bson.D{{"$skip", 0}}
+	if findOrderParams.Page != nil {
+		skipStage = bson.D{{"$skip", (*findOrderParams.Page - 1) * limit}}
+	}
+
 	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes,
-		unwindUser, project, sortStage}
+		unwindUser, project, sortStage, skipStage, limitStage}
 	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		log.Println("Can't get orders: " + err.Error())
@@ -491,7 +502,7 @@ func GetOrdersMongo(m *mongo.Database, findOrderParams FindOrderParamsMongo) ([]
 	}
 	defer cursor.Close(context.TODO())
 
-	var orders []OrderMongoWithData // TODO: paginator
+	var orders []OrderMongoWithData
 	if err = cursor.All(context.TODO(), &orders); err != nil {
 		log.Println(err)
 	}
