@@ -395,7 +395,7 @@ type FindOrderParamsMongo struct {
 	Sell           *bool
 	Limit          *int
 	OrderField     *string
-	Order          *string
+	Order          *int
 	Page           *int
 }
 
@@ -464,7 +464,26 @@ func GetOrdersMongo(m *mongo.Database, findOrderParams FindOrderParamsMongo) ([]
 		{"nickName", "$user.nickName"},
 	}}}
 
-	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes, unwindUser, project}
+	sort := bson.D{}
+
+	if findOrderParams.OrderField != nil {
+		if findOrderParams.Order != nil {
+			sort = append(filter, bson.E{Key: *findOrderParams.OrderField, Value: *findOrderParams.Order})
+		} else {
+			sort = append(filter, bson.E{Key: *findOrderParams.OrderField, Value: 1})
+		}
+	}
+
+	sortStage := bson.D{}
+
+	if len(sort) != 0 {
+		sortStage = bson.D{{"$sort", sort}}
+	} else {
+		sortStage = bson.D{{"$sort", bson.D{{"_id", -1}}}}
+	}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes,
+		unwindUser, project, sortStage}
 	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		log.Println("Can't get orders: " + err.Error())

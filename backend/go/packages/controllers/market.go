@@ -255,7 +255,10 @@ func GetOrdersMongo(c *gin.Context) {
 		findOrdersParams.Limit = &limit
 	}
 	if c.Query("order") != "" {
-		order := c.Query("order")
+		order, err := include.StrToInt(c, c.Query("order"))
+		if err != nil {
+			return
+		}
 		findOrdersParams.Order = &order
 	}
 	if c.Query("order_field") != "" {
