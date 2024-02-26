@@ -164,3 +164,41 @@ func ExecuteOrder(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You executed order")})
 }
+
+// mongo
+
+func CreateOrderMongo(c *gin.Context) {
+	var orderPayload models.OrderMongo
+	var err error
+
+	if err = include.GetPayload(c, &orderPayload); err != nil {
+		return
+	}
+
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+
+	err = models.CreateOrderMongo(db.M, userID, orderPayload)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create order: " + err.Error()})
+		log.Println("Can't create order: " + err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You created order")})
+}
+
+func GetMyOrdersMongo(c *gin.Context) {
+	userID, err := include.GetUserIDFromContextMongo(c)
+	if err != nil {
+		return
+	}
+	myOrders, err := models.GetMyOrdersMongo(db.M, userID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myOrders})
+}

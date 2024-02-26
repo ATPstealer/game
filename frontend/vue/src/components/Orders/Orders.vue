@@ -17,10 +17,14 @@
       </template>
     </Column>
     <Column
-      field="resourceName"
+      field="Resource"
       :header="t(`orders.columns.resource`)"
       class="w-1/5"
-    />
+    >
+      <template #body="{data}: {data: Order}">
+        {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
+      </template>
+    </Column>
     <Column
       field="amount"
       :header="t(`orders.columns.amount`)"

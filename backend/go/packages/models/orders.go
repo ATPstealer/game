@@ -1,8 +1,12 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 	"strings"
@@ -254,5 +258,99 @@ func GetOrders(db *gorm.DB, findOrderParams FindOrderParams) ([]OrdersResult, er
 		log.Println("Can't get orders: " + res.Error.Error())
 	}
 
+	return orders, nil
+}
+
+// mongo
+
+type OrderMongo struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	X              int                `json:"x" bson:"x"`
+	Y              int                `json:"y" bson:"y"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
+	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
+}
+
+func CreateOrderMongo(m *mongo.Database, userID primitive.ObjectID, payload OrderMongo) error {
+	if payload.Sell {
+		if !CheckEnoughResourcesMongo(m, payload.ResourceTypeID, userID, payload.X, payload.Y, payload.Amount) {
+			return errors.New("not enough resources in this cell")
+		}
+		if payload.PriceForUnit < 0 {
+			if err := AddMoneyMongo(m, userID, payload.PriceForUnit*payload.Amount); err != nil {
+				return err
+			}
+		}
+		if err := AddResourceMongo(m, payload.ResourceTypeID, userID, payload.X, payload.Y, (-1)*payload.Amount); err != nil {
+			return err
+		}
+
+	} else {
+		if payload.PriceForUnit >= 0 {
+			if err := AddMoneyMongo(m, userID, (-1)*payload.Amount*payload.PriceForUnit); err != nil {
+				return err
+			}
+		}
+	}
+
+	order := OrderMongo{
+		UserID:         userID,
+		X:              payload.X,
+		Y:              payload.Y,
+		ResourceTypeID: payload.ResourceTypeID,
+		Amount:         payload.Amount,
+		PriceForUnit:   payload.PriceForUnit,
+		Sell:           payload.Sell,
+	}
+	_, err := m.Collection("orders").InsertOne(context.TODO(), &order)
+	return err
+}
+
+type OrderMongoWithResourceType struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	X              int                `json:"x" bson:"x"`
+	Y              int                `json:"y" bson:"y"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
+	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+}
+
+func GetMyOrdersMongo(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWithResourceType, error) {
+	filter := bson.D{}
+	if userID != primitive.NilObjectID {
+		filter = append(filter, bson.E{Key: "userId", Value: userID})
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupResourceTypes := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+
+	unwindResourceTypes := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, unwindResourceTypes}
+	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get orders: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var orders []OrderMongoWithResourceType
+	if err = cursor.All(context.TODO(), &orders); err != nil {
+		log.Println(err)
+	}
 	return orders, nil
 }

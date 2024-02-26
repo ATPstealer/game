@@ -41,12 +41,10 @@ export interface Order {
   x: number;
   y: number;
   resourceTypeId: number;
-  resourceName: string;
   amount: number;
   priceForUnit: number;
   sell: boolean;
-  volume: number;
-  weight: number;
+  resourceType: ResourceType;
 }
 
 export interface Logistic {
