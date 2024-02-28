@@ -145,10 +145,9 @@ func StartLogisticJobMongo(m *mongo.Database, userID primitive.ObjectID, logisti
 	if err != nil {
 		return errors.New("can't get resource type")
 	}
-	//if !CheckEnoughStorage(db, userID, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
-	//	return errors.New("there is not enough storage capacity in the destination sector")
-	//}
-	// TODO: Сделать проверку после стораджей
+	if !CheckEnoughStorageMongo(m, userID, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
+		return errors.New("there is not enough storage capacity in the destination sector")
+	}
 
 	// FORMULA: logistic
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
@@ -207,4 +206,56 @@ func GetMyLogisticsMongo(m *mongo.Database, userID primitive.ObjectID) ([]bson.M
 		log.Println(err)
 	}
 	return logistics, nil
+}
+
+type LogisticResultMongo struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	FromX          int                `json:"fromX" bson:"fromX"`
+	FromY          int                `json:"fromY" bson:"fromY"`
+	ToX            int                `json:"toX" bson:"toX"`
+	ToY            int                `json:"toY" bson:"toY"`
+	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+}
+
+func GetDestinationVolumeMongo(m *mongo.Database, userID primitive.ObjectID, toX int, toY int) float64 {
+	var volume float64
+
+	filter := bson.M{"userId": userID, "toX": toX, "toY": toY}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupResourceType := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+
+	unwindResourceType := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
+	cursor, err := m.Collection("logistics").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get logistics: " + err.Error())
+		return 0
+	}
+	defer cursor.Close(context.TODO())
+
+	var logistics []LogisticResultMongo
+	if err = cursor.All(context.TODO(), &logistics); err != nil {
+		log.Println(err)
+		return 0
+	}
+
+	for _, logistic := range logistics {
+		volume += logistic.Amount * logistic.ResourceType.Volume
+	}
+
+	return volume
 }

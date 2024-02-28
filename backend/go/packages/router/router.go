@@ -119,7 +119,7 @@ func MakeRouter() *gin.Engine {
 	storeMongo.Use(AuthMiddlewareMongo())
 	storeMongo.POST("/goods/set", controllers.SetStoreGoodsMongo)
 
-	marketMongo := router.Group("/api/v2/market")
+	marketMongo := router.Group("/api/v2/market") // DONE
 	marketMongo.GET("/order/get", controllers.GetOrdersMongo)
 	marketMongo.Use(AuthMiddlewareMongo())
 	marketMongo.POST("/order/create", controllers.CreateOrderMongo)

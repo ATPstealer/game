@@ -523,9 +523,7 @@ func DestroyBuildingMongo(m *mongo.Database, userID primitive.ObjectID, building
 		return err
 	}
 
-	log.Println(buildingID, userID)
-	res, err := m.Collection("buildings").DeleteOne(context.TODO(), bson.M{"_id": buildingID, "userId": userID})
-	log.Println(res)
+	_, err = m.Collection("buildings").DeleteOne(context.TODO(), bson.M{"_id": buildingID, "userId": userID})
 	if err != nil {
 		log.Println("Failed to delete building: " + err.Error())
 		return err
