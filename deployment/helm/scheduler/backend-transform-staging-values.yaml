@@ -27,3 +27,23 @@ env:
     secretKeyRef:
       name: app
       key: DB_USER
+  - name: MONGO_DATABASE
+    secretKeyRef:
+      name: app
+      key: MONGO_DATABASE
+  - name: MONGO_HOST
+    secretKeyRef:
+      name: app
+      key: MONGO_HOST
+  - name: MONGO_PASSWORD
+    secretKeyRef:
+      name: app
+      key: MONGO_PASSWORD
+  - name: MONGO_PORT
+    secretKeyRef:
+      name: app
+      key: MONGO_PORT
+  - name: MONGO_USER
+    secretKeyRef:
+      name: app
+      key: MONGO_USER
