@@ -135,7 +135,16 @@ func StoragesUpdateMongo(m *mongo.Database) {
 		log.Println(storage)
 	}
 
-	// TODO: collect orders volumes
+	limit := 9000000000000000000 // infinite // TODO: сделать че-нибудь нормальное
+	sell := true
+	orders, err := models.GetOrdersMongo(m, models.FindOrderParamsMongo{Limit: &limit, Sell: &sell})
+	log.Println(orders)
+	if err != nil {
+		log.Println(err)
+	}
+	for _, order := range orders {
+		findOrderMongo(&storages, order)
+	}
 
 	for _, storage := range storages {
 		if storage.ID == primitive.NilObjectID {
@@ -185,5 +194,20 @@ func findBuildingStorageMongo(storages *[]models.StorageMongo, buildingStorage m
 		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
 		X:         buildingStorage.X,
 		Y:         buildingStorage.Y,
+	})
+}
+
+func findOrderMongo(storages *[]models.StorageMongo, order models.OrderMongoWithData) {
+	for i, storage := range *storages {
+		if storage.UserID == order.UserID && storage.X == order.X && storage.Y == order.Y {
+			(*storages)[i].VolumeOccupied += order.Amount * order.ResourceType.Volume
+			return
+		}
+	}
+	*storages = append(*storages, models.StorageMongo{
+		UserID:         order.UserID,
+		VolumeOccupied: order.ResourceType.Volume * order.Amount,
+		X:              order.X,
+		Y:              order.Y,
 	})
 }

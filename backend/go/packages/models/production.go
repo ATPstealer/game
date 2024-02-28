@@ -73,10 +73,10 @@ func StartWork(db *gorm.DB, userID uint, payload StartWorkPayload) error {
 
 type ProductionMongo struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID  primitive.ObjectID `json:"buildingId"`
-	BlueprintID uint               `json:"blueprintId"`
-	WorkStarted *time.Time         `json:"workStarted"`
-	WorkEnd     *time.Time         `json:"workEnd"`
+	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	BlueprintID uint               `json:"blueprintId" bson:"blueprintId"`
+	WorkStarted *time.Time         `json:"workStarted" bson:"workStarted"`
+	WorkEnd     *time.Time         `json:"workEnd" bson:"workEnd"`
 }
 
 type StartWorkPayloadMongo struct {

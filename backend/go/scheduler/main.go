@@ -29,4 +29,5 @@ func alive(db *gorm.DB) {
 func aliveMongo(m *mongo.Database) {
 	gameLive.StoragesUpdateMongo(m)
 	gameLive.LogisticsDoneMongo(m)
+	gameLive.StopWorkMongo(m)
 }

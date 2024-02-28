@@ -2,6 +2,9 @@ package gameLive
 
 import (
 	"backend/packages/models"
+	"context"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -116,4 +119,28 @@ func StopWork(db *gorm.DB) {
 		log.Println(res.Error)
 	}
 	db.Model(&models.Production{}).Where("work_end < NOW()").Delete(&models.Production{})
+}
+
+// mongo
+
+func StopWorkMongo(m *mongo.Database) {
+	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
+	update := bson.D{
+		{"$set", bson.D{
+			{"status", models.ReadyStatus},
+			{"workEnd", nil},
+			{"workStarted", nil},
+		}},
+	}
+	_, err := m.Collection("buildings").UpdateMany(context.TODO(), filter, update)
+	if err != nil {
+		log.Println("Production: " + err.Error())
+		return
+	}
+
+	_, err = m.Collection("productions").DeleteMany(context.TODO(), filter)
+	if err != nil {
+		log.Println("Production: " + err.Error())
+		return
+	}
 }
