@@ -212,7 +212,9 @@ func saveBuildings(m *mongo.Database, buildings *[]models.BuildingMongo) {
 		filter := bson.M{"_id": building.ID}
 		update := bson.M{
 			"$set": bson.M{
-				"workers": building.Workers,
+				"workers":     building.Workers,
+				"hiringNeeds": building.HiringNeeds,
+				"onStrike":    building.OnStrike,
 			},
 		}
 

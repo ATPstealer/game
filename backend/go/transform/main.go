@@ -28,4 +28,5 @@ func transform(db *gorm.DB) {
 
 func transformMongo(m *mongo.Database) {
 	evolution.HiringMongo(m)
+	evolution.PayrollMongo(m)
 }
