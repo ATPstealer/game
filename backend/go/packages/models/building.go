@@ -543,7 +543,7 @@ func GetAllReadyStoragesMongo(m *mongo.Database) ([]BuildingMongo, error) {
 	defer cursor.Close(context.TODO())
 
 	err = cursor.All(context.TODO(), &readyStorages)
-	return readyStorages, nil
+	return readyStorages, err
 }
 
 func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, status BuildingStatus) error {
@@ -551,4 +551,17 @@ func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, stat
 		bson.M{"_id": buildingId},
 		bson.M{"$set": bson.M{"status": status}})
 	return err
+}
+
+func GetBuildingsForHiringMongo(m *mongo.Database) ([]BuildingMongo, error) {
+	filter := bson.M{"salary": bson.M{"$ne": 0}, "hiringNeeds": bson.M{"$ne": 0}}
+	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var buildings []BuildingMongo
+	err = cursor.All(context.TODO(), &buildings)
+	return buildings, err
 }
