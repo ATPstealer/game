@@ -545,3 +545,10 @@ func GetAllReadyStoragesMongo(m *mongo.Database) ([]BuildingMongo, error) {
 	err = cursor.All(context.TODO(), &readyStorages)
 	return readyStorages, nil
 }
+
+func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, status BuildingStatus) error {
+	_, err := m.Collection("buildings").UpdateOne(context.TODO(),
+		bson.M{"_id": buildingId},
+		bson.M{"$set": bson.M{"status": status}})
+	return err
+}

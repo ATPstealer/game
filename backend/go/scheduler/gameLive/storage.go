@@ -123,22 +123,16 @@ func StoragesUpdateMongo(m *mongo.Database) {
 		log.Println(err)
 	}
 
-	log.Println(buildingStorages)
-
 	// Storage size depend on workers count
 	storageBuildingType, _ := models.GetBuildingTypeByIDMongo(m, 1) // 1 = Storage
 	for _, buildingStorage := range buildingStorages {
 		findBuildingStorageMongo(&storages, buildingStorage, float64(storageBuildingType.Workers))
 	}
 
-	for _, storage := range storages {
-		log.Println(storage)
-	}
-
 	limit := 9000000000000000000 // infinite // TODO: сделать че-нибудь нормальное
 	sell := true
 	orders, err := models.GetOrdersMongo(m, models.FindOrderParamsMongo{Limit: &limit, Sell: &sell})
-	log.Println(orders)
+
 	if err != nil {
 		log.Println(err)
 	}

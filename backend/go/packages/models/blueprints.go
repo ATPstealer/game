@@ -5,6 +5,7 @@ import (
 	"github.com/goccy/go-json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -108,7 +109,8 @@ func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, 
 	if blueprintID != 0 {
 		filter["id"] = blueprintID
 	}
-	cursor, err := m.Collection("blueprints").Find(context.TODO(), filter)
+	cursor, err := m.Collection("blueprints").Find(context.TODO(), filter,
+		options.Find().SetSort(bson.D{{"blueprintId", 1}}))
 	if err != nil {
 		log.Println("Can't get blueprints: " + err.Error())
 		return nil, err

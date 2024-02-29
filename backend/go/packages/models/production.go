@@ -137,3 +137,10 @@ func StartWorkMongo(m *mongo.Database, userID primitive.ObjectID, payload StartW
 	}
 	return nil
 }
+
+func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID, time *time.Time) error {
+	_, err := m.Collection("productions").UpdateOne(context.TODO(),
+		bson.M{"_id": productionId},
+		bson.M{"$set": bson.M{"workStarted": &time}})
+	return err
+}

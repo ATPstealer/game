@@ -4,6 +4,7 @@ import (
 	"backend/packages/models"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
@@ -123,6 +124,98 @@ func StopWork(db *gorm.DB) {
 
 // mongo
 
+func ProductionMongo(m *mongo.Database) {
+	productions, err := getProduction(m)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return
+	}
+	log.Println(productions)
+
+	resources, err := models.GetAllResourcesMongo(m)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+		return
+	}
+	log.Println(resources)
+
+	blueprints, err := models.GetBlueprintsMongo(m, 0)
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Println(blueprints)
+
+	now := time.Now()
+	for _, production := range productions {
+		if !models.CheckEnoughStorageMongo(m, production.Building.UserID, production.Building.X, production.Building.Y, 0) {
+			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.StorageNeededStatus); err != nil {
+				log.Println("Can't update building status: " + err.Error())
+			}
+			if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+				log.Println("Can't update production start time: " + err.Error())
+			}
+			continue
+		}
+		workTime := now.Sub(*production.WorkStarted).Seconds()
+		blueprint := blueprints[production.BlueprintID-1]
+		log.Println(workTime, blueprint)
+
+		// Formula of production pace
+		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * float64(production.Building.Workers) / float64(production.BuildingType.Workers)) // here the level and square are taken into account through workers
+		blueprintCycles := float64(productionCycles) * float64(production.BuildingType.Workers) / float64(production.Building.Workers)
+		log.Println(productionCycles, blueprintCycles)
+
+		if productionCycles == 0 {
+			continue
+		}
+
+		if production.Building.OnStrike {
+			if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+				log.Println("Can't update production start time: " + err.Error())
+			}
+			continue
+		}
+
+		enoughResources := true
+		for _, resource := range blueprint.UsedResources {
+			if !models.CheckEnoughResourcesMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
+				if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ResourcesNeededStatus); err != nil {
+					log.Println("Can't update building status: " + err.Error())
+				}
+				if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+					log.Println("Can't update production start time: " + err.Error())
+				}
+				enoughResources = false
+				break
+			}
+		}
+
+		if enoughResources {
+			for _, resource := range blueprint.UsedResources {
+				if err := models.AddResourceMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+					production.Building.Y, (-1)*resource.Amount*float64(productionCycles)); err != nil {
+					log.Println("Can't add resources: " + err.Error())
+				}
+			}
+			for _, resource := range blueprint.ProducedResources {
+				if err := models.AddResourceMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+					production.Building.Y, resource.Amount*float64(productionCycles)); err != nil {
+					log.Println("Can't add resources: " + err.Error())
+				}
+			}
+			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ProductionStatus); err != nil {
+				log.Println("Can't update building status: " + err.Error())
+			}
+			newWorkStarted := production.WorkStarted.Add(time.Duration(blueprintCycles) * blueprint.ProductionTime)
+			if err := models.ProductionSetWorkStarted(m, production.ID, &newWorkStarted); err != nil {
+				log.Println("Can't update production start time: " + err.Error())
+			}
+		}
+
+	}
+}
+
 func StopWorkMongo(m *mongo.Database) {
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
 	update := bson.D{
@@ -143,4 +236,57 @@ func StopWorkMongo(m *mongo.Database) {
 		log.Println("Production: " + err.Error())
 		return
 	}
+}
+
+type ProductionWithDataMongo struct {
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
+	WorkStarted  *time.Time         `json:"workStarted" bson:"workStarted"`
+	WorkEnd      *time.Time         `json:"workEnd" bson:"workEnd"`
+	Building     models.BuildingMongo
+	BuildingType models.BuildingTypeMongo
+}
+
+func getProduction(m *mongo.Database) ([]ProductionWithDataMongo, error) {
+	filter := bson.D{{"workEnd", bson.D{{"$gt", time.Now()}}}}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuilding := bson.D{{"$lookup", bson.D{
+		{"from", "buildings"},
+		{"localField", "buildingId"},
+		{"foreignField", "_id"},
+		{"as", "building"},
+	}}}
+
+	unwindBuilding := bson.D{{"$unwind", bson.D{
+		{"path", "$building"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "building.typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("productions").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var productions []ProductionWithDataMongo
+	if err = cursor.All(context.TODO(), &productions); err != nil {
+		log.Println(err)
+	}
+	return productions, nil
 }

@@ -41,8 +41,6 @@ func LogisticsDoneMongo(m *mongo.Database) {
 		return
 	}
 
-	log.Println(logistics)
-
 	for _, logistic := range logistics {
 		err := models.AddResourceMongo(m, logistic.ResourceTypeID, logistic.UserID, logistic.ToX, logistic.ToY, logistic.Amount)
 		if err != nil {
