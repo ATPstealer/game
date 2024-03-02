@@ -215,3 +215,59 @@ func SetStoreGoodsMongo(m *mongo.Database, userID primitive.ObjectID, payload St
 		options.Update().SetUpsert(true))
 	return err
 }
+
+type StoreGoodsWithDataMongo struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingID     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	Price          float64            `json:"price" bson:"price"`
+	SellSum        int                `json:"sellSum" bson:"sellSum"`
+	Revenue        float64            `json:"revenue" bson:"revenue"`
+	SellStarted    time.Time          `json:"sellStarted" bson:"sellStarted"`
+	Status         StoreGoodsStatus   `json:"status" bson:"status"`
+	Building       BuildingMongo      `json:"building" bson:"building"`
+	BuildingType   BuildingTypeMongo  `json:"buildingType" bson:"buildingType"`
+}
+
+func GetStoreGoodsWithDataMongo(m *mongo.Database) ([]StoreGoodsWithDataMongo, error) {
+	filter := bson.D{{}}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuilding := bson.D{{"$lookup", bson.D{
+		{"from", "buildings"},
+		{"localField", "buildingId"},
+		{"foreignField", "_id"},
+		{"as", "building"},
+	}}}
+
+	unwindBuilding := bson.D{{"$unwind", bson.D{
+		{"path", "$building"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "building.typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("storeGoods").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get store goods: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var storeGoods []StoreGoodsWithDataMongo
+	if err = cursor.All(context.TODO(), &storeGoods); err != nil {
+		log.Println(err)
+	}
+	return storeGoods, nil
+}

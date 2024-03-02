@@ -94,7 +94,6 @@ func PayrollMongo(m *mongo.Database) {
 		buildings[bIndex].OnStrike = false
 		addPayrollMongo(&building, &averageSalary)
 	}
-	log.Println(buildings)
 	saveBuildings(m, &buildings)
 	setCellAverageSalaryMongo(m, &averageSalary)
 }
@@ -121,7 +120,6 @@ func addPayrollMongo(building *models.BuildingMongo, averageSalary *[]AverageSal
 
 func setCellAverageSalaryMongo(m *mongo.Database, averageSalary *[]AverageSalary) {
 	for _, avg := range *averageSalary {
-		log.Println(avg)
 		filter := bson.M{"x": avg.x, "y": avg.y}
 		update := bson.M{
 			"$set": bson.M{

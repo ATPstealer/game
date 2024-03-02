@@ -144,3 +144,56 @@ func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID
 		bson.M{"$set": bson.M{"workStarted": &time}})
 	return err
 }
+
+type ProductionWithDataMongo struct {
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
+	WorkStarted  *time.Time         `json:"workStarted" bson:"workStarted"`
+	WorkEnd      *time.Time         `json:"workEnd" bson:"workEnd"`
+	Building     BuildingMongo      `json:"building" bson:"building"`
+	BuildingType BuildingTypeMongo  `json:"buildingType" bson:"buildingType"`
+}
+
+func GetProductionMongo(m *mongo.Database) ([]ProductionWithDataMongo, error) {
+	filter := bson.D{{"workEnd", bson.D{{"$gt", time.Now()}}}}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuilding := bson.D{{"$lookup", bson.D{
+		{"from", "buildings"},
+		{"localField", "buildingId"},
+		{"foreignField", "_id"},
+		{"as", "building"},
+	}}}
+
+	unwindBuilding := bson.D{{"$unwind", bson.D{
+		{"path", "$building"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "building.typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("productions").Aggregate(context.TODO(), pipeline)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return nil, err
+	}
+	defer cursor.Close(context.TODO())
+
+	var productions []ProductionWithDataMongo
+	if err = cursor.All(context.TODO(), &productions); err != nil {
+		log.Println(err)
+	}
+	return productions, nil
+}

@@ -4,7 +4,6 @@ import (
 	"backend/packages/models"
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
@@ -125,7 +124,7 @@ func StopWork(db *gorm.DB) {
 // mongo
 
 func ProductionMongo(m *mongo.Database) {
-	productions, err := getProduction(m)
+	productions, err := models.GetProductionMongo(m)
 	if err != nil {
 		log.Println("Can't get productions: " + err.Error())
 		return
@@ -236,57 +235,4 @@ func StopWorkMongo(m *mongo.Database) {
 		log.Println("Production: " + err.Error())
 		return
 	}
-}
-
-type ProductionWithDataMongo struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
-	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
-	WorkStarted  *time.Time         `json:"workStarted" bson:"workStarted"`
-	WorkEnd      *time.Time         `json:"workEnd" bson:"workEnd"`
-	Building     models.BuildingMongo
-	BuildingType models.BuildingTypeMongo
-}
-
-func getProduction(m *mongo.Database) ([]ProductionWithDataMongo, error) {
-	filter := bson.D{{"workEnd", bson.D{{"$gt", time.Now()}}}}
-	matchStage := bson.D{{"$match", filter}}
-
-	lookupBuilding := bson.D{{"$lookup", bson.D{
-		{"from", "buildings"},
-		{"localField", "buildingId"},
-		{"foreignField", "_id"},
-		{"as", "building"},
-	}}}
-
-	unwindBuilding := bson.D{{"$unwind", bson.D{
-		{"path", "$building"},
-		{"preserveNullAndEmptyArrays", true},
-	}}}
-
-	lookupBuildingType := bson.D{{"$lookup", bson.D{
-		{"from", "buildingTypes"},
-		{"localField", "building.typeId"},
-		{"foreignField", "id"},
-		{"as", "buildingType"},
-	}}}
-
-	unwindBuildingType := bson.D{{"$unwind", bson.D{
-		{"path", "$buildingType"},
-		{"preserveNullAndEmptyArrays", true},
-	}}}
-
-	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("productions").Aggregate(context.TODO(), pipeline)
-	if err != nil {
-		log.Println("Can't get productions: " + err.Error())
-		return nil, err
-	}
-	defer cursor.Close(context.TODO())
-
-	var productions []ProductionWithDataMongo
-	if err = cursor.All(context.TODO(), &productions); err != nil {
-		log.Println(err)
-	}
-	return productions, nil
 }
