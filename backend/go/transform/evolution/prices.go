@@ -204,6 +204,7 @@ func addOrChangeEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMong
 			return
 		}
 	}
+
 	*evolutionPrices = append(*evolutionPrices, models.EvolutionPriceMongo{
 		X:              x,
 		Y:              y,
@@ -226,7 +227,7 @@ func saveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionP
 			"$setOnInsert": bson.M{
 				"x":              price.X,
 				"y":              price.Y,
-				"ResourceTypeID": price.ResourceTypeID,
+				"resourceTypeId": price.ResourceTypeID,
 			},
 		}
 

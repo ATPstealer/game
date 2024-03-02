@@ -28,6 +28,7 @@ func transform(db *gorm.DB) {
 
 func transformMongo(m *mongo.Database) {
 	evolution.CellAveragePricesMongo(m)
+	evolution.CellSpendMaxMongo(m)
 	evolution.HiringMongo(m)
 	evolution.PayrollMongo(m)
 }
