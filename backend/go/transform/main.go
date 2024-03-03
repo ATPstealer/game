@@ -6,6 +6,7 @@ import (
 	"backend/transform/evolution"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
+	"log"
 )
 
 func main() {
@@ -27,8 +28,13 @@ func transform(db *gorm.DB) {
 }
 
 func transformMongo(m *mongo.Database) {
+	log.Println("=== Calculating prices in cells and maximum expenses of the population ===")
 	evolution.CellAveragePricesMongo(m)
 	evolution.CellSpendMaxMongo(m)
+	log.Println("=== Reset stats ===")
+	evolution.ResetStatsMongo(m)
+	log.Println("=== Hiring ===")
 	evolution.HiringMongo(m)
+	log.Println("=== Payroll ===")
 	evolution.PayrollMongo(m)
 }
