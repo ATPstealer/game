@@ -25,6 +25,9 @@ type StartWorkPayload struct {
 }
 
 func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		log.Println("Can't find buildings: " + err.Error())
@@ -52,7 +55,7 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	now := time.Now()
 	end := now.Add(payload.Duration)
 
-	_, err = m.Collection("buildings").UpdateOne(context.TODO(), bson.M{"_id": building.ID}, bson.M{
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.ID}, bson.M{
 		"$set": bson.M{
 			"status":      ProductionStatus,
 			"workStarted": &now,
@@ -64,7 +67,7 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 		return err
 	}
 
-	_, err = m.Collection("productions").InsertOne(context.TODO(), Production{
+	_, err = m.Collection("productions").InsertOne(ctx, Production{
 		BuildingID:  payload.BuildingID,
 		BlueprintID: payload.BlueprintID,
 		WorkStarted: &now,
@@ -77,10 +80,13 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	return nil
 }
 
-func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID, time *time.Time) error {
-	_, err := m.Collection("productions").UpdateOne(context.TODO(),
+func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID, timeStart *time.Time) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("productions").UpdateOne(ctx,
 		bson.M{"_id": productionId},
-		bson.M{"$set": bson.M{"workStarted": &time}})
+		bson.M{"$set": bson.M{"workStarted": &timeStart}})
 	return err
 }
 

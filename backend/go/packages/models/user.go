@@ -77,7 +77,7 @@ func GetUserNamesByPrefix(m *mongo.Database, prefix string) ([]string, error) {
 	}
 	var names []string
 
-	for cursor.Next(context.TODO()) {
+	for cursor.Next(ctx) {
 		var user User
 		err := cursor.Decode(&user)
 		if err != nil {

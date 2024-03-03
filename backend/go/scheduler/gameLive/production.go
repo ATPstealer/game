@@ -90,6 +90,9 @@ func Production(m *mongo.Database) {
 }
 
 func StopWork(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
 	update := bson.D{
 		{"$set", bson.D{
@@ -98,13 +101,13 @@ func StopWork(m *mongo.Database) {
 			{"workStarted", nil},
 		}},
 	}
-	_, err := m.Collection("buildings").UpdateMany(context.TODO(), filter, update)
+	_, err := m.Collection("buildings").UpdateMany(ctx, filter, update)
 	if err != nil {
 		log.Println("Production: " + err.Error())
 		return
 	}
 
-	_, err = m.Collection("productions").DeleteMany(context.TODO(), filter)
+	_, err = m.Collection("productions").DeleteMany(ctx, filter)
 	if err != nil {
 		log.Println("Production: " + err.Error())
 		return

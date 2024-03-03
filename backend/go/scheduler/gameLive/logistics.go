@@ -10,15 +10,18 @@ import (
 )
 
 func LogisticsDone(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
-	cursor, err := m.Collection("logistics").Find(context.TODO(), filter)
+	cursor, err := m.Collection("logistics").Find(ctx, filter)
 	if err != nil {
 		log.Println("Logistics: " + err.Error())
 		return
 	}
 
 	var logistics []models.Logistic
-	if err = cursor.All(context.TODO(), &logistics); err != nil {
+	if err = cursor.All(ctx, &logistics); err != nil {
 		log.Println("Logistics: " + err.Error())
 		return
 	}
@@ -28,7 +31,7 @@ func LogisticsDone(m *mongo.Database) {
 		if err != nil {
 			log.Println("Logistics: " + err.Error())
 		}
-		_, err = m.Collection("logistics").DeleteOne(context.TODO(), bson.M{"_id": logistic.ID})
+		_, err = m.Collection("logistics").DeleteOne(ctx, bson.M{"_id": logistic.ID})
 		if err != nil {
 			log.Println("Logistics: " + err.Error())
 		}

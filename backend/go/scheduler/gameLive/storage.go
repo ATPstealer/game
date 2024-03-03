@@ -8,9 +8,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 func StoragesUpdate(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	storages, err := models.GetAllStorages(m)
 	if err != nil {
 		log.Println(err)
@@ -51,7 +55,7 @@ func StoragesUpdate(m *mongo.Database) {
 		if storage.ID == primitive.NilObjectID {
 			storage.ID = primitive.NewObjectID()
 		}
-		_, err := m.Collection("storages").UpdateOne(context.TODO(),
+		_, err := m.Collection("storages").UpdateOne(ctx,
 			bson.M{"_id": storage.ID},
 			bson.M{"$set": storage},
 			options.Update().SetUpsert(true))

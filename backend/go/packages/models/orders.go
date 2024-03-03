@@ -22,6 +22,9 @@ type Order struct {
 }
 
 func CreateOrder(m *mongo.Database, userID primitive.ObjectID, payload Order) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	if payload.Sell {
 		if !CheckEnoughResources(m, payload.ResourceTypeID, userID, payload.X, payload.Y, payload.Amount) {
 			return errors.New("not enough resources in this cell")
@@ -52,7 +55,7 @@ func CreateOrder(m *mongo.Database, userID primitive.ObjectID, payload Order) er
 		PriceForUnit:   payload.PriceForUnit,
 		Sell:           payload.Sell,
 	}
-	_, err := m.Collection("orders").InsertOne(context.TODO(), &order)
+	_, err := m.Collection("orders").InsertOne(ctx, &order)
 	return err
 }
 
@@ -70,6 +73,9 @@ type OrderMongoWithData struct {
 }
 
 func GetMyOrders(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	if userID != primitive.NilObjectID {
 		filter = append(filter, bson.E{Key: "userId", Value: userID})
@@ -119,15 +125,14 @@ func GetMyOrders(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWith
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes, unwindUser, project}
-	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("orders").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get orders: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var orders []OrderMongoWithData
-	if err = cursor.All(context.TODO(), &orders); err != nil {
+	if err = cursor.All(ctx, &orders); err != nil {
 		log.Println(err)
 	}
 	return orders, nil
@@ -147,6 +152,9 @@ type FindOrderParams struct {
 }
 
 func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongoWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	if findOrderParams.ID != nil {
 		filter = append(filter, bson.E{Key: "orders._id", Value: *findOrderParams.ID})
@@ -241,15 +249,14 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 
 	pipeline := mongo.Pipeline{matchStage, lookupResourceTypes, lookupUser, unwindResourceTypes,
 		unwindUser, project, sortStage, skipStage, limitStage}
-	cursor, err := m.Collection("orders").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("orders").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get orders: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var orders []OrderMongoWithData
-	if err = cursor.All(context.TODO(), &orders); err != nil {
+	if err = cursor.All(ctx, &orders); err != nil {
 		log.Println(err)
 	}
 	return orders, nil
@@ -261,8 +268,11 @@ type ExecuteOrderPayload struct {
 }
 
 func GetOrderByID(m *mongo.Database, orderID primitive.ObjectID) (Order, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var order Order
-	err := m.Collection("orders").FindOne(context.TODO(),
+	err := m.Collection("orders").FindOne(ctx,
 		bson.M{"_id": orderID}).Decode(&order)
 	if err != nil {
 		log.Println("Can't get building by ID: " + err.Error())
@@ -271,6 +281,9 @@ func GetOrderByID(m *mongo.Database, orderID primitive.ObjectID) (Order, error) 
 }
 
 func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteOrderPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	order, err := GetOrderByID(m, payload.OrderID)
 	if err != nil {
 		log.Println("Can't get order: " + err.Error())
@@ -317,7 +330,7 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 	}
 
 	if order.Amount == payload.Amount {
-		_, err := m.Collection("orders").DeleteOne(context.TODO(), bson.M{"_id": order.ID})
+		_, err := m.Collection("orders").DeleteOne(ctx, bson.M{"_id": order.ID})
 		if err != nil {
 			return err
 		}
@@ -327,7 +340,7 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 				"amount": -payload.Amount,
 			},
 		}
-		_, err := m.Collection("orders").UpdateOne(context.TODO(), bson.M{"_id": order.ID}, update)
+		_, err := m.Collection("orders").UpdateOne(ctx, bson.M{"_id": order.ID}, update)
 		if err != nil {
 			return err
 		}

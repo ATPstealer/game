@@ -167,10 +167,9 @@ func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]b
 		log.Println("Can't get buildings: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var buildings []bson.M // TODO: paginator
-	if err = cursor.All(context.TODO(), &buildings); err != nil {
+	if err = cursor.All(ctx, &buildings); err != nil {
 		log.Println(err)
 	}
 	return buildings, nil
@@ -207,7 +206,7 @@ func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID pri
 	}
 
 	var myBuildings []bson.M
-	if err = cursor.All(context.TODO(), &myBuildings); err != nil {
+	if err = cursor.All(ctx, &myBuildings); err != nil {
 		log.Println(err)
 	}
 	return myBuildings, nil
