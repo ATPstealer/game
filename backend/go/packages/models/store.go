@@ -34,19 +34,21 @@ type StoreGoods struct {
 }
 
 func GetStoreGoods(m *mongo.Database, buildingID primitive.ObjectID) ([]StoreGoods, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var storeGoods []StoreGoods
 	filter := bson.M{}
 	if buildingID != primitive.NilObjectID {
 		filter["buildingId"] = buildingID
 	}
-	cursor, err := m.Collection("storeGoods").Find(context.TODO(), filter)
+	cursor, err := m.Collection("storeGoods").Find(ctx, filter)
 	if err != nil {
 		log.Println("Can't get store goods: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &storeGoods)
+	err = cursor.All(ctx, &storeGoods)
 	return storeGoods, err
 }
 
@@ -57,6 +59,9 @@ type StoreGoodsPayload struct {
 }
 
 func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGoodsPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		return err
@@ -81,7 +86,7 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 		return errors.New("can't sell here")
 	}
 
-	_, err = m.Collection("storeGoods").UpdateOne(context.TODO(),
+	_, err = m.Collection("storeGoods").UpdateOne(ctx,
 		bson.M{
 			"buildingId":     payload.BuildingID,
 			"resourceTypeId": payload.ResourceTypeID,
@@ -117,6 +122,9 @@ type StoreGoodsWithData struct {
 }
 
 func GetAllStoreGoodsWithData(m *mongo.Database) ([]StoreGoodsWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{{}}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -145,15 +153,14 @@ func GetAllStoreGoodsWithData(m *mongo.Database) ([]StoreGoodsWithData, error) {
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("storeGoods").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("storeGoods").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get store goods: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var storeGoods []StoreGoodsWithData
-	if err = cursor.All(context.TODO(), &storeGoods); err != nil {
+	if err = cursor.All(ctx, &storeGoods); err != nil {
 		log.Println(err)
 	}
 	return storeGoods, nil

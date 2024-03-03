@@ -20,30 +20,36 @@ import (
 // TODO: delete obsolete tokens
 
 func MongoIndex(m *mongo.Database) {
-	_, err := m.Collection("users").Indexes().CreateOne(context.Background(),
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("users").Indexes().CreateOne(ctx,
 		mongo.IndexModel{Keys: bson.D{{"nickName", 1}}, Options: options.Index().SetUnique(true)},
-		options.CreateIndexes().SetMaxTime(10*time.Second))
+		options.CreateIndexes().SetMaxTime(60*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err = m.Collection("users").Indexes().CreateOne(context.Background(),
+	_, err = m.Collection("users").Indexes().CreateOne(ctx,
 		mongo.IndexModel{Keys: bson.D{{"email", 1}}, Options: options.Index().SetUnique(true)},
-		options.CreateIndexes().SetMaxTime(10*time.Second))
+		options.CreateIndexes().SetMaxTime(60*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 func Init(m *mongo.Database, config cfg.Vars) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	if config.Init {
-		count, err := m.Collection("settings").CountDocuments(context.TODO(), bson.M{})
+		count, err := m.Collection("settings").CountDocuments(ctx, bson.M{})
 		if err != nil {
 			log.Fatal(err)
 		}
 		if count == 0 {
 			loadSettings(m)
 		}
-		count, err = m.Collection("cells").CountDocuments(context.TODO(), bson.M{})
+		count, err = m.Collection("cells").CountDocuments(ctx, bson.M{})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -55,6 +61,9 @@ func Init(m *mongo.Database, config cfg.Vars) {
 }
 
 func loadSettings(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	settings := []Settings{
 		{Key: "mapMinX", Value: -2},
 		{Key: "mapMaxX", Value: 2},
@@ -66,7 +75,7 @@ func loadSettings(m *mongo.Database) {
 	for _, setting := range settings {
 		filter := bson.D{{"key", setting.Key}}
 		update := bson.D{{"$set", setting}}
-		_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+		_, err := collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
 			log.Fatal("Error while updating setting:", err)
 		}
@@ -74,6 +83,9 @@ func loadSettings(m *mongo.Database) {
 }
 
 func generateMap(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	settings, _ := GetSettings(m)
 	var newMapCell Cell
 	for y := int(settings["mapMinY"]); y <= int(settings["mapMaxY"]); y++ {
@@ -96,7 +108,7 @@ func generateMap(m *mongo.Database) {
 			collection := m.Collection("cells")
 			filter := bson.D{{"X", newMapCell.X}, {"Y", newMapCell.Y}}
 			update := bson.D{{"$set", newMapCell}}
-			_, err := collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+			_, err := collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 			if err != nil {
 				log.Fatal("Error while updating cells:", err)
 			}
@@ -105,7 +117,9 @@ func generateMap(m *mongo.Database) {
 }
 
 func importFromDataSheet(m *mongo.Database) {
-	ctx := context.Background()
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	conf, err := google.JWTConfigFromJSON([]byte(cfg.Config.GoogleAPI), "https://www.googleapis.com/auth/spreadsheets.readonly")
 	if err != nil {
 		log.Println("Can't get data from Google Sheet: ", err)
@@ -153,6 +167,9 @@ func importDataInTable(m *mongo.Database, tableName string, rows [][]interface{}
 }
 
 func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
@@ -191,7 +208,7 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		collection := m.Collection("buildingTypes")
 		filter := bson.D{{"id", buildingTypeMongo.ID}}
 		update := bson.D{{"$set", buildingTypeMongo}}
-		_, err = collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
 			log.Fatal("Error while updating buildingTypes:", err)
 		}
@@ -200,6 +217,9 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 }
 
 func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
@@ -230,7 +250,7 @@ func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		collection := m.Collection("resourceTypes")
 		filter := bson.D{{"id", resourceTypeMongo.ID}}
 		update := bson.D{{"$set", resourceTypeMongo}}
-		_, err = collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
 			log.Fatal("Error while updating resourceTypes:", err)
 		}
@@ -239,6 +259,9 @@ func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 }
 
 func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
@@ -275,7 +298,7 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 		collection := m.Collection("blueprints")
 		filter := bson.D{{"id", blueprintMongo.ID}}
 		update := bson.D{{"$set", blueprintMongo}}
-		_, err = collection.UpdateOne(context.TODO(), filter, update, options.Update().SetUpsert(true))
+		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
 			log.Fatal("Error while updating resourceTypes:", err)
 		}

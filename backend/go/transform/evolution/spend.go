@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 func CellSpendMax(m *mongo.Database) {
@@ -74,6 +75,9 @@ func countSpendMax(cellPrices *[]models.EvolutionPrice, moneyAvailable float64) 
 }
 
 func saveSpend(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, evolutionPrice := range *evolutionPrices {
 		filter := bson.M{"_id": evolutionPrice.ID}
 		update := bson.M{
@@ -82,7 +86,7 @@ func saveSpend(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
 			},
 		}
 
-		_, err := m.Collection("evolutionPrices").UpdateOne(context.TODO(), filter, update)
+		_, err := m.Collection("evolutionPrices").UpdateOne(ctx, filter, update)
 		if err != nil {
 			log.Println(err)
 		}

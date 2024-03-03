@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type EvolutionPrice struct {
@@ -20,18 +21,23 @@ type EvolutionPrice struct {
 }
 
 func GetAllEvolutionPrices(m *mongo.Database) ([]EvolutionPrice, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var evolutionPrices []EvolutionPrice
-	cursor, err := m.Collection("evolutionPrices").Find(context.TODO(), bson.M{})
+	cursor, err := m.Collection("evolutionPrices").Find(ctx, bson.M{})
 	if err != nil {
 		return evolutionPrices, err
 	}
-	defer cursor.Close(context.Background())
 
-	err = cursor.All(context.TODO(), &evolutionPrices)
+	err = cursor.All(ctx, &evolutionPrices)
 	return evolutionPrices, err
 }
 
 func GetEvolutionPrices(m *mongo.Database, x *int, y *int) ([]EvolutionPrice, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	if x != nil {
 		filter = append(filter, bson.E{Key: "x", Value: *x})
@@ -41,12 +47,11 @@ func GetEvolutionPrices(m *mongo.Database, x *int, y *int) ([]EvolutionPrice, er
 	}
 
 	var evolutionPrices []EvolutionPrice
-	cursor, err := m.Collection("evolutionPrices").Find(context.TODO(), filter)
+	cursor, err := m.Collection("evolutionPrices").Find(ctx, filter)
 	if err != nil {
 		return evolutionPrices, err
 	}
-	defer cursor.Close(context.Background())
 
-	err = cursor.All(context.TODO(), &evolutionPrices)
+	err = cursor.All(ctx, &evolutionPrices)
 	return evolutionPrices, err
 }

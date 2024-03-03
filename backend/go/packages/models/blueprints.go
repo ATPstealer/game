@@ -24,27 +24,31 @@ type ResourceAmount struct {
 }
 
 func GetBlueprints(m *mongo.Database, blueprintID uint) ([]Blueprint, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var blueprints []Blueprint
 	filter := bson.M{}
 	if blueprintID != 0 {
 		filter["id"] = blueprintID
 	}
-	cursor, err := m.Collection("blueprints").Find(context.TODO(), filter,
+	cursor, err := m.Collection("blueprints").Find(ctx, filter,
 		options.Find().SetSort(bson.D{{"blueprintId", 1}}))
 	if err != nil {
 		log.Println("Can't get blueprints: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &blueprints)
+	err = cursor.All(ctx, &blueprints)
 	return blueprints, err
 }
 
 func GetBlueprintByID(m *mongo.Database, blueprintID uint) (Blueprint, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var blueprint Blueprint
-	err := m.Collection("blueprints").FindOne(context.TODO(),
-		bson.M{"id": blueprintID}).Decode(&blueprint)
+	err := m.Collection("blueprints").FindOne(ctx, bson.M{"id": blueprintID}).Decode(&blueprint)
 	if err != nil {
 		log.Println("Can't get blueprint by ID: " + err.Error())
 	}

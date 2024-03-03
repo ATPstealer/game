@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type User struct {
@@ -25,6 +26,9 @@ type User struct {
 }
 
 func CreateUser(m *mongo.Database, nickName string, email string, password string) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	user := User{
 		NickName:     nickName,
 		Email:        email,
@@ -38,13 +42,16 @@ func CreateUser(m *mongo.Database, nickName string, email string, password strin
 		Management:   3,
 		Planning:     3,
 	}
-	_, err := m.Collection("users").InsertOne(context.TODO(), user)
+	_, err := m.Collection("users").InsertOne(ctx, user)
 	return err
 }
 
 func GetUserByNickName(m *mongo.Database, nickName string) (User, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var user User
-	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"nickName", nickName}}).Decode(&user)
+	err := m.Collection("users").FindOne(ctx, bson.D{{"nickName", nickName}}).Decode(&user)
 	if err != nil {
 		return user, err
 	}
@@ -52,13 +59,19 @@ func GetUserByNickName(m *mongo.Database, nickName string) (User, error) {
 }
 
 func GetUserByID(m *mongo.Database, userID primitive.ObjectID) (User, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var user User
-	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"_id", userID}}).Decode(&user)
+	err := m.Collection("users").FindOne(ctx, bson.D{{"_id", userID}}).Decode(&user)
 	return user, err
 }
 
 func GetUserNamesByPrefix(m *mongo.Database, prefix string) ([]string, error) {
-	cursor, err := m.Collection("users").Find(context.TODO(), bson.M{"nickName": bson.M{"$regex": prefix}})
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	cursor, err := m.Collection("users").Find(ctx, bson.M{"nickName": bson.M{"$regex": prefix}})
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +90,9 @@ func GetUserNamesByPrefix(m *mongo.Database, prefix string) ([]string, error) {
 }
 
 func AddMoney(m *mongo.Database, userID primitive.ObjectID, money float64) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	user, err := GetUserByID(m, userID)
 	if err != nil {
 		return err
@@ -84,7 +100,7 @@ func AddMoney(m *mongo.Database, userID primitive.ObjectID, money float64) error
 	if user.Money+money < 0 {
 		return errors.New("not enough money")
 	}
-	_, err = m.Collection("users").UpdateOne(context.TODO(), bson.M{"_id": userID}, bson.M{"$inc": bson.M{"money": money}})
+	_, err = m.Collection("users").UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$inc": bson.M{"money": money}})
 	return err
 }
 

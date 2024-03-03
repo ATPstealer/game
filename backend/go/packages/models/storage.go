@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type Storage struct {
@@ -18,33 +19,39 @@ type Storage struct {
 }
 
 func GetAllStorages(m *mongo.Database) ([]Storage, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var allStorages []Storage
-	cursor, err := m.Collection("storages").Find(context.TODO(), bson.M{})
+	cursor, err := m.Collection("storages").Find(ctx, bson.M{})
 	if err != nil {
 		return allStorages, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &allStorages)
+	err = cursor.All(ctx, &allStorages)
 	return allStorages, err
 }
 
 func GetMyStorages(m *mongo.Database, userID primitive.ObjectID) ([]Storage, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var allStorages []Storage
-	cursor, err := m.Collection("storages").Find(context.TODO(), bson.M{"userId": userID})
+	cursor, err := m.Collection("storages").Find(ctx, bson.M{"userId": userID})
 	if err != nil {
 		return allStorages, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &allStorages)
+	err = cursor.All(ctx, &allStorages)
 	return allStorages, err
 }
 
 func CheckEnoughStorage(m *mongo.Database, userID primitive.ObjectID, x int, y int, addVolume float64) bool {
-	var storage Storage
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
 
-	res := m.Collection("storages").FindOne(context.TODO(), bson.M{"userId": userID, "x": x, "y": y})
+	var storage Storage
+	res := m.Collection("storages").FindOne(ctx, bson.M{"userId": userID, "x": x, "y": y})
 	if res.Err() != nil {
 		log.Println("Can't get storages: " + res.Err().Error())
 		return false

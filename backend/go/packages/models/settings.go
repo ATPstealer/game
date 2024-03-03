@@ -4,6 +4,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
 
 type Settings struct {
@@ -12,15 +13,17 @@ type Settings struct {
 }
 
 func GetSettings(m *mongo.Database) (map[string]float64, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
-	cursor, err := m.Collection("settings").Find(context.TODO(), filter)
+	cursor, err := m.Collection("settings").Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var settingsMongo []Settings
-	if err = cursor.All(context.TODO(), &settingsMongo); err != nil {
+	if err = cursor.All(ctx, &settingsMongo); err != nil {
 		return nil, err
 	}
 

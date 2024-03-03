@@ -95,6 +95,9 @@ type ProductionWithData struct {
 }
 
 func GetProduction(m *mongo.Database) ([]ProductionWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{{"workEnd", bson.D{{"$gt", time.Now()}}}}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -123,15 +126,14 @@ func GetProduction(m *mongo.Database) ([]ProductionWithData, error) {
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupBuilding, unwindBuilding, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("productions").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("productions").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get productions: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var productions []ProductionWithData
-	if err = cursor.All(context.TODO(), &productions); err != nil {
+	if err = cursor.All(ctx, &productions); err != nil {
 		log.Println(err)
 	}
 	return productions, nil

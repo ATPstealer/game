@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type Order struct {
@@ -335,6 +336,9 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 }
 
 func CloseMyOrder(m *mongo.Database, userID primitive.ObjectID, orderID primitive.ObjectID) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	order, err := GetOrderByID(m, orderID)
 	if err != nil {
 		return err
@@ -359,6 +363,6 @@ func CloseMyOrder(m *mongo.Database, userID primitive.ObjectID, orderID primitiv
 			}
 		}
 	}
-	_, err = m.Collection("orders").DeleteOne(context.TODO(), bson.M{"_id": orderID})
+	_, err = m.Collection("orders").DeleteOne(ctx, bson.M{"_id": orderID})
 	return err
 }

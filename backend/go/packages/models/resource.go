@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 type Resource struct {
@@ -29,6 +30,9 @@ type ResourceWithData struct {
 }
 
 func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	matchStage := bson.D{{"$match", filter}}
 	lookupResourceType := bson.D{{"$lookup", bson.D{
@@ -44,22 +48,24 @@ func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
-	cursor, err := m.Collection("resources").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("resources").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get resources: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var resourcesAndTypes []ResourceWithData
-	if err = cursor.All(context.TODO(), &resourcesAndTypes); err != nil {
+	if err = cursor.All(ctx, &resourcesAndTypes); err != nil {
 		log.Println(err)
 	}
 	return resourcesAndTypes, nil
 }
 
 func AddResource(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
-	_, err := m.Collection("resources").UpdateOne(context.TODO(),
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("resources").UpdateOne(ctx,
 		bson.M{
 			"userId":         userID,
 			"x":              x,
@@ -81,6 +87,9 @@ func AddResource(m *mongo.Database, resourceTypeID uint, userID primitive.Object
 }
 
 func GetMyResources(m *mongo.Database, userID primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	filter = append(filter, bson.E{Key: "userId", Value: userID})
 	if x != nil {
@@ -105,23 +114,25 @@ func GetMyResources(m *mongo.Database, userID primitive.ObjectID, x *int, y *int
 
 	// Connect the pipeline stages and execute
 	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
-	cursor, err := m.Collection("resources").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("resources").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get resources: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var resources []bson.M
-	if err = cursor.All(context.TODO(), &resources); err != nil {
+	if err = cursor.All(ctx, &resources); err != nil {
 		log.Println(err)
 	}
 	return resources, nil
 }
 
 func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int) (Resource, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var resource Resource
-	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
+	err := m.Collection("resources").FindOne(ctx, bson.M{
 		"userId":         userID,
 		"x":              x,
 		"y":              y,
@@ -134,9 +145,11 @@ func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userID primitive.
 }
 
 func CheckEnoughResources(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) bool {
-	var resource Resource
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
 
-	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
+	var resource Resource
+	err := m.Collection("resources").FindOne(ctx, bson.M{
 		"userId":         userID,
 		"x":              x,
 		"y":              y,

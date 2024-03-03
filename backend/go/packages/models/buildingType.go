@@ -21,20 +21,25 @@ type BuildingType struct {
 }
 
 func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var buildingTypes []BuildingType
-	cursor, err := m.Collection("buildingTypes").Find(context.Background(), bson.M{})
+	cursor, err := m.Collection("buildingTypes").Find(ctx, bson.M{})
 	if err != nil {
 		return buildingTypes, err
 	}
-	defer cursor.Close(context.Background())
 
-	err = cursor.All(context.TODO(), &buildingTypes)
+	err = cursor.All(ctx, &buildingTypes)
 	return buildingTypes, err
 }
 
 func GetBuildingTypeByID(m *mongo.Database, typeID uint) (BuildingType, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var buildingType BuildingType
-	res := m.Collection("buildingTypes").FindOne(context.Background(), bson.M{"id": typeID})
+	res := m.Collection("buildingTypes").FindOne(ctx, bson.M{"id": typeID})
 	err := res.Decode(&buildingType)
 	return buildingType, err
 }

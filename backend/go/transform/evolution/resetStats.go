@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 func ResetStats(m *mongo.Database) {
@@ -13,6 +14,9 @@ func ResetStats(m *mongo.Database) {
 }
 
 func resetStores(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	filter := bson.M{}
 	update := bson.M{
 		"$set": bson.M{
@@ -20,13 +24,16 @@ func resetStores(m *mongo.Database) {
 			"revenue": 0,
 		},
 	}
-	_, err := m.Collection("storeGoods").UpdateMany(context.TODO(), filter, update)
+	_, err := m.Collection("storeGoods").UpdateMany(ctx, filter, update)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
 func resetEvolutionPrices(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	filter := bson.M{}
 	update := bson.M{
 		"$set": bson.M{
@@ -34,7 +41,7 @@ func resetEvolutionPrices(m *mongo.Database) {
 			"revenueSum": 0,
 		},
 	}
-	_, err := m.Collection("evolutionPriceS").UpdateMany(context.TODO(), filter, update)
+	_, err := m.Collection("evolutionPriceS").UpdateMany(ctx, filter, update)
 	if err != nil {
 		log.Println(err)
 	}

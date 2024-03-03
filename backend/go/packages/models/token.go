@@ -20,6 +20,9 @@ type Token struct {
 }
 
 func CreateToken(m *mongo.Database, nickName string) (Token, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	tokenString := make([]byte, 32)
 	if _, err := rand.Read(tokenString); err != nil {
 		log.Println("Can't create token", err.Error())
@@ -34,15 +37,18 @@ func CreateToken(m *mongo.Database, nickName string) (Token, error) {
 		TTL:       2592000, // 30d TODO: set it from request
 		CreatedAt: time.Now(),
 	}
-	_, err := m.Collection("tokens").InsertOne(context.TODO(), &token)
+	_, err := m.Collection("tokens").InsertOne(ctx, &token)
 
 	return token, err
 }
 
 func GetUserIDByToken(m *mongo.Database, secureToken string) (primitive.ObjectID, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var token Token
 	filter := bson.M{"token": secureToken}
-	err := m.Collection("tokens").FindOne(context.TODO(), filter).Decode(&token)
+	err := m.Collection("tokens").FindOne(ctx, filter).Decode(&token)
 
 	if err != nil {
 		log.Println("Token not found: ", err)
@@ -56,6 +62,9 @@ func GetUserIDByToken(m *mongo.Database, secureToken string) (primitive.ObjectID
 }
 
 func Delete(m *mongo.Database, token string) error {
-	_, err := m.Collection("tokens").DeleteOne(context.TODO(), bson.M{"token": token})
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("tokens").DeleteOne(ctx, bson.M{"token": token})
 	return err
 }

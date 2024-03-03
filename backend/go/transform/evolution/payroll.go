@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type AverageSalary struct {
@@ -60,6 +61,9 @@ func addPayroll(building *models.Building, averageSalary *[]AverageSalary) {
 }
 
 func setCellAverageSalary(m *mongo.Database, averageSalary *[]AverageSalary) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, avg := range *averageSalary {
 		filter := bson.M{"x": avg.x, "y": avg.y}
 		update := bson.M{
@@ -68,7 +72,7 @@ func setCellAverageSalary(m *mongo.Database, averageSalary *[]AverageSalary) {
 			},
 		}
 
-		_, err := m.Collection("cells").UpdateOne(context.TODO(), filter, update)
+		_, err := m.Collection("cells").UpdateOne(ctx, filter, update)
 		if err != nil {
 			log.Println(err)
 		}

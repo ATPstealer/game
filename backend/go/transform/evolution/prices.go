@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 func CellAveragePrices(m *mongo.Database) {
@@ -119,6 +120,9 @@ func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, 
 }
 
 func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, price := range *evolutionPrices {
 		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeID}
 		update := bson.M{
@@ -135,7 +139,7 @@ func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionP
 			},
 		}
 
-		_, err := m.Collection("evolutionPrices").UpdateOne(context.TODO(), filter, update,
+		_, err := m.Collection("evolutionPrices").UpdateOne(ctx, filter, update,
 			options.Update().SetUpsert(true))
 		if err != nil {
 			log.Println(err)

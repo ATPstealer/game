@@ -65,6 +65,9 @@ func ConstructBuilding(m *mongo.Database, userID primitive.ObjectID, payload Con
 }
 
 func CreateBuilding(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingType) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	if err := AddMoney(m, userID, (-1)*buildingType.Cost*float64(payload.Square)); err != nil {
 		return err
 	}
@@ -86,7 +89,7 @@ func CreateBuilding(m *mongo.Database, userID primitive.ObjectID, payload Constr
 		Workers:     0,
 	}
 
-	_, err := m.Collection("buildings").InsertOne(context.TODO(), building)
+	_, err := m.Collection("buildings").InsertOne(ctx, building)
 	return err
 }
 
@@ -104,6 +107,9 @@ type FindBuildingParams struct {
 }
 
 func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]bson.M, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	if findBuildingParams.ID != nil {
 		filter = append(filter, bson.E{Key: "buildings._id", Value: *findBuildingParams.ID})
@@ -156,7 +162,7 @@ func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]b
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, lookupUser, unwindBuildingType, unwindUser, projectStage}
-	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get buildings: " + err.Error())
 		return nil, err
@@ -171,6 +177,9 @@ func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]b
 }
 
 func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]bson.M, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.D{}
 	filter = append(filter, bson.E{Key: "userId", Value: userID})
 	if buildingID != primitive.NilObjectID {
@@ -191,12 +200,11 @@ func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID pri
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get buildings: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var myBuildings []bson.M
 	if err = cursor.All(context.TODO(), &myBuildings); err != nil {
@@ -206,8 +214,11 @@ func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID pri
 }
 
 func GetBuildingByID(m *mongo.Database, buildingID primitive.ObjectID) (Building, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var building Building
-	err := m.Collection("buildings").FindOne(context.TODO(),
+	err := m.Collection("buildings").FindOne(ctx,
 		bson.M{"_id": buildingID}).Decode(&building)
 	if err != nil {
 		log.Println("Can't get building by ID: " + err.Error())
@@ -222,6 +233,9 @@ type HiringPayload struct {
 }
 
 func SetHiring(m *mongo.Database, userID primitive.ObjectID, payload HiringPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		return err
@@ -238,7 +252,7 @@ func SetHiring(m *mongo.Database, userID primitive.ObjectID, payload HiringPaylo
 		return errors.New(fmt.Sprintf("hiring needs more that maximum(%d)", hiringMax))
 	}
 
-	_, err = m.Collection("buildings").UpdateOne(context.TODO(),
+	_, err = m.Collection("buildings").UpdateOne(ctx,
 		bson.M{"_id": building.ID},
 		bson.M{"$set": bson.M{"salary": payload.Salary, "hiringNeeds": payload.HiringNeeds}})
 	if err != nil {
@@ -248,6 +262,9 @@ func SetHiring(m *mongo.Database, userID primitive.ObjectID, payload HiringPaylo
 }
 
 func DestroyBuilding(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	building, err := GetBuildingByID(m, buildingID)
 	if userID != building.UserID && building.UserID != primitive.NilObjectID {
 		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
@@ -257,7 +274,7 @@ func DestroyBuilding(m *mongo.Database, userID primitive.ObjectID, buildingID pr
 		return err
 	}
 
-	_, err = m.Collection("buildings").DeleteOne(context.TODO(), bson.M{"_id": buildingID, "userId": userID})
+	_, err = m.Collection("buildings").DeleteOne(ctx, bson.M{"_id": buildingID, "userId": userID})
 	if err != nil {
 		log.Println("Failed to delete building: " + err.Error())
 		return err
@@ -267,35 +284,42 @@ func DestroyBuilding(m *mongo.Database, userID primitive.ObjectID, buildingID pr
 }
 
 func GetAllReadyStorages(m *mongo.Database) ([]Building, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var readyStorages []Building
 
 	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1}
-	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
+	cursor, err := m.Collection("buildings").Find(ctx, filter)
 	if err != nil {
 		return readyStorages, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &readyStorages)
+	err = cursor.All(ctx, &readyStorages)
 	return readyStorages, err
 }
 
 func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, status BuildingStatus) error {
-	_, err := m.Collection("buildings").UpdateOne(context.TODO(),
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx,
 		bson.M{"_id": buildingId},
 		bson.M{"$set": bson.M{"status": status}})
 	return err
 }
 
 func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	filter := bson.M{"salary": bson.M{"$ne": 0}, "hiringNeeds": bson.M{"$ne": 0}}
-	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
+	cursor, err := m.Collection("buildings").Find(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var buildings []Building
-	err = cursor.All(context.TODO(), &buildings)
+	err = cursor.All(ctx, &buildings)
 	return buildings, err
 }

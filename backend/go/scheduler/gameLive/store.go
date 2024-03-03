@@ -122,6 +122,9 @@ func findEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, 
 }
 
 func saveStoreGoods(m *mongo.Database, storeGoods *[]models.StoreGoodsWithData) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, sg := range *storeGoods {
 		filter := bson.M{"buildingId": sg.BuildingID, "resourceTypeId": sg.ResourceTypeID}
 		update := bson.M{
@@ -132,7 +135,7 @@ func saveStoreGoods(m *mongo.Database, storeGoods *[]models.StoreGoodsWithData) 
 				"status":      sg.Status,
 			},
 		}
-		_, err := m.Collection("storeGoods").UpdateOne(context.TODO(), filter, update)
+		_, err := m.Collection("storeGoods").UpdateOne(ctx, filter, update)
 		if err != nil {
 			log.Println(err)
 		}

@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"math"
+	"time"
 )
 
 // Hiring Formula is Worker N = HiringNeeds *(1 - alpha*( (salary N / salary Max) - 1)^2 )
@@ -117,6 +118,9 @@ func getAlpha(buildingsInCell *[]models.Building, population float64, salaryMax 
 }
 
 func saveBuildings(m *mongo.Database, buildings *[]models.Building) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
 	for _, building := range *buildings {
 		filter := bson.M{"_id": building.ID}
 		update := bson.M{
@@ -127,7 +131,7 @@ func saveBuildings(m *mongo.Database, buildings *[]models.Building) {
 			},
 		}
 
-		_, err := m.Collection("buildings").UpdateOne(context.TODO(), filter, update)
+		_, err := m.Collection("buildings").UpdateOne(ctx, filter, update)
 		if err != nil {
 			log.Println(err)
 		}

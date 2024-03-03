@@ -33,6 +33,9 @@ type LogisticPayload struct {
 }
 
 func StartLogisticJob(m *mongo.Database, userID primitive.ObjectID, logisticPayload LogisticPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	if !CheckEnoughResources(m, logisticPayload.ResourceTypeID, userID,
 		logisticPayload.FromX, logisticPayload.FromY, logisticPayload.Amount) {
 		return errors.New("not enough resources in this cell")
@@ -72,11 +75,14 @@ func StartLogisticJob(m *mongo.Database, userID primitive.ObjectID, logisticPayl
 		ToY:            logisticPayload.ToY,
 		WorkEnd:        time.Now().Add(time.Second * time.Duration(distance*600)),
 	}
-	_, err = m.Collection("logistics").InsertOne(context.TODO(), &logistic)
+	_, err = m.Collection("logistics").InsertOne(ctx, &logistic)
 	return err
 }
 
 func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]bson.M, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	matchStage := bson.D{{"$match", bson.M{"userId": userID}}}
 	lookupResourceType := bson.D{{"$lookup", bson.D{
 		{"from", "resourceTypes"},
@@ -91,15 +97,14 @@ func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]bson.M, err
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
-	cursor, err := m.Collection("logistics").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("logistics").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get resources: " + err.Error())
 		return nil, err
 	}
-	defer cursor.Close(context.TODO())
 
 	var logistics []bson.M
-	if err = cursor.All(context.TODO(), &logistics); err != nil {
+	if err = cursor.All(ctx, &logistics); err != nil {
 		log.Println(err)
 	}
 	return logistics, nil
@@ -119,6 +124,9 @@ type LogisticResult struct {
 }
 
 func GetDestinationVolume(m *mongo.Database, userID primitive.ObjectID, toX int, toY int) float64 {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var volume float64
 
 	filter := bson.M{"userId": userID, "toX": toX, "toY": toY}
@@ -137,15 +145,14 @@ func GetDestinationVolume(m *mongo.Database, userID primitive.ObjectID, toX int,
 	}}}
 
 	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
-	cursor, err := m.Collection("logistics").Aggregate(context.TODO(), pipeline)
+	cursor, err := m.Collection("logistics").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get logistics: " + err.Error())
 		return 0
 	}
-	defer cursor.Close(context.TODO())
 
 	var logistics []LogisticResult
-	if err = cursor.All(context.TODO(), &logistics); err != nil {
+	if err = cursor.All(ctx, &logistics); err != nil {
 		log.Println(err)
 		return 0
 	}

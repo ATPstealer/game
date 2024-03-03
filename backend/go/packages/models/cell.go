@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"time"
 )
 
 type Cell struct {
@@ -43,8 +44,11 @@ func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, e
 }
 
 func GetCell(m *mongo.Database, x int, y int) (Cell, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var cell Cell
-	err := m.Collection("cells").FindOne(context.TODO(),
+	err := m.Collection("cells").FindOne(ctx,
 		bson.M{"x": x, "y": y}).Decode(&cell)
 	return cell, err
 }
@@ -63,7 +67,10 @@ func GetCellOccupiedLand(m *mongo.Database, x int, y int) (int, error) {
 }
 
 func AddCivilSavings(m *mongo.Database, x int, y int, money float64) error {
-	_, err := m.Collection("cells").UpdateOne(context.TODO(),
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("cells").UpdateOne(ctx,
 		bson.M{
 			"x": x,
 			"y": y,
@@ -77,15 +84,17 @@ func AddCivilSavings(m *mongo.Database, x int, y int, money float64) error {
 }
 
 func GetAllCells(m *mongo.Database) ([]Cell, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
 	var cells []Cell
 
-	cursor, err := m.Collection("cells").Find(context.TODO(), bson.M{})
+	cursor, err := m.Collection("cells").Find(ctx, bson.M{})
 	if err != nil {
 		log.Println("Can't get all cells: " + err.Error())
 		return cells, err
 	}
-	defer cursor.Close(context.TODO())
 
-	err = cursor.All(context.TODO(), &cells)
+	err = cursor.All(ctx, &cells)
 	return cells, err
 }
