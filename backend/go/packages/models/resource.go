@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-type ResourceMongo struct {
+type Resource struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
@@ -18,17 +18,17 @@ type ResourceMongo struct {
 	Y              int                `json:"y" bson:"y"`
 }
 
-type ResourceWithTypeMongo struct {
+type ResourceWithData struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-	ResourceType   ResourceTypeMongo  `json:"resourceType" bson:"resourceType"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 }
 
-func GetAllResourcesMongo(m *mongo.Database) ([]ResourceWithTypeMongo, error) {
+func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	filter := bson.D{}
 	matchStage := bson.D{{"$match", filter}}
 	lookupResourceType := bson.D{{"$lookup", bson.D{
@@ -51,14 +51,14 @@ func GetAllResourcesMongo(m *mongo.Database) ([]ResourceWithTypeMongo, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	var resourcesAndTypes []ResourceWithTypeMongo
+	var resourcesAndTypes []ResourceWithData
 	if err = cursor.All(context.TODO(), &resourcesAndTypes); err != nil {
 		log.Println(err)
 	}
 	return resourcesAndTypes, nil
 }
 
-func AddResourceMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
+func AddResource(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
 	_, err := m.Collection("resources").UpdateOne(context.TODO(),
 		bson.M{
 			"userId":         userID,
@@ -80,7 +80,7 @@ func AddResourceMongo(m *mongo.Database, resourceTypeID uint, userID primitive.O
 	return err
 }
 
-func GetMyResourcesMongo(m *mongo.Database, userID primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
+func GetMyResources(m *mongo.Database, userID primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
 	filter := bson.D{}
 	filter = append(filter, bson.E{Key: "userId", Value: userID})
 	if x != nil {
@@ -119,8 +119,8 @@ func GetMyResourcesMongo(m *mongo.Database, userID primitive.ObjectID, x *int, y
 	return resources, nil
 }
 
-func GetResourceInCellMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int) (ResourceMongo, error) {
-	var resource ResourceMongo
+func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int) (Resource, error) {
+	var resource Resource
 	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
 		"userId":         userID,
 		"x":              x,
@@ -133,8 +133,8 @@ func GetResourceInCellMongo(m *mongo.Database, resourceTypeID uint, userID primi
 	return resource, err
 }
 
-func CheckEnoughResourcesMongo(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) bool {
-	var resource ResourceMongo
+func CheckEnoughResources(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) bool {
+	var resource Resource
 
 	err := m.Collection("resources").FindOne(context.TODO(), bson.M{
 		"userId":         userID,

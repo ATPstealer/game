@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func GetEvolutionPricesMongo(c *gin.Context) {
+func GetEvolutionPrices(c *gin.Context) {
 	var xPointer, yPointer *int
 	if c.Query("x") != "" {
 		x, err := include.StrToInt(c, c.Query("x"))
@@ -25,7 +25,7 @@ func GetEvolutionPricesMongo(c *gin.Context) {
 		yPointer = &y
 	}
 
-	evolutionPrices, err := models.GetEvolutionPricesMongo(db.M, xPointer, yPointer)
+	evolutionPrices, err := models.GetEvolutionPrices(db.M, xPointer, yPointer)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get evolution prices: " + err.Error()})
 		return

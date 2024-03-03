@@ -10,13 +10,13 @@ import (
 func main() {
 	cfg.LoadConfig()            // global cfg.Config
 	db.MongoConnect(cfg.Config) // global db.M
-	aliveMongo(db.M)
+	alive(db.M)
 }
 
-func aliveMongo(m *mongo.Database) {
-	gameLive.ProductionMongo(m)
-	gameLive.StopWorkMongo(m)
-	gameLive.LogisticsDoneMongo(m)
-	gameLive.StoragesUpdateMongo(m)
-	gameLive.StoreSellMongo(m)
+func alive(m *mongo.Database) {
+	gameLive.Production(m)
+	gameLive.StopWork(m)
+	gameLive.LogisticsDone(m)
+	gameLive.StoragesUpdate(m)
+	gameLive.StoreSell(m)
 }

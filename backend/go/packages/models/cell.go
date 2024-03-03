@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-type CellMongo struct {
+type Cell struct {
 	CellName         string  `bson:"cellName" json:"cellName"`
 	X                int     `bson:"x" json:"x"`
 	Y                int     `bson:"y" json:"y"`
@@ -24,17 +24,17 @@ type CellMongo struct {
 	AverageSalary    float64 `bson:"averageSalary" json:"averageSalary"`
 }
 
-func CheckEnoughLandMongo(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {
+func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {
 	if squareForBuy <= 0 {
 		return false, errors.New("square < 0")
 	}
 
-	occupiedLand, err := GetCellOccupiedLandMongo(m, x, y)
+	occupiedLand, err := GetCellOccupiedLand(m, x, y)
 	if err != nil {
 		return false, errors.New("can't get cell occupied land")
 	}
 
-	cell, err := GetCellMongo(m, x, y)
+	cell, err := GetCell(m, x, y)
 	if err != nil {
 		return false, errors.New("can't get cell")
 	}
@@ -42,15 +42,15 @@ func CheckEnoughLandMongo(m *mongo.Database, x int, y int, squareForBuy int) (bo
 	return cell.Square-occupiedLand >= squareForBuy, nil
 }
 
-func GetCellMongo(m *mongo.Database, x int, y int) (CellMongo, error) {
-	var cell CellMongo
+func GetCell(m *mongo.Database, x int, y int) (Cell, error) {
+	var cell Cell
 	err := m.Collection("cells").FindOne(context.TODO(),
 		bson.M{"x": x, "y": y}).Decode(&cell)
 	return cell, err
 }
 
-func GetCellOccupiedLandMongo(m *mongo.Database, x int, y int) (int, error) {
-	landLords, err := GetCellOwnersMongo(m, x, y)
+func GetCellOccupiedLand(m *mongo.Database, x int, y int) (int, error) {
+	landLords, err := GetCellOwners(m, x, y)
 	if err != nil {
 		return 0, errors.New("can't get cell owners")
 	}
@@ -62,7 +62,7 @@ func GetCellOccupiedLandMongo(m *mongo.Database, x int, y int) (int, error) {
 	return occupiedLand, nil
 }
 
-func AddCivilSavingsMongo(m *mongo.Database, x int, y int, money float64) error {
+func AddCivilSavings(m *mongo.Database, x int, y int, money float64) error {
 	_, err := m.Collection("cells").UpdateOne(context.TODO(),
 		bson.M{
 			"x": x,
@@ -76,8 +76,8 @@ func AddCivilSavingsMongo(m *mongo.Database, x int, y int, money float64) error 
 	return err
 }
 
-func GetAllCellsMongo(m *mongo.Database) ([]CellMongo, error) {
-	var cells []CellMongo
+func GetAllCells(m *mongo.Database) ([]Cell, error) {
+	var cells []Cell
 
 	cursor, err := m.Collection("cells").Find(context.TODO(), bson.M{})
 	if err != nil {

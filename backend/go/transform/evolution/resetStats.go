@@ -7,12 +7,12 @@ import (
 	"log"
 )
 
-func ResetStatsMongo(m *mongo.Database) {
-	resetStoresMongo(m)
-	resetEvolutionPricesMongo(m)
+func ResetStats(m *mongo.Database) {
+	resetStores(m)
+	resetEvolutionPrices(m)
 }
 
-func resetStoresMongo(m *mongo.Database) {
+func resetStores(m *mongo.Database) {
 	filter := bson.M{}
 	update := bson.M{
 		"$set": bson.M{
@@ -26,7 +26,7 @@ func resetStoresMongo(m *mongo.Database) {
 	}
 }
 
-func resetEvolutionPricesMongo(m *mongo.Database) {
+func resetEvolutionPrices(m *mongo.Database) {
 	filter := bson.M{}
 	update := bson.M{
 		"$set": bson.M{

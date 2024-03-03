@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type BuildingTypeMongo struct {
+type BuildingType struct {
 	ID               uint          `bson:"id" json:"id"`
 	Title            string        `bson:"title" json:"title"`
 	Description      string        `bson:"description" json:"description"`
@@ -20,8 +20,8 @@ type BuildingTypeMongo struct {
 	Workers          int           `bson:"workers" json:"workers"`
 }
 
-func GetAllBuildingTypesMongo(m *mongo.Database) ([]BuildingTypeMongo, error) {
-	var buildingTypes []BuildingTypeMongo
+func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {
+	var buildingTypes []BuildingType
 	cursor, err := m.Collection("buildingTypes").Find(context.Background(), bson.M{})
 	if err != nil {
 		return buildingTypes, err
@@ -32,8 +32,8 @@ func GetAllBuildingTypesMongo(m *mongo.Database) ([]BuildingTypeMongo, error) {
 	return buildingTypes, err
 }
 
-func GetBuildingTypeByIDMongo(m *mongo.Database, typeID uint) (BuildingTypeMongo, error) {
-	var buildingType BuildingTypeMongo
+func GetBuildingTypeByID(m *mongo.Database, typeID uint) (BuildingType, error) {
+	var buildingType BuildingType
 	res := m.Collection("buildingTypes").FindOne(context.Background(), bson.M{"id": typeID})
 	err := res.Decode(&buildingType)
 	return buildingType, err

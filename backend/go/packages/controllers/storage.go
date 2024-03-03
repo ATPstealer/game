@@ -8,12 +8,12 @@ import (
 	"net/http"
 )
 
-func GetMyStoragesMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func GetMyStorages(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
-	myStorages, err := models.GetMyStoragesMongo(db.M, userID)
+	myStorages, err := models.GetMyStorages(db.M, userID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get storages: " + err.Error()})
 		return

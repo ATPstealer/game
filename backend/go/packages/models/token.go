@@ -12,23 +12,23 @@ import (
 	"time"
 )
 
-type TokenMongo struct {
+type Token struct {
 	UserID    primitive.ObjectID `json:"userId" bson:"userId"`
 	Token     string             `json:"token" bson:"token"`
 	TTL       time.Duration      `json:"ttl" bson:"ttl"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
 }
 
-func CreateTokenMongo(m *mongo.Database, nickName string) (TokenMongo, error) {
+func CreateToken(m *mongo.Database, nickName string) (Token, error) {
 	tokenString := make([]byte, 32)
 	if _, err := rand.Read(tokenString); err != nil {
 		log.Println("Can't create token", err.Error())
 	}
 	hexToken := hex.EncodeToString(tokenString)
 
-	user, _ := GetUserByNickNameMongo(m, nickName)
+	user, _ := GetUserByNickName(m, nickName)
 
-	token := TokenMongo{
+	token := Token{
 		UserID:    user.ID,
 		Token:     hexToken,
 		TTL:       2592000, // 30d TODO: set it from request
@@ -39,8 +39,8 @@ func CreateTokenMongo(m *mongo.Database, nickName string) (TokenMongo, error) {
 	return token, err
 }
 
-func GetUserIDByTokenMongo(m *mongo.Database, secureToken string) (primitive.ObjectID, error) {
-	var token TokenMongo
+func GetUserIDByToken(m *mongo.Database, secureToken string) (primitive.ObjectID, error) {
+	var token Token
 	filter := bson.M{"token": secureToken}
 	err := m.Collection("tokens").FindOne(context.TODO(), filter).Decode(&token)
 
@@ -55,7 +55,7 @@ func GetUserIDByTokenMongo(m *mongo.Database, secureToken string) (primitive.Obj
 	return token.UserID, nil
 }
 
-func DeleteTokenMongo(m *mongo.Database, token string) error {
+func Delete(m *mongo.Database, token string) error {
 	_, err := m.Collection("tokens").DeleteOne(context.TODO(), bson.M{"token": token})
 	return err
 }

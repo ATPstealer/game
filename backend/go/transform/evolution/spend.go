@@ -8,30 +8,30 @@ import (
 	"log"
 )
 
-func CellSpendMaxMongo(m *mongo.Database) {
-	cells, err := models.GetAllCellsMongo(m)
+func CellSpendMax(m *mongo.Database) {
+	cells, err := models.GetAllCells(m)
 	if err != nil {
 		log.Println("Can't get cells: " + err.Error())
 		return
 	}
-	evolutionPrices, err := models.GetAllEvolutionPricesMongo(m)
+	evolutionPrices, err := models.GetAllEvolutionPrices(m)
 	if err != nil {
 		log.Println("Can't get evolution prices: " + err.Error())
 		return
 	}
-	var cellPrices []models.EvolutionPriceMongo
-	var newCellPrices []models.EvolutionPriceMongo
+	var cellPrices []models.EvolutionPrice
+	var newCellPrices []models.EvolutionPrice
 	for _, cell := range cells {
-		cellPrices = findCellPricesMongo(&evolutionPrices, cell.X, cell.Y)
-		sortByTurnoverMongo(&cellPrices)
-		countSpendMaxMongo(&cellPrices, cell.CivilSavings*cell.SpendRate)
+		cellPrices = findCellPrices(&evolutionPrices, cell.X, cell.Y)
+		sortByTurnover(&cellPrices)
+		countSpendMax(&cellPrices, cell.CivilSavings*cell.SpendRate)
 		newCellPrices = append(newCellPrices, cellPrices...)
 	}
 	saveSpend(m, &newCellPrices)
 }
 
-func findCellPricesMongo(evolutionPrices *[]models.EvolutionPriceMongo, x int, y int) []models.EvolutionPriceMongo {
-	var cellPrices []models.EvolutionPriceMongo
+func findCellPrices(evolutionPrices *[]models.EvolutionPrice, x int, y int) []models.EvolutionPrice {
+	var cellPrices []models.EvolutionPrice
 	for _, evolutionPrice := range *evolutionPrices {
 		if evolutionPrice.X == x && evolutionPrice.Y == y {
 			cellPrices = append(cellPrices, evolutionPrice)
@@ -40,7 +40,7 @@ func findCellPricesMongo(evolutionPrices *[]models.EvolutionPriceMongo, x int, y
 	return cellPrices
 }
 
-func sortByTurnoverMongo(cellPrices *[]models.EvolutionPriceMongo) {
+func sortByTurnover(cellPrices *[]models.EvolutionPrice) {
 	for j := 0; j < len(*cellPrices); j++ {
 		for k := j + 1; k < len(*cellPrices); k++ {
 			if ((*cellPrices)[j].PriceAverage * (*cellPrices)[j].Demand) > ((*cellPrices)[k].PriceAverage * (*cellPrices)[k].Demand) {
@@ -50,7 +50,7 @@ func sortByTurnoverMongo(cellPrices *[]models.EvolutionPriceMongo) {
 	}
 }
 
-func countSpendMaxMongo(cellPrices *[]models.EvolutionPriceMongo, moneyAvailable float64) {
+func countSpendMax(cellPrices *[]models.EvolutionPrice, moneyAvailable float64) {
 	arrayLen := len(*cellPrices)
 	var consumptionLevel float64
 	for i := 0; i < arrayLen; i++ {
@@ -73,7 +73,7 @@ func countSpendMaxMongo(cellPrices *[]models.EvolutionPriceMongo, moneyAvailable
 	}
 }
 
-func saveSpend(m *mongo.Database, evolutionPrices *[]models.EvolutionPriceMongo) {
+func saveSpend(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
 	for _, evolutionPrice := range *evolutionPrices {
 		filter := bson.M{"_id": evolutionPrice.ID}
 		update := bson.M{

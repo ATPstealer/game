@@ -11,17 +11,17 @@ import (
 func main() {
 	cfg.LoadConfig()            // global cfg.Config
 	db.MongoConnect(cfg.Config) // global db.M
-	transformMongo(db.M)
+	transform(db.M)
 }
 
-func transformMongo(m *mongo.Database) {
+func transform(m *mongo.Database) {
 	log.Println("=== Calculating prices in cells and maximum expenses of the population ===")
-	evolution.CellAveragePricesMongo(m)
-	evolution.CellSpendMaxMongo(m)
+	evolution.CellAveragePrices(m)
+	evolution.CellSpendMax(m)
 	log.Println("=== Reset stats ===")
-	evolution.ResetStatsMongo(m)
+	evolution.ResetStats(m)
 	log.Println("=== Hiring ===")
-	evolution.HiringMongo(m)
+	evolution.Hiring(m)
 	log.Println("=== Payroll ===")
-	evolution.PayrollMongo(m)
+	evolution.Payroll(m)
 }

@@ -10,41 +10,41 @@ import (
 	"log"
 )
 
-func StoragesUpdateMongo(m *mongo.Database) {
-	storages, err := models.GetAllStoragesMongo(m)
+func StoragesUpdate(m *mongo.Database) {
+	storages, err := models.GetAllStorages(m)
 	if err != nil {
 		log.Println(err)
 	}
-	cleanStorageMongo(&storages)
+	cleanStorage(&storages)
 
-	resources, err := models.GetAllResourcesMongo(m)
+	resources, err := models.GetAllResources(m)
 	if err != nil {
 		log.Println(err)
 	}
 	for _, resource := range resources {
-		findResourceMongo(&storages, resource)
+		findResource(&storages, resource)
 	}
 
-	buildingStorages, err := models.GetAllReadyStoragesMongo(m)
+	buildingStorages, err := models.GetAllReadyStorages(m)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// Storage size depend on workers count
-	storageBuildingType, _ := models.GetBuildingTypeByIDMongo(m, 1) // 1 = Storage
+	storageBuildingType, _ := models.GetBuildingTypeByID(m, 1) // 1 = Storage
 	for _, buildingStorage := range buildingStorages {
-		findBuildingStorageMongo(&storages, buildingStorage, float64(storageBuildingType.Workers))
+		findBuildingStorage(&storages, buildingStorage, float64(storageBuildingType.Workers))
 	}
 
 	limit := 9000000000000000000 // infinite // TODO: сделать че-нибудь нормальное
 	sell := true
-	orders, err := models.GetOrdersMongo(m, models.FindOrderParamsMongo{Limit: &limit, Sell: &sell})
+	orders, err := models.GetOrders(m, models.FindOrderParams{Limit: &limit, Sell: &sell})
 
 	if err != nil {
 		log.Println(err)
 	}
 	for _, order := range orders {
-		findOrderMongo(&storages, order)
+		findOrder(&storages, order)
 	}
 
 	for _, storage := range storages {
@@ -61,21 +61,21 @@ func StoragesUpdateMongo(m *mongo.Database) {
 	}
 }
 
-func cleanStorageMongo(storages *[]models.StorageMongo) {
+func cleanStorage(storages *[]models.Storage) {
 	for i := 0; i < len(*storages); i++ {
 		(*storages)[i].VolumeMax = 0
 		(*storages)[i].VolumeOccupied = 0
 	}
 }
 
-func findResourceMongo(storages *[]models.StorageMongo, resource models.ResourceWithTypeMongo) {
+func findResource(storages *[]models.Storage, resource models.ResourceWithData) {
 	for i, storage := range *storages {
 		if storage.UserID == resource.UserID && storage.X == resource.X && storage.Y == resource.Y {
 			(*storages)[i].VolumeOccupied += resource.ResourceType.Volume * resource.Amount
 			return
 		}
 	}
-	*storages = append(*storages, models.StorageMongo{
+	*storages = append(*storages, models.Storage{
 		UserID:         resource.UserID,
 		VolumeOccupied: resource.ResourceType.Volume * resource.Amount,
 		X:              resource.X,
@@ -83,14 +83,14 @@ func findResourceMongo(storages *[]models.StorageMongo, resource models.Resource
 	})
 }
 
-func findBuildingStorageMongo(storages *[]models.StorageMongo, buildingStorage models.BuildingMongo, workersNeeded float64) {
+func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Building, workersNeeded float64) {
 	for i, storage := range *storages {
 		if storage.UserID == buildingStorage.UserID && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
 			(*storages)[i].VolumeMax += float64(buildingStorage.Workers) * 100 * 5 / workersNeeded
 			return
 		}
 	}
-	*storages = append(*storages, models.StorageMongo{
+	*storages = append(*storages, models.Storage{
 		UserID:    buildingStorage.UserID,
 		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
 		X:         buildingStorage.X,
@@ -98,14 +98,14 @@ func findBuildingStorageMongo(storages *[]models.StorageMongo, buildingStorage m
 	})
 }
 
-func findOrderMongo(storages *[]models.StorageMongo, order models.OrderMongoWithData) {
+func findOrder(storages *[]models.Storage, order models.OrderMongoWithData) {
 	for i, storage := range *storages {
 		if storage.UserID == order.UserID && storage.X == order.X && storage.Y == order.Y {
 			(*storages)[i].VolumeOccupied += order.Amount * order.ResourceType.Volume
 			return
 		}
 	}
-	*storages = append(*storages, models.StorageMongo{
+	*storages = append(*storages, models.Storage{
 		UserID:         order.UserID,
 		VolumeOccupied: order.ResourceType.Volume * order.Amount,
 		X:              order.X,

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type ProductionMongo struct {
+type Production struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	BlueprintID uint               `json:"blueprintId" bson:"blueprintId"`
@@ -18,14 +18,14 @@ type ProductionMongo struct {
 	WorkEnd     *time.Time         `json:"workEnd" bson:"workEnd"`
 }
 
-type StartWorkPayloadMongo struct {
+type StartWorkPayload struct {
 	BuildingID  primitive.ObjectID
 	BlueprintID uint
 	Duration    time.Duration
 }
 
-func StartWorkMongo(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPayloadMongo) error {
-	building, err := GetBuildingByIDMongo(m, payload.BuildingID)
+func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPayload) error {
+	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		log.Println("Can't find buildings: " + err.Error())
 		return err
@@ -38,7 +38,7 @@ func StartWorkMongo(m *mongo.Database, userID primitive.ObjectID, payload StartW
 		log.Println(err)
 		return err
 	}
-	blueprintResult, err := GetBlueprintByIDMongo(m, payload.BlueprintID)
+	blueprintResult, err := GetBlueprintByID(m, payload.BlueprintID)
 	if err != nil {
 		log.Println("invalid blueprint" + err.Error())
 		return err
@@ -64,7 +64,7 @@ func StartWorkMongo(m *mongo.Database, userID primitive.ObjectID, payload StartW
 		return err
 	}
 
-	_, err = m.Collection("productions").InsertOne(context.TODO(), ProductionMongo{
+	_, err = m.Collection("productions").InsertOne(context.TODO(), Production{
 		BuildingID:  payload.BuildingID,
 		BlueprintID: payload.BlueprintID,
 		WorkStarted: &now,
@@ -84,17 +84,17 @@ func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID
 	return err
 }
 
-type ProductionWithDataMongo struct {
+type ProductionWithData struct {
 	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
 	WorkStarted  *time.Time         `json:"workStarted" bson:"workStarted"`
 	WorkEnd      *time.Time         `json:"workEnd" bson:"workEnd"`
-	Building     BuildingMongo      `json:"building" bson:"building"`
-	BuildingType BuildingTypeMongo  `json:"buildingType" bson:"buildingType"`
+	Building     Building           `json:"building" bson:"building"`
+	BuildingType BuildingType       `json:"buildingType" bson:"buildingType"`
 }
 
-func GetProductionMongo(m *mongo.Database) ([]ProductionWithDataMongo, error) {
+func GetProduction(m *mongo.Database) ([]ProductionWithData, error) {
 	filter := bson.D{{"workEnd", bson.D{{"$gt", time.Now()}}}}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -130,7 +130,7 @@ func GetProductionMongo(m *mongo.Database) ([]ProductionWithDataMongo, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	var productions []ProductionWithDataMongo
+	var productions []ProductionWithData
 	if err = cursor.All(context.TODO(), &productions); err != nil {
 		log.Println(err)
 	}

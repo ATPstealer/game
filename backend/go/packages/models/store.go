@@ -22,7 +22,7 @@ const (
 	CapacityReached      StoreGoodsStatus = "CapacityReached"
 )
 
-type StoreGoodsMongo struct {
+type StoreGoods struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
@@ -33,8 +33,8 @@ type StoreGoodsMongo struct {
 	Status         StoreGoodsStatus   `json:"status" bson:"status"`
 }
 
-func GetStoreGoodsMongo(m *mongo.Database, buildingID primitive.ObjectID) ([]StoreGoodsMongo, error) {
-	var storeGoods []StoreGoodsMongo
+func GetStoreGoods(m *mongo.Database, buildingID primitive.ObjectID) ([]StoreGoods, error) {
+	var storeGoods []StoreGoods
 	filter := bson.M{}
 	if buildingID != primitive.NilObjectID {
 		filter["buildingId"] = buildingID
@@ -50,14 +50,14 @@ func GetStoreGoodsMongo(m *mongo.Database, buildingID primitive.ObjectID) ([]Sto
 	return storeGoods, err
 }
 
-type StoreGoodsPayloadMongo struct {
+type StoreGoodsPayload struct {
 	BuildingID     primitive.ObjectID `json:"buildingId"`
 	ResourceTypeID uint               `json:"resourceTypeId"`
 	Price          float64            `json:"price"`
 }
 
-func SetStoreGoodsMongo(m *mongo.Database, userID primitive.ObjectID, payload StoreGoodsPayloadMongo) error {
-	building, err := GetBuildingByIDMongo(m, payload.BuildingID)
+func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGoodsPayload) error {
+	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		return err
 	}
@@ -65,7 +65,7 @@ func SetStoreGoodsMongo(m *mongo.Database, userID primitive.ObjectID, payload St
 		return errors.New("this building don't belong you")
 	}
 
-	buildingType, err := GetBuildingTypeByIDMongo(m, building.TypeID)
+	buildingType, err := GetBuildingTypeByID(m, building.TypeID)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func SetStoreGoodsMongo(m *mongo.Database, userID primitive.ObjectID, payload St
 		return errors.New("this is not a store")
 	}
 
-	resourceType, err := GetResourceTypesByIDMongo(m, payload.ResourceTypeID)
+	resourceType, err := GetResourceTypesByID(m, payload.ResourceTypeID)
 	if err != nil {
 		return err
 	}
@@ -103,7 +103,7 @@ func SetStoreGoodsMongo(m *mongo.Database, userID primitive.ObjectID, payload St
 	return err
 }
 
-type StoreGoodsWithDataMongo struct {
+type StoreGoodsWithData struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
@@ -112,11 +112,11 @@ type StoreGoodsWithDataMongo struct {
 	Revenue        float64            `json:"revenue" bson:"revenue"`
 	SellStarted    time.Time          `json:"sellStarted" bson:"sellStarted"`
 	Status         StoreGoodsStatus   `json:"status" bson:"status"`
-	Building       BuildingMongo      `json:"building" bson:"building"`
-	BuildingType   BuildingTypeMongo  `json:"buildingType" bson:"buildingType"`
+	Building       Building           `json:"building" bson:"building"`
+	BuildingType   BuildingType       `json:"buildingType" bson:"buildingType"`
 }
 
-func GetAllStoreGoodsWithDataMongo(m *mongo.Database) ([]StoreGoodsWithDataMongo, error) {
+func GetAllStoreGoodsWithData(m *mongo.Database) ([]StoreGoodsWithData, error) {
 	filter := bson.D{{}}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -152,7 +152,7 @@ func GetAllStoreGoodsWithDataMongo(m *mongo.Database) ([]StoreGoodsWithDataMongo
 	}
 	defer cursor.Close(context.TODO())
 
-	var storeGoods []StoreGoodsWithDataMongo
+	var storeGoods []StoreGoodsWithData
 	if err = cursor.All(context.TODO(), &storeGoods); err != nil {
 		log.Println(err)
 	}

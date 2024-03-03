@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-type UserMongo struct {
+type User struct {
 	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	NickName     string             `json:"nickName" bson:"nickName"`
 	Email        string             `json:"email" bson:"email"`
@@ -24,8 +24,8 @@ type UserMongo struct {
 	Planning     int                `json:"planning" bson:"planning"`
 }
 
-func CreateUserMongo(m *mongo.Database, nickName string, email string, password string) error {
-	userMongo := UserMongo{
+func CreateUser(m *mongo.Database, nickName string, email string, password string) error {
+	user := User{
 		NickName:     nickName,
 		Email:        email,
 		Password:     password,
@@ -38,12 +38,12 @@ func CreateUserMongo(m *mongo.Database, nickName string, email string, password 
 		Management:   3,
 		Planning:     3,
 	}
-	_, err := m.Collection("users").InsertOne(context.TODO(), userMongo)
+	_, err := m.Collection("users").InsertOne(context.TODO(), user)
 	return err
 }
 
-func GetUserByNickNameMongo(m *mongo.Database, nickName string) (UserMongo, error) {
-	var user UserMongo
+func GetUserByNickName(m *mongo.Database, nickName string) (User, error) {
+	var user User
 	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"nickName", nickName}}).Decode(&user)
 	if err != nil {
 		return user, err
@@ -51,13 +51,13 @@ func GetUserByNickNameMongo(m *mongo.Database, nickName string) (UserMongo, erro
 	return user, nil
 }
 
-func GetUserByIDMongo(m *mongo.Database, userID primitive.ObjectID) (UserMongo, error) {
-	var user UserMongo
+func GetUserByID(m *mongo.Database, userID primitive.ObjectID) (User, error) {
+	var user User
 	err := m.Collection("users").FindOne(context.TODO(), bson.D{{"_id", userID}}).Decode(&user)
 	return user, err
 }
 
-func GetUserNamesByPrefixMongo(m *mongo.Database, prefix string) ([]string, error) {
+func GetUserNamesByPrefix(m *mongo.Database, prefix string) ([]string, error) {
 	cursor, err := m.Collection("users").Find(context.TODO(), bson.M{"nickName": bson.M{"$regex": prefix}})
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func GetUserNamesByPrefixMongo(m *mongo.Database, prefix string) ([]string, erro
 	var names []string
 
 	for cursor.Next(context.TODO()) {
-		var user UserMongo
+		var user User
 		err := cursor.Decode(&user)
 		if err != nil {
 			return nil, err
@@ -76,8 +76,8 @@ func GetUserNamesByPrefixMongo(m *mongo.Database, prefix string) ([]string, erro
 	return names, nil
 }
 
-func AddMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) error {
-	user, err := GetUserByIDMongo(m, userID)
+func AddMoney(m *mongo.Database, userID primitive.ObjectID, money float64) error {
+	user, err := GetUserByID(m, userID)
 	if err != nil {
 		return err
 	}
@@ -88,8 +88,8 @@ func AddMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) 
 	return err
 }
 
-func CheckEnoughMoneyMongo(m *mongo.Database, userID primitive.ObjectID, money float64) bool {
-	user, err := GetUserByIDMongo(m, userID)
+func CheckEnough(m *mongo.Database, userID primitive.ObjectID, money float64) bool {
+	user, err := GetUserByID(m, userID)
 	if err != nil {
 		log.Println(err)
 		return false

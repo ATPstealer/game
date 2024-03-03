@@ -9,9 +9,9 @@ import (
 )
 
 func main() {
-	cfg.LoadConfig()                   // global cfg.Config
-	db.MongoConnect(cfg.Config)        // global db.M
-	models.InitMongo(db.M, cfg.Config) // Init mongoDB vars
+	cfg.LoadConfig()              // global cfg.Config
+	db.MongoConnect(cfg.Config)   // global db.M
+	models.Init(db.M, cfg.Config) // Init mongoDB vars
 	models.MongoIndex(db.M)
 	// models.DeleteObsoleteTokens(db.DB) // TODO: make it
 

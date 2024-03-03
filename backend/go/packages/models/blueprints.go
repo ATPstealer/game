@@ -9,22 +9,22 @@ import (
 	"time"
 )
 
-type BlueprintMongo struct {
-	ID                uint                  `json:"id" bson:"id"`
-	Name              string                `json:"name" bson:"name"`
-	ProducedResources []ResourceAmountMongo `json:"producedResources" bson:"producedResources"`
-	UsedResources     []ResourceAmountMongo `json:"usedResources" bson:"usedResources"`
-	ProducedInID      uint                  `json:"producedInId" bson:"producedInId"`
-	ProductionTime    time.Duration         `json:"productionTime" bson:"productionTime"`
+type Blueprint struct {
+	ID                uint             `json:"id" bson:"id"`
+	Name              string           `json:"name" bson:"name"`
+	ProducedResources []ResourceAmount `json:"producedResources" bson:"producedResources"`
+	UsedResources     []ResourceAmount `json:"usedResources" bson:"usedResources"`
+	ProducedInID      uint             `json:"producedInId" bson:"producedInId"`
+	ProductionTime    time.Duration    `json:"productionTime" bson:"productionTime"`
 }
 
-type ResourceAmountMongo struct {
+type ResourceAmount struct {
 	ResourceID uint    `json:"resourceId" bson:"resourceId"`
 	Amount     float64 `json:"amount" bson:"amount"`
 }
 
-func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, error) {
-	var blueprints []BlueprintMongo
+func GetBlueprints(m *mongo.Database, blueprintID uint) ([]Blueprint, error) {
+	var blueprints []Blueprint
 	filter := bson.M{}
 	if blueprintID != 0 {
 		filter["id"] = blueprintID
@@ -41,8 +41,8 @@ func GetBlueprintsMongo(m *mongo.Database, blueprintID uint) ([]BlueprintMongo, 
 	return blueprints, err
 }
 
-func GetBlueprintByIDMongo(m *mongo.Database, blueprintID uint) (BlueprintMongo, error) {
-	var blueprint BlueprintMongo
+func GetBlueprintByID(m *mongo.Database, blueprintID uint) (Blueprint, error) {
+	var blueprint Blueprint
 	err := m.Collection("blueprints").FindOne(context.TODO(),
 		bson.M{"id": blueprintID}).Decode(&blueprint)
 	if err != nil {

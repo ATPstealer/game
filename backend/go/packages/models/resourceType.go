@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-type ResourceTypeMongo struct {
+type ResourceType struct {
 	ID         uint    `json:"id" bson:"id"`
 	Name       string  `json:"name" bson:"name"`
 	Volume     float64 `json:"volume" bson:"volume"` // m3
@@ -16,8 +16,8 @@ type ResourceTypeMongo struct {
 	StoreGroup string  `json:"storeGroup" bson:"storeGroup"`
 }
 
-func GetAllResourceTypesMongo(m *mongo.Database) ([]ResourceTypeMongo, error) {
-	var resourceTypes []ResourceTypeMongo
+func GetAllResourceTypes(m *mongo.Database) ([]ResourceType, error) {
+	var resourceTypes []ResourceType
 	cursor, err := m.Collection("resourceTypes").Find(context.Background(), bson.M{})
 	if err != nil {
 		return resourceTypes, err
@@ -28,8 +28,8 @@ func GetAllResourceTypesMongo(m *mongo.Database) ([]ResourceTypeMongo, error) {
 	return resourceTypes, err
 }
 
-func GetResourceTypesByIDMongo(m *mongo.Database, typeID uint) (ResourceTypeMongo, error) {
-	var resourceType ResourceTypeMongo
+func GetResourceTypesByID(m *mongo.Database, typeID uint) (ResourceType, error) {
+	var resourceType ResourceType
 	err := m.Collection("resourceTypes").FindOne(context.Background(), bson.M{"id": typeID}).Decode(&resourceType)
 	if err != nil {
 		log.Println("Can't get resource type: " + err.Error())

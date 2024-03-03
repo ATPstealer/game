@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type LandLordMongo struct {
+type LandLord struct {
 	ID     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserID primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"`
 	Square int                `json:"square"`
@@ -26,17 +26,17 @@ type BuyLandPayload struct {
 	Square int `json:"square"`
 }
 
-func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandPayload) (float64, error) {
-	occupiedLand, err := GetCellOccupiedLandMongo(m, payload.X, payload.Y)
+func BuyLand(m *mongo.Database, userID primitive.ObjectID, payload BuyLandPayload) (float64, error) {
+	occupiedLand, err := GetCellOccupiedLand(m, payload.X, payload.Y)
 	if err != nil {
 		return 0, err
 	}
 	price := 10 * (float64(occupiedLand)*2 + 1 + float64(payload.Square)) * float64(payload.Square) / 2
 
-	if !CheckEnoughMoneyMongo(m, userID, price) {
+	if !CheckEnough(m, userID, price) {
 		return 0, errors.New("not enough money")
 	}
-	enoughLand, err := CheckEnoughLandMongo(m, payload.X, payload.Y, payload.Square)
+	enoughLand, err := CheckEnoughLand(m, payload.X, payload.Y, payload.Square)
 	if err != nil {
 		return 0, err
 	}
@@ -44,11 +44,11 @@ func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandP
 		return 0, errors.New("not enough land")
 	}
 
-	if err := AddMoneyMongo(m, userID, (-1)*price); err != nil {
+	if err := AddMoney(m, userID, (-1)*price); err != nil {
 		return 0, err
 	}
 
-	if err := AddCivilSavingsMongo(m, payload.X, payload.Y, price); err != nil {
+	if err := AddCivilSavings(m, payload.X, payload.Y, price); err != nil {
 		log.Println("Can't add civil money" + err.Error())
 	}
 
@@ -75,14 +75,14 @@ func BuyLandMongo(m *mongo.Database, userID primitive.ObjectID, payload BuyLandP
 	return price, nil
 }
 
-func GetCellOwnersMongo(m *mongo.Database, x int, y int) ([]LandLordMongo, error) {
+func GetCellOwners(m *mongo.Database, x int, y int) ([]LandLord, error) {
 	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"x": x, "y": y})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
 	}
 	defer cursor.Close(context.Background())
 
-	var landLords []LandLordMongo
+	var landLords []LandLord
 	if err = cursor.All(context.TODO(), &landLords); err != nil {
 		return nil, err
 	}
@@ -90,14 +90,14 @@ func GetCellOwnersMongo(m *mongo.Database, x int, y int) ([]LandLordMongo, error
 	return landLords, nil
 }
 
-func GetAllLandLordsMongo(m *mongo.Database) ([]LandLordMongo, error) {
+func GetAllLandLords(m *mongo.Database) ([]LandLord, error) {
 	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
 	}
 	defer cursor.Close(context.Background())
 
-	var landLords []LandLordMongo
+	var landLords []LandLord
 	if err = cursor.All(context.TODO(), &landLords); err != nil {
 		return nil, err
 	}
@@ -105,14 +105,14 @@ func GetAllLandLordsMongo(m *mongo.Database) ([]LandLordMongo, error) {
 	return landLords, nil
 }
 
-func GetMyLandsMongo(m *mongo.Database, userID primitive.ObjectID) ([]LandLordMongo, error) {
+func GetMyLands(m *mongo.Database, userID primitive.ObjectID) ([]LandLord, error) {
 	cursor, err := m.Collection("landLords").Find(context.TODO(), bson.M{"userId": userID})
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
 	}
 	defer cursor.Close(context.Background())
 
-	var landLords []LandLordMongo
+	var landLords []LandLord
 	if err = cursor.All(context.TODO(), &landLords); err != nil {
 		return nil, err
 	}
@@ -120,11 +120,11 @@ func GetMyLandsMongo(m *mongo.Database, userID primitive.ObjectID) ([]LandLordMo
 	return landLords, nil
 }
 
-func CheckEnoughLandForBuildingMongo(m *mongo.Database, userID primitive.ObjectID, square int, x int, y int) (bool, error) {
+func CheckEnoughLandForBuilding(m *mongo.Database, userID primitive.ObjectID, square int, x int, y int) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	var myLandInCell LandLordMongo
+	var myLandInCell LandLord
 	err := m.Collection("landLords").FindOne(ctx,
 		bson.M{
 			"userId": userID,
@@ -136,7 +136,7 @@ func CheckEnoughLandForBuildingMongo(m *mongo.Database, userID primitive.ObjectI
 		return false, err
 	}
 
-	var myBuildingsInCell []BuildingMongo
+	var myBuildingsInCell []Building
 
 	cursor, err := m.Collection("buildings").Find(ctx,
 		bson.M{

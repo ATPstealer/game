@@ -9,23 +9,23 @@ import (
 	"log"
 )
 
-func CellAveragePricesMongo(m *mongo.Database) {
-	cells, err := models.GetAllCellsMongo(m)
+func CellAveragePrices(m *mongo.Database) {
+	cells, err := models.GetAllCells(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	allResourceTypes, err := models.GetAllResourceTypesMongo(m)
+	allResourceTypes, err := models.GetAllResourceTypes(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	storeGoods, err := models.GetAllStoreGoodsWithDataMongo(m)
+	storeGoods, err := models.GetAllStoreGoodsWithData(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	evolutionPrices, err := models.GetAllEvolutionPricesMongo(m)
+	evolutionPrices, err := models.GetAllEvolutionPrices(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -36,16 +36,16 @@ func CellAveragePricesMongo(m *mongo.Database) {
 				continue
 			}
 			demand := resourceType.Demand * cell.Population
-			cellGoods := findCellGoodsMongo(cell.X, cell.Y, resourceType.ID, &storeGoods)
-			averagePrice := getAveragePriceMongo(demand, cellGoods)
-			addOrChangeEvolutionPriceMongo(&evolutionPrices, cell.X, cell.Y, resourceType.ID, averagePrice, demand)
+			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.ID, &storeGoods)
+			averagePrice := getAveragePrice(demand, cellGoods)
+			addOrChangeEvolutionPrice(&evolutionPrices, cell.X, cell.Y, resourceType.ID, averagePrice, demand)
 		}
 	}
 	SaveEvolutionPrices(m, &evolutionPrices)
 }
 
-func findCellGoodsMongo(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsWithDataMongo) []models.StoreGoodsWithDataMongo {
-	var cellGoods []models.StoreGoodsWithDataMongo
+func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsWithData) []models.StoreGoodsWithData {
+	var cellGoods []models.StoreGoodsWithData
 	for _, sg := range *storeGoods {
 		if sg.Building.X == x && sg.Building.Y == y && sg.ResourceTypeID == resourceTypeID {
 			cellGoods = append(cellGoods, sg)
@@ -54,11 +54,11 @@ func findCellGoodsMongo(x int, y int, resourceTypeID uint, storeGoods *[]models.
 	return cellGoods
 }
 
-func getAveragePriceMongo(demand float64, cellGoods []models.StoreGoodsWithDataMongo) float64 {
-	if len(cellGoods) == 0 || !goodsPriceExistMongo(cellGoods) {
+func getAveragePrice(demand float64, cellGoods []models.StoreGoodsWithData) float64 {
+	if len(cellGoods) == 0 || !goodsPriceExist(cellGoods) {
 		return 1 // Price for start selling
 	}
-	sortMongo(&cellGoods)
+	sort(&cellGoods)
 	soldGoodsCount := float64(0)
 	revenueCount := float64(0)
 	for _, cg := range cellGoods {
@@ -79,7 +79,7 @@ func getAveragePriceMongo(demand float64, cellGoods []models.StoreGoodsWithDataM
 	return revenueCount / soldGoodsCount
 }
 
-func goodsPriceExistMongo(cellGoods []models.StoreGoodsWithDataMongo) bool {
+func goodsPriceExist(cellGoods []models.StoreGoodsWithData) bool {
 	for _, cg := range cellGoods {
 		if cg.SellSum != 0 {
 			return true
@@ -88,7 +88,7 @@ func goodsPriceExistMongo(cellGoods []models.StoreGoodsWithDataMongo) bool {
 	return false
 }
 
-func sortMongo(cellGoods *[]models.StoreGoodsWithDataMongo) {
+func sort(cellGoods *[]models.StoreGoodsWithData) {
 	for j := 0; j < len(*cellGoods); j++ {
 		for k := j + 1; k < len(*cellGoods); k++ {
 			if (*cellGoods)[j].Revenue/float64((*cellGoods)[j].SellSum) > (*cellGoods)[k].Revenue/float64((*cellGoods)[k].SellSum) {
@@ -98,7 +98,7 @@ func sortMongo(cellGoods *[]models.StoreGoodsWithDataMongo) {
 	}
 }
 
-func addOrChangeEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMongo, x int, y int, resourceTypeID uint, averagePrice float64, demand float64) {
+func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint, averagePrice float64, demand float64) {
 	for i, evolutionPrice := range *evolutionPrices {
 		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeID == resourceTypeID {
 			(*evolutionPrices)[i].PriceAverage = averagePrice
@@ -107,7 +107,7 @@ func addOrChangeEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMong
 		}
 	}
 
-	*evolutionPrices = append(*evolutionPrices, models.EvolutionPriceMongo{
+	*evolutionPrices = append(*evolutionPrices, models.EvolutionPrice{
 		X:              x,
 		Y:              y,
 		ResourceTypeID: resourceTypeID,
@@ -118,7 +118,7 @@ func addOrChangeEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMong
 	})
 }
 
-func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionPriceMongo) {
+func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
 	for _, price := range *evolutionPrices {
 		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeID}
 		update := bson.M{

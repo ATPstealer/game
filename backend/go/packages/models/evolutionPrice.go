@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type EvolutionPriceMongo struct {
+type EvolutionPrice struct {
 	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
@@ -19,8 +19,8 @@ type EvolutionPriceMongo struct {
 	SpendMax       float64            `json:"spendMax" bson:"spendMax"`
 }
 
-func GetAllEvolutionPricesMongo(m *mongo.Database) ([]EvolutionPriceMongo, error) {
-	var evolutionPrices []EvolutionPriceMongo
+func GetAllEvolutionPrices(m *mongo.Database) ([]EvolutionPrice, error) {
+	var evolutionPrices []EvolutionPrice
 	cursor, err := m.Collection("evolutionPrices").Find(context.TODO(), bson.M{})
 	if err != nil {
 		return evolutionPrices, err
@@ -31,7 +31,7 @@ func GetAllEvolutionPricesMongo(m *mongo.Database) ([]EvolutionPriceMongo, error
 	return evolutionPrices, err
 }
 
-func GetEvolutionPricesMongo(m *mongo.Database, x *int, y *int) ([]EvolutionPriceMongo, error) {
+func GetEvolutionPrices(m *mongo.Database, x *int, y *int) ([]EvolutionPrice, error) {
 	filter := bson.D{}
 	if x != nil {
 		filter = append(filter, bson.E{Key: "x", Value: *x})
@@ -40,7 +40,7 @@ func GetEvolutionPricesMongo(m *mongo.Database, x *int, y *int) ([]EvolutionPric
 		filter = append(filter, bson.E{Key: "y", Value: *y})
 	}
 
-	var evolutionPrices []EvolutionPriceMongo
+	var evolutionPrices []EvolutionPrice
 	cursor, err := m.Collection("evolutionPrices").Find(context.TODO(), filter)
 	if err != nil {
 		return evolutionPrices, err

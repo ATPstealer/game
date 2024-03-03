@@ -10,8 +10,8 @@ import (
 	"strconv"
 )
 
-func GetResourceTypesMongo(c *gin.Context) {
-	resourceTypes, err := models.GetAllResourceTypesMongo(db.M)
+func GetResourceTypes(c *gin.Context) {
+	resourceTypes, err := models.GetAllResourceTypes(db.M)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resource types: " + err.Error()})
 		return
@@ -19,8 +19,8 @@ func GetResourceTypesMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": resourceTypes})
 }
 
-func GetMyResourcesMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func GetMyResources(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
@@ -40,7 +40,7 @@ func GetMyResourcesMongo(c *gin.Context) {
 		yPointer = &y
 	}
 
-	myResources, err := models.GetMyResourcesMongo(db.M, userID, xPointer, yPointer)
+	myResources, err := models.GetMyResources(db.M, userID, xPointer, yPointer)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resources: " + err.Error()})
 		return
@@ -48,8 +48,8 @@ func GetMyResourcesMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myResources})
 }
 
-func ResourceMoveMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func ResourceMove(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func ResourceMoveMongo(c *gin.Context) {
 		return
 	}
 
-	err = models.StartLogisticJobMongo(db.M, userID, logisticPayload)
+	err = models.StartLogisticJob(db.M, userID, logisticPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
 		return
@@ -74,12 +74,12 @@ func ResourceMoveMongo(c *gin.Context) {
 		strconv.Itoa(logisticPayload.ToY) + ". They didn't ask what was inside."})
 }
 
-func GetMyLogisticsMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func GetMyLogistics(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
-	myLogistics, err := models.GetMyLogisticsMongo(db.M, userID)
+	myLogistics, err := models.GetMyLogistics(db.M, userID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get logistics: " + err.Error()})
 		return

@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func GetSettingsMongo(c *gin.Context) {
-	settings, err := models.GetSettingsMongo(db.M)
+func GetSettings(c *gin.Context) {
+	settings, err := models.GetSettings(db.M)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "code": 100001, "text": err})
 		return

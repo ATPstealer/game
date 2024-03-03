@@ -87,7 +87,7 @@ onFetchResponse(() => {
   resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingType.buildingSubGroup)
 })
 
-const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?building_id=${ props.building._id}`)
+const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?buildingId=${ props.building._id}`)
 onGoodsResponse(() => {
   goods.value = goodsData.value
 })

@@ -16,30 +16,30 @@ type AverageSalary struct {
 	y      int
 }
 
-func PayrollMongo(m *mongo.Database) {
-	buildings, err := models.GetBuildingsForHiringMongo(m)
+func Payroll(m *mongo.Database) {
+	buildings, err := models.GetBuildingsForHiring(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	var averageSalary []AverageSalary
 
 	for bIndex, building := range buildings {
-		if models.AddMoneyMongo(m, building.UserID, (-1)*float64(building.Workers)*building.Salary) != nil {
+		if models.AddMoney(m, building.UserID, (-1)*float64(building.Workers)*building.Salary) != nil {
 			buildings[bIndex].OnStrike = true
 			buildings[bIndex].HiringNeeds = 0
 			continue
 		}
-		if err := models.AddCivilSavingsMongo(m, building.X, building.Y, float64(building.Workers)*building.Salary); err != nil {
+		if err := models.AddCivilSavings(m, building.X, building.Y, float64(building.Workers)*building.Salary); err != nil {
 			fmt.Println(err)
 		}
 		buildings[bIndex].OnStrike = false
-		addPayrollMongo(&building, &averageSalary)
+		addPayroll(&building, &averageSalary)
 	}
 	saveBuildings(m, &buildings)
-	setCellAverageSalaryMongo(m, &averageSalary)
+	setCellAverageSalary(m, &averageSalary)
 }
 
-func addPayrollMongo(building *models.BuildingMongo, averageSalary *[]AverageSalary) {
+func addPayroll(building *models.Building, averageSalary *[]AverageSalary) {
 	founded := false
 	for i, avg := range *averageSalary {
 		if avg.x == building.X && avg.y == building.Y {
@@ -59,7 +59,7 @@ func addPayrollMongo(building *models.BuildingMongo, averageSalary *[]AverageSal
 	}
 }
 
-func setCellAverageSalaryMongo(m *mongo.Database, averageSalary *[]AverageSalary) {
+func setCellAverageSalary(m *mongo.Database, averageSalary *[]AverageSalary) {
 	for _, avg := range *averageSalary {
 		filter := bson.M{"x": avg.x, "y": avg.y}
 		update := bson.M{

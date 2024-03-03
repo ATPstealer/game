@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func LogisticsDoneMongo(m *mongo.Database) {
+func LogisticsDone(m *mongo.Database) {
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
 	cursor, err := m.Collection("logistics").Find(context.TODO(), filter)
 	if err != nil {
@@ -17,14 +17,14 @@ func LogisticsDoneMongo(m *mongo.Database) {
 		return
 	}
 
-	var logistics []models.LogisticMongo
+	var logistics []models.Logistic
 	if err = cursor.All(context.TODO(), &logistics); err != nil {
 		log.Println("Logistics: " + err.Error())
 		return
 	}
 
 	for _, logistic := range logistics {
-		err := models.AddResourceMongo(m, logistic.ResourceTypeID, logistic.UserID, logistic.ToX, logistic.ToY, logistic.Amount)
+		err := models.AddResource(m, logistic.ResourceTypeID, logistic.UserID, logistic.ToX, logistic.ToY, logistic.Amount)
 		if err != nil {
 			log.Println("Logistics: " + err.Error())
 		}

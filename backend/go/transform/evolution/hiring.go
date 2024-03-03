@@ -14,20 +14,20 @@ import (
 // Alpha is percentage of hired employees from required
 // TODO: strike buildings not in count
 
-func HiringMongo(m *mongo.Database) {
-	buildings, err := models.GetBuildingsForHiringMongo(m)
+func Hiring(m *mongo.Database) {
+	buildings, err := models.GetBuildingsForHiring(m)
 	if err != nil {
 		log.Println("Can't get buildings for hiring: " + err.Error())
 		return
 	}
 
-	cells, err := models.GetAllCellsMongo(m)
+	cells, err := models.GetAllCells(m)
 	if err != nil {
 		log.Println("Can't get cells for hiring: " + err.Error())
 		return
 	}
 
-	settings, err := models.GetSettingsMongo(m)
+	settings, err := models.GetSettings(m)
 	if err != nil {
 		log.Println("Can't get settings for hiring: " + err.Error())
 		return
@@ -35,21 +35,21 @@ func HiringMongo(m *mongo.Database) {
 
 	for y := int(settings["mapMinY"]); y <= int(settings["mapMaxY"]); y++ {
 		for x := int(settings["mapMinX"]); x <= int(settings["mapMaxX"]); x++ {
-			buildingsInCell := findBuildingsInCellMongo(&buildings, x, y)
+			buildingsInCell := findBuildingsInCell(&buildings, x, y)
 
 			if len(buildingsInCell) == 0 {
 				continue
 			}
 
-			var zeroWorkerBuildings []models.BuildingMongo
-			cell := getCellMongo(&cells, x, y)
-			salaryMax := findMaxSalaryMongo(&buildingsInCell)
+			var zeroWorkerBuildings []models.Building
+			cell := getCell(&cells, x, y)
+			salaryMax := findMaxSalary(&buildingsInCell)
 
 			again := true
 			for again {
 				again = false
 
-				alpha := getAlphaMongo(&buildingsInCell, cell.Population, salaryMax)
+				alpha := getAlpha(&buildingsInCell, cell.Population, salaryMax)
 				for bIndex, building := range buildingsInCell {
 					newWorkers := int(float64(building.HiringNeeds) * (1 - alpha*math.Pow((building.Salary/salaryMax)-1, 2)))
 					if newWorkers < 0 {
@@ -71,8 +71,8 @@ func HiringMongo(m *mongo.Database) {
 	}
 }
 
-func findBuildingsInCellMongo(buildings *[]models.BuildingMongo, x int, y int) []models.BuildingMongo {
-	var buildingsInCell []models.BuildingMongo
+func findBuildingsInCell(buildings *[]models.Building, x int, y int) []models.Building {
+	var buildingsInCell []models.Building
 	for _, building := range *buildings {
 		if building.X == x && building.Y == y {
 			buildingsInCell = append(buildingsInCell, building)
@@ -81,8 +81,8 @@ func findBuildingsInCellMongo(buildings *[]models.BuildingMongo, x int, y int) [
 	return buildingsInCell
 }
 
-func getCellMongo(cells *[]models.CellMongo, x int, y int) models.CellMongo {
-	var cellFound models.CellMongo
+func getCell(cells *[]models.Cell, x int, y int) models.Cell {
+	var cellFound models.Cell
 	for _, cell := range *cells {
 		if cell.X == x && cell.Y == y {
 			cellFound = cell
@@ -92,7 +92,7 @@ func getCellMongo(cells *[]models.CellMongo, x int, y int) models.CellMongo {
 	return cellFound
 }
 
-func findMaxSalaryMongo(buildingsInCell *[]models.BuildingMongo) float64 {
+func findMaxSalary(buildingsInCell *[]models.Building) float64 {
 	salaryMax := 0.0
 	for _, building := range *buildingsInCell {
 		if building.Salary > salaryMax {
@@ -102,7 +102,7 @@ func findMaxSalaryMongo(buildingsInCell *[]models.BuildingMongo) float64 {
 	return salaryMax
 }
 
-func getAlphaMongo(buildingsInCell *[]models.BuildingMongo, population float64, salaryMax float64) float64 {
+func getAlpha(buildingsInCell *[]models.Building, population float64, salaryMax float64) float64 {
 	numerator := 0.0
 	denominator := 0.0
 	for _, building := range *buildingsInCell {
@@ -116,7 +116,7 @@ func getAlphaMongo(buildingsInCell *[]models.BuildingMongo, population float64, 
 	return alpha
 }
 
-func saveBuildings(m *mongo.Database, buildings *[]models.BuildingMongo) {
+func saveBuildings(m *mongo.Database, buildings *[]models.Building) {
 	for _, building := range *buildings {
 		filter := bson.M{"_id": building.ID}
 		update := bson.M{

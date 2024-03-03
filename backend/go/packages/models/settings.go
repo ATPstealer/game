@@ -6,12 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type SettingsMongo struct {
+type Settings struct {
 	Key   string  `bson:"key" json:"key"`
 	Value float64 `bson:"value" json:"value"`
 }
 
-func GetSettingsMongo(m *mongo.Database) (map[string]float64, error) {
+func GetSettings(m *mongo.Database) (map[string]float64, error) {
 	filter := bson.D{}
 	cursor, err := m.Collection("settings").Find(context.TODO(), filter)
 	if err != nil {
@@ -19,7 +19,7 @@ func GetSettingsMongo(m *mongo.Database) (map[string]float64, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	var settingsMongo []SettingsMongo
+	var settingsMongo []Settings
 	if err = cursor.All(context.TODO(), &settingsMongo); err != nil {
 		return nil, err
 	}

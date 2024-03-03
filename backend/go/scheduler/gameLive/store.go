@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-func StoreSellMongo(m *mongo.Database) {
-	storeGoods, err := models.GetAllStoreGoodsWithDataMongo(m)
+func StoreSell(m *mongo.Database) {
+	storeGoods, err := models.GetAllStoreGoodsWithData(m)
 	if err != nil {
 		log.Println("Can't get Store Goods: " + err.Error())
 		return
 	}
 
-	evolutionPrices, err := models.GetAllEvolutionPricesMongo(m)
+	evolutionPrices, err := models.GetAllEvolutionPrices(m)
 	if err != nil {
 		log.Println("Can't get Evolution Prices: " + err.Error())
 		return
@@ -38,7 +38,7 @@ func StoreSellMongo(m *mongo.Database) {
 			continue
 		}
 
-		epIndex, err := findEvolutionPriceMongo(&evolutionPrices, goods.Building.X, goods.Building.Y, goods.ResourceTypeID)
+		epIndex, err := findEvolutionPrice(&evolutionPrices, goods.Building.X, goods.Building.Y, goods.ResourceTypeID)
 		if err != nil {
 			log.Println(err)
 		}
@@ -56,7 +56,7 @@ func StoreSellMongo(m *mongo.Database) {
 		// Formula of selling pace
 		workTime := now.Sub(goods.SellStarted).Seconds()
 		storeCapacity := goods.BuildingType.Capacity * float64(goods.Building.Workers) / float64(goods.BuildingType.Workers) // square and level in Workers count
-		daySells := daySellCalcMongo(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
+		daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
 		oneSellTime := time.Second * time.Duration(24*60*60/daySells)
 
 		if daySells == 0 {
@@ -70,24 +70,24 @@ func StoreSellMongo(m *mongo.Database) {
 			continue
 		}
 
-		if !models.CheckEnoughResourcesMongo(m, goods.ResourceTypeID, goods.Building.UserID,
+		if !models.CheckEnoughResources(m, goods.ResourceTypeID, goods.Building.UserID,
 			goods.Building.X, goods.Building.Y, float64(sellCycles)) {
 			storeGoods[gIndex].Status = models.NotEnoughMinerals
 			storeGoods[gIndex].SellStarted = now
 			continue
 		}
 
-		err = models.AddResourceMongo(m, goods.ResourceTypeID, goods.Building.UserID,
+		err = models.AddResource(m, goods.ResourceTypeID, goods.Building.UserID,
 			goods.Building.X, goods.Building.Y, (-1)*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		err = models.AddMoneyMongo(m, goods.Building.UserID, goods.Price*float64(sellCycles))
+		err = models.AddMoney(m, goods.Building.UserID, goods.Price*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
-		err = models.AddCivilSavingsMongo(m, goods.Building.X, goods.Building.Y, (-1)*float64(sellCycles)*goods.Price)
+		err = models.AddCivilSavings(m, goods.Building.X, goods.Building.Y, (-1)*float64(sellCycles)*goods.Price)
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -101,18 +101,18 @@ func StoreSellMongo(m *mongo.Database) {
 		storeGoods[gIndex].Status = models.Selling
 	}
 
-	saveStoreGoodsMongo(m, &storeGoods)
+	saveStoreGoods(m, &storeGoods)
 	evolution.SaveEvolutionPrices(m, &evolutionPrices)
 }
 
-func daySellCalcMongo(price float64, priceAverage float64, capacity float64) float64 {
+func daySellCalc(price float64, priceAverage float64, capacity float64) float64 {
 	if priceAverage == 0 {
 		return 0
 	}
 	return capacity * 0.75 * priceAverage / price
 }
 
-func findEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMongo, x int, y int, resourceTypeID uint) (int, error) {
+func findEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint) (int, error) {
 	for index, evolutionPrice := range *evolutionPrices {
 		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeID == resourceTypeID {
 			return index, nil
@@ -121,7 +121,7 @@ func findEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMongo, x in
 	return -1, errors.New(fmt.Sprintf("can't find evolutionPrice in %s:%s resource %s", strconv.Itoa(x), strconv.Itoa(y), strconv.Itoa(int(resourceTypeID))))
 }
 
-func saveStoreGoodsMongo(m *mongo.Database, storeGoods *[]models.StoreGoodsWithDataMongo) {
+func saveStoreGoods(m *mongo.Database, storeGoods *[]models.StoreGoodsWithData) {
 	for _, sg := range *storeGoods {
 		filter := bson.M{"buildingId": sg.BuildingID, "resourceTypeId": sg.ResourceTypeID}
 		update := bson.M{

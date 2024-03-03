@@ -10,20 +10,20 @@ import (
 	"net/http"
 )
 
-func CreateOrderMongo(c *gin.Context) {
-	var orderPayload models.OrderMongo
+func CreateOrder(c *gin.Context) {
+	var orderPayload models.Order
 	var err error
 
 	if err = include.GetPayload(c, &orderPayload); err != nil {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContextMongo(c)
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
 
-	err = models.CreateOrderMongo(db.M, userID, orderPayload)
+	err = models.CreateOrder(db.M, userID, orderPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create order: " + err.Error()})
 		log.Println("Can't create order: " + err.Error())
@@ -33,12 +33,12 @@ func CreateOrderMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You created order")})
 }
 
-func GetMyOrdersMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func GetMyOrders(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
-	myOrders, err := models.GetMyOrdersMongo(db.M, userID)
+	myOrders, err := models.GetMyOrders(db.M, userID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
 		return
@@ -46,8 +46,8 @@ func GetMyOrdersMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myOrders})
 }
 
-func GetOrdersMongo(c *gin.Context) {
-	var findOrdersParams models.FindOrderParamsMongo
+func GetOrders(c *gin.Context) {
+	var findOrdersParams models.FindOrderParams
 	if c.Query("id") != "" {
 		id, err := include.StrToPrimObjId(c, c.Query("id"))
 		if err != nil {
@@ -56,7 +56,7 @@ func GetOrdersMongo(c *gin.Context) {
 		findOrdersParams.ID = &id
 	}
 	if c.Query("user_id") != "" {
-		userID, err := include.StrToPrimObjId(c, c.Query("user_id"))
+		userID, err := include.StrToPrimObjId(c, c.Query("user_id")) // TODO: fix it
 		if err != nil {
 			return
 		}
@@ -77,7 +77,7 @@ func GetOrdersMongo(c *gin.Context) {
 		findOrdersParams.Y = &y
 	}
 	if c.Query("resource_type_id") != "" {
-		resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id"))
+		resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id")) // TODO: fix it
 		if err != nil {
 			return
 		}
@@ -116,7 +116,7 @@ func GetOrdersMongo(c *gin.Context) {
 		findOrdersParams.Page = &page
 	}
 
-	orders, err := models.GetOrdersMongo(db.M, findOrdersParams)
+	orders, err := models.GetOrders(db.M, findOrdersParams)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
@@ -125,8 +125,8 @@ func GetOrdersMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": orders})
 }
 
-func CloseMyOrderMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func CloseMyOrder(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
@@ -134,7 +134,7 @@ func CloseMyOrderMongo(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	err = models.CloseMyOrderMongo(db.M, userID, orderID)
+	err = models.CloseMyOrder(db.M, userID, orderID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't close order: " + err.Error()})
 		log.Println("Can't close order: " + err.Error())
@@ -143,13 +143,13 @@ func CloseMyOrderMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You closed order")})
 }
 
-func ExecuteOrderMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func ExecuteOrder(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
 
-	var payload models.ExecuteOrderPayloadMongo
+	var payload models.ExecuteOrderPayload
 	if err := include.GetPayload(c, &payload); err != nil {
 		return
 	}
@@ -159,7 +159,7 @@ func ExecuteOrderMongo(c *gin.Context) {
 		return
 	}
 
-	err = models.ExecuteOrderMongo(db.M, userID, payload)
+	err = models.ExecuteOrder(db.M, userID, payload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't execute order: " + err.Error()})
 		log.Println("Can't execute order: " + err.Error())

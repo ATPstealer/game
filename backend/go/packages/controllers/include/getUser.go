@@ -37,20 +37,7 @@ func GetUserFromRequest(c *gin.Context) (UserPayload, error) {
 	return user, nil
 }
 
-func GetUserIDFromContext(c *gin.Context) (uint, error) {
-	userID, ok := c.Get("userID")
-	if !ok {
-		log.Println("UserID not unit")
-		c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "UserID not unit"})
-		c.Abort()
-		return 0, errors.New("userID not unit")
-	}
-	return userID.(uint), nil
-}
-
-// mongo
-
-func GetUserIDFromContextMongo(c *gin.Context) (primitive.ObjectID, error) {
+func GetUserIDFromContext(c *gin.Context) (primitive.ObjectID, error) {
 	userID, ok := c.Get("userID")
 	if !ok {
 		log.Println("UserID didn't set")

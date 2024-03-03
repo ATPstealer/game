@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func AuthMiddlewareMongo() gin.HandlerFunc {
+func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		secureToken, err := c.Cookie("secureToken")
 		if err != nil {
@@ -15,7 +15,7 @@ func AuthMiddlewareMongo() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		userID, err := models.GetUserIDByTokenMongo(db.M, secureToken)
+		userID, err := models.GetUserIDByToken(db.M, secureToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 10, "text": "Token incorrect"})
 			c.Abort()

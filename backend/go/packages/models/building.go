@@ -21,7 +21,7 @@ const (
 	StorageNeededStatus   BuildingStatus = "StorageNeeded"
 )
 
-type BuildingMongo struct {
+type Building struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	TypeID      uint               `json:"typeId" bson:"typeId"`
 	UserID      primitive.ObjectID `json:"userId" bson:"userId"`
@@ -45,8 +45,8 @@ type ConstructBuildingPayload struct {
 	Square int
 }
 
-func ConstructBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload) error {
-	enoughLand, err := CheckEnoughLandForBuildingMongo(m, userID, payload.Square, payload.X, payload.Y)
+func ConstructBuilding(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload) error {
+	enoughLand, err := CheckEnoughLandForBuilding(m, userID, payload.Square, payload.X, payload.Y)
 	if !enoughLand {
 		return errors.New("not enough land")
 	}
@@ -54,24 +54,24 @@ func ConstructBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payloa
 		return err
 	}
 
-	buildingType, err := GetBuildingTypeByIDMongo(m, payload.TypeID)
+	buildingType, err := GetBuildingTypeByID(m, payload.TypeID)
 	if err != nil {
 		return err
 	}
-	if !CheckEnoughMoneyMongo(m, userID, buildingType.Cost*float64(payload.Square)) {
+	if !CheckEnough(m, userID, buildingType.Cost*float64(payload.Square)) {
 		return errors.New("not enough money")
 	}
-	return CreateBuildingMongo(m, userID, payload, buildingType)
+	return CreateBuilding(m, userID, payload, buildingType)
 }
 
-func CreateBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingTypeMongo) error {
-	if err := AddMoneyMongo(m, userID, (-1)*buildingType.Cost*float64(payload.Square)); err != nil {
+func CreateBuilding(m *mongo.Database, userID primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingType) error {
+	if err := AddMoney(m, userID, (-1)*buildingType.Cost*float64(payload.Square)); err != nil {
 		return err
 	}
 
 	now := time.Now()
 	end := now.Add(time.Duration(float64(buildingType.BuildTime) * float64(payload.Square)))
-	building := BuildingMongo{
+	building := Building{
 		TypeID:      payload.TypeID,
 		UserID:      userID,
 		X:           payload.X,
@@ -90,7 +90,7 @@ func CreateBuildingMongo(m *mongo.Database, userID primitive.ObjectID, payload C
 	return err
 }
 
-type FindBuildingParamsMongo struct {
+type FindBuildingParams struct {
 	ID             *primitive.ObjectID `json:"id"`
 	UserID         *primitive.ObjectID `json:"userId"`
 	NickName       *string             `json:"nickName"`
@@ -103,8 +103,7 @@ type FindBuildingParamsMongo struct {
 	Page           *int                `json:"page"`
 }
 
-func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsMongo) ([]bson.M, error) {
-	// create filter for match stage
+func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]bson.M, error) {
 	filter := bson.D{}
 	if findBuildingParams.ID != nil {
 		filter = append(filter, bson.E{Key: "buildings._id", Value: *findBuildingParams.ID})
@@ -122,7 +121,6 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 		filter = append(filter, bson.E{Key: "y", Value: *findBuildingParams.Y})
 	}
 
-	// Create aggregation stages
 	matchStage := bson.D{{"$match", filter}}
 	lookupBuildingType := bson.D{{"$lookup", bson.D{
 		{"from", "buildingTypes"},
@@ -146,7 +144,6 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 		{"preserveNullAndEmptyArrays", true},
 	}}}
 
-	// Change fields as per requirements
 	projectStage := bson.D{{"$project", bson.D{
 		{"title", "$buildingType.title"},
 		{"typeId", 1},
@@ -158,7 +155,6 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 		{"nickName", "$user.nickName"},
 	}}}
 
-	// Connect the pipeline stages and execute
 	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, lookupUser, unwindBuildingType, unwindUser, projectStage}
 	cursor, err := m.Collection("buildings").Aggregate(context.TODO(), pipeline)
 	if err != nil {
@@ -174,7 +170,7 @@ func GetBuildingsMongo(m *mongo.Database, findBuildingParams FindBuildingParamsM
 	return buildings, nil
 }
 
-func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]bson.M, error) {
+func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]bson.M, error) {
 	filter := bson.D{}
 	filter = append(filter, bson.E{Key: "userId", Value: userID})
 	if buildingID != primitive.NilObjectID {
@@ -209,8 +205,8 @@ func GetMyBuildingsMongo(m *mongo.Database, userID primitive.ObjectID, buildingI
 	return myBuildings, nil
 }
 
-func GetBuildingByIDMongo(m *mongo.Database, buildingID primitive.ObjectID) (BuildingMongo, error) {
-	var building BuildingMongo
+func GetBuildingByID(m *mongo.Database, buildingID primitive.ObjectID) (Building, error) {
+	var building Building
 	err := m.Collection("buildings").FindOne(context.TODO(),
 		bson.M{"_id": buildingID}).Decode(&building)
 	if err != nil {
@@ -219,21 +215,21 @@ func GetBuildingByIDMongo(m *mongo.Database, buildingID primitive.ObjectID) (Bui
 	return building, err
 }
 
-type HiringPayloadMongo struct {
+type HiringPayload struct {
 	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	Salary      float64            `json:"salary" bson:"salary"`
 	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
 }
 
-func SetHiringMongo(m *mongo.Database, userID primitive.ObjectID, payload HiringPayloadMongo) error {
-	building, err := GetBuildingByIDMongo(m, payload.BuildingID)
+func SetHiring(m *mongo.Database, userID primitive.ObjectID, payload HiringPayload) error {
+	building, err := GetBuildingByID(m, payload.BuildingID)
 	if err != nil {
 		return err
 	}
 	if userID != building.UserID && building.UserID != primitive.NilObjectID {
 		return errors.New("this building doesn't belong to you")
 	}
-	buildingType, err := GetBuildingTypeByIDMongo(m, building.TypeID)
+	buildingType, err := GetBuildingTypeByID(m, building.TypeID)
 	if err != nil {
 		return err
 	}
@@ -251,8 +247,8 @@ func SetHiringMongo(m *mongo.Database, userID primitive.ObjectID, payload Hiring
 	return err
 }
 
-func DestroyBuildingMongo(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) error {
-	building, err := GetBuildingByIDMongo(m, buildingID)
+func DestroyBuilding(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) error {
+	building, err := GetBuildingByID(m, buildingID)
 	if userID != building.UserID && building.UserID != primitive.NilObjectID {
 		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
 	}
@@ -270,8 +266,8 @@ func DestroyBuildingMongo(m *mongo.Database, userID primitive.ObjectID, building
 	return nil
 }
 
-func GetAllReadyStoragesMongo(m *mongo.Database) ([]BuildingMongo, error) {
-	var readyStorages []BuildingMongo
+func GetAllReadyStorages(m *mongo.Database) ([]Building, error) {
+	var readyStorages []Building
 
 	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1}
 	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
@@ -291,7 +287,7 @@ func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, stat
 	return err
 }
 
-func GetBuildingsForHiringMongo(m *mongo.Database) ([]BuildingMongo, error) {
+func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
 	filter := bson.M{"salary": bson.M{"$ne": 0}, "hiringNeeds": bson.M{"$ne": 0}}
 	cursor, err := m.Collection("buildings").Find(context.TODO(), filter)
 	if err != nil {
@@ -299,7 +295,7 @@ func GetBuildingsForHiringMongo(m *mongo.Database) ([]BuildingMongo, error) {
 	}
 	defer cursor.Close(context.TODO())
 
-	var buildings []BuildingMongo
+	var buildings []Building
 	err = cursor.All(context.TODO(), &buildings)
 	return buildings, err
 }

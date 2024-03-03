@@ -34,28 +34,28 @@ func MongoIndex(m *mongo.Database) {
 	}
 }
 
-func InitMongo(m *mongo.Database, config cfg.Vars) {
+func Init(m *mongo.Database, config cfg.Vars) {
 	if config.Init {
 		count, err := m.Collection("settings").CountDocuments(context.TODO(), bson.M{})
 		if err != nil {
 			log.Fatal(err)
 		}
 		if count == 0 {
-			loadSettingsMongo(m)
+			loadSettings(m)
 		}
 		count, err = m.Collection("cells").CountDocuments(context.TODO(), bson.M{})
 		if err != nil {
 			log.Fatal(err)
 		}
 		if count == 0 {
-			generateMapMongo(m)
+			generateMap(m)
 		}
-		importFromDataSheetMongo(m)
+		importFromDataSheet(m)
 	}
 }
 
-func loadSettingsMongo(m *mongo.Database) {
-	settings := []SettingsMongo{
+func loadSettings(m *mongo.Database) {
+	settings := []Settings{
 		{Key: "mapMinX", Value: -2},
 		{Key: "mapMaxX", Value: 2},
 		{Key: "mapMinY", Value: -2},
@@ -73,13 +73,13 @@ func loadSettingsMongo(m *mongo.Database) {
 	}
 }
 
-func generateMapMongo(m *mongo.Database) {
-	settings, _ := GetSettingsMongo(m)
-	var newMapCell CellMongo
+func generateMap(m *mongo.Database) {
+	settings, _ := GetSettings(m)
+	var newMapCell Cell
 	for y := int(settings["mapMinY"]); y <= int(settings["mapMaxY"]); y++ {
 		for x := int(settings["mapMinX"]); x <= int(settings["mapMaxX"]); x++ {
 			r := rand.New(rand.NewSource(time.Now().UnixNano()))
-			newMapCell = CellMongo{
+			newMapCell = Cell{
 				CellName:         strconv.Itoa(x) + "x" + strconv.Itoa(y),
 				X:                x,
 				Y:                y,
@@ -104,7 +104,7 @@ func generateMapMongo(m *mongo.Database) {
 	}
 }
 
-func importFromDataSheetMongo(m *mongo.Database) {
+func importFromDataSheet(m *mongo.Database) {
 	ctx := context.Background()
 	conf, err := google.JWTConfigFromJSON([]byte(cfg.Config.GoogleAPI), "https://www.googleapis.com/auth/spreadsheets.readonly")
 	if err != nil {
@@ -126,33 +126,33 @@ func importFromDataSheetMongo(m *mongo.Database) {
 		if len(rows.Values) == 0 {
 			fmt.Println("No data found in sheet: ", sheet.Properties.Title)
 		} else {
-			if err := importDataInTableMongo(m, sheet.Properties.Title, rows.Values); err != nil {
+			if err := importDataInTable(m, sheet.Properties.Title, rows.Values); err != nil {
 				fmt.Println("Func importDataInTable failed")
 			}
 		}
 	}
 }
 
-func importDataInTableMongo(m *mongo.Database, tableName string, rows [][]interface{}) error {
+func importDataInTable(m *mongo.Database, tableName string, rows [][]interface{}) error {
 	if tableName == "building_types" {
-		if err := buildingTypesImportMongo(m, rows); err != nil {
+		if err := buildingTypesImport(m, rows); err != nil {
 			fmt.Println("Import table building_types failed")
 		}
 	}
 	if tableName == "resource_types" {
-		if err := resourceTypesImportMongo(m, rows); err != nil {
+		if err := resourceTypesImport(m, rows); err != nil {
 			fmt.Println("Import table resource_types failed")
 		}
 	}
 	if tableName == "blueprints" {
-		if err := productionBlueprintsImportMongo(m, rows); err != nil {
+		if err := productionBlueprintsImport(m, rows); err != nil {
 			fmt.Println("Import table production_blueprints failed")
 		}
 	}
 	return nil
 }
 
-func buildingTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
+func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
@@ -175,7 +175,7 @@ func buildingTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
 			log.Println("Can't get Int from Google sheet Workers field: ", err)
 		}
 
-		buildingTypeMongo := BuildingTypeMongo{
+		buildingTypeMongo := BuildingType{
 			ID:               uint(id),
 			Title:            row[2].(string),
 			Description:      row[3].(string),
@@ -199,7 +199,7 @@ func buildingTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
 	return nil
 }
 
-func resourceTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
+func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
@@ -218,7 +218,7 @@ func resourceTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
 			log.Println("Can't get float from Google sheet Demand field: ", err)
 		}
 
-		resourceTypeMongo := ResourceTypeMongo{
+		resourceTypeMongo := ResourceType{
 			ID:         uint(id),
 			Name:       row[2].(string),
 			Volume:     float64(volume),
@@ -238,13 +238,13 @@ func resourceTypesImportMongo(m *mongo.Database, rows [][]interface{}) error {
 	return nil
 }
 
-func productionBlueprintsImportMongo(m *mongo.Database, rows [][]interface{}) error {
+func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
 			log.Println("Can't get time.Duration from Google sheet ID field: ", err)
 		}
-		var producedResources, usedResources []ResourceAmountMongo
+		var producedResources, usedResources []ResourceAmount
 		if err := json.Unmarshal([]byte(row[2].(string)), &producedResources); err != nil {
 			log.Println("Error while unmarshalling ProducedResources:", err)
 			return err
@@ -263,7 +263,7 @@ func productionBlueprintsImportMongo(m *mongo.Database, rows [][]interface{}) er
 			log.Println("Can't get UInt from Google sheet ProductionTime field: ", err)
 		}
 
-		blueprintMongo := BlueprintMongo{
+		blueprintMongo := Blueprint{
 			ID:                uint(id),
 			Name:              row[6].(string),
 			ProducedResources: producedResources,

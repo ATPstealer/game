@@ -9,28 +9,21 @@ import (
 	"time"
 )
 
-func ProductionMongo(m *mongo.Database) {
-	productions, err := models.GetProductionMongo(m)
+func Production(m *mongo.Database) {
+	productions, err := models.GetProduction(m)
 	if err != nil {
 		log.Println("Can't get productions: " + err.Error())
 		return
 	}
 
-	//resources, err := models.GetAllResourcesMongo(m)
-	//if err != nil {
-	//	log.Println("Can't get resources: " + err.Error())
-	//	return
-	//}
-	//log.Println(resources)
-
-	blueprints, err := models.GetBlueprintsMongo(m, 0)
+	blueprints, err := models.GetBlueprints(m, 0)
 	if err != nil {
 		log.Println(err)
 	}
 
 	now := time.Now()
 	for _, production := range productions {
-		if !models.CheckEnoughStorageMongo(m, production.Building.UserID, production.Building.X, production.Building.Y, 0) {
+		if !models.CheckEnoughStorage(m, production.Building.UserID, production.Building.X, production.Building.Y, 0) {
 			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.StorageNeededStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
@@ -59,7 +52,7 @@ func ProductionMongo(m *mongo.Database) {
 
 		enoughResources := true
 		for _, resource := range blueprint.UsedResources {
-			if !models.CheckEnoughResourcesMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
+			if !models.CheckEnoughResources(m, resource.ResourceID, production.Building.UserID, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
 				if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ResourcesNeededStatus); err != nil {
 					log.Println("Can't update building status: " + err.Error())
 				}
@@ -73,13 +66,13 @@ func ProductionMongo(m *mongo.Database) {
 
 		if enoughResources {
 			for _, resource := range blueprint.UsedResources {
-				if err := models.AddResourceMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+				if err := models.AddResource(m, resource.ResourceID, production.Building.UserID, production.Building.X,
 					production.Building.Y, (-1)*resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
 			}
 			for _, resource := range blueprint.ProducedResources {
-				if err := models.AddResourceMongo(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+				if err := models.AddResource(m, resource.ResourceID, production.Building.UserID, production.Building.X,
 					production.Building.Y, resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
@@ -96,7 +89,7 @@ func ProductionMongo(m *mongo.Database) {
 	}
 }
 
-func StopWorkMongo(m *mongo.Database) {
+func StopWork(m *mongo.Database) {
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
 	update := bson.D{
 		{"$set", bson.D{

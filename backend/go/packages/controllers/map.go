@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func GetCellOwnersMongo(c *gin.Context) {
+func GetCellOwners(c *gin.Context) {
 	x, err := include.StrToInt(c, c.Query("x"))
 	if err != nil {
 		return
@@ -20,7 +20,7 @@ func GetCellOwnersMongo(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	cellOwners, err := models.GetCellOwnersMongo(db.M, x, y)
+	cellOwners, err := models.GetCellOwners(db.M, x, y)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 15, "text": "Can't get Cell Owners: " + err.Error()})
 		return
@@ -28,19 +28,19 @@ func GetCellOwnersMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
 }
 
-func BuyLandMongo(c *gin.Context) {
+func BuyLand(c *gin.Context) {
 	var buyLandPayload models.BuyLandPayload
 	var err error
 	if err = include.GetPayload(c, &buyLandPayload); err != nil {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContextMongo(c)
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
 
-	price, err := models.BuyLandMongo(db.M, userID, buyLandPayload)
+	price, err := models.BuyLand(db.M, userID, buyLandPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 16, "text": "Can't buy land: " + err.Error()})
 		log.Println("Can't buy land: " + err.Error())
@@ -66,8 +66,8 @@ func BuyLandMongo(c *gin.Context) {
 			buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
 }
 
-func GetMapMongo(c *gin.Context) {
-	mapCells, err := models.GetAllCellsMongo(db.M)
+func GetMap(c *gin.Context) {
+	mapCells, err := models.GetAllCells(db.M)
 	if err != nil {
 		log.Println("Can't get map cells: " + err.Error())
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 18, "text": "Can't get map cells: " + err.Error()})
@@ -76,8 +76,8 @@ func GetMapMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": mapCells})
 }
 
-func GetAllLandLordsMongo(c *gin.Context) {
-	cellOwners, err := models.GetAllLandLordsMongo(db.M)
+func GetAllLandLords(c *gin.Context) {
+	cellOwners, err := models.GetAllLandLords(db.M)
 	if err != nil {
 		log.Println("Can't get Land Lords: " + err.Error())
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
@@ -86,12 +86,12 @@ func GetAllLandLordsMongo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
 }
 
-func GetMyLandMongo(c *gin.Context) {
-	userID, err := include.GetUserIDFromContextMongo(c)
+func GetMyLand(c *gin.Context) {
+	userID, err := include.GetUserIDFromContext(c)
 	if err != nil {
 		return
 	}
-	myLands, err := models.GetMyLandsMongo(db.M, userID)
+	myLands, err := models.GetMyLands(db.M, userID)
 	if err != nil {
 		log.Println("Can't get Land Lords: " + err.Error())
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
