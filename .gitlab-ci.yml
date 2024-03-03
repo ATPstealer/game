@@ -130,18 +130,6 @@ minio:
     - master
     - /^ci-.*$/
 
-mysql:
-  stage: infra
-  image: alpine/helm
-  script:
-    - helm upgrade --install mysql -n game
-      --history-max 1
-      ./deployment/helm/mysql
-  only:
-    - master
-    - /^ci-.*$/
-
-
 mongodb:
   stage: infra
   image: alpine/helm
