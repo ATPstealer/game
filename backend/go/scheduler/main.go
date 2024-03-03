@@ -23,6 +23,7 @@ func alive(db *gorm.DB) {
 	gameLive.LogisticsDone(db)
 	gameLive.StoragesUpdate(db)
 	gameLive.StoreSell(db)
+
 }
 
 // mongo
