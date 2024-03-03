@@ -7,17 +7,17 @@ import (
 	"net/http"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddlewareMongo() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		secureToken, err := c.Cookie("secureToken")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "Token cookie is required"})
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 9, "text": "Token cookie is required"})
 			c.Abort()
 			return
 		}
-		userID, err := models.GetUserIDByToken(db.DB, secureToken)
+		userID, err := models.GetUserIDByTokenMongo(db.M, secureToken)
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "Token incorrect"})
+			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 10, "text": "Token incorrect"})
 			c.Abort()
 			return
 		}
@@ -37,27 +37,6 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(204)
 			return
 		}
-		c.Next()
-	}
-}
-
-// mongo
-
-func AuthMiddlewareMongo() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		secureToken, err := c.Cookie("secureToken")
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 9, "text": "Token cookie is required"})
-			c.Abort()
-			return
-		}
-		userID, err := models.GetUserIDByTokenMongo(db.M, secureToken)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 10, "text": "Token incorrect"})
-			c.Abort()
-			return
-		}
-		c.Set("userID", userID)
 		c.Next()
 	}
 }

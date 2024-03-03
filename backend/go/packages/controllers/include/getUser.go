@@ -10,15 +10,15 @@ import (
 	"net/http"
 )
 
-type userPayload struct {
+type UserPayload struct {
 	NickName string `json:"nickName"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	TTL      int    `json:"ttl"`
 }
 
-func GetUserFromRequest(c *gin.Context) (userPayload, error) {
-	var user userPayload
+func GetUserFromRequest(c *gin.Context) (UserPayload, error) {
+	var user UserPayload
 
 	// Get POST body
 	body, err := io.ReadAll(c.Request.Body)

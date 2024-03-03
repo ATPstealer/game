@@ -5,27 +5,9 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gorm.io/gorm"
 	"log"
 	"time"
 )
-
-func LogisticsDone(db *gorm.DB) {
-	var logistics []models.Logistic
-	res := db.Model(&models.Logistic{}).Where("work_end < NOW()").Scan(&logistics)
-	if res.Error != nil {
-		log.Println(res.Error)
-	}
-	for _, logistic := range logistics {
-		err := models.AddResource(db, logistic.ResourceTypeID, logistic.UserID, logistic.ToX, logistic.ToY, logistic.Amount)
-		if err != nil {
-			log.Println(err)
-		}
-		db.Delete(&logistic)
-	}
-}
-
-// mongo
 
 func LogisticsDoneMongo(m *mongo.Database) {
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}
