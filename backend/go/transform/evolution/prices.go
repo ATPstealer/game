@@ -121,7 +121,7 @@ func CellAveragePricesMongo(m *mongo.Database) {
 		log.Fatalln(err)
 	}
 
-	storeGoods, err := models.GetStoreGoodsWithDataMongo(m)
+	storeGoods, err := models.GetAllStoreGoodsWithDataMongo(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -142,7 +142,7 @@ func CellAveragePricesMongo(m *mongo.Database) {
 			addOrChangeEvolutionPriceMongo(&evolutionPrices, cell.X, cell.Y, resourceType.ID, averagePrice, demand)
 		}
 	}
-	saveEvolutionPrices(m, &evolutionPrices)
+	SaveEvolutionPrices(m, &evolutionPrices)
 }
 
 func findCellGoodsMongo(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsWithDataMongo) []models.StoreGoodsWithDataMongo {
@@ -163,6 +163,9 @@ func getAveragePriceMongo(demand float64, cellGoods []models.StoreGoodsWithDataM
 	soldGoodsCount := float64(0)
 	revenueCount := float64(0)
 	for _, cg := range cellGoods {
+		if cg.Building.OnStrike {
+			continue
+		}
 		if soldGoodsCount+float64(cg.SellSum) <= demand {
 			revenueCount += cg.Revenue
 			soldGoodsCount += float64(cg.SellSum)
@@ -216,13 +219,15 @@ func addOrChangeEvolutionPriceMongo(evolutionPrices *[]models.EvolutionPriceMong
 	})
 }
 
-func saveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionPriceMongo) {
+func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionPriceMongo) {
 	for _, price := range *evolutionPrices {
 		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeID}
 		update := bson.M{
 			"$set": bson.M{
 				"priceAverage": price.PriceAverage,
 				"demand":       price.Demand,
+				"sellSum":      price.SellSum,
+				"revenueSum":   price.RevenueSum,
 			},
 			"$setOnInsert": bson.M{
 				"x":              price.X,

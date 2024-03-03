@@ -229,7 +229,7 @@ type StoreGoodsWithDataMongo struct {
 	BuildingType   BuildingTypeMongo  `json:"buildingType" bson:"buildingType"`
 }
 
-func GetStoreGoodsWithDataMongo(m *mongo.Database) ([]StoreGoodsWithDataMongo, error) {
+func GetAllStoreGoodsWithDataMongo(m *mongo.Database) ([]StoreGoodsWithDataMongo, error) {
 	filter := bson.D{{}}
 	matchStage := bson.D{{"$match", filter}}
 

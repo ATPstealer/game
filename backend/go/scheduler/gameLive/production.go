@@ -129,21 +129,18 @@ func ProductionMongo(m *mongo.Database) {
 		log.Println("Can't get productions: " + err.Error())
 		return
 	}
-	log.Println(productions)
 
-	resources, err := models.GetAllResourcesMongo(m)
-	if err != nil {
-		log.Println("Can't get resources: " + err.Error())
-		return
-	}
-	log.Println(resources)
+	//resources, err := models.GetAllResourcesMongo(m)
+	//if err != nil {
+	//	log.Println("Can't get resources: " + err.Error())
+	//	return
+	//}
+	//log.Println(resources)
 
 	blueprints, err := models.GetBlueprintsMongo(m, 0)
 	if err != nil {
 		log.Println(err)
 	}
-
-	log.Println(blueprints)
 
 	now := time.Now()
 	for _, production := range productions {
@@ -158,12 +155,10 @@ func ProductionMongo(m *mongo.Database) {
 		}
 		workTime := now.Sub(*production.WorkStarted).Seconds()
 		blueprint := blueprints[production.BlueprintID-1]
-		log.Println(workTime, blueprint)
 
 		// Formula of production pace
 		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * float64(production.Building.Workers) / float64(production.BuildingType.Workers)) // here the level and square are taken into account through workers
 		blueprintCycles := float64(productionCycles) * float64(production.BuildingType.Workers) / float64(production.Building.Workers)
-		log.Println(productionCycles, blueprintCycles)
 
 		if productionCycles == 0 {
 			continue
