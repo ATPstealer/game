@@ -49,7 +49,7 @@ func resetStoresMongo(m *mongo.Database) {
 			"revenue": 0,
 		},
 	}
-	_, err := m.Collection("storeGoods").UpdateOne(context.TODO(), filter, update)
+	_, err := m.Collection("storeGoods").UpdateMany(context.TODO(), filter, update)
 	if err != nil {
 		log.Println(err)
 	}
@@ -63,7 +63,7 @@ func resetEvolutionPricesMongo(m *mongo.Database) {
 			"revenueSum": 0,
 		},
 	}
-	_, err := m.Collection("evolutionPriceS").UpdateOne(context.TODO(), filter, update)
+	_, err := m.Collection("evolutionPriceS").UpdateMany(context.TODO(), filter, update)
 	if err != nil {
 		log.Println(err)
 	}
