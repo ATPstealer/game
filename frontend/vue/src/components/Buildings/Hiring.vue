@@ -12,7 +12,7 @@
       {{ t(`buildings.hiring.on strike`) }}
     </p>
     <p>
-      {{ t(`buildings.hiring.max workers`) }}: {{ building.maxWorkers*building.level*building.square }}
+      {{ t(`buildings.hiring.max workers`) }}: {{ building.buildingType.workers*building.level*building.square }}
     </p>
     <p>
       {{ t(`buildings.hiring.workers`) }} / {{ t(`buildings.hiring.hiring needs`) }}:
@@ -84,7 +84,7 @@
     </div>
     <div>
       {{ t(`buildings.coefficient efficiency`) }}:
-      {{ (building.workers / building.maxWorkers).toFixed(2) }}
+      {{ (building.workers / building.buildingType.workers).toFixed(2) }}
     </div>
     <hr />
     <div v-if="!isMapFetching">
