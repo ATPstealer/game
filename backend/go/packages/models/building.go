@@ -30,8 +30,8 @@ type Building struct {
 	Square      int                `json:"square" bson:"square"`
 	Level       int                `json:"level" bson:"level"`
 	Status      BuildingStatus     `json:"status" bson:"status"`
-	WorkStarted *time.Time         `json:"workStarted" bson:"workStarted"`
-	WorkEnd     *time.Time         `json:"workEnd" bson:"workEnd"`
+	WorkStarted time.Time          `json:"workStarted" bson:"workStarted"`
+	WorkEnd     time.Time          `json:"workEnd" bson:"workEnd"`
 	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
 	Salary      float64            `json:"salary" bson:"salary"`
 	Workers     int                `json:"workers" bson:"workers"`
@@ -82,8 +82,8 @@ func CreateBuilding(m *mongo.Database, userID primitive.ObjectID, payload Constr
 		Square:      payload.Square,
 		Level:       1,
 		Status:      ConstructionStatus,
-		WorkStarted: &now,
-		WorkEnd:     &end,
+		WorkStarted: now,
+		WorkEnd:     end,
 		HiringNeeds: 0,
 		Salary:      0,
 		Workers:     0,
