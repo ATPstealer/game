@@ -54,11 +54,11 @@ func ConstructBuilding(m *mongo.Database, userId primitive.ObjectID, payload Con
 		return err
 	}
 
-	buildingType, err := GetBuildingTypeByID(m, payload.TypeId)
+	buildingType, err := GetBuildingTypeById(m, payload.TypeId)
 	if err != nil {
 		return err
 	}
-	if !CheckEnough(m, userId, buildingType.Cost*float64(payload.Square)) {
+	if !CheckEnoughMoney(m, userId, buildingType.Cost*float64(payload.Square)) {
 		return errors.New("not enough money")
 	}
 	return CreateBuilding(m, userId, payload, buildingType)
@@ -262,13 +262,13 @@ func GetMyBuildings(m *mongo.Database, userId primitive.ObjectID, buildingId pri
 	return myBuildings, nil
 }
 
-func GetBuildingByID(m *mongo.Database, buildingID primitive.ObjectID) (Building, error) {
+func GetBuildingById(m *mongo.Database, buildingId primitive.ObjectID) (Building, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var building Building
 	err := m.Collection("buildings").FindOne(ctx,
-		bson.M{"_id": buildingID}).Decode(&building)
+		bson.M{"_id": buildingId}).Decode(&building)
 	if err != nil {
 		log.Println("Can't get building by Id: " + err.Error())
 	}
@@ -281,18 +281,18 @@ type HiringPayload struct {
 	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
 }
 
-func SetHiring(m *mongo.Database, userID primitive.ObjectID, payload HiringPayload) error {
+func SetHiring(m *mongo.Database, userId primitive.ObjectID, payload HiringPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	building, err := GetBuildingByID(m, payload.BuildingID)
+	building, err := GetBuildingById(m, payload.BuildingID)
 	if err != nil {
 		return err
 	}
-	if userID != building.UserId && building.UserId != primitive.NilObjectID {
+	if userId != building.UserId && building.UserId != primitive.NilObjectID {
 		return errors.New("this building doesn't belong to you")
 	}
-	buildingType, err := GetBuildingTypeByID(m, building.TypeId)
+	buildingType, err := GetBuildingTypeById(m, building.TypeId)
 	if err != nil {
 		return err
 	}
@@ -314,7 +314,7 @@ func DestroyBuilding(m *mongo.Database, userId primitive.ObjectID, buildingId pr
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	building, err := GetBuildingByID(m, buildingId)
+	building, err := GetBuildingById(m, buildingId)
 	if userId != building.UserId && building.UserId != primitive.NilObjectID {
 		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
 	}

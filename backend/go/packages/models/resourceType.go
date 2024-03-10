@@ -9,7 +9,7 @@ import (
 )
 
 type ResourceType struct {
-	ID         uint    `json:"id" bson:"id"`
+	Id         uint    `json:"id" bson:"id"`
 	Name       string  `json:"name" bson:"name"`
 	Volume     float64 `json:"volume" bson:"volume"` // m3
 	Weight     float64 `json:"weight" bson:"weight"` // kg
@@ -31,12 +31,12 @@ func GetAllResourceTypes(m *mongo.Database) ([]ResourceType, error) {
 	return resourceTypes, err
 }
 
-func GetResourceTypesByID(m *mongo.Database, typeID uint) (ResourceType, error) {
+func GetResourceTypesByID(m *mongo.Database, typeId uint) (ResourceType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var resourceType ResourceType
-	err := m.Collection("resourceTypes").FindOne(ctx, bson.M{"id": typeID}).Decode(&resourceType)
+	err := m.Collection("resourceTypes").FindOne(ctx, bson.M{"id": typeId}).Decode(&resourceType)
 	if err != nil {
 		log.Println("Can't get resource type: " + err.Error())
 	}

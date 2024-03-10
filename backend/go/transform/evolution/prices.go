@@ -37,9 +37,9 @@ func CellAveragePrices(m *mongo.Database) {
 				continue
 			}
 			demand := resourceType.Demand * cell.Population
-			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.ID, &storeGoods)
+			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.Id, &storeGoods)
 			averagePrice := getAveragePrice(demand, cellGoods)
-			addOrChangeEvolutionPrice(&evolutionPrices, cell.X, cell.Y, resourceType.ID, averagePrice, demand)
+			addOrChangeEvolutionPrice(&evolutionPrices, cell.X, cell.Y, resourceType.Id, averagePrice, demand)
 		}
 	}
 	SaveEvolutionPrices(m, &evolutionPrices)
@@ -48,7 +48,7 @@ func CellAveragePrices(m *mongo.Database) {
 func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsWithData) []models.StoreGoodsWithData {
 	var cellGoods []models.StoreGoodsWithData
 	for _, sg := range *storeGoods {
-		if sg.Building.X == x && sg.Building.Y == y && sg.ResourceTypeID == resourceTypeID {
+		if sg.Building.X == x && sg.Building.Y == y && sg.ResourceTypeId == resourceTypeID {
 			cellGoods = append(cellGoods, sg)
 		}
 	}

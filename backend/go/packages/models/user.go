@@ -11,7 +11,7 @@ import (
 )
 
 type User struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Id           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	NickName     string             `json:"nickName" bson:"nickName"`
 	Email        string             `json:"email" bson:"email"`
 	Password     string             `json:"password" bson:"password"`
@@ -24,6 +24,8 @@ type User struct {
 	Management   int                `json:"management" bson:"management"`
 	Planning     int                `json:"planning" bson:"planning"`
 }
+
+// TODO: Вынести характеристики
 
 func CreateUser(m *mongo.Database, nickName string, email string, password string) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
@@ -58,7 +60,7 @@ func GetUserByNickName(m *mongo.Database, nickName string) (User, error) {
 	return user, nil
 }
 
-func GetUserByID(m *mongo.Database, userID primitive.ObjectID) (User, error) {
+func GetUserById(m *mongo.Database, userID primitive.ObjectID) (User, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -89,23 +91,23 @@ func GetUserNamesByPrefix(m *mongo.Database, prefix string) ([]string, error) {
 	return names, nil
 }
 
-func AddMoney(m *mongo.Database, userID primitive.ObjectID, money float64) error {
+func AddMoney(m *mongo.Database, userId primitive.ObjectID, money float64) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	user, err := GetUserByID(m, userID)
+	user, err := GetUserById(m, userId)
 	if err != nil {
 		return err
 	}
 	if user.Money+money < 0 {
 		return errors.New("not enough money")
 	}
-	_, err = m.Collection("users").UpdateOne(ctx, bson.M{"_id": userID}, bson.M{"$inc": bson.M{"money": money}})
+	_, err = m.Collection("users").UpdateOne(ctx, bson.M{"_id": userId}, bson.M{"$inc": bson.M{"money": money}})
 	return err
 }
 
-func CheckEnough(m *mongo.Database, userID primitive.ObjectID, money float64) bool {
-	user, err := GetUserByID(m, userID)
+func CheckEnoughMoney(m *mongo.Database, userID primitive.ObjectID, money float64) bool {
+	user, err := GetUserById(m, userID)
 	if err != nil {
 		log.Println(err)
 		return false

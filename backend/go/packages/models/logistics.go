@@ -52,7 +52,7 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 	// FORMULA: logistic
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
 	price := (resourceType.Weight + resourceType.Volume) * distance * logisticPayload.Amount / 1000
-	if !CheckEnough(m, userId, price) {
+	if !CheckEnoughMoney(m, userId, price) {
 		return errors.New("not enough money")
 	} else {
 		if err := AddMoney(m, userId, (-1)*price); err != nil {

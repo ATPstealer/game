@@ -63,11 +63,11 @@ func Login(c *gin.Context) {
 }
 
 func GetUserData(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
-	user, err := models.GetUserByID(db.M, userID)
+	user, err := models.GetUserById(db.M, userId)
 	if err != nil {
 		log.Println("Can't get user ", err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 6, "text": "Can't get user " + err.Error()})

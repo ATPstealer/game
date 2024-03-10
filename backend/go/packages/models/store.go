@@ -23,9 +23,9 @@ const (
 )
 
 type StoreGoods struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingId     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	Price          float64            `json:"price" bson:"price"`
 	SellSum        int                `json:"sellSum" bson:"sellSum"`
 	Revenue        float64            `json:"revenue" bson:"revenue"`
@@ -33,14 +33,14 @@ type StoreGoods struct {
 	Status         StoreGoodsStatus   `json:"status" bson:"status"`
 }
 
-func GetStoreGoods(m *mongo.Database, buildingID primitive.ObjectID) ([]StoreGoods, error) {
+func GetStoreGoods(m *mongo.Database, buildingId primitive.ObjectID) ([]StoreGoods, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var storeGoods []StoreGoods
 	filter := bson.M{}
-	if buildingID != primitive.NilObjectID {
-		filter["buildingId"] = buildingID
+	if buildingId != primitive.NilObjectID {
+		filter["buildingId"] = buildingId
 	}
 	cursor, err := m.Collection("storeGoods").Find(ctx, filter)
 	if err != nil {
@@ -53,24 +53,24 @@ func GetStoreGoods(m *mongo.Database, buildingID primitive.ObjectID) ([]StoreGoo
 }
 
 type StoreGoodsPayload struct {
-	BuildingID     primitive.ObjectID `json:"buildingId"`
-	ResourceTypeID uint               `json:"resourceTypeId"`
+	BuildingId     primitive.ObjectID `json:"buildingId"`
+	ResourceTypeId uint               `json:"resourceTypeId"`
 	Price          float64            `json:"price"`
 }
 
-func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGoodsPayload) error {
+func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGoodsPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	building, err := GetBuildingByID(m, payload.BuildingID)
+	building, err := GetBuildingById(m, payload.BuildingId)
 	if err != nil {
 		return err
 	}
-	if building.UserId != userID {
+	if building.UserId != userId {
 		return errors.New("this building don't belong you")
 	}
 
-	buildingType, err := GetBuildingTypeByID(m, building.TypeId)
+	buildingType, err := GetBuildingTypeById(m, building.TypeId)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 		return errors.New("this is not a store")
 	}
 
-	resourceType, err := GetResourceTypesByID(m, payload.ResourceTypeID)
+	resourceType, err := GetResourceTypesByID(m, payload.ResourceTypeId)
 	if err != nil {
 		return err
 	}
@@ -88,8 +88,8 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 
 	_, err = m.Collection("storeGoods").UpdateOne(ctx,
 		bson.M{
-			"buildingId":     payload.BuildingID,
-			"resourceTypeId": payload.ResourceTypeID,
+			"buildingId":     payload.BuildingId,
+			"resourceTypeId": payload.ResourceTypeId,
 		},
 		bson.M{
 			"$set": bson.M{
@@ -97,8 +97,8 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 				"sellStarted": time.Now(),
 			},
 			"$setOnInsert": bson.M{
-				"buildingID":     payload.BuildingID,
-				"resourceTypeId": payload.ResourceTypeID,
+				"buildingID":     payload.BuildingId,
+				"resourceTypeId": payload.ResourceTypeId,
 				"sellSum":        0,
 				"revenue":        0,
 				"status":         Selling,
@@ -109,9 +109,9 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 }
 
 type StoreGoodsWithData struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingId     primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	Price          float64            `json:"price" bson:"price"`
 	SellSum        int                `json:"sellSum" bson:"sellSum"`
 	Revenue        float64            `json:"revenue" bson:"revenue"`

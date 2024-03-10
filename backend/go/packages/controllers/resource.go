@@ -20,7 +20,7 @@ func GetResourceTypes(c *gin.Context) {
 }
 
 func GetMyResources(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -40,7 +40,7 @@ func GetMyResources(c *gin.Context) {
 		yPointer = &y
 	}
 
-	myResources, err := models.GetMyResources(db.M, userID, xPointer, yPointer)
+	myResources, err := models.GetMyResources(db.M, userId, xPointer, yPointer)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resources: " + err.Error()})
 		return
@@ -49,7 +49,7 @@ func GetMyResources(c *gin.Context) {
 }
 
 func ResourceMove(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -64,7 +64,7 @@ func ResourceMove(c *gin.Context) {
 		return
 	}
 
-	err = models.StartLogisticJob(db.M, userID, logisticPayload)
+	err = models.StartLogisticJob(db.M, userId, logisticPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
 		return
@@ -75,11 +75,11 @@ func ResourceMove(c *gin.Context) {
 }
 
 func GetMyLogistics(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
-	myLogistics, err := models.GetMyLogistics(db.M, userID)
+	myLogistics, err := models.GetMyLogistics(db.M, userId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get logistics: " + err.Error()})
 		return

@@ -34,7 +34,7 @@ func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {
 	return buildingTypes, err
 }
 
-func GetBuildingTypeByID(m *mongo.Database, typeId uint) (BuildingType, error) {
+func GetBuildingTypeById(m *mongo.Database, typeId uint) (BuildingType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 

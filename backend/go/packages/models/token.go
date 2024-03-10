@@ -13,7 +13,7 @@ import (
 )
 
 type Token struct {
-	UserID    primitive.ObjectID `json:"userId" bson:"userId"`
+	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
 	Token     string             `json:"token" bson:"token"`
 	TTL       time.Duration      `json:"ttl" bson:"ttl"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
@@ -32,7 +32,7 @@ func CreateToken(m *mongo.Database, nickName string) (Token, error) {
 	user, _ := GetUserByNickName(m, nickName)
 
 	token := Token{
-		UserID:    user.ID,
+		UserId:    user.Id,
 		Token:     hexToken,
 		TTL:       2592000, // 30d TODO: set it from request
 		CreatedAt: time.Now(),
@@ -42,7 +42,7 @@ func CreateToken(m *mongo.Database, nickName string) (Token, error) {
 	return token, err
 }
 
-func GetUserIDByToken(m *mongo.Database, secureToken string) (primitive.ObjectID, error) {
+func GetUserIdByToken(m *mongo.Database, secureToken string) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -58,7 +58,7 @@ func GetUserIDByToken(m *mongo.Database, secureToken string) (primitive.ObjectID
 		log.Println("token expired")
 		return primitive.NilObjectID, errors.New("token expired")
 	}
-	return token.UserID, nil
+	return token.UserId, nil
 }
 
 func Delete(m *mongo.Database, token string) error {

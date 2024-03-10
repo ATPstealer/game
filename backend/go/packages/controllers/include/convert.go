@@ -19,7 +19,7 @@ func StrToInt(c *gin.Context, str string) (int, error) {
 	return int(number), nil
 }
 
-func StrTofloat64(c *gin.Context, str string) (float64, error) {
+func StrToFloat64(c *gin.Context, str string) (float64, error) {
 	number, err := strconv.ParseFloat(str, 32)
 	if err != nil {
 		log.Println("Can't parse string as float64 : " + err.Error())

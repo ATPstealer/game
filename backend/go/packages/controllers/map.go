@@ -35,12 +35,12 @@ func BuyLand(c *gin.Context) {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
 
-	price, err := models.BuyLand(db.M, userID, buyLandPayload)
+	price, err := models.BuyLand(db.M, userId, buyLandPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 16, "text": "Can't buy land: " + err.Error()})
 		log.Println("Can't buy land: " + err.Error())
@@ -87,11 +87,11 @@ func GetAllLandLords(c *gin.Context) {
 }
 
 func GetMyLand(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
-	myLands, err := models.GetMyLands(db.M, userID)
+	myLands, err := models.GetMyLands(db.M, userId)
 	if err != nil {
 		log.Println("Can't get Land Lords: " + err.Error())
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})

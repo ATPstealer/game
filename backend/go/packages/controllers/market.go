@@ -18,12 +18,12 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
 
-	err = models.CreateOrder(db.M, userID, orderPayload)
+	err = models.CreateOrder(db.M, userId, orderPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create order: " + err.Error()})
 		log.Println("Can't create order: " + err.Error())
@@ -34,11 +34,11 @@ func CreateOrder(c *gin.Context) {
 }
 
 func GetMyOrders(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
-	myOrders, err := models.GetMyOrders(db.M, userID)
+	myOrders, err := models.GetMyOrders(db.M, userId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
 		return
@@ -126,7 +126,7 @@ func GetOrders(c *gin.Context) {
 }
 
 func CloseMyOrder(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -134,7 +134,7 @@ func CloseMyOrder(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	err = models.CloseMyOrder(db.M, userID, orderID)
+	err = models.CloseMyOrder(db.M, userId, orderID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't close order: " + err.Error()})
 		log.Println("Can't close order: " + err.Error())
@@ -144,7 +144,7 @@ func CloseMyOrder(c *gin.Context) {
 }
 
 func ExecuteOrder(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -159,7 +159,7 @@ func ExecuteOrder(c *gin.Context) {
 		return
 	}
 
-	err = models.ExecuteOrder(db.M, userID, payload)
+	err = models.ExecuteOrder(db.M, userId, payload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't execute order: " + err.Error()})
 		log.Println("Can't execute order: " + err.Error())

@@ -35,7 +35,7 @@ func StoragesUpdate(m *mongo.Database) {
 	}
 
 	// Storage size depend on workers count
-	storageBuildingType, _ := models.GetBuildingTypeByID(m, 1) // 1 = Storage
+	storageBuildingType, _ := models.GetBuildingTypeById(m, 1) // 1 = Storage
 	for _, buildingStorage := range buildingStorages {
 		findBuildingStorage(&storages, buildingStorage, float64(storageBuildingType.Workers))
 	}
@@ -52,11 +52,11 @@ func StoragesUpdate(m *mongo.Database) {
 	}
 
 	for _, storage := range storages {
-		if storage.ID == primitive.NilObjectID {
-			storage.ID = primitive.NewObjectID()
+		if storage.Id == primitive.NilObjectID {
+			storage.Id = primitive.NewObjectID()
 		}
 		_, err := m.Collection("storages").UpdateOne(ctx,
-			bson.M{"_id": storage.ID},
+			bson.M{"_id": storage.Id},
 			bson.M{"$set": storage},
 			options.Update().SetUpsert(true))
 		if err != nil {
@@ -74,13 +74,13 @@ func cleanStorage(storages *[]models.Storage) {
 
 func findResource(storages *[]models.Storage, resource models.ResourceWithData) {
 	for i, storage := range *storages {
-		if storage.UserID == resource.UserID && storage.X == resource.X && storage.Y == resource.Y {
+		if storage.UserId == resource.UserId && storage.X == resource.X && storage.Y == resource.Y {
 			(*storages)[i].VolumeOccupied += resource.ResourceType.Volume * resource.Amount
 			return
 		}
 	}
 	*storages = append(*storages, models.Storage{
-		UserID:         resource.UserID,
+		UserId:         resource.UserId,
 		VolumeOccupied: resource.ResourceType.Volume * resource.Amount,
 		X:              resource.X,
 		Y:              resource.Y,
@@ -89,13 +89,13 @@ func findResource(storages *[]models.Storage, resource models.ResourceWithData) 
 
 func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Building, workersNeeded float64) {
 	for i, storage := range *storages {
-		if storage.UserID == buildingStorage.UserId && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
+		if storage.UserId == buildingStorage.UserId && storage.X == buildingStorage.X && storage.Y == buildingStorage.Y {
 			(*storages)[i].VolumeMax += float64(buildingStorage.Workers) * 100 * 5 / workersNeeded
 			return
 		}
 	}
 	*storages = append(*storages, models.Storage{
-		UserID:    buildingStorage.UserId,
+		UserId:    buildingStorage.UserId,
 		VolumeMax: float64(buildingStorage.Workers) * 100 * 5 / workersNeeded,
 		X:         buildingStorage.X,
 		Y:         buildingStorage.Y,
@@ -104,13 +104,13 @@ func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Buil
 
 func findOrder(storages *[]models.Storage, order models.OrderMongoWithData) {
 	for i, storage := range *storages {
-		if storage.UserID == order.UserId && storage.X == order.X && storage.Y == order.Y {
+		if storage.UserId == order.UserId && storage.X == order.X && storage.Y == order.Y {
 			(*storages)[i].VolumeOccupied += order.Amount * order.ResourceType.Volume
 			return
 		}
 	}
 	*storages = append(*storages, models.Storage{
-		UserID:         order.UserId,
+		UserId:         order.UserId,
 		VolumeOccupied: order.ResourceType.Volume * order.Amount,
 		X:              order.X,
 		Y:              order.Y,

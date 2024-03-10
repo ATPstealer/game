@@ -9,12 +9,12 @@ import (
 )
 
 func GetStoreGoods(c *gin.Context) {
-	buildingID, err := include.StrToPrimObjId(c, c.Query("buildingId"))
+	buildingId, err := include.StrToPrimObjId(c, c.Query("buildingId"))
 	if err != nil {
 		return
 	}
 
-	storePrices, err := models.GetStoreGoods(db.M, buildingID)
+	storePrices, err := models.GetStoreGoods(db.M, buildingId)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get store prices: " + err.Error()})
@@ -24,7 +24,7 @@ func GetStoreGoods(c *gin.Context) {
 }
 
 func SetStoreGoods(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -34,7 +34,7 @@ func SetStoreGoods(c *gin.Context) {
 		return
 	}
 
-	err = models.SetStoreGoods(db.M, userID, storeGoodsPayload)
+	err = models.SetStoreGoods(db.M, userId, storeGoodsPayload)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't set price: " + err.Error()})

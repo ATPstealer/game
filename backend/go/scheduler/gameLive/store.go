@@ -38,7 +38,7 @@ func StoreSell(m *mongo.Database) {
 			continue
 		}
 
-		epIndex, err := findEvolutionPrice(&evolutionPrices, goods.Building.X, goods.Building.Y, goods.ResourceTypeID)
+		epIndex, err := findEvolutionPrice(&evolutionPrices, goods.Building.X, goods.Building.Y, goods.ResourceTypeId)
 		if err != nil {
 			log.Println(err)
 		}
@@ -70,14 +70,14 @@ func StoreSell(m *mongo.Database) {
 			continue
 		}
 
-		if !models.CheckEnoughResources(m, goods.ResourceTypeID, goods.Building.UserId,
+		if !models.CheckEnoughResources(m, goods.ResourceTypeId, goods.Building.UserId,
 			goods.Building.X, goods.Building.Y, float64(sellCycles)) {
 			storeGoods[gIndex].Status = models.NotEnoughMinerals
 			storeGoods[gIndex].SellStarted = now
 			continue
 		}
 
-		err = models.AddResource(m, goods.ResourceTypeID, goods.Building.UserId,
+		err = models.AddResource(m, goods.ResourceTypeId, goods.Building.UserId,
 			goods.Building.X, goods.Building.Y, (-1)*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
@@ -126,7 +126,7 @@ func saveStoreGoods(m *mongo.Database, storeGoods *[]models.StoreGoodsWithData) 
 	defer cancel()
 
 	for _, sg := range *storeGoods {
-		filter := bson.M{"buildingId": sg.BuildingID, "resourceTypeId": sg.ResourceTypeID}
+		filter := bson.M{"buildingId": sg.BuildingId, "resourceTypeId": sg.ResourceTypeId}
 		update := bson.M{
 			"$set": bson.M{
 				"sellSum":     sg.SellSum,

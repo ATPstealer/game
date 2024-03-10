@@ -11,18 +11,18 @@ import (
 )
 
 type Resource struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
 }
 
 type ResourceWithData struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
@@ -61,23 +61,23 @@ func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	return resourcesAndTypes, nil
 }
 
-func AddResource(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) error {
+func AddResource(m *mongo.Database, resourceTypeId uint, userId primitive.ObjectID, x int, y int, amount float64) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	_, err := m.Collection("resources").UpdateOne(ctx,
 		bson.M{
-			"userId":         userID,
+			"userId":         userId,
 			"x":              x,
 			"y":              y,
-			"resourceTypeId": resourceTypeID,
+			"resourceTypeId": resourceTypeId,
 		},
 		bson.M{
 			"$inc": bson.M{
 				"amount": amount,
 			},
 			"$setOnInsert": bson.M{
-				"userId": userID,
+				"userId": userId,
 				"x":      x,
 				"y":      y,
 			},
@@ -86,12 +86,12 @@ func AddResource(m *mongo.Database, resourceTypeID uint, userID primitive.Object
 	return err
 }
 
-func GetMyResources(m *mongo.Database, userID primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
+func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	filter := bson.D{}
-	filter = append(filter, bson.E{Key: "userId", Value: userID})
+	filter = append(filter, bson.E{Key: "userId", Value: userId})
 	if x != nil {
 		filter = append(filter, bson.E{Key: "x", Value: *x})
 	}
@@ -127,13 +127,13 @@ func GetMyResources(m *mongo.Database, userID primitive.ObjectID, x *int, y *int
 	return resources, nil
 }
 
-func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int) (Resource, error) {
+func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userId primitive.ObjectID, x int, y int) (Resource, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var resource Resource
 	err := m.Collection("resources").FindOne(ctx, bson.M{
-		"userId":         userID,
+		"userId":         userId,
 		"x":              x,
 		"y":              y,
 		"resourceTypeId": resourceTypeID,
@@ -144,16 +144,16 @@ func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userID primitive.
 	return resource, err
 }
 
-func CheckEnoughResources(m *mongo.Database, resourceTypeID uint, userID primitive.ObjectID, x int, y int, amount float64) bool {
+func CheckEnoughResources(m *mongo.Database, resourceTypeId uint, userId primitive.ObjectID, x int, y int, amount float64) bool {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var resource Resource
 	err := m.Collection("resources").FindOne(ctx, bson.M{
-		"userId":         userID,
+		"userId":         userId,
 		"x":              x,
 		"y":              y,
-		"resourceTypeId": resourceTypeID,
+		"resourceTypeId": resourceTypeId,
 	}).Decode(&resource)
 	if err != nil {
 		log.Println("Can't get resources: " + err.Error())

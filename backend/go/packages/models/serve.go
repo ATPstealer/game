@@ -239,7 +239,7 @@ func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 
 		resourceTypeMongo := ResourceType{
-			ID:         uint(id),
+			Id:         uint(id),
 			Name:       row[2].(string),
 			Volume:     float64(volume),
 			Weight:     float64(weight),
@@ -248,7 +248,7 @@ func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 
 		collection := m.Collection("resourceTypes")
-		filter := bson.D{{"id", resourceTypeMongo.ID}}
+		filter := bson.D{{"id", resourceTypeMongo.Id}}
 		update := bson.D{{"$set", resourceTypeMongo}}
 		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {

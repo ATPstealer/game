@@ -43,7 +43,7 @@ func GetBlueprints(m *mongo.Database, blueprintId uint) ([]Blueprint, error) {
 	return blueprints, err
 }
 
-func GetBlueprintByID(m *mongo.Database, blueprintId uint) (Blueprint, error) {
+func GetBlueprintById(m *mongo.Database, blueprintId uint) (Blueprint, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 

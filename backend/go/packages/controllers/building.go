@@ -12,15 +12,15 @@ import (
 )
 
 func GetBlueprints(c *gin.Context) {
-	var blueprintID uint
+	var blueprintId uint
 	var err error
 	if c.Query("id") != "" {
-		blueprintID, err = include.StrToUInt(c, c.Query("id"))
+		blueprintId, err = include.StrToUInt(c, c.Query("id"))
 		if err != nil {
 			return
 		}
 	}
-	blueprints, err := models.GetBlueprints(db.M, blueprintID)
+	blueprints, err := models.GetBlueprints(db.M, blueprintId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 11, "text": "Can't get blueprints: " + err.Error()})
 	}
@@ -43,7 +43,7 @@ func ConstructBuilding(c *gin.Context) {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -53,7 +53,7 @@ func ConstructBuilding(c *gin.Context) {
 		return
 	}
 
-	err = models.ConstructBuilding(db.M, userID, constructBuildingPayload)
+	err = models.ConstructBuilding(db.M, userId, constructBuildingPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create building: " + err.Error()})
 		log.Println("Can't create building: " + err.Error())
@@ -75,7 +75,7 @@ func GetBuildings(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 13, "text": "Can't get user: " + err.Error()})
 			return
 		}
-		findBuildingsParams.UserId = &User.ID
+		findBuildingsParams.UserId = &User.Id
 	}
 
 	buildings, err := models.GetBuildings(db.M, findBuildingsParams)
@@ -88,18 +88,18 @@ func GetBuildings(c *gin.Context) {
 }
 
 func GetMyBuildings(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
-	var buildingID primitive.ObjectID
+	var buildingId primitive.ObjectID
 	if c.Query("_id") != "" {
-		buildingID, err = include.StrToPrimObjId(c, c.Query("_id"))
+		buildingId, err = include.StrToPrimObjId(c, c.Query("_id"))
 		if err != nil {
 			return
 		}
 	}
-	myBuildings, err := models.GetMyBuildings(db.M, userID, buildingID)
+	myBuildings, err := models.GetMyBuildings(db.M, userId, buildingId)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get buildings: " + err.Error()})
 		return
@@ -114,12 +114,12 @@ func StartWork(c *gin.Context) {
 		return
 	}
 
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
 
-	err = models.StartWork(db.M, userID, startWorkPayload)
+	err = models.StartWork(db.M, userId, startWorkPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't start job: " + err.Error()})
 		return
@@ -132,7 +132,7 @@ func SetHiring(c *gin.Context) {
 	if err := include.GetPayload(c, &hiringPayload); err != nil {
 		return
 	}
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -141,7 +141,7 @@ func SetHiring(c *gin.Context) {
 		return
 	}
 
-	err = models.SetHiring(db.M, userID, hiringPayload)
+	err = models.SetHiring(db.M, userId, hiringPayload)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't change hiring details: " + err.Error()})
 		log.Println("Can't change hiring details: " + err.Error())
@@ -152,7 +152,7 @@ func SetHiring(c *gin.Context) {
 }
 
 func DestroyBuilding(c *gin.Context) {
-	userID, err := include.GetUserIDFromContext(c)
+	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
 		return
 	}
@@ -161,7 +161,7 @@ func DestroyBuilding(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	err = models.DestroyBuilding(db.M, userID, buildingID)
+	err = models.DestroyBuilding(db.M, userId, buildingID)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't destroy building: " + err.Error()})
 		return

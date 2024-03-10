@@ -14,8 +14,7 @@ var (
 )
 
 func MongoConnect(config cfg.Vars) {
-	timeoutDuration := 5 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeoutDuration)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	clientOptions := options.Client().ApplyURI(
 		"mongodb://" + config.MongoUser + ":" + config.MongoPassword + "@" + config.MongoHost + ":" + config.MongoPort)

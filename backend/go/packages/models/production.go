@@ -11,24 +11,24 @@ import (
 )
 
 type Production struct {
-	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
-	BlueprintID uint               `json:"blueprintId" bson:"blueprintId"`
+	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingId  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	BlueprintId uint               `json:"blueprintId" bson:"blueprintId"`
 	WorkStarted time.Time          `json:"workStarted" bson:"workStarted"`
 	WorkEnd     time.Time          `json:"workEnd" bson:"workEnd"`
 }
 
 type StartWorkPayload struct {
-	BuildingID  primitive.ObjectID
-	BlueprintID uint
+	BuildingId  primitive.ObjectID
+	BlueprintId uint
 	Duration    time.Duration
 }
 
-func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPayload) error {
+func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	building, err := GetBuildingByID(m, payload.BuildingID)
+	building, err := GetBuildingById(m, payload.BuildingId)
 	if err != nil {
 		log.Println("Can't find buildings: " + err.Error())
 		return err
@@ -36,12 +36,12 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	if building.Status != ReadyStatus {
 		return errors.New("Building not ready. Status is " + string(building.Status))
 	}
-	if building.UserId != userID {
+	if building.UserId != userId {
 		err := errors.New("this building don't belong you")
 		log.Println(err)
 		return err
 	}
-	blueprintResult, err := GetBlueprintByID(m, payload.BlueprintID)
+	blueprintResult, err := GetBlueprintById(m, payload.BlueprintId)
 	if err != nil {
 		log.Println("invalid blueprint" + err.Error())
 		return err
@@ -68,8 +68,8 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	}
 
 	_, err = m.Collection("productions").InsertOne(ctx, Production{
-		BuildingID:  payload.BuildingID,
-		BlueprintID: payload.BlueprintID,
+		BuildingId:  payload.BuildingId,
+		BlueprintId: payload.BlueprintId,
 		WorkStarted: now,
 		WorkEnd:     end,
 	})
@@ -91,9 +91,9 @@ func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID
 }
 
 type ProductionWithData struct {
-	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
-	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
+	Id           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	BuildingId   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
+	BlueprintId  uint               `json:"blueprintId" bson:"blueprintId"`
 	WorkStarted  time.Time          `json:"workStarted" bson:"workStarted"`
 	WorkEnd      time.Time          `json:"workEnd" bson:"workEnd"`
 	Building     Building           `json:"building" bson:"building"`

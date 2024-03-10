@@ -15,13 +15,13 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		userID, err := models.GetUserIDByToken(db.M, secureToken)
+		userId, err := models.GetUserIdByToken(db.M, secureToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "code": 10, "text": "Token incorrect"})
 			c.Abort()
 			return
 		}
-		c.Set("userID", userID)
+		c.Set("userId", userId)
 		c.Next()
 	}
 }

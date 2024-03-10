@@ -36,7 +36,7 @@ func BuyLand(m *mongo.Database, userId primitive.ObjectID, payload BuyLandPayloa
 	}
 	price := 10 * (float64(occupiedLand)*2 + 1 + float64(payload.Square)) * float64(payload.Square) / 2
 
-	if !CheckEnough(m, userId, price) {
+	if !CheckEnoughMoney(m, userId, price) {
 		return 0, errors.New("not enough money")
 	}
 	enoughLand, err := CheckEnoughLand(m, payload.X, payload.Y, payload.Square)
