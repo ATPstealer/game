@@ -8,7 +8,7 @@ import (
 )
 
 type BuildingType struct {
-	ID               uint          `bson:"id" json:"id"`
+	Id               uint          `bson:"id" json:"id"`
 	Title            string        `bson:"title" json:"title"`
 	Description      string        `bson:"description" json:"description"`
 	Cost             float64       `bson:"cost" json:"cost"`
@@ -34,12 +34,12 @@ func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {
 	return buildingTypes, err
 }
 
-func GetBuildingTypeByID(m *mongo.Database, typeID uint) (BuildingType, error) {
+func GetBuildingTypeByID(m *mongo.Database, typeId uint) (BuildingType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var buildingType BuildingType
-	res := m.Collection("buildingTypes").FindOne(ctx, bson.M{"id": typeID})
+	res := m.Collection("buildingTypes").FindOne(ctx, bson.M{"id": typeId})
 	err := res.Decode(&buildingType)
 	return buildingType, err
 }

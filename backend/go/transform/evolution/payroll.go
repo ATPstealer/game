@@ -25,7 +25,7 @@ func Payroll(m *mongo.Database) {
 	var averageSalary []AverageSalary
 
 	for bIndex, building := range buildings {
-		if models.AddMoney(m, building.UserID, (-1)*float64(building.Workers)*building.Salary) != nil {
+		if models.AddMoney(m, building.UserId, (-1)*float64(building.Workers)*building.Salary) != nil {
 			buildings[bIndex].OnStrike = true
 			buildings[bIndex].HiringNeeds = 0
 			continue

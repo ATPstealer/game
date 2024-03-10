@@ -79,7 +79,7 @@ func saveSpend(m *mongo.Database, evolutionPrices *[]models.EvolutionPrice) {
 	defer cancel()
 
 	for _, evolutionPrice := range *evolutionPrices {
-		filter := bson.M{"_id": evolutionPrice.ID}
+		filter := bson.M{"_id": evolutionPrice.Id}
 		update := bson.M{
 			"$set": bson.M{
 				"spendMax": evolutionPrice.SpendMax,

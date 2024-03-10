@@ -36,7 +36,7 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	if building.Status != ReadyStatus {
 		return errors.New("Building not ready. Status is " + string(building.Status))
 	}
-	if building.UserID != userID {
+	if building.UserId != userID {
 		err := errors.New("this building don't belong you")
 		log.Println(err)
 		return err
@@ -46,7 +46,7 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 		log.Println("invalid blueprint" + err.Error())
 		return err
 	}
-	if blueprintResult.ProducedInID != building.TypeID {
+	if blueprintResult.ProducedInId != building.TypeId {
 		err := errors.New("can't product it here")
 		log.Println(err)
 		return err
@@ -55,7 +55,7 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	now := time.Now()
 	end := now.Add(payload.Duration)
 
-	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.ID}, bson.M{
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
 		"$set": bson.M{
 			"status":      ProductionStatus,
 			"workStarted": now,

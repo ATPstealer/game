@@ -10,27 +10,27 @@ import (
 )
 
 type Blueprint struct {
-	ID                uint             `json:"id" bson:"id"`
+	Id                uint             `json:"id" bson:"id"`
 	Name              string           `json:"name" bson:"name"`
 	ProducedResources []ResourceAmount `json:"producedResources" bson:"producedResources"`
 	UsedResources     []ResourceAmount `json:"usedResources" bson:"usedResources"`
-	ProducedInID      uint             `json:"producedInId" bson:"producedInId"`
+	ProducedInId      uint             `json:"producedInId" bson:"producedInId"`
 	ProductionTime    time.Duration    `json:"productionTime" bson:"productionTime"`
 }
 
 type ResourceAmount struct {
-	ResourceID uint    `json:"resourceId" bson:"resourceId"`
+	ResourceId uint    `json:"resourceId" bson:"resourceId"`
 	Amount     float64 `json:"amount" bson:"amount"`
 }
 
-func GetBlueprints(m *mongo.Database, blueprintID uint) ([]Blueprint, error) {
+func GetBlueprints(m *mongo.Database, blueprintId uint) ([]Blueprint, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var blueprints []Blueprint
 	filter := bson.M{}
-	if blueprintID != 0 {
-		filter["id"] = blueprintID
+	if blueprintId != 0 {
+		filter["id"] = blueprintId
 	}
 	cursor, err := m.Collection("blueprints").Find(ctx, filter,
 		options.Find().SetSort(bson.D{{"blueprintId", 1}}))
@@ -43,14 +43,14 @@ func GetBlueprints(m *mongo.Database, blueprintID uint) ([]Blueprint, error) {
 	return blueprints, err
 }
 
-func GetBlueprintByID(m *mongo.Database, blueprintID uint) (Blueprint, error) {
+func GetBlueprintByID(m *mongo.Database, blueprintId uint) (Blueprint, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var blueprint Blueprint
-	err := m.Collection("blueprints").FindOne(ctx, bson.M{"id": blueprintID}).Decode(&blueprint)
+	err := m.Collection("blueprints").FindOne(ctx, bson.M{"id": blueprintId}).Decode(&blueprint)
 	if err != nil {
-		log.Println("Can't get blueprint by ID: " + err.Error())
+		log.Println("Can't get blueprint by Id: " + err.Error())
 	}
 	return blueprint, err
 }

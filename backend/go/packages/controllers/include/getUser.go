@@ -40,8 +40,8 @@ func GetUserFromRequest(c *gin.Context) (UserPayload, error) {
 func GetUserIDFromContext(c *gin.Context) (primitive.ObjectID, error) {
 	userID, ok := c.Get("userID")
 	if !ok {
-		log.Println("UserID didn't set")
-		c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "UserID didn't set"})
+		log.Println("UserId didn't set")
+		c.JSON(http.StatusUnauthorized, gin.H{"status": "failed", "text": "UserId didn't set"})
 		c.Abort()
 		return primitive.NilObjectID, errors.New("userID didn't set")
 	}

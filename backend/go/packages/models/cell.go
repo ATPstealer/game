@@ -4,25 +4,27 @@ import (
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"time"
 )
 
 type Cell struct {
-	CellName         string  `bson:"cellName" json:"cellName"`
-	X                int     `bson:"x" json:"x"`
-	Y                int     `bson:"y" json:"y"`
-	SurfaceImagePath string  `bson:"surfaceImagePath" json:"surfaceImagePath"`
-	Square           int     `bson:"square" json:"square"`
-	Pollution        float64 `bson:"pollution" json:"pollution"`
-	Population       float64 `bson:"population" json:"population"`
-	CivilSavings     float64 `bson:"civilSavings" json:"civilSavings"`
-	SpendRate        float64 `bson:"spendRate" json:"SpendRate"`
-	Education        float64 `bson:"education" json:"education"`
-	Crime            float64 `bson:"crime" json:"crime"`
-	Medicine         float64 `bson:"medicine" json:"medicine"`
-	AverageSalary    float64 `bson:"averageSalary" json:"averageSalary"`
+	Id               primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	CellName         string             `json:"cellName" bson:"cellName" `
+	X                int                `json:"x" bson:"x"`
+	Y                int                `json:"y" bson:"y"`
+	SurfaceImagePath string             `json:"surfaceImagePath" bson:"surfaceImagePath"`
+	Square           int                `json:"square" bson:"square"`
+	Pollution        float64            `json:"pollution" bson:"pollution"`
+	Population       float64            `json:"population" bson:"population"`
+	CivilSavings     float64            `json:"civilSavings" bson:"civilSavings"`
+	SpendRate        float64            `json:"SpendRate" bson:"spendRate"`
+	Education        float64            `json:"education" bson:"education"`
+	Crime            float64            `json:"crime" bson:"crime"`
+	Medicine         float64            `json:"medicine" bson:"medicine"`
+	AverageSalary    float64            `json:"averageSalary" bson:"averageSalary"`
 }
 
 func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {

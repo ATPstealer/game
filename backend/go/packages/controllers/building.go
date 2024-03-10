@@ -75,7 +75,7 @@ func GetBuildings(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 13, "text": "Can't get user: " + err.Error()})
 			return
 		}
-		findBuildingsParams.UserID = &User.ID
+		findBuildingsParams.UserId = &User.ID
 	}
 
 	buildings, err := models.GetBuildings(db.M, findBuildingsParams)

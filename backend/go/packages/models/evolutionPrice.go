@@ -9,10 +9,10 @@ import (
 )
 
 type EvolutionPrice struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	PriceAverage   float64            `json:"priceAverage" bson:"priceAverage"`
 	Demand         float64            `json:"demand" bson:"demand"`
 	SellSum        int                `json:"sellSum" bson:"sellSum"`

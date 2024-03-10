@@ -11,46 +11,46 @@ import (
 )
 
 type Order struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
 	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
 }
 
-func CreateOrder(m *mongo.Database, userID primitive.ObjectID, payload Order) error {
+func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	if payload.Sell {
-		if !CheckEnoughResources(m, payload.ResourceTypeID, userID, payload.X, payload.Y, payload.Amount) {
+		if !CheckEnoughResources(m, payload.ResourceTypeId, userId, payload.X, payload.Y, payload.Amount) {
 			return errors.New("not enough resources in this cell")
 		}
 		if payload.PriceForUnit < 0 {
-			if err := AddMoney(m, userID, payload.PriceForUnit*payload.Amount); err != nil {
+			if err := AddMoney(m, userId, payload.PriceForUnit*payload.Amount); err != nil {
 				return err
 			}
 		}
-		if err := AddResource(m, payload.ResourceTypeID, userID, payload.X, payload.Y, (-1)*payload.Amount); err != nil {
+		if err := AddResource(m, payload.ResourceTypeId, userId, payload.X, payload.Y, (-1)*payload.Amount); err != nil {
 			return err
 		}
 
 	} else {
 		if payload.PriceForUnit >= 0 {
-			if err := AddMoney(m, userID, (-1)*payload.Amount*payload.PriceForUnit); err != nil {
+			if err := AddMoney(m, userId, (-1)*payload.Amount*payload.PriceForUnit); err != nil {
 				return err
 			}
 		}
 	}
 
 	order := Order{
-		UserID:         userID,
+		UserId:         userId,
 		X:              payload.X,
 		Y:              payload.Y,
-		ResourceTypeID: payload.ResourceTypeID,
+		ResourceTypeId: payload.ResourceTypeId,
 		Amount:         payload.Amount,
 		PriceForUnit:   payload.PriceForUnit,
 		Sell:           payload.Sell,
@@ -60,11 +60,11 @@ func CreateOrder(m *mongo.Database, userID primitive.ObjectID, payload Order) er
 }
 
 type OrderMongoWithData struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
 	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
@@ -72,13 +72,13 @@ type OrderMongoWithData struct {
 	NickName       string             `json:"nickName" bson:"nickName"`
 }
 
-func GetMyOrders(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWithData, error) {
+func GetMyOrders(m *mongo.Database, userId primitive.ObjectID) ([]OrderMongoWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	filter := bson.D{}
-	if userID != primitive.NilObjectID {
-		filter = append(filter, bson.E{Key: "userId", Value: userID})
+	if userId != primitive.NilObjectID {
+		filter = append(filter, bson.E{Key: "userId", Value: userId})
 	}
 	matchStage := bson.D{{"$match", filter}}
 
@@ -139,11 +139,11 @@ func GetMyOrders(m *mongo.Database, userID primitive.ObjectID) ([]OrderMongoWith
 }
 
 type FindOrderParams struct {
-	ID             *primitive.ObjectID
-	UserID         *primitive.ObjectID
+	Id             *primitive.ObjectID
+	UserId         *primitive.ObjectID
 	X              *int
 	Y              *int
-	ResourceTypeID *uint
+	ResourceTypeId *uint
 	Sell           *bool
 	Limit          *int
 	OrderField     *string
@@ -156,11 +156,11 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 	defer cancel()
 
 	filter := bson.D{}
-	if findOrderParams.ID != nil {
-		filter = append(filter, bson.E{Key: "orders._id", Value: *findOrderParams.ID})
+	if findOrderParams.Id != nil {
+		filter = append(filter, bson.E{Key: "orders._id", Value: *findOrderParams.Id})
 	}
-	if findOrderParams.UserID != nil {
-		filter = append(filter, bson.E{Key: "userId", Value: *findOrderParams.UserID})
+	if findOrderParams.UserId != nil {
+		filter = append(filter, bson.E{Key: "userId", Value: *findOrderParams.UserId})
 	}
 	if findOrderParams.X != nil {
 		filter = append(filter, bson.E{Key: "x", Value: *findOrderParams.X})
@@ -168,8 +168,8 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 	if findOrderParams.Y != nil {
 		filter = append(filter, bson.E{Key: "y", Value: *findOrderParams.Y})
 	}
-	if findOrderParams.ResourceTypeID != nil {
-		filter = append(filter, bson.E{Key: "resourceTypeId", Value: *findOrderParams.ResourceTypeID})
+	if findOrderParams.ResourceTypeId != nil {
+		filter = append(filter, bson.E{Key: "resourceTypeId", Value: *findOrderParams.ResourceTypeId})
 	}
 	if findOrderParams.Sell != nil {
 		filter = append(filter, bson.E{Key: "sell", Value: *findOrderParams.Sell})
@@ -263,19 +263,19 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 }
 
 type ExecuteOrderPayload struct {
-	OrderID primitive.ObjectID
+	OrderId primitive.ObjectID
 	Amount  float64
 }
 
-func GetOrderByID(m *mongo.Database, orderID primitive.ObjectID) (Order, error) {
+func GetOrderByID(m *mongo.Database, orderId primitive.ObjectID) (Order, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var order Order
 	err := m.Collection("orders").FindOne(ctx,
-		bson.M{"_id": orderID}).Decode(&order)
+		bson.M{"_id": orderId}).Decode(&order)
 	if err != nil {
-		log.Println("Can't get building by ID: " + err.Error())
+		log.Println("Can't get building by Id: " + err.Error())
 	}
 	return order, err
 }
@@ -284,7 +284,7 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	order, err := GetOrderByID(m, payload.OrderID)
+	order, err := GetOrderByID(m, payload.OrderId)
 	if err != nil {
 		log.Println("Can't get order: " + err.Error())
 		return err
@@ -298,17 +298,17 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 		if err := AddMoney(m, userID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
 			return err
 		}
-		if err := AddResource(m, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount); err != nil {
+		if err := AddResource(m, order.ResourceTypeId, userID, order.X, order.Y, payload.Amount); err != nil {
 			return err
 		}
 		if order.PriceForUnit > 0 {
-			if err := AddMoney(m, order.UserID, payload.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(m, order.UserId, payload.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
 
 	} else {
-		if !CheckEnoughResources(m, order.ResourceTypeID, userID, order.X, order.Y, payload.Amount) {
+		if !CheckEnoughResources(m, order.ResourceTypeId, userID, order.X, order.Y, payload.Amount) {
 			return errors.New("not enough resources in this cell")
 		}
 		// AddMoney checks enough money if price < 0
@@ -316,21 +316,21 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 			return err
 		}
 		if order.PriceForUnit < 0 {
-			if err := AddMoney(m, order.UserID, (-1)*payload.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(m, order.UserId, (-1)*payload.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
-		if err := AddResource(m, order.ResourceTypeID, userID, order.X, order.Y, (-1)*payload.Amount); err != nil {
+		if err := AddResource(m, order.ResourceTypeId, userID, order.X, order.Y, (-1)*payload.Amount); err != nil {
 			return err
 		}
-		if err := AddResource(m, order.ResourceTypeID, order.UserID, order.X, order.Y, payload.Amount); err != nil {
+		if err := AddResource(m, order.ResourceTypeId, order.UserId, order.X, order.Y, payload.Amount); err != nil {
 			return err
 		}
 
 	}
 
 	if order.Amount == payload.Amount {
-		_, err := m.Collection("orders").DeleteOne(ctx, bson.M{"_id": order.ID})
+		_, err := m.Collection("orders").DeleteOne(ctx, bson.M{"_id": order.Id})
 		if err != nil {
 			return err
 		}
@@ -340,7 +340,7 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 				"amount": -payload.Amount,
 			},
 		}
-		_, err := m.Collection("orders").UpdateOne(ctx, bson.M{"_id": order.ID}, update)
+		_, err := m.Collection("orders").UpdateOne(ctx, bson.M{"_id": order.Id}, update)
 		if err != nil {
 			return err
 		}
@@ -348,34 +348,34 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 	return nil
 }
 
-func CloseMyOrder(m *mongo.Database, userID primitive.ObjectID, orderID primitive.ObjectID) error {
+func CloseMyOrder(m *mongo.Database, userId primitive.ObjectID, orderId primitive.ObjectID) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	order, err := GetOrderByID(m, orderID)
+	order, err := GetOrderByID(m, orderId)
 	if err != nil {
 		return err
 	}
-	if order.UserID != userID {
+	if order.UserId != userId {
 		return errors.New("you are not the owner of this order")
 	}
 
 	if order.Sell {
-		if err := AddResource(m, order.ResourceTypeID, order.UserID, order.X, order.Y, order.Amount); err != nil {
+		if err := AddResource(m, order.ResourceTypeId, order.UserId, order.X, order.Y, order.Amount); err != nil {
 			return err
 		}
 		if order.PriceForUnit < 0 {
-			if err := AddMoney(m, order.UserID, (-1)*order.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(m, order.UserId, (-1)*order.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
 	} else {
 		if order.PriceForUnit > 0 {
-			if err := AddMoney(m, order.UserID, order.Amount*order.PriceForUnit); err != nil {
+			if err := AddMoney(m, order.UserId, order.Amount*order.PriceForUnit); err != nil {
 				return err
 			}
 		}
 	}
-	_, err = m.Collection("orders").DeleteOne(ctx, bson.M{"_id": orderID})
+	_, err = m.Collection("orders").DeleteOne(ctx, bson.M{"_id": orderId})
 	return err
 }

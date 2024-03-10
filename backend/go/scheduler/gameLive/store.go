@@ -70,20 +70,20 @@ func StoreSell(m *mongo.Database) {
 			continue
 		}
 
-		if !models.CheckEnoughResources(m, goods.ResourceTypeID, goods.Building.UserID,
+		if !models.CheckEnoughResources(m, goods.ResourceTypeID, goods.Building.UserId,
 			goods.Building.X, goods.Building.Y, float64(sellCycles)) {
 			storeGoods[gIndex].Status = models.NotEnoughMinerals
 			storeGoods[gIndex].SellStarted = now
 			continue
 		}
 
-		err = models.AddResource(m, goods.ResourceTypeID, goods.Building.UserID,
+		err = models.AddResource(m, goods.ResourceTypeID, goods.Building.UserId,
 			goods.Building.X, goods.Building.Y, (-1)*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		err = models.AddMoney(m, goods.Building.UserID, goods.Price*float64(sellCycles))
+		err = models.AddMoney(m, goods.Building.UserId, goods.Price*float64(sellCycles))
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -114,7 +114,7 @@ func daySellCalc(price float64, priceAverage float64, capacity float64) float64 
 
 func findEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint) (int, error) {
 	for index, evolutionPrice := range *evolutionPrices {
-		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeID == resourceTypeID {
+		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeId == resourceTypeID {
 			return index, nil
 		}
 	}

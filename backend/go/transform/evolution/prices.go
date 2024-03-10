@@ -101,7 +101,7 @@ func sort(cellGoods *[]models.StoreGoodsWithData) {
 
 func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, resourceTypeID uint, averagePrice float64, demand float64) {
 	for i, evolutionPrice := range *evolutionPrices {
-		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeID == resourceTypeID {
+		if evolutionPrice.X == x && evolutionPrice.Y == y && evolutionPrice.ResourceTypeId == resourceTypeID {
 			(*evolutionPrices)[i].PriceAverage = averagePrice
 			(*evolutionPrices)[i].Demand = demand
 			return
@@ -111,7 +111,7 @@ func addOrChangeEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, 
 	*evolutionPrices = append(*evolutionPrices, models.EvolutionPrice{
 		X:              x,
 		Y:              y,
-		ResourceTypeID: resourceTypeID,
+		ResourceTypeId: resourceTypeID,
 		PriceAverage:   averagePrice,
 		Demand:         demand,
 		SellSum:        0,
@@ -124,7 +124,7 @@ func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionP
 	defer cancel()
 
 	for _, price := range *evolutionPrices {
-		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeID}
+		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeId}
 		update := bson.M{
 			"$set": bson.M{
 				"priceAverage": price.PriceAverage,
@@ -135,7 +135,7 @@ func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionP
 			"$setOnInsert": bson.M{
 				"x":              price.X,
 				"y":              price.Y,
-				"resourceTypeId": price.ResourceTypeID,
+				"resourceTypeId": price.ResourceTypeId,
 			},
 		}
 

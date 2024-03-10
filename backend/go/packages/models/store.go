@@ -66,11 +66,11 @@ func SetStoreGoods(m *mongo.Database, userID primitive.ObjectID, payload StoreGo
 	if err != nil {
 		return err
 	}
-	if building.UserID != userID {
+	if building.UserId != userID {
 		return errors.New("this building don't belong you")
 	}
 
-	buildingType, err := GetBuildingTypeByID(m, building.TypeID)
+	buildingType, err := GetBuildingTypeByID(m, building.TypeId)
 	if err != nil {
 		return err
 	}

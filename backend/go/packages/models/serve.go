@@ -193,7 +193,7 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 
 		buildingTypeMongo := BuildingType{
-			ID:               uint(id),
+			Id:               uint(id),
 			Title:            row[2].(string),
 			Description:      row[3].(string),
 			Cost:             float64(cost),
@@ -206,7 +206,7 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 
 		collection := m.Collection("buildingTypes")
-		filter := bson.D{{"id", buildingTypeMongo.ID}}
+		filter := bson.D{{"id", buildingTypeMongo.Id}}
 		update := bson.D{{"$set", buildingTypeMongo}}
 		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
@@ -223,7 +223,7 @@ func resourceTypesImport(m *mongo.Database, rows [][]interface{}) error {
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
-			log.Println("Can't get time.Duration from Google sheet ID field: ", err)
+			log.Println("Can't get time.Duration from Google sheet Id field: ", err)
 		}
 		volume, err := strconv.ParseFloat(row[3].(string), 32)
 		if err != nil {
@@ -265,7 +265,7 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 	for _, row := range rows[1:] {
 		id, err := strconv.ParseInt(row[1].(string), 10, 64)
 		if err != nil {
-			log.Println("Can't get time.Duration from Google sheet ID field: ", err)
+			log.Println("Can't get time.Duration from Google sheet Id field: ", err)
 		}
 		var producedResources, usedResources []ResourceAmount
 		if err := json.Unmarshal([]byte(row[2].(string)), &producedResources); err != nil {
@@ -279,7 +279,7 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 		producedInID, err := strconv.ParseUint(row[4].(string), 10, 32)
 		if err != nil {
-			log.Println("Can't get UInt from Google sheet ProducedInID field: ", err)
+			log.Println("Can't get UInt from Google sheet ProducedInId field: ", err)
 		}
 		productionTime, err := strconv.ParseInt(row[5].(string), 10, 32)
 		if err != nil {
@@ -287,16 +287,16 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 		}
 
 		blueprintMongo := Blueprint{
-			ID:                uint(id),
+			Id:                uint(id),
 			Name:              row[6].(string),
 			ProducedResources: producedResources,
 			UsedResources:     usedResources,
-			ProducedInID:      uint(producedInID),
+			ProducedInId:      uint(producedInID),
 			ProductionTime:    time.Second * time.Duration(productionTime),
 		}
 
 		collection := m.Collection("blueprints")
-		filter := bson.D{{"id", blueprintMongo.ID}}
+		filter := bson.D{{"id", blueprintMongo.Id}}
 		update := bson.D{{"$set", blueprintMongo}}
 		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {

@@ -122,7 +122,7 @@ func saveBuildings(m *mongo.Database, buildings *[]models.Building) {
 	defer cancel()
 
 	for _, building := range *buildings {
-		filter := bson.M{"_id": building.ID}
+		filter := bson.M{"_id": building.Id}
 		update := bson.M{
 			"$set": bson.M{
 				"workers":     building.Workers,

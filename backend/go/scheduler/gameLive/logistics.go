@@ -27,11 +27,11 @@ func LogisticsDone(m *mongo.Database) {
 	}
 
 	for _, logistic := range logistics {
-		err := models.AddResource(m, logistic.ResourceTypeID, logistic.UserID, logistic.ToX, logistic.ToY, logistic.Amount)
+		err := models.AddResource(m, logistic.ResourceTypeId, logistic.UserId, logistic.ToX, logistic.ToY, logistic.Amount)
 		if err != nil {
 			log.Println("Logistics: " + err.Error())
 		}
-		_, err = m.Collection("logistics").DeleteOne(ctx, bson.M{"_id": logistic.ID})
+		_, err = m.Collection("logistics").DeleteOne(ctx, bson.M{"_id": logistic.Id})
 		if err != nil {
 			log.Println("Logistics: " + err.Error())
 		}

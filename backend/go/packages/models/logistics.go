@@ -12,9 +12,9 @@ import (
 )
 
 type Logistic struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	FromX          int                `json:"fromX" bson:"fromX"`
 	FromY          int                `json:"fromY" bson:"fromY"`
@@ -24,7 +24,7 @@ type Logistic struct {
 }
 
 type LogisticPayload struct {
-	ResourceTypeID uint    `json:"resourceTypeId"`
+	ResourceTypeId uint    `json:"resourceTypeId"`
 	Amount         float64 `json:"amount"`
 	FromX          int     `json:"fromX"`
 	FromY          int     `json:"fromY"`
@@ -32,42 +32,42 @@ type LogisticPayload struct {
 	ToY            int     `json:"toY"`
 }
 
-func StartLogisticJob(m *mongo.Database, userID primitive.ObjectID, logisticPayload LogisticPayload) error {
+func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayload LogisticPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	if !CheckEnoughResources(m, logisticPayload.ResourceTypeID, userID,
+	if !CheckEnoughResources(m, logisticPayload.ResourceTypeId, userId,
 		logisticPayload.FromX, logisticPayload.FromY, logisticPayload.Amount) {
 		return errors.New("not enough resources in this cell")
 	}
 
-	resourceType, err := GetResourceTypesByID(m, logisticPayload.ResourceTypeID)
+	resourceType, err := GetResourceTypesByID(m, logisticPayload.ResourceTypeId)
 	if err != nil {
 		return errors.New("can't get resource type")
 	}
-	if !CheckEnoughStorage(m, userID, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
+	if !CheckEnoughStorage(m, userId, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
 		return errors.New("there is not enough storage capacity in the destination sector")
 	}
 
 	// FORMULA: logistic
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
 	price := (resourceType.Weight + resourceType.Volume) * distance * logisticPayload.Amount / 1000
-	if !CheckEnough(m, userID, price) {
+	if !CheckEnough(m, userId, price) {
 		return errors.New("not enough money")
 	} else {
-		if err := AddMoney(m, userID, (-1)*price); err != nil {
+		if err := AddMoney(m, userId, (-1)*price); err != nil {
 			return err
 		}
 	}
 
 	log.Println(price)
-	if err := AddResource(m, logisticPayload.ResourceTypeID, userID, logisticPayload.FromX, logisticPayload.FromY, (-1)*logisticPayload.Amount); err != nil {
+	if err := AddResource(m, logisticPayload.ResourceTypeId, userId, logisticPayload.FromX, logisticPayload.FromY, (-1)*logisticPayload.Amount); err != nil {
 		return err
 	}
 
 	logistic := Logistic{
-		ResourceTypeID: logisticPayload.ResourceTypeID,
-		UserID:         userID,
+		ResourceTypeId: logisticPayload.ResourceTypeId,
+		UserId:         userId,
 		Amount:         logisticPayload.Amount,
 		FromX:          logisticPayload.FromX,
 		FromY:          logisticPayload.FromY,
@@ -80,9 +80,9 @@ func StartLogisticJob(m *mongo.Database, userID primitive.ObjectID, logisticPayl
 }
 
 type LogisticWithData struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	Amount         float64            `json:"amount" bson:"amount"`
 	FromX          int                `json:"fromX" bson:"fromX"`
 	FromY          int                `json:"fromY" bson:"fromY"`
@@ -92,11 +92,11 @@ type LogisticWithData struct {
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 }
 
-func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]LogisticWithData, error) {
+func GetMyLogistics(m *mongo.Database, userId primitive.ObjectID) ([]LogisticWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	matchStage := bson.D{{"$match", bson.M{"userId": userID}}}
+	matchStage := bson.D{{"$match", bson.M{"userId": userId}}}
 	lookupResourceType := bson.D{{"$lookup", bson.D{
 		{"from", "resourceTypes"},
 		{"localField", "resourceTypeId"},
@@ -123,13 +123,13 @@ func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]LogisticWit
 	return logistics, nil
 }
 
-func GetDestinationVolume(m *mongo.Database, userID primitive.ObjectID, toX int, toY int) float64 {
+func GetDestinationVolume(m *mongo.Database, userId primitive.ObjectID, toX int, toY int) float64 {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	var volume float64
 
-	filter := bson.M{"userId": userID, "toX": toX, "toY": toY}
+	filter := bson.M{"userId": userId, "toX": toX, "toY": toY}
 	matchStage := bson.D{{"$match", filter}}
 
 	lookupResourceType := bson.D{{"$lookup", bson.D{

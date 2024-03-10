@@ -53,14 +53,14 @@ func GetOrders(c *gin.Context) {
 		if err != nil {
 			return
 		}
-		findOrdersParams.ID = &id
+		findOrdersParams.Id = &id
 	}
 	if c.Query("user_id") != "" {
 		userID, err := include.StrToPrimObjId(c, c.Query("user_id")) // TODO: fix it
 		if err != nil {
 			return
 		}
-		findOrdersParams.UserID = &userID
+		findOrdersParams.UserId = &userID
 	}
 	if c.Query("x") != "" {
 		x, err := include.StrToInt(c, c.Query("x"))
@@ -81,7 +81,7 @@ func GetOrders(c *gin.Context) {
 		if err != nil {
 			return
 		}
-		findOrdersParams.ResourceTypeID = &resourceTypeID
+		findOrdersParams.ResourceTypeId = &resourceTypeID
 	}
 	if c.Query("sell") != "" {
 		sell, err := include.StrToBool(c, c.Query("sell"))

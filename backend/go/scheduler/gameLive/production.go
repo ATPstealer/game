@@ -23,8 +23,8 @@ func Production(m *mongo.Database) {
 
 	now := time.Now()
 	for _, production := range productions {
-		if !models.CheckEnoughStorage(m, production.Building.UserID, production.Building.X, production.Building.Y, 0) {
-			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.StorageNeededStatus); err != nil {
+		if !models.CheckEnoughStorage(m, production.Building.UserId, production.Building.X, production.Building.Y, 0) {
+			if err := models.BuildingStatusUpdate(m, production.Building.Id, models.StorageNeededStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
 			if err := models.ProductionSetWorkStarted(m, production.ID, now); err != nil {
@@ -52,8 +52,8 @@ func Production(m *mongo.Database) {
 
 		enoughResources := true
 		for _, resource := range blueprint.UsedResources {
-			if !models.CheckEnoughResources(m, resource.ResourceID, production.Building.UserID, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
-				if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ResourcesNeededStatus); err != nil {
+			if !models.CheckEnoughResources(m, resource.ResourceId, production.Building.UserId, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
+				if err := models.BuildingStatusUpdate(m, production.Building.Id, models.ResourcesNeededStatus); err != nil {
 					log.Println("Can't update building status: " + err.Error())
 				}
 				if err := models.ProductionSetWorkStarted(m, production.ID, now); err != nil {
@@ -66,18 +66,18 @@ func Production(m *mongo.Database) {
 
 		if enoughResources {
 			for _, resource := range blueprint.UsedResources {
-				if err := models.AddResource(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+				if err := models.AddResource(m, resource.ResourceId, production.Building.UserId, production.Building.X,
 					production.Building.Y, (-1)*resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
 			}
 			for _, resource := range blueprint.ProducedResources {
-				if err := models.AddResource(m, resource.ResourceID, production.Building.UserID, production.Building.X,
+				if err := models.AddResource(m, resource.ResourceId, production.Building.UserId, production.Building.X,
 					production.Building.Y, resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
 			}
-			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ProductionStatus); err != nil {
+			if err := models.BuildingStatusUpdate(m, production.Building.Id, models.ProductionStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
 			newWorkStarted := production.WorkStarted.Add(time.Duration(blueprintCycles) * blueprint.ProductionTime)
