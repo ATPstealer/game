@@ -107,7 +107,7 @@ type FindBuildingParams struct {
 }
 
 type BuildingWithData struct {
-	ID           primitive.ObjectID `json:"_id,omitempty"`
+	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	TypeID       uint               `json:"typeId"`
 	UserID       primitive.ObjectID `json:"userId"`
 	X            int                `json:"x"`
