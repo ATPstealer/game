@@ -1,25 +1,49 @@
 <template>
   <Message
-    :severity="message.status === 'success'? 'success' : 'error'"
+    :severity="status === 'success'? 'success' : 'error'"
     :pt="{
       wrapper: {
         class: '!p-2'
       }
     }"
   >
-    {{ message.text }}
+    {{ message }}
   </Message>
 </template>
 
 <script setup lang="ts">
 import Message from 'primevue/message'
-import type { DataMessage } from '@/types'
+import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
-  message: DataMessage;
+  code: number;
+  values?: Record<string, string | number>;
+  text?: string;
+  status: string;
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const { t, locale } = useI18n()
+
+const codeText = ref<string>(t(`codes.${props.code.toString()}`))
+
+watch(locale, () => {
+  codeText.value = t(`codes.${props.code.toString()}`)
+})
+
+const message = computed(() => {
+  if (props.values) {
+    return codeText.value.replace(/%\w+/g, match => {
+      const key = match.slice(1)
+      const value = props?.values?.[key]
+
+      return value.toString() || match
+    })
+  }
+
+  return codeText.value
+})
 </script>
 
 <style scoped>

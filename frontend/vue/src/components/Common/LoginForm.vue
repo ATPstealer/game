@@ -1,7 +1,7 @@
 <template>
   <MessageBlock
-    v-if="message"
-    :message="message"
+    v-if="messageData?.code"
+    v-bind="messageData"
     class="mb-4"
   />
   <div class="flex flex-col gap-8">
@@ -59,7 +59,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -68,24 +68,23 @@ const emits = defineEmits<{
 
 const nickName = ref<string>('')
 const pass = ref<string>('')
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const { t } = useI18n()
 const { logIn } = useUser()
 const submit = () => {
-  message.value = null
   const userData = {
     nickName: nickName.value,
     password: sha256(pass.value).toString()
   }
-  const { dataMessage, onFetchFinally } = logIn(userData)
+  const { data, onFetchFinally } = logIn(userData)
 
   onFetchFinally(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
 
-    if (message.value && message.value?.status === 'success') {
+    if (data.value?.status === 'success') {
       setTimeout(() => {
-        emits('close')
+        // emits('close')
       }, 1000)
     }
   })

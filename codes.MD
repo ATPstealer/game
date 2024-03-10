@@ -4,7 +4,7 @@
 0 OK   
 1 Backend error  
 2 Can't create user. Unexpected error  
-3 User with this %nickName already exists  
+3 User with nickname %nickName already exists  
 4 User with this %email already exists  
 5 Can't get user data from POST body  
 6 Can't get user from database  

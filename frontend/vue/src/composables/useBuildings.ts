@@ -1,27 +1,15 @@
-import { ref } from 'vue'
+import type { EventHookOn } from '@vueuse/core'
 import type { Ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 import type { ConstructBuildingPayload, SearchBuildingParams } from '@/types/Buildings/index.interface'
 
 export const useBuildings = () => {
-  const constructBuilding = (payload: ConstructBuildingPayload) => {
-    const dataMessage = ref<DataMessage | null>(null)
-    const { onFetchFinally } = useMyFetch('/building/construct',
-      {
-        afterFetch: ctx => {
-          dataMessage.value = {
-            text: ctx.data.text,
-            status: ctx.data.status
-          }
-
-          return ctx
-        }
-      }
-    ).post(payload).json()
+  const constructBuilding = (payload: ConstructBuildingPayload): {data: Ref<BackData>; onFetchFinally: EventHookOn<Response>} => {
+    const { data, onFetchFinally } = useMyFetch('/building/construct').post(payload).json()
 
     return {
-      dataMessage,
+      data,
       onFetchFinally
     }
   }
@@ -46,62 +34,29 @@ export const useBuildings = () => {
     }
   }
 
-  const startProduction = (payload: {buildingId: number; blueprintId: number; duration: number}) => {
-    const dataMessage = ref<DataMessage | null>(null)
-    const { onFetchResponse } = useMyFetch('/building/start_work', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          text: ctx.data.text,
-          status: ctx.data.status
-        }
-
-        return ctx
-      }
-    }).post(payload).json()
+  const startProduction = (payload: { duration: number; blueprintId: number; buildingId: string }): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/building/start_work').post(payload).json()
 
     return {
-      dataMessage,
+      data,
       onFetchResponse
     }
   }
 
-  const setPrice = (payload: {buildingId: number; resourceTypeId: number; price: number}) => {
-    const dataMessage = ref<DataMessage | null>(null)
-
-    const { onFetchResponse, isFetching } = useMyFetch('/store/goods/set', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          text: ctx.data.text,
-          status: ctx.data.status
-        }
-
-        return ctx
-      }
-    }).post(payload).json()
+  const setPrice = (payload: { price: any; resourceTypeId: any; buildingId: string }) => {
+    const { onFetchResponse, isFetching } = useMyFetch('/store/goods/set').post(payload).json()
 
     return {
-      dataMessage,
       onFetchResponse,
       isFetching
     }
   }
 
-  const setHiring = (payload: {buildingId: string; salary: number; hiringNeeds: number}) => {
-    const dataMessage = ref<DataMessage | null>(null)
-
-    const { onFetchResponse } = useMyFetch('/building/hiring', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          text: ctx.data.text,
-          status: ctx.data.status
-        }
-
-        return ctx
-      }
-    }).post(payload).json()
+  const setHiring = (payload: {buildingId: string; salary: number; hiringNeeds: number}): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/building/hiring').post(payload).json()
 
     return {
-      dataMessage,
+      data,
       onFetchResponse
     }
   }

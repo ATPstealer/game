@@ -1,9 +1,9 @@
 import { useFetch } from '@vueuse/core'
 import type { EventHookOn } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import type { Ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { DataMessage, Order } from '@/types'
+import type { BackData, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 export const useOrders = () => {
@@ -48,39 +48,21 @@ export const useOrders = () => {
     }
   }
 
-  const executeOrder = (payload: {orderID: string; amount: number}) => {
-    const dataMessage = ref<DataMessage | null>(null)
-
-    const { onFetchResponse } = useMyFetch('/market/order/execute', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          text: ctx.data.text,
-          status: ctx.data.status
-        }
-
-        return ctx
-      }
-    }).post(payload).json()
+  const executeOrder = (payload: {orderID: string; amount: number}): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/market/order/execute').post(payload).json()
 
     return {
-      dataMessage,
+      data,
       onFetchResponse
     }
   }
 
-  const createOrder = (payload: any) => {
-    const dataMessage = ref<DataMessage | null>(null)
-    const { onFetchResponse } = useMyFetch('/market/order/create', {
-      afterFetch: ctx => {
-        dataMessage.value = ctx.data
-
-        return ctx
-      }
-    }).post(payload).json()
+  const createOrder = (payload: any): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/market/order/create').post(payload).json()
 
     return {
-      onFetchResponse,
-      dataMessage
+      data,
+      onFetchResponse
     }
   }
 

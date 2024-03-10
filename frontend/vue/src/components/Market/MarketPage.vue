@@ -105,7 +105,10 @@
     :header="!order.sell ? 'You\'ll sell' : 'You\'ll buy'"
   >
     <div class="flex flex-col gap-4">
-      <MessageBlock :message="message" v-if="message" />
+      <MessageBlock
+        v-if="messageData?.code"
+        v-bind="messageData"
+      />
       <p><span class="font-bold">{{ order.resourceType.name }}</span></p>
       <p>
         Amount:
@@ -136,7 +139,7 @@ import { ref, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useOrders } from '@/composables/useOrders'
-import type { DataMessage, Order } from '@/types'
+import type { BackData, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -150,7 +153,7 @@ const { searchParams } = toRefs(props)
 
 const order = ref<Order>({} as Order)
 const showModal = ref<boolean>(false)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 const amount = ref<number>(0)
 
 const { getOrders, executeOrder } = useOrders()
@@ -176,13 +179,15 @@ const sellRowClass = (data) => {
 }
 
 const execOrder = () => {
-  const { onFetchResponse, dataMessage } = executeOrder({ orderID: order.value._id, amount: amount.value })
+  messageData.value = {} as BackData
+
+  const { data, onFetchResponse } = executeOrder({ orderID: order.value._id, amount: amount.value })
   onFetchResponse(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
 
     setTimeout(() => {
       showModal.value = false
-      message.value = null
+      messageData.value = {} as BackData
       execute()
     }, 2000)
   })

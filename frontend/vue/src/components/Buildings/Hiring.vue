@@ -1,7 +1,7 @@
 <template>
   <MessageBlock
-    v-if="message"
-    :message="message"
+    v-if="messageData?.code"
+    v-bind="messageData"
     class="mb-4"
   />
   <div class="m-0">
@@ -23,7 +23,7 @@
       </p>
       <span
         v-if="!editHiringNeeds"
-        @click="editHiringNeeds = true; editSalary = false; message = null"
+        @click="editHiringNeeds = true; editSalary = false; messageData = {} as BackData"
         class="font-bold text-blue-500 hover:text-blue-700 cursor-pointer"
       >
         {{ hiringNeeds ? hiringNeeds : t(`buildings.hiring.set`) }}
@@ -55,7 +55,7 @@
       </p>
       <span
         v-if="!editSalary"
-        @click="editSalary = true; editHiringNeeds = false; message = null"
+        @click="editSalary = true; editHiringNeeds = false; messageData = {} as BackData"
         class="font-bold text-blue-500 hover:text-blue-700 cursor-pointer"
       >
         {{ salary ? moneyFormat(salary) : t(`buildings.hiring.set`) }}
@@ -102,7 +102,7 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useMap } from '@/composables/useMap'
-import { DataMessage } from '@/types'
+import { BackData } from '@/types'
 import { Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
 
@@ -117,7 +117,7 @@ const editSalary = ref<boolean>(false)
 const editHiringNeeds = ref<boolean>(false)
 const salary = ref<number>(props.building.salary)
 const hiringNeeds = ref<number>(props.building.hiringNeeds)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const { setHiring } = useBuildings()
 const { t } = useI18n()
@@ -132,6 +132,7 @@ const getAverageSalary = () => {
 }
 
 const setHiringData = (value, option: HiringOptions) => {
+  messageData.value = {} as BackData
   const isSalary = option === 'salary'
 
   const payload = {
@@ -140,10 +141,10 @@ const setHiringData = (value, option: HiringOptions) => {
     hiringNeeds: !isSalary ? value : hiringNeeds.value
   }
 
-  const { dataMessage: dataMessageSalary, onFetchResponse: onFetchResponseSalary } = setHiring(payload)
+  const { data: dataSalary, onFetchResponse: onFetchResponseSalary } = setHiring(payload)
 
   onFetchResponseSalary(() => {
-    message.value = dataMessageSalary.value
+    messageData.value = dataSalary.value
 
     editHiringNeeds.value = false
     editSalary.value = false
