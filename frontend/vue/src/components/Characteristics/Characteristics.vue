@@ -27,13 +27,13 @@ const { data, isFetching } = useGetData('/user/data')
 
 const characteristics: Ref<Characteristics> = computed(() => {
   return {
-    memory: data.value?.memory,
-    intelligence: data.value?.intelligence,
-    attention: data.value?.attention,
-    wits: data.value?.wits,
-    multitasking: data.value?.multitasking,
-    management: data.value?.management,
-    planning: data.value?.planning
+    memory: data.value?.characteristics.memory,
+    intelligence: data.value?.characteristics.intelligence,
+    attention: data.value?.characteristics.attention,
+    wits: data.value?.characteristics.wits,
+    multitasking: data.value?.characteristics.multitasking,
+    management: data.value?.characteristics.management,
+    planning: data.value?.characteristics.planning
   }
 })
 

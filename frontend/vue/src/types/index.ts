@@ -17,12 +17,13 @@ export interface Characteristics {
   planning?: number;
 }
 
-export interface User extends Characteristics{
+export interface User{
   id?: number;
   nickName: string;
   email: string;
   password: string;
-  money?: number;
+  money: number;
+  characteristics: Characteristics;
 }
 
 export interface Land {
