@@ -27,12 +27,12 @@ func Production(m *mongo.Database) {
 			if err := models.BuildingStatusUpdate(m, production.Building.ID, models.StorageNeededStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
-			if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+			if err := models.ProductionSetWorkStarted(m, production.ID, now); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 			continue
 		}
-		workTime := now.Sub(*production.WorkStarted).Seconds()
+		workTime := now.Sub(production.WorkStarted).Seconds()
 		blueprint := blueprints[production.BlueprintID-1]
 
 		// Formula of production pace
@@ -44,7 +44,7 @@ func Production(m *mongo.Database) {
 		}
 
 		if production.Building.OnStrike {
-			if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+			if err := models.ProductionSetWorkStarted(m, production.ID, now); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 			continue
@@ -56,7 +56,7 @@ func Production(m *mongo.Database) {
 				if err := models.BuildingStatusUpdate(m, production.Building.ID, models.ResourcesNeededStatus); err != nil {
 					log.Println("Can't update building status: " + err.Error())
 				}
-				if err := models.ProductionSetWorkStarted(m, production.ID, &now); err != nil {
+				if err := models.ProductionSetWorkStarted(m, production.ID, now); err != nil {
 					log.Println("Can't update production start time: " + err.Error())
 				}
 				enoughResources = false
@@ -81,7 +81,7 @@ func Production(m *mongo.Database) {
 				log.Println("Can't update building status: " + err.Error())
 			}
 			newWorkStarted := production.WorkStarted.Add(time.Duration(blueprintCycles) * blueprint.ProductionTime)
-			if err := models.ProductionSetWorkStarted(m, production.ID, &newWorkStarted); err != nil {
+			if err := models.ProductionSetWorkStarted(m, production.ID, newWorkStarted); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 		}

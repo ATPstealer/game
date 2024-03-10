@@ -14,8 +14,8 @@ type Production struct {
 	ID          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	BlueprintID uint               `json:"blueprintId" bson:"blueprintId"`
-	WorkStarted *time.Time         `json:"workStarted" bson:"workStarted"`
-	WorkEnd     *time.Time         `json:"workEnd" bson:"workEnd"`
+	WorkStarted time.Time          `json:"workStarted" bson:"workStarted"`
+	WorkEnd     time.Time          `json:"workEnd" bson:"workEnd"`
 }
 
 type StartWorkPayload struct {
@@ -58,8 +58,8 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.ID}, bson.M{
 		"$set": bson.M{
 			"status":      ProductionStatus,
-			"workStarted": &now,
-			"workEnd":     &end,
+			"workStarted": now,
+			"workEnd":     end,
 		},
 	})
 	if err != nil {
@@ -70,8 +70,8 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	_, err = m.Collection("productions").InsertOne(ctx, Production{
 		BuildingID:  payload.BuildingID,
 		BlueprintID: payload.BlueprintID,
-		WorkStarted: &now,
-		WorkEnd:     &end,
+		WorkStarted: now,
+		WorkEnd:     end,
 	})
 	if err != nil {
 		log.Println("Failed to insert production: " + err.Error())
@@ -80,13 +80,13 @@ func StartWork(m *mongo.Database, userID primitive.ObjectID, payload StartWorkPa
 	return nil
 }
 
-func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID, timeStart *time.Time) error {
+func ProductionSetWorkStarted(m *mongo.Database, productionId primitive.ObjectID, timeStart time.Time) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	_, err := m.Collection("productions").UpdateOne(ctx,
 		bson.M{"_id": productionId},
-		bson.M{"$set": bson.M{"workStarted": &timeStart}})
+		bson.M{"$set": bson.M{"workStarted": timeStart}})
 	return err
 }
 
@@ -94,8 +94,8 @@ type ProductionWithData struct {
 	ID           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BuildingID   primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	BlueprintID  uint               `json:"blueprintId" bson:"blueprintId"`
-	WorkStarted  *time.Time         `json:"workStarted" bson:"workStarted"`
-	WorkEnd      *time.Time         `json:"workEnd" bson:"workEnd"`
+	WorkStarted  time.Time          `json:"workStarted" bson:"workStarted"`
+	WorkEnd      time.Time          `json:"workEnd" bson:"workEnd"`
 	Building     Building           `json:"building" bson:"building"`
 	BuildingType BuildingType       `json:"buildingType" bson:"buildingType"`
 }
