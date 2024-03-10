@@ -98,7 +98,7 @@ const searchUsers = () => {
 }
 
 const params = ref<SearchBuildingParams>({
-  limit: -1
+  limit: 500000000 // TODO: Илья сделай плз пагинатор
 })
 
 const setParams = ({ key, value }: {key: string; value: number}) => {

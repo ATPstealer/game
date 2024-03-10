@@ -10,7 +10,7 @@ import (
 )
 
 func LogisticsDone(m *mongo.Database) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 	defer cancel()
 
 	filter := bson.D{{"workEnd", bson.D{{"$lt", time.Now()}}}}

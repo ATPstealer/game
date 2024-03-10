@@ -79,7 +79,20 @@ func StartLogisticJob(m *mongo.Database, userID primitive.ObjectID, logisticPayl
 	return err
 }
 
-func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]bson.M, error) {
+type LogisticWithData struct {
+	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	FromX          int                `json:"fromX" bson:"fromX"`
+	FromY          int                `json:"fromY" bson:"fromY"`
+	ToX            int                `json:"toX" bson:"toX"`
+	ToY            int                `json:"toY" bson:"toY"`
+	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+}
+
+func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]LogisticWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -103,24 +116,11 @@ func GetMyLogistics(m *mongo.Database, userID primitive.ObjectID) ([]bson.M, err
 		return nil, err
 	}
 
-	var logistics []bson.M
+	var logistics []LogisticWithData
 	if err = cursor.All(ctx, &logistics); err != nil {
 		log.Println(err)
 	}
 	return logistics, nil
-}
-
-type LogisticResult struct {
-	ID             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeID uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserID         primitive.ObjectID `json:"userId" bson:"userId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	FromX          int                `json:"fromX" bson:"fromX"`
-	FromY          int                `json:"fromY" bson:"fromY"`
-	ToX            int                `json:"toX" bson:"toX"`
-	ToY            int                `json:"toY" bson:"toY"`
-	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
-	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 }
 
 func GetDestinationVolume(m *mongo.Database, userID primitive.ObjectID, toX int, toY int) float64 {
@@ -151,7 +151,7 @@ func GetDestinationVolume(m *mongo.Database, userID primitive.ObjectID, toX int,
 		return 0
 	}
 
-	var logistics []LogisticResult
+	var logistics []LogisticWithData
 	if err = cursor.All(ctx, &logistics); err != nil {
 		log.Println(err)
 		return 0

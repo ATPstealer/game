@@ -7,11 +7,6 @@ import (
 )
 
 type Vars struct {
-	DBUser        string `env:"DB_USER" default:"root"`
-	DBPassword    string `env:"DB_PASSWORD" default:"pass"`
-	DBHost        string `env:"DB_HOST" default:"localhost"`
-	DBPort        string `env:"DB_PORT" default:"3306"`
-	DBDataBase    string `env:"DB_DATABASE" default:"db"`
 	AppPort       string `env:"APP_PORT" default:"8000"`
 	Secure        bool   `env:"SECURE" default:"false"`
 	GoogleAPI     string `env:"GOOGLE_API"`
@@ -29,23 +24,6 @@ var (
 )
 
 func LoadConfig() {
-	if user := os.Getenv("DB_USER"); user != "" {
-		Config.DBUser = user
-	}
-	if password := os.Getenv("DB_PASSWORD"); password != "" {
-		Config.DBPassword = password
-	}
-	if host := os.Getenv("DB_HOST"); host != "" {
-		Config.DBHost = host
-	}
-	if port := os.Getenv("DB_PORT"); port != "" {
-		Config.DBPort = port
-	} else {
-		Config.DBPort = "3306"
-	}
-	if db := os.Getenv("DB_DATABASE"); db != "" {
-		Config.DBDataBase = db
-	}
 	if appPort := os.Getenv("APP_PORT"); appPort != "" {
 		appPortInt, err := strconv.Atoi(appPort)
 		if err != nil {

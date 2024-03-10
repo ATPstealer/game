@@ -106,7 +106,26 @@ type FindBuildingParams struct {
 	Page           *int                `json:"page"`
 }
 
-func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]bson.M, error) {
+type BuildingWithData struct {
+	ID           primitive.ObjectID `json:"_id,omitempty"`
+	TypeID       uint               `json:"typeId"`
+	UserID       primitive.ObjectID `json:"userId"`
+	X            int                `json:"x"`
+	Y            int                `json:"y"`
+	Square       int                `json:"square"`
+	Level        int                `json:"level"`
+	Status       BuildingStatus     `json:"status"`
+	WorkStarted  time.Time          `json:"workStarted"`
+	WorkEnd      time.Time          `json:"workEnd"`
+	HiringNeeds  int                `json:"hiringNeeds"`
+	Salary       float64            `json:"salary"`
+	Workers      int                `json:"workers"`
+	OnStrike     bool               `json:"onStrike"`
+	BuildingType BuildingType       `json:"buildingType"`
+	NickName     string             `json:"nickName"`
+}
+
+func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -151,31 +170,62 @@ func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]b
 	}}}
 
 	projectStage := bson.D{{"$project", bson.D{
-		{"title", "$buildingType.title"},
 		{"typeId", 1},
 		{"x", 1},
 		{"y", 1},
 		{"level", 1},
 		{"status", 1},
 		{"square", 1},
+		{"buildingType.title", 1},
 		{"nickName", "$user.nickName"},
 	}}}
 
-	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, lookupUser, unwindBuildingType, unwindUser, projectStage}
+	sort := bson.D{}
+
+	if findBuildingParams.OrderField != nil {
+		if findBuildingParams.Order != nil {
+			sort = append(filter, bson.E{Key: *findBuildingParams.OrderField, Value: *findBuildingParams.Order})
+		} else {
+			sort = append(filter, bson.E{Key: *findBuildingParams.OrderField, Value: 1})
+		}
+	}
+
+	sortStage := bson.D{}
+
+	if len(sort) != 0 {
+		sortStage = bson.D{{"$sort", sort}}
+	} else {
+		sortStage = bson.D{{"$sort", bson.D{{"_id", -1}}}}
+	}
+
+	limit := 20
+	if findBuildingParams.Limit != nil {
+		limit = *findBuildingParams.Limit
+	}
+	limitStage := bson.D{{"$limit", limit}}
+
+	skipStage := bson.D{{"$skip", 0}}
+	if findBuildingParams.Page != nil {
+		skipStage = bson.D{{"$skip", (*findBuildingParams.Page - 1) * limit}}
+	}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, lookupUser, unwindBuildingType, unwindUser,
+		projectStage, sortStage, skipStage, limitStage}
+
 	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
 	if err != nil {
 		log.Println("Can't get buildings: " + err.Error())
 		return nil, err
 	}
 
-	var buildings []bson.M // TODO: paginator
+	var buildings []BuildingWithData
 	if err = cursor.All(ctx, &buildings); err != nil {
 		log.Println(err)
 	}
 	return buildings, nil
 }
 
-func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]bson.M, error) {
+func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID primitive.ObjectID) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -205,7 +255,7 @@ func GetMyBuildings(m *mongo.Database, userID primitive.ObjectID, buildingID pri
 		return nil, err
 	}
 
-	var myBuildings []bson.M
+	var myBuildings []BuildingWithData
 	if err = cursor.All(ctx, &myBuildings); err != nil {
 		log.Println(err)
 	}

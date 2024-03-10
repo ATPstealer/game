@@ -122,7 +122,7 @@ func findEvolutionPrice(evolutionPrices *[]models.EvolutionPrice, x int, y int, 
 }
 
 func saveStoreGoods(m *mongo.Database, storeGoods *[]models.StoreGoodsWithData) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(10*time.Second))
 	defer cancel()
 
 	for _, sg := range *storeGoods {

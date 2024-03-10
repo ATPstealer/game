@@ -48,7 +48,7 @@ export interface Blueprint {
 }
 
 export interface SearchBuildingParams {
-  limit: -1;
+  limit: number;
   nickName?: string;
   x?: string;
   y?: string;

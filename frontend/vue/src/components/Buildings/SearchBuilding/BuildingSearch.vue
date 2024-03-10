@@ -24,7 +24,7 @@
       class="flex-2"
     >
       <template #body="{data}">
-        <span>{{ t(`buildings.types.${data?.title.toLocaleLowerCase()}`) }}</span>
+        <span>{{ t(`buildings.types.${data?.buildingType.title.toLocaleLowerCase()}`) }}</span>
       </template>
     </Column>
     <Column
