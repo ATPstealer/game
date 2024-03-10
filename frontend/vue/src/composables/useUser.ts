@@ -1,32 +1,11 @@
-import { ref } from 'vue'
+import type { EventHookOn } from '@vueuse/core'
+import type { Ref } from 'vue'
 import { useMyFetch } from '@/composables/useMyFetch'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 
 export const useUser = () => {
-  const logIn = (userData: Record<string, string>) => {
-    const dataMessage = ref<DataMessage | null>(null)
-
-    const { data, onFetchResponse, onFetchFinally }  = useMyFetch('/user/login', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          status: ctx.data.status,
-          text: ctx.data.status === 'failed' ? ctx.data.text : 'You are logged in. You will be redirected'
-        }
-
-        return ctx
-      },
-      onFetchError: ctx => {
-        if (!ctx.response) {
-          dataMessage.value = {
-            status: 'error',
-            text: 'Something went wrong'
-          }
-        }
-
-        return ctx
-      }
-    }
-    ).post(userData).json()
+  const logIn = (userData: Record<string, string>): {data: Ref<BackData>; onFetchFinally: EventHookOn<Response>} => {
+    const { data, onFetchResponse, onFetchFinally }  = useMyFetch('/user/login').post(userData).json()
 
     onFetchResponse(() => {
       if (data?.value.status === 'success') {
@@ -39,7 +18,7 @@ export const useUser = () => {
 
     return {
       onFetchFinally,
-      dataMessage
+      data
     }
   }
 
@@ -53,21 +32,11 @@ export const useUser = () => {
     }).delete()
   }
 
-  const signUp = (payload: {nickName: string; email: string; password: string}) => {
-    const dataMessage= ref<DataMessage | null>({} as DataMessage)
-    const { onFetchFinally } = useMyFetch('/user/create', {
-      afterFetch: ctx => {
-        dataMessage.value = {
-          status: ctx.data.status,
-          text: ctx.data.status === 'failed' ? 'User didn\'t registered' : 'User successfully registered. Please, login'
-        }
-
-        return ctx
-      }
-    }).post(payload).json()
+  const signUp = (payload: {nickName: string; email: string; password: string}): {data: Ref<BackData>; onFetchFinally: EventHookOn<Response>} => {
+    const { data, onFetchFinally } = useMyFetch('/user/create').post(payload).json()
 
     return {
-      dataMessage,
+      data,
       onFetchFinally
     }
   }

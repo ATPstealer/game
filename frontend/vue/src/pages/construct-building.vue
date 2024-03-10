@@ -2,7 +2,10 @@
   <Layout :show-options-prop="false">
     <div class="flex flex-col gap-4 items-center justify-center">
       <h2>{{ t('buildings.builder') }}</h2>
-      <MessageBlock v-if="message" :message="message" />
+      <MessageBlock
+        v-if="messageData?.code"
+        v-bind="messageData"
+      />
       <Card v-if="buildingTypes">
         <template #content>
           <div class="flex flex-col gap-4">
@@ -102,7 +105,7 @@ import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTranslation } from '@/utils/getTranslation'
@@ -113,7 +116,7 @@ const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
 const buildingType = ref<BuildingType>({} as BuildingType)
 const square = ref<number>(10)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const { constructBuilding } = useBuildings()
 const { t } = useI18n()
@@ -125,7 +128,7 @@ onFetchResponse(() => {
 })
 
 const construct = () => {
-  message.value = null
+  messageData.value = {} as BackData
 
   const payload = {
     x: x.value,
@@ -134,10 +137,10 @@ const construct = () => {
     square: square.value
   }
 
-  const { dataMessage, onFetchFinally } = constructBuilding(payload)
+  const { data, onFetchFinally } = constructBuilding(payload)
 
   onFetchFinally(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
   })
 }
 

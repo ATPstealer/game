@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col gap-4">
     <MessageBlock
-      v-if="message"
-      :message="message"
+      v-if="messageData?.code"
+      v-bind="messageData"
     />
     <p class="text-xl">
       {{ t('common.move') }}
@@ -67,7 +67,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useResources } from '@/composables/useResources'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 import type { Resource, ResourceMovePayload } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -79,7 +79,7 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 const amount = ref<number>(0)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const { moveResource } = useResources()
 const { t } = useI18n()
@@ -92,6 +92,8 @@ const price = computed(() => {
 })
 
 const move = () => {
+  messageData.value = {} as BackData
+
   const payload: ResourceMovePayload = {
     toX: x.value,
     toY: y.value,
@@ -100,12 +102,12 @@ const move = () => {
     fromX: props.resource.x,
     fromY: props.resource.y
   }
-  const { onFetchResponse, dataMessage } = moveResource(payload)
+  const { data, onFetchResponse } = moveResource(payload)
   onFetchResponse(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
 
     setTimeout(() => {
-      if (dataMessage.value?.status === 'success') {
+      if (data.value?.status === 'success') {
         emits('close')
       }
     }, 2000)

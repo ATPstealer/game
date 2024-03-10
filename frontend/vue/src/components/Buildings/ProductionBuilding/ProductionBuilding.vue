@@ -4,8 +4,8 @@
       {{ t('common.production') }}
     </h1>
     <MessageBlock
-      :message="message"
-      v-if="message"
+      v-if="messageData?.code"
+      v-bind="messageData"
       class="md:w-1/3 self-center"
     />
     <div class="flex gap-4 justify-center w-full flex-col-reverse md:flex-row">
@@ -69,7 +69,7 @@ import MessageBlock from '@/components/Common/MessageBlock.vue'
 import ResourceCard from '@/components/Resources/ResourceCard.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { ResourceType } from '@/types/Resources/index.interface'
 import { getTranslation } from '@/utils/getTranslation'
@@ -83,7 +83,7 @@ const props = defineProps<Props>()
 const blueprints = ref<Blueprint[]>([])
 const duration = ref<number>(3600 * 1000000000)
 const selectedBlueprint = ref<number>(0)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const { t } = useI18n()
 
@@ -107,6 +107,7 @@ const selectBlueprint = (event: number) => {
 }
 
 const start = () => {
+  messageData.value = {} as BackData
   const { startProduction } = useBuildings()
 
   const payload = {
@@ -115,9 +116,9 @@ const start = () => {
     duration: duration.value
   }
 
-  const { dataMessage, onFetchResponse } = startProduction(payload)
+  const { data, onFetchResponse } = startProduction(payload)
   onFetchResponse(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
   })
 }
 

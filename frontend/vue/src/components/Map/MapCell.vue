@@ -1,6 +1,9 @@
 <template>
   <div v-if="!isFetching">
-    <MessageBlock v-if="message" :message="message" />
+    <MessageBlock
+      v-if="messageData?.code"
+      v-bind="messageData"
+    />
     <p>
       Each free slot of land costs $10 more than the previous one.
     </p>
@@ -62,7 +65,7 @@ import { computed, ref } from 'vue'
 import Loading from '@/components/Common/Loading.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useMap } from '@/composables/useMap'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 import type { Cell } from '@/types/Map/index.interface'
 
 interface Props {
@@ -76,7 +79,7 @@ const buySquare = ref<number>(0)
 
 const { getCellOwners, buyCellSquare } = useMap()
 const { data: cellOwners, onFetchResponse, isFetching } = getCellOwners({ x: props.cell.x, y: props.cell.y })
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 
 const freeSquare = computed(() => {
   let value = props.square
@@ -105,13 +108,14 @@ const price = computed(() => {
 })
 
 const buy = () => {
+  messageData.value = {} as BackData
   if (!buySquare.value) {
     return
   }
 
-  const { dataMessage, onFetchResponse } = buyCellSquare({ x: props.cell.x, y: props.cell.y, square: buySquare.value })
+  const { data, onFetchResponse } = buyCellSquare({ x: props.cell.x, y: props.cell.y, square: buySquare.value })
   onFetchResponse(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
   })
 }
 </script>

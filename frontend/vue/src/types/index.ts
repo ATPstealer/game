@@ -1,4 +1,11 @@
-import type {ResourceType} from "@/types/Resources/index.interface";
+import type { ResourceType } from '@/types/Resources/index.interface'
+
+export interface BackData {
+  status: string;
+  code: number;
+  text?: string;
+  values?: Record<string, string | number>;
+}
 
 export interface Characteristics {
   memory?: number;

@@ -1,7 +1,7 @@
 <template>
   <MessageBlock
-    v-if="message"
-    :message="message"
+    v-if="messageData?.code"
+    v-bind="messageData"
     class="mb-4"
   />
   <div class="flex flex-col gap-4">
@@ -125,18 +125,18 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { DataMessage } from '@/types'
+import type { BackData } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
   (e: 'log-in'): void;
 }>()
 
-const nickName = ref<string>('')
-const email = ref<string>('')
-const pass1 = ref<string>('')
-const pass2 = ref<string>('')
-const message = ref<DataMessage | null>(null)
+const nickName = ref<string>('nomel')
+const email = ref<string>('nomelnomel@gmail.com')
+const pass1 = ref<string>('qweASD123')
+const pass2 = ref<string>('qweASD123')
+const messageData = ref<BackData>()
 
 const { t } = useI18n()
 
@@ -186,18 +186,18 @@ const validForm = computed(() => {
 
 const { signUp } = useUser()
 const submit = () => {
-  message.value = null
+  messageData.value = {} as BackData
   const userData = {
     nickName: nickName.value,
     email: email.value,
     password: sha256(pass1.value).toString()
   }
-  const { dataMessage, onFetchFinally } = signUp(userData)
+  const { data, onFetchFinally } = signUp(userData)
 
   onFetchFinally(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
 
-    if (message.value && message.value?.status === 'success') {
+    if (data.value && data.value?.status === 'success') {
       setTimeout(() => {
         emits('log-in')
       }, 1000)

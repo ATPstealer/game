@@ -1,8 +1,8 @@
 <template>
   <p class="text-xl mb-4">
     <MessageBlock
-      v-if="message"
-      :message="message"
+      v-if="messageData?.code"
+      v-bind="messageData"
     />
   </p>
   <p v-if="resource">
@@ -97,7 +97,7 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useGetData } from '@/composables/useGetData'
 import { useOrders } from '@/composables/useOrders'
-import { DataMessage } from '@/types'
+import { BackData } from '@/types'
 import { Resource, ResourceType } from '@/types/Resources/index.interface'
 
 interface Props {
@@ -109,7 +109,7 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const amount = ref<number>(0)
 const priceForUnit = ref<number>(0)
 const sell = ref<boolean>(true)
-const message = ref<DataMessage | null>(null)
+const messageData = ref<BackData>()
 const resourceTypes = ref<ResourceType[]>([])
 const resourceTypeId = ref<number>()
 const x = ref<number>(0)
@@ -138,6 +138,8 @@ if (!props.resource) {
 }
 
 const create = () => {
+  messageData.value = {} as BackData
+
   const payload = {
     x: props.resource?.x || x.value,
     y: props.resource?.y || y.value,
@@ -147,12 +149,12 @@ const create = () => {
     sell: sell.value
   }
 
-  const { onFetchResponse, dataMessage } = createOrder(payload)
+  const { data, onFetchResponse } = createOrder(payload)
   onFetchResponse(() => {
-    message.value = dataMessage.value
+    messageData.value = data.value
 
     setTimeout(() => {
-      if (message.value?.status === 'success') {
+      if (data.value?.status === 'success') {
         emits('close')
       }
     }, 2000)

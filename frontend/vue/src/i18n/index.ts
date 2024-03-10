@@ -1,5 +1,7 @@
 import { createI18n } from 'vue-i18n'
+import enCodes from './locales/en-codes.json'
 import en from './locales/en.json'
+import ruCodes from './locales/ru-codes.json'
 import ru from './locales/ru.json'
 
 export default createI18n({
@@ -8,8 +10,8 @@ export default createI18n({
   legacy: false,
   globalInjection: true,
   messages: {
-    en,
-    ru
+    en: { ...en, ...enCodes },
+    ru: { ...ru, ...ruCodes }
   },
   missing: (locale, key) => {
     return key.split('.').pop()
