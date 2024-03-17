@@ -105,7 +105,51 @@ func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGo
 			},
 		},
 		options.Update().SetUpsert(true))
+	if err != nil {
+		return err
+	}
+
+	log.Println("asdasd")
+	index := getIdPosition(building.Goods, payload.ResourceTypeId)
+	log.Println(index)
+	if index == -1 {
+		newGoodsPrice := Goods{
+			ResourceTypeId: payload.ResourceTypeId,
+			Price:          payload.Price,
+			SellSum:        0,
+			Revenue:        0,
+			SellStarted:    time.Now(),
+			Status:         Selling,
+		}
+		newGoodsArr := []Goods{newGoodsPrice}
+		if building.Goods != nil {
+			newGoodsArr = append(*building.Goods, newGoodsPrice)
+		}
+		building.Goods = &newGoodsArr
+	} else {
+		(*building.Goods)[index].Price = payload.Price
+		(*building.Goods)[index].SellStarted = time.Now()
+		(*building.Goods)[index].Status = Selling
+	}
+	log.Println("6")
+
+	_, err = m.Collection("buildings").UpdateOne(ctx,
+		bson.M{"_id": building.Id},
+		bson.M{"$set": building})
+
 	return err
+}
+
+func getIdPosition(goodsArr *[]Goods, typeId uint) int {
+	if goodsArr == nil {
+		return -1
+	}
+	for i, v := range *goodsArr {
+		if v.ResourceTypeId == typeId {
+			return i
+		}
+	}
+	return -1
 }
 
 type StoreGoodsWithData struct {

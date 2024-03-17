@@ -55,11 +55,16 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 	now := time.Now()
 	end := now.Add(payload.Duration)
 
+	prod := Prod{
+		BlueprintId: payload.BlueprintId,
+	}
+
 	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
 		"$set": bson.M{
 			"status":      ProductionStatus,
 			"workStarted": now,
 			"workEnd":     end,
+			"prod":        &prod,
 		},
 	})
 	if err != nil {

@@ -60,7 +60,6 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 		}
 	}
 
-	log.Println(price)
 	if err := AddResource(m, logisticPayload.ResourceTypeId, userId, logisticPayload.FromX, logisticPayload.FromY, (-1)*logisticPayload.Amount); err != nil {
 		return err
 	}

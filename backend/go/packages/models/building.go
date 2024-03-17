@@ -36,6 +36,21 @@ type Building struct {
 	Salary      float64            `json:"salary" bson:"salary"`
 	Workers     int                `json:"workers" bson:"workers"`
 	OnStrike    bool               `json:"onStrike" bson:"onStrike"`
+	Prod        *Prod              `json:"prod" bson:"prod"`
+	Goods       *[]Goods           `json:"goods" bson:"goods"`
+}
+
+type Prod struct {
+	BlueprintId uint `json:"blueprintId" bson:"blueprintId"`
+}
+
+type Goods struct {
+	ResourceTypeId uint             `json:"resourceTypeId" bson:"resourceTypeId"`
+	Price          float64          `json:"price" bson:"price"`
+	SellSum        int              `json:"sellSum" bson:"sellSum"`
+	Revenue        float64          `json:"revenue" bson:"revenue"`
+	SellStarted    time.Time        `json:"sellStarted" bson:"sellStarted"`
+	Status         StoreGoodsStatus `json:"status" bson:"status"`
 }
 
 type ConstructBuildingPayload struct {
@@ -87,6 +102,8 @@ func CreateBuilding(m *mongo.Database, userId primitive.ObjectID, payload Constr
 		HiringNeeds: 0,
 		Salary:      0,
 		Workers:     0,
+		Prod:        nil,
+		Goods:       nil,
 	}
 
 	_, err := m.Collection("buildings").InsertOne(ctx, building)
@@ -123,6 +140,8 @@ type BuildingWithData struct {
 	OnStrike     bool               `json:"onStrike"`
 	BuildingType BuildingType       `json:"buildingType"`
 	NickName     string             `json:"nickName"`
+	Prod         *Prod              `json:"prod"`
+	Goods        *[]Goods           `json:"goods"`
 }
 
 func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]BuildingWithData, error) {

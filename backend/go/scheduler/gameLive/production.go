@@ -99,6 +99,7 @@ func StopWork(m *mongo.Database) {
 			{"status", models.ReadyStatus},
 			{"workEnd", nil},
 			{"workStarted", nil},
+			{"prod", nil},
 		}},
 	}
 	_, err := m.Collection("buildings").UpdateMany(ctx, filter, update)

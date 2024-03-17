@@ -20,10 +20,10 @@ import { computed, Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
-import type { Characteristics } from '@/types'
+import type {Characteristics, User} from '@/types'
 
 const { t } = useI18n()
-const { data, isFetching } = useGetData('/user/data')
+const { data, isFetching } = useGetData<User>('/user/data')
 
 const characteristics: Ref<Characteristics> = computed(() => {
   return {
