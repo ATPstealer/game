@@ -437,3 +437,59 @@ func BuildingSetWorkStarted(m *mongo.Database, buildingId primitive.ObjectID, ti
 		bson.M{"$set": bson.M{"workStarted": timeStart}})
 	return err
 }
+
+type StartWorkPayload struct {
+	BuildingId  primitive.ObjectID
+	BlueprintId uint
+	Duration    time.Duration
+}
+
+func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, payload.BuildingId)
+	if err != nil {
+		log.Println("Can't find buildings: " + err.Error())
+		return err
+	}
+	if building.Status != ReadyStatus {
+		return errors.New("Building not ready. Status is " + string(building.Status))
+	}
+	if building.UserId != userId {
+		err := errors.New("this building don't belong you")
+		log.Println(err)
+		return err
+	}
+	blueprintResult, err := GetBlueprintById(m, payload.BlueprintId)
+	if err != nil {
+		log.Println("invalid blueprint" + err.Error())
+		return err
+	}
+	if blueprintResult.ProducedInId != building.TypeId {
+		err := errors.New("can't product it here")
+		log.Println(err)
+		return err
+	}
+	log.Println(building.WorkStarted)
+	now := time.Now()
+	end := now.Add(payload.Duration)
+
+	production := Production{
+		BlueprintId: payload.BlueprintId,
+	}
+
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
+		"$set": bson.M{
+			"status":      ProductionStatus,
+			"workStarted": now,
+			"workEnd":     end,
+			"production":  &production,
+		},
+	})
+	if err != nil {
+		log.Println("Failed to update building: " + err.Error())
+		return err
+	}
+	return nil
+}
