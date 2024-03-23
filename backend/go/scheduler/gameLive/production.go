@@ -10,7 +10,7 @@ import (
 )
 
 func Production(m *mongo.Database) {
-	productions, err := models.GetProduction(m)
+	buildings, err := models.GetProduction(m)
 	if err != nil {
 		log.Println("Can't get productions: " + err.Error())
 		return
@@ -18,33 +18,34 @@ func Production(m *mongo.Database) {
 
 	blueprints, err := models.GetBlueprints(m, 0)
 	if err != nil {
-		log.Println(err)
+		log.Println("Can't get blueprints: " + err.Error())
+		return
 	}
 
 	now := time.Now()
-	for _, production := range productions {
-		if !models.CheckEnoughStorage(m, production.Building.UserId, production.Building.X, production.Building.Y, 0) {
-			if err := models.BuildingStatusUpdate(m, production.Building.Id, models.StorageNeededStatus); err != nil {
+	for _, building := range buildings {
+		if !models.CheckEnoughStorage(m, building.UserId, building.X, building.Y, 0) {
+			if err := models.BuildingStatusUpdate(m, building.Id, models.StorageNeededStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
-			if err := models.ProductionSetWorkStarted(m, production.Id, now); err != nil {
+			if err := models.BuildingSetWorkStarted(m, building.Id, now); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 			continue
 		}
-		workTime := now.Sub(production.WorkStarted).Seconds()
-		blueprint := blueprints[production.BlueprintId-1]
+		workTime := now.Sub(building.WorkStarted).Seconds()
+		blueprint := blueprints[building.Production.BlueprintId-1]
 
 		// Formula of production pace
-		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * float64(production.Building.Workers) / float64(production.BuildingType.Workers)) // here the level and square are taken into account through workers
-		blueprintCycles := float64(productionCycles) * float64(production.BuildingType.Workers) / float64(production.Building.Workers)
+		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * float64(building.Workers) / float64(building.BuildingType.Workers)) // here the level and square are taken into account through workers
+		blueprintCycles := float64(productionCycles) * float64(building.BuildingType.Workers) / float64(building.Workers)
 
 		if productionCycles == 0 {
 			continue
 		}
 
-		if production.Building.OnStrike {
-			if err := models.ProductionSetWorkStarted(m, production.Id, now); err != nil {
+		if building.OnStrike {
+			if err := models.BuildingSetWorkStarted(m, building.Id, now); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 			continue
@@ -52,11 +53,11 @@ func Production(m *mongo.Database) {
 
 		enoughResources := true
 		for _, resource := range blueprint.UsedResources {
-			if !models.CheckEnoughResources(m, resource.ResourceId, production.Building.UserId, production.Building.X, production.Building.Y, resource.Amount*float64(productionCycles)) {
-				if err := models.BuildingStatusUpdate(m, production.Building.Id, models.ResourcesNeededStatus); err != nil {
+			if !models.CheckEnoughResources(m, resource.ResourceId, building.UserId, building.X, building.Y, resource.Amount*float64(productionCycles)) {
+				if err := models.BuildingStatusUpdate(m, building.Id, models.ResourcesNeededStatus); err != nil {
 					log.Println("Can't update building status: " + err.Error())
 				}
-				if err := models.ProductionSetWorkStarted(m, production.Id, now); err != nil {
+				if err := models.BuildingSetWorkStarted(m, building.Id, now); err != nil {
 					log.Println("Can't update production start time: " + err.Error())
 				}
 				enoughResources = false
@@ -66,22 +67,22 @@ func Production(m *mongo.Database) {
 
 		if enoughResources {
 			for _, resource := range blueprint.UsedResources {
-				if err := models.AddResource(m, resource.ResourceId, production.Building.UserId, production.Building.X,
-					production.Building.Y, (-1)*resource.Amount*float64(productionCycles)); err != nil {
+				if err := models.AddResource(m, resource.ResourceId, building.UserId, building.X,
+					building.Y, (-1)*resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
 			}
 			for _, resource := range blueprint.ProducedResources {
-				if err := models.AddResource(m, resource.ResourceId, production.Building.UserId, production.Building.X,
-					production.Building.Y, resource.Amount*float64(productionCycles)); err != nil {
+				if err := models.AddResource(m, resource.ResourceId, building.UserId, building.X,
+					building.Y, resource.Amount*float64(productionCycles)); err != nil {
 					log.Println("Can't add resources: " + err.Error())
 				}
 			}
-			if err := models.BuildingStatusUpdate(m, production.Building.Id, models.ProductionStatus); err != nil {
+			if err := models.BuildingStatusUpdate(m, building.Id, models.ProductionStatus); err != nil {
 				log.Println("Can't update building status: " + err.Error())
 			}
-			newWorkStarted := production.WorkStarted.Add(time.Duration(blueprintCycles) * blueprint.ProductionTime)
-			if err := models.ProductionSetWorkStarted(m, production.Id, newWorkStarted); err != nil {
+			newWorkStarted := building.WorkStarted.Add(time.Duration(blueprintCycles * float64(blueprint.ProductionTime)))
+			if err := models.BuildingSetWorkStarted(m, building.Id, newWorkStarted); err != nil {
 				log.Println("Can't update production start time: " + err.Error())
 			}
 		}
@@ -99,7 +100,7 @@ func StopWork(m *mongo.Database) {
 			{"status", models.ReadyStatus},
 			{"workEnd", nil},
 			{"workStarted", nil},
-			{"prod", nil},
+			{"production", nil},
 		}},
 	}
 	_, err := m.Collection("buildings").UpdateMany(ctx, filter, update)

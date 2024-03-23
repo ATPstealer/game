@@ -36,11 +36,11 @@ type Building struct {
 	Salary      float64            `json:"salary" bson:"salary"`
 	Workers     int                `json:"workers" bson:"workers"`
 	OnStrike    bool               `json:"onStrike" bson:"onStrike"`
-	Prod        *Prod              `json:"prod" bson:"prod"`
+	Production  *Production        `json:"production" bson:"production"`
 	Goods       *[]Goods           `json:"goods" bson:"goods"`
 }
 
-type Prod struct {
+type Production struct {
 	BlueprintId uint `json:"blueprintId" bson:"blueprintId"`
 }
 
@@ -102,7 +102,7 @@ func CreateBuilding(m *mongo.Database, userId primitive.ObjectID, payload Constr
 		HiringNeeds: 0,
 		Salary:      0,
 		Workers:     0,
-		Prod:        nil,
+		Production:  nil,
 		Goods:       nil,
 	}
 
@@ -140,7 +140,7 @@ type BuildingWithData struct {
 	OnStrike     bool               `json:"onStrike"`
 	BuildingType BuildingType       `json:"buildingType"`
 	NickName     string             `json:"nickName"`
-	Prod         *Prod              `json:"prod"`
+	Production   *Production        `json:"production"`
 	Goods        *[]Goods           `json:"goods"`
 }
 
@@ -390,4 +390,50 @@ func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
 	var buildings []Building
 	err = cursor.All(ctx, &buildings)
 	return buildings, err
+}
+
+func GetProduction(m *mongo.Database) ([]BuildingWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{
+		{"workEnd", bson.D{{"$gt", time.Now()}}},
+		{"production", bson.D{{"$ne", nil}}},
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return nil, err
+	}
+
+	var buildingWithData []BuildingWithData
+	if err = cursor.All(ctx, &buildingWithData); err != nil {
+		log.Println(err)
+	}
+	return buildingWithData, nil
+}
+
+func BuildingSetWorkStarted(m *mongo.Database, buildingId primitive.ObjectID, timeStart time.Time) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx,
+		bson.M{"_id": buildingId},
+		bson.M{"$set": bson.M{"workStarted": timeStart}})
+	return err
 }
