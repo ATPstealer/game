@@ -7,6 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
 )
@@ -492,4 +493,93 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 		return err
 	}
 	return nil
+}
+
+func GetBuildingsGoods(m *mongo.Database) ([]BuildingWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{
+		{"workEnd", bson.D{{"$gt", time.Now()}}},
+		{"goods", bson.D{{"$ne", nil}}},
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return nil, err
+	}
+
+	var buildingWithData []BuildingWithData
+	if err = cursor.All(ctx, &buildingWithData); err != nil {
+		log.Println(err)
+	}
+	return buildingWithData, nil
+}
+
+func BuildingGoodsStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, status StoreGoodsStatus) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{{"_id", buildingId}}
+	update := bson.D{{"$set", bson.D{{"goods.$[elem].status", status}}}}
+	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"elem.resourceTypeId", resourceTypeId}},
+		},
+	})
+
+	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
+	return err
+}
+
+func BuildingSetSellStarted(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, timeStart time.Time) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{{"_id", buildingId}}
+	update := bson.D{{"$set", bson.D{{"goods.$[elem].sellStarted", timeStart}}}}
+	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"elem.resourceTypeId", resourceTypeId}},
+		},
+	})
+
+	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
+	return err
+}
+
+func BuildingGoodsStatsUpdate(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, sellSum int, revenue float64) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{{"_id", buildingId}}
+	update := bson.D{{"$set",
+		bson.D{
+			{"goods.$[elem].sellSum", sellSum},
+			{"goods.$[elem].revenue", revenue},
+		},
+	}}
+	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"elem.resourceTypeId", resourceTypeId}},
+		},
+	})
+
+	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
+	return err
 }

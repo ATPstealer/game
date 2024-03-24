@@ -41,7 +41,7 @@ func resetEvolutionPrices(m *mongo.Database) {
 			"revenueSum": 0,
 		},
 	}
-	_, err := m.Collection("evolutionPriceS").UpdateMany(ctx, filter, update)
+	_, err := m.Collection("evolutionPrices").UpdateMany(ctx, filter, update)
 	if err != nil {
 		log.Println(err)
 	}
