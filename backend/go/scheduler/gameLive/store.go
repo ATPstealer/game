@@ -60,7 +60,6 @@ func StoreSell(m *mongo.Database) {
 
 			if evolutionPrices[epIndex].RevenueSum >= evolutionPrices[epIndex].SpendMax {
 				if goods.Status != models.SpendingLimitReached {
-					/// TODO: проверить что BuildingGoodsStatusUpdate вообще работает
 					if err := models.BuildingGoodsStatusUpdate(m, building.Id, goods.ResourceTypeId, models.SpendingLimitReached); err != nil {
 						log.Println("Can't update Goods status: " + err.Error())
 					}
