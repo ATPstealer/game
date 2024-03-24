@@ -22,6 +22,7 @@ export interface Building {
   workers: number;
   onStrike: boolean;
   buildingType: BuildingType;
+  goods: Goods[];
 }
 
 export interface BuildingType {
@@ -56,11 +57,10 @@ export interface SearchBuildingParams {
 }
 
 export interface Goods {
-  id: number;
-  buildingId: number;
   resourceTypeId: number;
   price: number;
   sellSum: number;
   revenue: number;
   status: string;
+  sellStarted: string;
 }

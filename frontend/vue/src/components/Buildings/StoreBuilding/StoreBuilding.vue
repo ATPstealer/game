@@ -80,17 +80,19 @@ interface Props {
 
 const props = defineProps<Props>()
 const resourcesTypes = ref<ResourceType[]>([])
-const goods = ref<Goods[]>([])
+const updatedBuilding = ref<Building>(props.building)
 
 const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData<ResourceType[]>('/resource/types')
 onFetchResponse(() => {
   resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingType.buildingSubGroup)
 })
 
-const { data: goodsData, onFetchResponse: onGoodsResponse, execute: executeGoods } = useGetData<Goods[]>(`/store/goods/get?buildingId=${ props.building._id}`)
-onGoodsResponse(() => {
-  goods.value = goodsData.value
-})
+const executeBuildingUpdate = () => {
+  const { data: building, onFetchResponse } = useGetData<Building[]>(`/building/my?_id=${  props.building._id}`)
+  onFetchResponse(() => {
+    updatedBuilding.value = building.value[0]
+  })
+}
 
 const tableData = computed(() => {
   return resourcesTypes.value.map(item => {
@@ -104,9 +106,10 @@ const tableData = computed(() => {
     }
   })
 })
+
 const getGoodsData = (id: number) => {
-  if (goods.value) {
-    return goods.value.find(item => item.resourceTypeId === id)
+  if (updatedBuilding.value.goods) {
+    return updatedBuilding.value.goods.find(item => item.resourceTypeId === id)
   }
 
   return null
@@ -122,7 +125,7 @@ const onCellEditComplete = (event) => {
   const { onFetchResponse } = setPrice(payload)
 
   onFetchResponse(() => {
-    executeGoods()
+    executeBuildingUpdate()
   })
 }
 
