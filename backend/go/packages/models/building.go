@@ -567,6 +567,8 @@ func BuildingGoodsStatsUpdate(m *mongo.Database, buildingId primitive.ObjectID, 
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
+	log.Println(buildingId, resourceTypeId, sellSum, revenue)
+
 	filter := bson.D{{"_id", buildingId}}
 	update := bson.D{{"$set",
 		bson.D{

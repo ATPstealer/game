@@ -14,19 +14,20 @@ func ResetStats(m *mongo.Database) {
 }
 
 func resetStores(m *mongo.Database) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	filter := bson.M{}
-	update := bson.M{
-		"$set": bson.M{
-			"sellSum": 0,
-			"revenue": 0,
+	filter := bson.D{{"goods", bson.D{{"$ne", nil}}}}
+	update := bson.D{
+		{"$set",
+			bson.D{
+				{"goods.$[].sellSum", 0},
+				{"goods.$[].revenue", 0},
+			},
 		},
 	}
-	_, err := m.Collection("storeGoods").UpdateMany(ctx, filter, update)
-	if err != nil {
-		log.Println(err)
+	if _, err := m.Collection("buildings").UpdateOne(ctx, filter, update); err != nil {
+		log.Println("Can't reset store Goods stats: " + err.Error())
 	}
 }
 

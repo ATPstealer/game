@@ -105,10 +105,11 @@ func StoreSell(m *mongo.Database) {
 				continue
 			}
 
-			err = models.AddResource(m, goods.ResourceTypeId, building.UserId,
+			log.Println(goods.ResourceTypeId, building.UserId,
 				building.X, building.Y, (-1)*float64(sellCycles))
-			if err != nil {
-				log.Println(err.Error())
+			if err := models.AddResource(m, goods.ResourceTypeId, building.UserId,
+				building.X, building.Y, (-1)*float64(sellCycles)); err != nil {
+				log.Println("Can't update resources: " + err.Error())
 			}
 
 			err = models.AddMoney(m, building.UserId, goods.Price*float64(sellCycles))
