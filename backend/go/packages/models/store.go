@@ -55,7 +55,6 @@ func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGo
 		return errors.New("can't sell here")
 	}
 
-	// TODO: это можно упростить
 	index := getIdPosition(building.Goods, payload.ResourceTypeId)
 	if index == -1 {
 		newGoodsPrice := Goods{

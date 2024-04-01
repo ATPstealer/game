@@ -35,7 +35,6 @@
           {{ data[field] ? moneyFormat(data[field]) : t('buildings.store.setPrice') }}
         </span>
       </template>
-      <!--  TODO: сделать чтобы не разъезжалось и были ровыне поля при редактировании цены -->>
       <template #editor="{ data, field }">
         <InputNumber
           v-model="data[field]"

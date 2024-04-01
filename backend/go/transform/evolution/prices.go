@@ -72,7 +72,7 @@ func getAveragePrice(demand float64, cellGoods []models.Goods) float64 {
 	sort(&cellGoods)
 	soldGoodsCount := float64(0)
 	revenueCount := float64(0)
-	for _, cg := range cellGoods { // TODO: сделать статус забастовка
+	for _, cg := range cellGoods {
 		if cg.Status == "OnStrike" {
 			continue
 		}
@@ -135,24 +135,12 @@ func SaveEvolutionPrices(m *mongo.Database, evolutionPrices *[]models.EvolutionP
 
 	for _, price := range *evolutionPrices {
 		filter := bson.M{"x": price.X, "y": price.Y, "resourceTypeID": price.ResourceTypeId}
-		update := bson.M{
-			"$set": bson.M{
-				"priceAverage": price.PriceAverage,
-				"demand":       price.Demand,
-				"sellSum":      price.SellSum,
-				"revenueSum":   price.RevenueSum,
-			},
-			"$setOnInsert": bson.M{
-				"x":              price.X,
-				"y":              price.Y,
-				"resourceTypeId": price.ResourceTypeId,
-			},
-		}
-
+		update := bson.M{"$set": price}
 		_, err := m.Collection("evolutionPrices").UpdateOne(ctx, filter, update,
 			options.Update().SetUpsert(true))
 		if err != nil {
-			log.Println(err)
+			log.Fatalln("Can't update Evolution Price cell", price.X, ":", price.Y, " resource ID ",
+				price.ResourceTypeId, ": ", err)
 		}
 	}
 }
