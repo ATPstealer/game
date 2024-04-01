@@ -57,7 +57,6 @@ func MakeRouter() *gin.Engine {
 	storage.GET("/my", controllers.GetMyStorages)
 
 	store := router.Group("/api/v2/store")
-	store.GET("/goods/get", controllers.GetStoreGoods)
 	store.Use(AuthMiddleware())
 	store.POST("/goods/set", controllers.SetStoreGoods)
 

@@ -8,21 +8,6 @@ import (
 	"net/http"
 )
 
-func GetStoreGoods(c *gin.Context) {
-	buildingId, err := include.StrToPrimObjId(c, c.Query("buildingId"))
-	if err != nil {
-		return
-	}
-
-	storePrices, err := models.GetStoreGoods(db.M, buildingId)
-
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get store prices: " + err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": storePrices})
-}
-
 func SetStoreGoods(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
