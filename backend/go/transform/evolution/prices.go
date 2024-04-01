@@ -21,7 +21,7 @@ func CellAveragePrices(m *mongo.Database) {
 		log.Fatalln(err)
 	}
 
-	storeGoods, err := models.GetAllStoreGoodsWithData(m)
+	stores, err := models.GetBuildingsStores(m)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -37,7 +37,11 @@ func CellAveragePrices(m *mongo.Database) {
 				continue
 			}
 			demand := resourceType.Demand * cell.Population
-			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.Id, &storeGoods)
+			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.Id, &stores)
+			if cell.X == 0 && cell.Y == 0 {
+				log.Println(cellGoods, demand)
+
+			}
 			averagePrice := getAveragePrice(demand, cellGoods)
 			addOrChangeEvolutionPrice(&evolutionPrices, cell.X, cell.Y, resourceType.Id, averagePrice, demand)
 		}
@@ -45,25 +49,31 @@ func CellAveragePrices(m *mongo.Database) {
 	SaveEvolutionPrices(m, &evolutionPrices)
 }
 
-func findCellGoods(x int, y int, resourceTypeID uint, storeGoods *[]models.StoreGoodsWithData) []models.StoreGoodsWithData {
-	var cellGoods []models.StoreGoodsWithData
-	for _, sg := range *storeGoods {
-		if sg.Building.X == x && sg.Building.Y == y && sg.ResourceTypeId == resourceTypeID {
-			cellGoods = append(cellGoods, sg)
+func findCellGoods(x int, y int, resourceTypeID uint, stores *[]models.BuildingWithData) []models.Goods {
+	var cellGoods []models.Goods
+	for _, s := range *stores {
+		if s.X != x || s.Y != y || s.Goods == nil {
+			continue
+		}
+		for _, sg := range *s.Goods {
+			if sg.ResourceTypeId == resourceTypeID {
+				cellGoods = append(cellGoods, sg)
+				break
+			}
 		}
 	}
 	return cellGoods
 }
 
-func getAveragePrice(demand float64, cellGoods []models.StoreGoodsWithData) float64 {
+func getAveragePrice(demand float64, cellGoods []models.Goods) float64 {
 	if len(cellGoods) == 0 || !goodsPriceExist(cellGoods) {
-		return 1 // Price for start selling
+		return 1 // TODO: Можно в этом случае брать цены как средняя от соседей
 	}
 	sort(&cellGoods)
 	soldGoodsCount := float64(0)
 	revenueCount := float64(0)
-	for _, cg := range cellGoods {
-		if cg.Building.OnStrike {
+	for _, cg := range cellGoods { // TODO: сделать статус забастовка
+		if cg.Status == "OnStrike" {
 			continue
 		}
 		if soldGoodsCount+float64(cg.SellSum) <= demand {
@@ -80,7 +90,7 @@ func getAveragePrice(demand float64, cellGoods []models.StoreGoodsWithData) floa
 	return revenueCount / soldGoodsCount
 }
 
-func goodsPriceExist(cellGoods []models.StoreGoodsWithData) bool {
+func goodsPriceExist(cellGoods []models.Goods) bool {
 	for _, cg := range cellGoods {
 		if cg.SellSum != 0 {
 			return true
@@ -89,7 +99,7 @@ func goodsPriceExist(cellGoods []models.StoreGoodsWithData) bool {
 	return false
 }
 
-func sort(cellGoods *[]models.StoreGoodsWithData) {
+func sort(cellGoods *[]models.Goods) {
 	for j := 0; j < len(*cellGoods); j++ {
 		for k := j + 1; k < len(*cellGoods); k++ {
 			if (*cellGoods)[j].Revenue/float64((*cellGoods)[j].SellSum) > (*cellGoods)[k].Revenue/float64((*cellGoods)[k].SellSum) {

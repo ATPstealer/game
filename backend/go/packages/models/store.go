@@ -20,6 +20,7 @@ const (
 	NotEnoughMinerals    StoreGoodsStatus = "NotEnoughMinerals"
 	SpendingLimitReached StoreGoodsStatus = "SpendingLimitReached"
 	CapacityReached      StoreGoodsStatus = "CapacityReached"
+	OnStrike             StoreGoodsStatus = "OnStrike"
 )
 
 type StoreGoods struct {

@@ -13,7 +13,7 @@ import (
 
 // TODO: хотябы разбей это говно на функции
 func StoreSell(m *mongo.Database) {
-	buildingsGoods, err := models.GetBuildingsGoods(m)
+	buildingsGoods, err := models.GetBuildingsStores(m)
 	log.Println(buildingsGoods)
 	if err != nil {
 		log.Println("Can't get Buildings Goods: " + err.Error())
@@ -31,6 +31,14 @@ func StoreSell(m *mongo.Database) {
 	for _, building := range buildingsGoods {
 		for _, goods := range *building.Goods {
 			if goods.Price == 0 {
+				continue
+			}
+			if building.OnStrike {
+				if goods.Status != models.OnStrike {
+					if err := models.BuildingGoodsStatusUpdate(m, building.Id, goods.ResourceTypeId, models.OnStrike); err != nil {
+						log.Println("Can't update Goods status: " + err.Error())
+					}
+				}
 				continue
 			}
 			log.Println(goods)

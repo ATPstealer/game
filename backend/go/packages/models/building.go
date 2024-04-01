@@ -495,7 +495,7 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 	return nil
 }
 
-func GetBuildingsGoods(m *mongo.Database) ([]BuildingWithData, error) {
+func GetBuildingsStores(m *mongo.Database) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
