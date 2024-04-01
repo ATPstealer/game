@@ -15,14 +15,12 @@ import (
 func StoreSell(m *mongo.Database) {
 	buildingsGoods, err := models.GetBuildingsStores(m)
 	if err != nil {
-		log.Println("Can't get Buildings Goods: " + err.Error())
-		return
+		log.Fatalln("Can't get Buildings Goods: " + err.Error())
 	}
 
 	evolutionPrices, err := models.GetAllEvolutionPrices(m)
 	if err != nil {
-		log.Println("Can't get Evolution Prices: " + err.Error())
-		return
+		log.Fatalln("Can't get Evolution Prices: " + err.Error())
 	}
 
 	now := time.Now()
@@ -54,14 +52,14 @@ func StoreSell(m *mongo.Database) {
 			workTime := now.Sub(goods.SellStarted).Seconds()
 			storeCapacity := building.BuildingType.Capacity * float64(building.Workers) / float64(building.BuildingType.Workers) // square and level in Workers count
 			daySells := daySellCalc(goods.Price, evolutionPrices[epIndex].PriceAverage, storeCapacity)
-			oneSellTime := time.Second * time.Duration(24*60*60/daySells) // TODO: проверить что здесь нормальные секунды
-			log.Println(oneSellTime)
+
 			if daySells < 1 {
 				statusUpdate(m, building.Id, &goods, models.HighPrice)
 				continue
 			}
+
+			oneSellTime := time.Second * time.Duration(24*60*60/daySells)
 			sellCycles := int(daySells * workTime / (24 * 60 * 60))
-			log.Println(sellCycles)
 			if sellCycles == 0 {
 				continue
 			}

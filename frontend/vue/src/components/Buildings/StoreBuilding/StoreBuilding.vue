@@ -40,6 +40,8 @@
         <InputNumber
           v-model="data[field]"
           autofocus
+          minFractionDigits="2"
+          maxFractionDigits="2"
           input-class="!p-2 !w-1/2"
           class="!w-1/2"
         />
