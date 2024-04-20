@@ -24,7 +24,7 @@ export const useOrders = () => {
       // @ts-expect-error
       const p = new URLSearchParams(params).toString()
 
-      return `/market/order/get?${p}&order_field=priceForUnit&order=-1`
+      return `/market/order/get?${p}&orderField=priceForUnit&order=-1`
     })
 
     const { data, onFetchResponse, execute } = useMyFetch(url,

@@ -23,7 +23,7 @@ export interface ResourceType {
 export interface MarketParams {
   x?: number;
   y?: number;
-  resource_type_id: number;
+  resourceTypeId: number;
   trigger?: number;
 }
 

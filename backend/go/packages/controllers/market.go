@@ -55,8 +55,8 @@ func GetOrders(c *gin.Context) {
 		}
 		findOrdersParams.Id = &id
 	}
-	if c.Query("user_id") != "" {
-		userID, err := include.StrToPrimObjId(c, c.Query("user_id")) // TODO: fix it
+	if c.Query("userId") != "" {
+		userID, err := include.StrToPrimObjId(c, c.Query("userId"))
 		if err != nil {
 			return
 		}
@@ -76,8 +76,8 @@ func GetOrders(c *gin.Context) {
 		}
 		findOrdersParams.Y = &y
 	}
-	if c.Query("resource_type_id") != "" {
-		resourceTypeID, err := include.StrToUInt(c, c.Query("resource_type_id")) // TODO: fix it
+	if c.Query("resourceTypeId") != "" {
+		resourceTypeID, err := include.StrToUInt(c, c.Query("resourceTypeId"))
 		if err != nil {
 			return
 		}
@@ -104,8 +104,8 @@ func GetOrders(c *gin.Context) {
 		}
 		findOrdersParams.Order = &order
 	}
-	if c.Query("order_field") != "" {
-		orderField := c.Query("order_field")
+	if c.Query("orderField") != "" {
+		orderField := c.Query("orderField")
 		findOrdersParams.OrderField = &orderField
 	}
 	if c.Query("page") != "" {

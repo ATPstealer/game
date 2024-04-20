@@ -2,7 +2,6 @@ import axios, { AxiosError } from 'axios'
 import config from '../config'
 import { IResponse, Message } from '../models'
 
-// v1/market/order/create?resource_type_id=3&x=1&y=0&amount=100&price_for_unit=100&sell=true
 export const createOrder = async (
   resourceTypeID: number,
   amount: number,

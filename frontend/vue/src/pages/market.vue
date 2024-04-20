@@ -37,7 +37,7 @@
         :option-label="event => t(`resources.types.${event.name.toLowerCase()}`)"
         option-value="id"
         v-model="currentResource"
-        @change="event => setParams({key: 'resource_type_id', value: event.value})"
+        @change="event => setParams({key: 'resourceTypeId', value: event.value})"
       />
       <Button :label="t('common.reset')" @click="reset" />
       <Button
@@ -97,7 +97,7 @@ const setParams = ({ key, value }: {key: string; value: number}) => {
   delete params.value.trigger
 
   if (!currentResource.value) {
-    delete params.value.resource_type_id
+    delete params.value.resourceTypeId
   }
 }
 

@@ -219,16 +219,15 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 	}}}
 
 	sort := bson.D{}
+	sortStage := bson.D{}
 
 	if findOrderParams.OrderField != nil {
 		if findOrderParams.Order != nil {
-			sort = append(filter, bson.E{Key: *findOrderParams.OrderField, Value: *findOrderParams.Order})
+			sort = append(sort, bson.E{Key: *findOrderParams.OrderField, Value: *findOrderParams.Order})
 		} else {
-			sort = append(filter, bson.E{Key: *findOrderParams.OrderField, Value: 1})
+			sort = append(sort, bson.E{Key: *findOrderParams.OrderField, Value: 1})
 		}
 	}
-
-	sortStage := bson.D{}
 
 	if len(sort) != 0 {
 		sortStage = bson.D{{"$sort", sort}}
