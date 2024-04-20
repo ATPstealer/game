@@ -59,7 +59,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": token})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "code": -4, "data": token})
 }
 
 func GetUserData(c *gin.Context) {
