@@ -29,6 +29,13 @@ type Characteristics struct {
 	Planning     int `json:"planning" bson:"planning"`
 }
 
+type UserPayload struct {
+	NickName string `json:"nickName"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	TTL      int    `json:"ttl"`
+}
+
 func CreateUser(m *mongo.Database, nickName string, email string, password string) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()

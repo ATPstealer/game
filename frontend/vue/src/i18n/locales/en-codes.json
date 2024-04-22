@@ -9,10 +9,9 @@
     "2": "Can't create user. Unexpected error",
     "3": "User with nickname %nickName already exists",
     "4": "User with email %email already exists",
-    "5": "Can't get user data from POST body",
-    "6": "Can't get user from database",
+    "6": "Can't find user in database. Check nickname",
     "7": "Wrong password",
-    "8": "Can't create token",
+    "8": "Can't create token. Try again",
     "9": "Token cookie is required",
     "10": "Token incorrect",
     "11": "Can't get blueprints",
@@ -20,6 +19,12 @@
     "13": "Can't get users",
     "14": "In this building, people will suffer from lack of air",
     "15": "Can't get Cell Owners",
-    "16": "Can't buy land"
+    "16": "Can't buy land",
+
+
+    "100001": "Database error",
+    "100002": "Can't read request POST body",
+    "100003": "Can't parse POST data",
+    "100004": "Can't get user by ID"
   }
 }

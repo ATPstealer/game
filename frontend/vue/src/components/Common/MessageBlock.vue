@@ -1,6 +1,6 @@
 <template>
   <Message
-    :severity="status === 'success'? 'success' : 'error'"
+    :severity="code <= 0 ? 'success' : 'error'"
     :pt="{
       wrapper: {
         class: '!p-2'
