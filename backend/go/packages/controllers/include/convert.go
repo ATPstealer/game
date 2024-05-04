@@ -12,7 +12,7 @@ func StrToInt(c *gin.Context, str string) (int, error) {
 	number, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
 		log.Println("Can't parse string as int: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as int: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100005, "text": "Can't parse string as int: " + err.Error()})
 		c.Abort()
 		return 0, err
 	}
@@ -23,18 +23,18 @@ func StrToFloat64(c *gin.Context, str string) (float64, error) {
 	number, err := strconv.ParseFloat(str, 32)
 	if err != nil {
 		log.Println("Can't parse string as float64 : " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as float64 : " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100006, "text": "Can't parse string as float64 : " + err.Error()})
 		c.Abort()
 		return 0, err
 	}
-	return float64(number), nil
+	return number, nil
 }
 
 func StrToUInt(c *gin.Context, str string) (uint, error) {
 	number, err := strconv.ParseUint(str, 10, 64)
 	if err != nil {
 		log.Println("Can't parse string as uint : " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as uint : " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100007, "text": "Can't parse string as uint : " + err.Error()})
 		c.Abort()
 		return 0, err
 	}
@@ -45,7 +45,7 @@ func StrToBool(c *gin.Context, str string) (bool, error) {
 	boolean, err := strconv.ParseBool(str)
 	if err != nil {
 		log.Println("Can't parse string as boolean : " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't parse string as boolean : " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100008, "text": "Can't parse string as boolean : " + err.Error()})
 		c.Abort()
 		return false, err
 	}
@@ -56,7 +56,7 @@ func StrToPrimObjId(c *gin.Context, str string) (primitive.ObjectID, error) {
 	objectID, err := primitive.ObjectIDFromHex(str)
 	if err != nil {
 		log.Println("Can't parse string as objectID : " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't parse string as uint : " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100009, "text": "Can't parse string as uint : " + err.Error()})
 		c.Abort()
 		return primitive.NilObjectID, err
 	}

@@ -4,10 +4,9 @@ import (
 	"backend/packages/controllers/include"
 	"backend/packages/db"
 	"backend/packages/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
+	"strings"
 )
 
 func CreateOrder(c *gin.Context) {
@@ -24,13 +23,19 @@ func CreateOrder(c *gin.Context) {
 	}
 
 	err = models.CreateOrder(db.M, userId, orderPayload)
+
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't create order: " + err.Error()})
-		log.Println("Can't create order: " + err.Error())
+		if strings.Contains(err.Error(), "not enough resources in this cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 22, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You created order")})
+	c.JSON(http.StatusOK, gin.H{"code": -6})
 }
 
 func GetMyOrders(c *gin.Context) {
@@ -40,10 +45,10 @@ func GetMyOrders(c *gin.Context) {
 	}
 	myOrders, err := models.GetMyOrders(db.M, userId)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": "Can't get orders: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myOrders})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myOrders})
 }
 
 func GetOrders(c *gin.Context) {
@@ -119,10 +124,10 @@ func GetOrders(c *gin.Context) {
 	orders, err := models.GetOrders(db.M, findOrdersParams)
 
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get orders: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": orders})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": orders})
 }
 
 func CloseMyOrder(c *gin.Context) {
@@ -130,17 +135,16 @@ func CloseMyOrder(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	orderID, err := include.StrToPrimObjId(c, c.Query("order_id"))
+	orderID, err := include.StrToPrimObjId(c, c.Query("orderId"))
 	if err != nil {
 		return
 	}
 	err = models.CloseMyOrder(db.M, userId, orderID)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't close order: " + err.Error()})
-		log.Println("Can't close order: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You closed order")})
+	c.JSON(http.StatusOK, gin.H{"code": -7})
 }
 
 func ExecuteOrder(c *gin.Context) {
@@ -155,15 +159,23 @@ func ExecuteOrder(c *gin.Context) {
 	}
 
 	if payload.Amount <= 0 {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		c.JSON(http.StatusOK, gin.H{"code": 21})
 		return
 	}
 
 	err = models.ExecuteOrder(db.M, userId, payload)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't execute order: " + err.Error()})
-		log.Println("Can't execute order: " + err.Error())
+		if strings.Contains(err.Error(), "the amount you're requesting exceeds the available quantity") {
+			c.JSON(http.StatusOK, gin.H{"code": 25, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough resources in this cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 22, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": fmt.Sprintf("You executed order")})
+
+	c.JSON(http.StatusOK, gin.H{"code": -8})
 }

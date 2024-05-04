@@ -290,7 +290,7 @@ func ExecuteOrder(m *mongo.Database, userID primitive.ObjectID, payload ExecuteO
 	}
 
 	if order.Amount < payload.Amount {
-		return errors.New("requested quantity is greater than available quantity")
+		return errors.New("the amount you're requesting exceeds the available quantity")
 	}
 
 	if order.Sell {
@@ -376,5 +376,8 @@ func CloseMyOrder(m *mongo.Database, userId primitive.ObjectID, orderId primitiv
 		}
 	}
 	_, err = m.Collection("orders").DeleteOne(ctx, bson.M{"_id": orderId})
+	if err != nil {
+		log.Println("Can't close order: " + err.Error())
+	}
 	return err
 }
