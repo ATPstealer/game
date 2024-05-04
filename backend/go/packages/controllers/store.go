@@ -6,6 +6,7 @@ import (
 	"backend/packages/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func SetStoreGoods(c *gin.Context) {
@@ -22,8 +23,17 @@ func SetStoreGoods(c *gin.Context) {
 	err = models.SetStoreGoods(db.M, userId, storeGoodsPayload)
 
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't set price: " + err.Error()})
+		if strings.Contains(err.Error(), "this building doesn't belong to you") {
+			c.JSON(http.StatusOK, gin.H{"code": 18, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "this is not a store") {
+			c.JSON(http.StatusOK, gin.H{"code": 19, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "can't sell here") {
+			c.JSON(http.StatusOK, gin.H{"code": 20, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok"})
+
+	c.JSON(http.StatusOK, gin.H{"code": 0})
 }

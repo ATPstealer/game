@@ -1,5 +1,6 @@
 {
   "codes": {
+    "-5": "Logistics company took you order for transfer %amount from %fromX:%fromY to %toX:%toY",
     "-4": "Login successful",
     "-3": "You bought %square ares in %x x %y cell by %price$",
     "-2": "Logout successful",
@@ -20,6 +21,14 @@
     "14": "In this building, people will suffer from lack of air",
     "15": "Can't get Cell Owners",
     "16": "Can't buy land",
+    "17": "Can't set price",
+    "18": "This building doesn't belong to you",
+    "19": "This is not a store",
+    "20": "Can't sell here",
+    "21": "Wrong amount",
+    "22": "Not enough resources in this cell",
+    "23": "There is not enough storage capacity in the destination sector",
+    "24": "Not enough money",
 
 
     "100001": "Database error",

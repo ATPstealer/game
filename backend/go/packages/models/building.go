@@ -335,12 +335,12 @@ func DestroyBuilding(m *mongo.Database, userId primitive.ObjectID, buildingId pr
 	defer cancel()
 
 	building, err := GetBuildingById(m, buildingId)
-	if userId != building.UserId && building.UserId != primitive.NilObjectID {
-		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
-	}
 	if err != nil {
 		log.Println("Can't destroy building: " + err.Error())
 		return err
+	}
+	if userId != building.UserId && building.UserId != primitive.NilObjectID {
+		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
 	}
 
 	_, err = m.Collection("buildings").DeleteOne(ctx, bson.M{"_id": buildingId, "userId": userId})
@@ -472,7 +472,7 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 		log.Println(err)
 		return err
 	}
-	log.Println(building.WorkStarted)
+
 	now := time.Now()
 	end := now.Add(payload.Duration)
 

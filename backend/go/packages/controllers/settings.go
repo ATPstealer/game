@@ -10,8 +10,8 @@ import (
 func GetSettings(c *gin.Context) {
 	settings, err := models.GetSettings(db.M)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"status": "failed", "code": 100001, "text": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": settings})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": settings})
 }

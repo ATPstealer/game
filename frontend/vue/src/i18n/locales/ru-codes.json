@@ -15,11 +15,12 @@
     "8": "Не получилось создать токен",
     "9": "Необходимы куки токена",
     "10": "Неправильный токен",
-    "11": "Н",
+    "11": "Can't get blueprints",
     "12": "Can't delete token",
     "13": "Can't get users",
     "14": "In this building, people will suffer from lack of air",
     "15": "Can't get Cell Owners",
-    "16": "Can't buy land"
+    "16": "Can't buy land",
+    "17": "Can't set price"
   }
 }

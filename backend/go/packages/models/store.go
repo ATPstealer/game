@@ -36,7 +36,7 @@ func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGo
 		return err
 	}
 	if building.UserId != userId {
-		return errors.New("this building don't belong you")
+		return errors.New("this building doesn't belong to you")
 	}
 
 	buildingType, err := GetBuildingTypeById(m, building.TypeId)

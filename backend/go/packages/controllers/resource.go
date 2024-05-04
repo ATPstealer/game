@@ -4,19 +4,18 @@ import (
 	"backend/packages/controllers/include"
 	"backend/packages/db"
 	"backend/packages/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"strconv"
+	"strings"
 )
 
 func GetResourceTypes(c *gin.Context) {
 	resourceTypes, err := models.GetAllResourceTypes(db.M)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resource types: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": resourceTypes})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": resourceTypes})
 }
 
 func GetMyResources(c *gin.Context) {
@@ -42,10 +41,10 @@ func GetMyResources(c *gin.Context) {
 
 	myResources, err := models.GetMyResources(db.M, userId, xPointer, yPointer)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get resources: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myResources})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myResources})
 }
 
 func ResourceMove(c *gin.Context) {
@@ -60,18 +59,24 @@ func ResourceMove(c *gin.Context) {
 	}
 
 	if logisticPayload.Amount <= 0 {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Wrong amount"})
+		c.JSON(http.StatusOK, gin.H{"code": 21, "text": "Wrong amount"})
 		return
 	}
 
 	err = models.StartLogisticJob(db.M, userId, logisticPayload)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't move resources: " + err.Error()})
+		if strings.Contains(err.Error(), "not enough resources in this cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 22, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "there is not enough storage capacity in the destination sector") {
+			c.JSON(http.StatusOK, gin.H{"code": 23, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "Logistics company took you order for transfer " + fmt.Sprintf("%.1f", logisticPayload.Amount) +
-		" from " + strconv.Itoa(logisticPayload.FromX) + ":" + strconv.Itoa(logisticPayload.FromY) + " to " + strconv.Itoa(logisticPayload.ToX) + ":" +
-		strconv.Itoa(logisticPayload.ToY) + ". They didn't ask what was inside."})
+	c.JSON(http.StatusOK, gin.H{"code": -5, "values": logisticPayload})
 }
 
 func GetMyLogistics(c *gin.Context) {
@@ -81,8 +86,8 @@ func GetMyLogistics(c *gin.Context) {
 	}
 	myLogistics, err := models.GetMyLogistics(db.M, userId)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get logistics: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": "Can't get logistics: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myLogistics})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myLogistics})
 }

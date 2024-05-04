@@ -112,7 +112,6 @@ func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int
 		{"preserveNullAndEmptyArrays", true},
 	}}}
 
-	// Connect the pipeline stages and execute
 	pipeline := mongo.Pipeline{matchStage, lookupResourceType, unwindResourceType}
 	cursor, err := m.Collection("resources").Aggregate(ctx, pipeline)
 	if err != nil {

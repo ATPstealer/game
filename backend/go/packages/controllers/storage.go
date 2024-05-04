@@ -15,8 +15,8 @@ func GetMyStorages(c *gin.Context) {
 	}
 	myStorages, err := models.GetMyStorages(db.M, userId)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get storages: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": "Can't get storages: " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": myStorages})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myStorages})
 }
