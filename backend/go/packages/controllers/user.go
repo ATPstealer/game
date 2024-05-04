@@ -96,5 +96,5 @@ func GetUserNamesByPrefix(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"code": 13, "text": "Can't get users " + err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": names})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": names})
 }

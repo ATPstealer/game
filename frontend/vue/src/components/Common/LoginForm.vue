@@ -82,7 +82,7 @@ const submit = () => {
   onFetchFinally(() => {
     messageData.value = data.value
 
-    if (data.value?.status === 'success') {
+    if (data.value?.code <= 0) {
       setTimeout(() => {
         // emits('close')
       }, 1000)

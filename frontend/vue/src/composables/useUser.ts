@@ -8,7 +8,7 @@ export const useUser = () => {
     const { data, onFetchResponse, onFetchFinally }  = useMyFetch('/user/login').post(userData).json()
 
     onFetchResponse(() => {
-      if (data?.value.status <= 0) {
+      if (data?.value.code <= 0) {
         const ttl = Number(data.value?.data.ttl)
         const date = new Date()
         date.setTime(date.getTime() + ttl*1000)

@@ -1,7 +1,7 @@
 import type { ResourceType } from '@/types/Resources/index.interface'
 
 export interface BackData {
-  status: string;
+  status?: string;
   code: number;
   text?: string;
   values?: Record<string, string | number>;
@@ -68,7 +68,7 @@ export interface Logistic {
 }
 
 export interface DataMessage {
-  status: string;
+  status?: string;
   text: string;
 }
 

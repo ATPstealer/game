@@ -14,7 +14,7 @@ export interface Building {
   x: number;
   y: number;
   level: number;
-  status: string;
+  status?: string;
   workStarted: string;
   workEnd: string;
   hiringNeeds: number;
@@ -61,6 +61,6 @@ export interface Goods {
   price: number;
   sellSum: number;
   revenue: number;
-  status: string;
+  status?: string;
   sellStarted: string;
 }
