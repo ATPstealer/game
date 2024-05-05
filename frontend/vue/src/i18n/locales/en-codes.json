@@ -1,5 +1,9 @@
 {
   "codes": {
+    "-12": "Building has been destroyed :(",
+    "-11": "Hiring details changed",
+    "-10": "Job was started",
+    "-9": "You begin to construct building in %x x %y square is %square",
     "-8": "Order has been executed",
     "-7": "Order has been closed",
     "-6": "Order has been created",
@@ -18,10 +22,8 @@
     "8": "Can't create token. Try again",
     "9": "Token cookie is required",
     "10": "Token incorrect",
-    "11": "Can't get blueprints",
     "12": "Can't delete token",
-    "13": "Can't get users",
-    "14": "In this building, people will suffer from lack of air",
+    "13": "Can't get user by nickname",
     "16": "Can't buy land",
     "17": "Can't set price",
     "18": "This building doesn't belong to you",
@@ -34,6 +36,12 @@
     "25": "The amount you're requesting exceeds the available quantity",
     "26": "Square should be greater than 0",
     "27": "Not enough land in this cell",
+    "28": "Building busy",
+    "29": "This building doesn't belong you",
+    "30": "Can't product it here",
+    "31": "Hiring needs more that maximum",
+    "32": "For attempting to destroy someone else's building, inevitable punishment awaits you",
+
 
     "100001": "Database error",
     "100002": "Can't read request POST body",

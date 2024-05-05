@@ -1,0 +1,249 @@
+{
+  "account": {
+    "confirmPass": "Bevestig wachtwoord",
+    "email": "E-mail",
+    "errors": {
+      "email": "Voer een correct e-mailadres in",
+      "nickname": "Vul het veld bijnaam in",
+      "passMatch": "Wachtwoorden komen niet overeen",
+      "password": "Wachtwoord moet kleine en hoofdletters, cijfers bevatten en meer dan 8 symbolen zijn"
+    },
+    "haveAccount": "Heb je al een account? Log in",
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "nickname": "Bijnaam",
+    "password": "Wachtwoord",
+    "signup": "Aanmelden"
+  },
+  "buildings": {
+    "builder": "Gebouw Bouwer",
+    "coefficient efficiency": "Coëfficiënt efficiëntie",
+    "construct new building": "Creëer Nieuwe Gebouw",
+    "finish": "Voltooien",
+    "hiring": {
+      "average salary": "Gemiddeld salaris",
+      "help": "Inhuren vindt één keer per dag plaats. Om 00:00Z. Hoe hoger het salaris, hoe meer werknemers naar uw onderneming zullen komen. Stel het vereiste aantal werknemers in in de kolom “Inhuurbehoeften”.",
+      "hiring needs": "Inhuurbehoeften",
+      "max workers": "Maximaal werknemers",
+      "name": "Inhuren",
+      "on strike": "In staking",
+      "salary": "Salaris",
+      "set": "Set",
+      "workers": "Werknemers"
+    },
+    "one": "Gebouw",
+    "production": {
+      "chooseResource": "Kies een resource om te creëren:",
+      "cycle": "1 cyclus tijd",
+      "produce": "Produceer",
+      "startWork": "Begin met werken",
+      "use": "Gebruik"
+    },
+    "status": "Status",
+    "store": {
+      "columns": {
+        "name": "Naam",
+        "price": "Prijs",
+        "revenue today": "Inkomsten Vandaag",
+        "sell count": "Verkoop Telling",
+        "status": "Status"
+      },
+      "help": "Klik op de prijs om te veranderen. Automatisch toepassen.",
+      "name": "Winkel",
+      "setPrice": "Stel prijs in",
+      "status": {
+        "notset": "Prijs niet ingesteld",
+        "selling": "Verkopen"
+      },
+      "types": {
+        "grocery": "Kruidenier",
+        "gas station": "Tankstation"
+      }
+    },
+    "title": "Gebouwen",
+    "type": "Gebouw type",
+    "types": {
+      "all": "Alle",
+      "energy plant": "Energiecentrale",
+      "factory": "Fabriek",
+      "farm": "Boerderij",
+      "field": "Veld",
+      "food factory": "Voedsel fabriek",
+      "foundry": "Gieterij",
+      "gas station": "Tankstation",
+      "grocery store": "Kruidenierswinkel",
+      "lumbermill": "Zaagmolen",
+      "mine": "Mijn",
+      "office": "Kantoor",
+      "recycling plant": "Recyclage installatie",
+      "refinery": "Raffinaderij",
+      "storage": "Opslag",
+      "water pump": "Waterpomp"
+    },
+    "typesDescriptions": {
+      "energy plant": "Voorziet energie",
+      "farm": "Voedselproductie",
+      "field": "Groeit voedsel",
+      "food factory": "Voedselproductie",
+      "gas station": "Verkoopt energiedragers",
+      "grocery store": "Verkoopt essentiële producten",
+      "mine": "Mijnbouw middelen",
+      "refinery": "Olie raffinage",
+      "storage": "Slaat iets op",
+      "water pump": "Voorziet water"
+    }
+  },
+  "common": {
+    "amount": "Bedrag",
+    "build": "Bouw",
+    "buy": "Koop",
+    "construct": "Bouw",
+    "coordinates": "coördinaten",
+    "cost": "Kosten",
+    "create": "Creëer",
+    "day": "{n} dag | {n} dagen",
+    "from": "van",
+    "hour": "{n} uur | {n} uur",
+    "in": "in",
+    "level": "niveau",
+    "move": "Verplaatsen",
+    "owner": "Eigenaar",
+    "production": "Productie",
+    "reset": "Reset",
+    "resource": "Resource",
+    "sell": "Verkoop",
+    "square": "Vierkant",
+    "status": "status",
+    "time": "Tijd",
+    "to": "naar",
+    "type": "type",
+    "where": "Waar"
+  },
+  "lands": {
+    "title": "Landen"
+  },
+  "layout": {
+    "help": "Help",
+    "settings": "Instellingen"
+  },
+  "logistics": {
+    "columns": {
+      "amount": "Bedrag",
+      "finish": "Voltooien",
+      "from": "Van",
+      "resource": "Resource",
+      "to": "Naar"
+    },
+    "help": "Op deze pagina worden de taken voor vrachtvervoer weergegeven.",
+    "title": "Logistiek"
+  },
+  "main": {
+    "title": "Hoofdpagina"
+  },
+  "map": {
+    "cell": "Cel",
+    "square": "Vierkant",
+    "title": "Kaart"
+  },
+  "market": {
+    "title": "Markt"
+  },
+  "menu": {
+    "business": "Zaken",
+    "world": "Wereld"
+  },
+  "orders": {
+    "columns": {
+      "amount": "Bedrag",
+      "price": "Prijs per eenheid",
+      "resource": "Resource",
+      "type": "Type"
+    },
+    "create": {
+      "header": "Maak een bestelling",
+      "type": "Bestellings Type"
+    },
+    "help": "Om een bestelling te sluiten, klik op zijn type.",
+    "title": "Bestellingen"
+  },
+  "resources": {
+    "choose": "Kies resource",
+    "columns": {
+      "amount": "Bedrag",
+      "name": "Resource"
+    },
+    "help": "Klik op de resource naam om te verplaatsen. Klik op het bedrag om te verkopen",
+    "move": {
+      "header": "Verplaats resource",
+      "price": "Schat prijs",
+      "time": "Schat tijd"
+    },
+    "resourceType": "Resource type",
+    "sell": {
+      "header": "Verkoop resource",
+      "price": "Prijs per eenheid"
+    },
+    "title": "Resources",
+    "types": {
+      "all": "Alle",
+      "beef": "Rundvlees",
+      "beef meat": "Rundvlees",
+      "bird": "Vogel",
+      "bread": "Brood",
+      "butter": "Boter",
+      "cereals": "Granen",
+      "cheese": "Kaas",
+      "chicken": "Kip",
+      "diesel": "Diesel",
+      "eggs": "Eieren",
+      "energy": "Energie",
+      "fruits": "Fruit",
+      "gas": "Gas",
+      "gear": "Versnelling",
+      "hydrocarbons": "Koolwaterstoffen",
+      "iron": "Ijzer",
+      "iron ore": "Ijzererts",
+      "livestock": "Vee",
+      "milk": "Melk",
+      "oil": "Olie",
+      "pasta": "Pasta",
+      "petrol": "Benzine",
+      "plastics": "Plastics",
+      "poultry meat": "Gevogelte vlees",
+      "rice": "Rijst",
+      "schlack": "Slak",
+      "soda": "Frisdrank",
+      "vegetables": "Groenten",
+      "water": "Water",
+      "wood": "Hout"
+    }
+  },
+  "search-building": {
+    "chooseUser": "Kies gebruiker",
+    "title": "Zoek naar gebouwen"
+  },
+  "status": {
+    "construction": "Constructie",
+    "production": "Productie",
+    "ready": "Klaar",
+    "storageneeded": "Opslag nodig"
+  },
+  "storages": {
+    "columns": {
+      "volume": "Volume"
+    },
+    "help": "Geeft het totale volume van de bronnen en opslag in sectoren weer.",
+    "title": "Opslagplaatsen"
+  },
+  "user": {
+    "attention": "Aandacht",
+    "characteristics": "Kenmerken",
+    "intelligence": "Intelligentie",
+    "management": "Beheer",
+    "memory": "Geheugen",
+    "multitasking": "Multitasking",
+    "planning": "Planning",
+    "title": "Gebruiker",
+    "wits": "Geestigheid"
+  }
+}

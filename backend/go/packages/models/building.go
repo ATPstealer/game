@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -64,7 +63,7 @@ type ConstructBuildingPayload struct {
 func ConstructBuilding(m *mongo.Database, userId primitive.ObjectID, payload ConstructBuildingPayload) error {
 	enoughLand, err := CheckEnoughLandForBuilding(m, userId, payload.Square, payload.X, payload.Y)
 	if !enoughLand {
-		return errors.New("not enough land")
+		return errors.New("not enough land in this cell")
 	}
 	if err != nil {
 		return err
@@ -240,7 +239,7 @@ func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]B
 
 	var buildings []BuildingWithData
 	if err = cursor.All(ctx, &buildings); err != nil {
-		log.Println(err)
+		log.Println("Can't get buildings: " + err.Error())
 	}
 	return buildings, nil
 }
@@ -310,7 +309,7 @@ func SetHiring(m *mongo.Database, userId primitive.ObjectID, payload HiringPaylo
 		return err
 	}
 	if userId != building.UserId && building.UserId != primitive.NilObjectID {
-		return errors.New("this building doesn't belong to you")
+		return errors.New("this building doesn't belong you")
 	}
 	buildingType, err := GetBuildingTypeById(m, building.TypeId)
 	if err != nil {
@@ -318,7 +317,7 @@ func SetHiring(m *mongo.Database, userId primitive.ObjectID, payload HiringPaylo
 	}
 	hiringMax := buildingType.Workers * building.Level * building.Square
 	if payload.HiringNeeds > hiringMax {
-		return errors.New(fmt.Sprintf("hiring needs more that maximum(%d)", hiringMax))
+		return errors.New("hiring needs more that maximum")
 	}
 
 	_, err = m.Collection("buildings").UpdateOne(ctx,
@@ -336,7 +335,7 @@ func DestroyBuilding(m *mongo.Database, userId primitive.ObjectID, buildingId pr
 
 	building, err := GetBuildingById(m, buildingId)
 	if err != nil {
-		log.Println("Can't destroy building: " + err.Error())
+		log.Println("Can't get building: " + err.Error())
 		return err
 	}
 	if userId != building.UserId && building.UserId != primitive.NilObjectID {
@@ -455,7 +454,7 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 		return err
 	}
 	if building.Status != ReadyStatus {
-		return errors.New("Building not ready. Status is " + string(building.Status))
+		return errors.New("building busy")
 	}
 	if building.UserId != userId {
 		err := errors.New("this building don't belong you")
@@ -469,7 +468,6 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 	}
 	if blueprintResult.ProducedInId != building.TypeId {
 		err := errors.New("can't product it here")
-		log.Println(err)
 		return err
 	}
 

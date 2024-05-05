@@ -162,6 +162,7 @@ func CheckEnoughLandForBuilding(m *mongo.Database, userId primitive.ObjectID, sq
 	}
 
 	if err = cursor.All(ctx, &myBuildingsInCell); err != nil {
+		log.Println("Can't get Buildings in Cell: " + err.Error())
 		return false, err
 	}
 
