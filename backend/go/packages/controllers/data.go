@@ -5,6 +5,7 @@ import (
 	"backend/packages/db"
 	"backend/packages/models"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 )
 
@@ -27,8 +28,9 @@ func GetEvolutionPrices(c *gin.Context) {
 
 	evolutionPrices, err := models.GetEvolutionPrices(db.M, xPointer, yPointer)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "text": "Can't get evolution prices: " + err.Error()})
+		log.Printf("Can't get evolution prices: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "text": "ok", "data": evolutionPrices})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": evolutionPrices})
 }
