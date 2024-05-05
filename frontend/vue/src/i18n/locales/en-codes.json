@@ -22,7 +22,6 @@
     "12": "Can't delete token",
     "13": "Can't get users",
     "14": "In this building, people will suffer from lack of air",
-    "15": "Can't get Cell Owners",
     "16": "Can't buy land",
     "17": "Can't set price",
     "18": "This building doesn't belong to you",
@@ -33,7 +32,8 @@
     "23": "There is not enough storage capacity in the destination sector",
     "24": "Not enough money",
     "25": "The amount you're requesting exceeds the available quantity",
-
+    "26": "Square should be greater than 0",
+    "27": "Not enough land in this cell",
 
     "100001": "Database error",
     "100002": "Can't read request POST body",
@@ -43,6 +43,8 @@
     "100006": "Can't parse string as float64",
     "100007": "Can't parse string as uint",
     "100008": "Can't parse string as boolean",
-    "100009": "Can't parse string as uint"
+    "100009": "Can't parse string as uint",
+    "100010": "Can't get user from session",
+    "100011": "Can't Marshal values in JSON"
   }
 }

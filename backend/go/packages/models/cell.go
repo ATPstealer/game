@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"log"
 	"time"
 )
 
@@ -29,17 +28,17 @@ type Cell struct {
 
 func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {
 	if squareForBuy <= 0 {
-		return false, errors.New("square < 0")
+		return false, errors.New("square should be greater than 0")
 	}
 
 	occupiedLand, err := GetCellOccupiedLand(m, x, y)
 	if err != nil {
-		return false, errors.New("can't get cell occupied land")
+		return false, err
 	}
 
 	cell, err := GetCell(m, x, y)
 	if err != nil {
-		return false, errors.New("can't get cell")
+		return false, err
 	}
 
 	return cell.Square-occupiedLand >= squareForBuy, nil
@@ -58,7 +57,7 @@ func GetCell(m *mongo.Database, x int, y int) (Cell, error) {
 func GetCellOccupiedLand(m *mongo.Database, x int, y int) (int, error) {
 	landLords, err := GetCellOwners(m, x, y)
 	if err != nil {
-		return 0, errors.New("can't get cell owners")
+		return 0, err
 	}
 
 	occupiedLand := 0
@@ -93,7 +92,6 @@ func GetAllCells(m *mongo.Database) ([]Cell, error) {
 
 	cursor, err := m.Collection("cells").Find(ctx, bson.M{})
 	if err != nil {
-		log.Println("Can't get all cells: " + err.Error())
 		return cells, err
 	}
 

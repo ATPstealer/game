@@ -5,10 +5,10 @@ import (
 	"backend/packages/db"
 	"backend/packages/models"
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func GetCellOwners(c *gin.Context) {
@@ -22,16 +22,22 @@ func GetCellOwners(c *gin.Context) {
 	}
 	cellOwners, err := models.GetCellOwners(db.M, x, y)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 15, "text": "Can't get Cell Owners: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": cellOwners})
 }
 
 func BuyLand(c *gin.Context) {
 	var buyLandPayload models.BuyLandPayload
+
 	var err error
 	if err = include.GetPayload(c, &buyLandPayload); err != nil {
+		return
+	}
+
+	if buyLandPayload.Square <= 0 {
+		c.JSON(http.StatusOK, gin.H{"code": 26})
 		return
 	}
 
@@ -42,8 +48,15 @@ func BuyLand(c *gin.Context) {
 
 	price, err := models.BuyLand(db.M, userId, buyLandPayload)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 16, "text": "Can't buy land: " + err.Error()})
-		log.Println("Can't buy land: " + err.Error())
+		if strings.Contains(err.Error(), "square should be greater than 0") {
+			c.JSON(http.StatusOK, gin.H{"code": 26, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough land in this cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 27, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
 
@@ -56,34 +69,32 @@ func BuyLand(c *gin.Context) {
 
 	valuesJson, err := json.Marshal(values)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 17, "text": "Can't make JSON: " + err.Error()})
-		log.Println(err)
+		log.Println("Can't make JSON: " + err.Error())
+		c.JSON(http.StatusOK, gin.H{"code": 100011, "text": "Can't make JSON: " + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": -3, "values": string(valuesJson),
-		"text": fmt.Sprintf("You bought %d ares in %dx%d cell by %.2f$",
-			buyLandPayload.Square, buyLandPayload.X, buyLandPayload.Y, price)})
+	c.JSON(http.StatusOK, gin.H{"code": -3, "values": string(valuesJson)})
 }
 
 func GetMap(c *gin.Context) {
 	mapCells, err := models.GetAllCells(db.M)
 	if err != nil {
 		log.Println("Can't get map cells: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 18, "text": "Can't get map cells: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": mapCells})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": mapCells})
 }
 
 func GetAllLandLords(c *gin.Context) {
 	cellOwners, err := models.GetAllLandLords(db.M)
 	if err != nil {
 		log.Println("Can't get Land Lords: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": cellOwners})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": cellOwners})
 }
 
 func GetMyLand(c *gin.Context) {
@@ -94,8 +105,8 @@ func GetMyLand(c *gin.Context) {
 	myLands, err := models.GetMyLands(db.M, userId)
 	if err != nil {
 		log.Println("Can't get Land Lords: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"status": "failed", "code": 1, "text": "Can't get Land Lords: " + err.Error()})
+		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "success", "code": 0, "data": myLands})
+	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myLands})
 }

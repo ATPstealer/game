@@ -44,7 +44,7 @@ func BuyLand(m *mongo.Database, userId primitive.ObjectID, payload BuyLandPayloa
 		return 0, err
 	}
 	if !enoughLand {
-		return 0, errors.New("not enough land")
+		return 0, errors.New("not enough land in this cell")
 	}
 
 	if err := AddMoney(m, userId, (-1)*price); err != nil {
@@ -53,6 +53,7 @@ func BuyLand(m *mongo.Database, userId primitive.ObjectID, payload BuyLandPayloa
 
 	if err := AddCivilSavings(m, payload.X, payload.Y, price); err != nil {
 		log.Println("Can't add civil money" + err.Error())
+		return 0, err
 	}
 
 	_, err = m.Collection("landLords").UpdateOne(ctx,
@@ -84,11 +85,13 @@ func GetCellOwners(m *mongo.Database, x int, y int) ([]LandLord, error) {
 
 	cursor, err := m.Collection("landLords").Find(ctx, bson.M{"x": x, "y": y})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
+		log.Println("Can't get landLords: " + err.Error())
+		return nil, err
 	}
 
 	var landLords []LandLord
 	if err = cursor.All(ctx, &landLords); err != nil {
+		log.Println("Can't get landLords: " + err.Error())
 		return nil, err
 	}
 
