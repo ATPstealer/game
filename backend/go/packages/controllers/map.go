@@ -4,7 +4,6 @@ import (
 	"backend/packages/controllers/include"
 	"backend/packages/db"
 	"backend/packages/models"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -67,14 +66,7 @@ func BuyLand(c *gin.Context) {
 		"price":  price,
 	}
 
-	valuesJson, err := json.Marshal(values)
-	if err != nil {
-		log.Println("Can't make JSON: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"code": 100011, "text": "Can't make JSON: " + err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"code": -3, "values": string(valuesJson)})
+	c.JSON(http.StatusOK, gin.H{"code": -3, "values": values})
 }
 
 func GetMap(c *gin.Context) {
