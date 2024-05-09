@@ -53,15 +53,14 @@
   <Loading v-else />
 </template>
 <script setup lang="ts">
-import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import { useI18n } from 'vue-i18n'
-import { moneyFormat } from '../../utils/moneyFormat'
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
 import { useOrders } from '@/composables/useOrders'
-import { Order, Storage } from '@/types'
+import { Order } from '@/types'
+import { moneyFormat } from '@/utils/moneyFormat'
 
 const { data: orders, isFetching } = useGetData<Order[]>('/market/order/my')
 const { closeOrder } = useOrders()

@@ -94,8 +94,10 @@ const close = () => {
 }
 
 const signOut = () => {
-  logOut()
-  router.go(0)
+  const { onFetchResponse } = logOut()
+  onFetchResponse(() => {
+    router.go(0)
+  })
 }
 
 </script>
