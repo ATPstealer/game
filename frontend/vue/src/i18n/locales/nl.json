@@ -109,6 +109,7 @@
     "in": "in",
     "level": "niveau",
     "move": "Verplaatsen",
+    "no": "Nee",
     "owner": "Eigenaar",
     "production": "Productie",
     "reset": "Reset",
@@ -119,7 +120,8 @@
     "time": "Tijd",
     "to": "naar",
     "type": "type",
-    "where": "Waar"
+    "where": "Waar",
+    "yes": "Ja"
   },
   "lands": {
     "title": "Landen"

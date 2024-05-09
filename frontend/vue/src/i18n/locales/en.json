@@ -109,6 +109,7 @@
     "in": "in",
     "level": "level",
     "move": "Move",
+    "no": "No",
     "owner": "Owner",
     "production": "Production",
     "reset": "Reset",
@@ -119,7 +120,8 @@
     "time": "Time",
     "to": "to",
     "type": "type",
-    "where": "Where"
+    "where": "Where",
+    "yes": "Yes"
   },
   "lands": {
     "title": "Lands"
