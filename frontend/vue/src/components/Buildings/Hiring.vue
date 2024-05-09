@@ -4,7 +4,7 @@
     v-bind="messageData"
     class="mb-4"
   />
-  <div class="m-0">
+  <div class="m-0" v-if="building">
     <p class="font-bold">
       {{ t(`buildings.hiring.name`) }}
     </p>
@@ -12,14 +12,14 @@
       {{ t(`buildings.hiring.on strike`) }}
     </p>
     <p>
-      {{ t(`buildings.hiring.max workers`) }}: {{ building.buildingType.workers*building.level*building.square }}
+      {{ t(`buildings.hiring.max workers`) }}: {{ building?.buildingType?.workers * building?.level * building?.square }}
     </p>
     <p>
       {{ t(`buildings.hiring.workers`) }} / {{ t(`buildings.hiring.hiring needs`) }}:
     </p>
     <div class="flex items-center gap-1 h-10">
       <p class="whitespace-nowrap">
-        {{ props.building.workers }} /
+        {{ building.workers }} /
       </p>
       <span
         v-if="!editHiringNeeds"
@@ -45,7 +45,7 @@
           size="small"
           icon="pi pi-times"
           severity="danger"
-          @click="editHiringNeeds = false"
+          @click="editHiringNeeds = false; hiringNeeds = building.hiringNeeds"
         />
       </div>
     </div>
@@ -78,13 +78,13 @@
           size="small"
           icon="pi pi-times"
           severity="danger"
-          @click="editSalary = false"
+          @click="editSalary = false; salary = building.salary"
         />
       </div>
     </div>
     <div>
       {{ t(`buildings.coefficient efficiency`) }}:
-      {{ (building.workers / building.buildingType.workers).toFixed(2) }}
+      {{ (building?.workers / building?.buildingType?.workers).toFixed(2) }}
     </div>
     <hr />
     <div v-if="!isMapFetching">

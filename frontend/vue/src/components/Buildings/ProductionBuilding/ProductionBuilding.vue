@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4" v-if="building?.buildingType.title">
+  <div class="flex flex-col gap-4" v-if="building?.buildingType?.title">
     <h1 class="text-center">
       {{ t('common.production') }}
     </h1>
@@ -35,7 +35,7 @@
           <span class="font-bold">
             {{ t('buildings.one') }}:
           </span>
-          <p><span>{{ t('common.type') }}</span>: {{ getTranslation({parent: 'buildings.types', child: building?.buildingType.title}) }}</p>
+          <p><span>{{ t('common.type') }}</span>: {{ getTranslation({parent: 'buildings.types', child: building?.buildingType?.title}) }}</p>
           <p><span>{{ t('common.status') }}</span>: {{ building?.status }}</p>
           <p><span>{{ t('common.coordinates') }}</span>: {{ building?.x }}:{{ building?.y }}</p>
           <p><span>{{ t('common.level') }}</span> x <span>{{ t('common.square') }}</span>: {{ building?.level }}x{{ building?.square }}</p>
@@ -73,7 +73,8 @@ import type { BackData } from '@/types'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { ResourceType } from '@/types/Resources/index.interface'
 import { getTranslation } from '@/utils/getTranslation'
-
+// TODO: при изменении кол-ва работников/зп, при нажатии на крестик сейчас показываются значения из props.building,
+// добавить перезапрос данных о building при изменении кол-ва работников/зп
 interface Props {
   building: Building;
 }

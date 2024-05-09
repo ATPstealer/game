@@ -84,7 +84,7 @@ const submit = () => {
 
     if (data.value?.code <= 0) {
       setTimeout(() => {
-        // emits('close')
+        emits('close')
       }, 1000)
     }
   })

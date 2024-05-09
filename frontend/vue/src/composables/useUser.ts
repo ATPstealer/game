@@ -23,13 +23,17 @@ export const useUser = () => {
   }
 
   const logOut = () => {
-    useMyFetch('/user/login', {
+    const { onFetchResponse } = useMyFetch('/user/login', {
       onFetchError: ctx => {
         console.log(ctx.error.message)
 
         return ctx
       }
     }).delete()
+
+    return {
+      onFetchResponse
+    }
   }
 
   const signUp = (payload: {nickName: string; email: string; password: string}): {data: Ref<BackData>; onFetchFinally: EventHookOn<Response>} => {
