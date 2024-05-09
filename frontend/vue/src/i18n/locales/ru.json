@@ -19,6 +19,8 @@
     "builder": "Постройка зданий",
     "coefficient efficiency": "Коэффициент эффективности",
     "construct new building": "Построить Новое Здание",
+    "destroy": "Снести",
+    "destroyConfirm": "Вы точно хотите снести здание?",
     "finish": "Конец",
     "hiring": {
       "average salary": "Средняя зарплата",
@@ -56,8 +58,8 @@
         "selling": "Продаётся"
       },
       "types": {
-        "grocery": "Продуктовый",
-        "gas station": "Заправка"
+        "gas station": "Заправка",
+        "grocery": "Продуктовый"
       }
     },
     "title": "Здания",

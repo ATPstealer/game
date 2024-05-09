@@ -84,6 +84,7 @@
       :label="resource? t('common.sell') : t('common.create')"
       @click="create"
       class="self-center w-1/2 mt-4"
+      :disabled="!amount || !priceForUnit || !resourceTypeId"
     />
   </div>
 </template>
@@ -154,7 +155,7 @@ const create = () => {
     messageData.value = data.value
 
     setTimeout(() => {
-      if (data.value?.status === 'success') {
+      if (!data.value.text) {
         emits('close')
       }
     }, 2000)
