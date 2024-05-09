@@ -17,7 +17,31 @@ import (
 	"time"
 )
 
-// TODO: delete obsolete tokens
+func DeleteObsoleteTokens(m *mongo.Database) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
+	now := time.Now()
+	_, err := m.Collection("tokens").DeleteMany(ctx, bson.M{
+		"$expr": bson.M{
+			"$lt": []interface{}{
+				bson.M{
+					"$add": []interface{}{
+						"$createdAt",
+						bson.M{
+							"$multiply": []interface{}{"$ttl", 1000}, // Multiply by 1000 to convert from milliseconds to seconds
+						},
+					},
+				},
+				now,
+			},
+		},
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+}
 
 func MongoIndex(m *mongo.Database) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))

@@ -12,7 +12,9 @@
     "-3": "Je hebt %square hectaren gekocht in cel %x x %y voor %price$",
     "-2": "Uitloggen succesvol",
     "-1": "gebruiker %nickName is geregistreerd met email %email",
+
     "0": "OK",
+
     "1": "Backend fout",
     "2": "Kan gebruiker niet aanmaken. Onverwachte fout",
     "3": "Gebruiker met bijnaam %nickName bestaat al",
@@ -41,7 +43,6 @@
     "30": "Kan het hier niet produceren",
     "31": "Inhuren heeft meer nodig dan het maximum",
     "32": "Voor het proberen te vernietigen van iemand anders gebouw, wacht je een onvermijdelijke straf",
-
 
     "100001": "Database fout",
     "100002": "Kan verzoek POST body niet lezen",
