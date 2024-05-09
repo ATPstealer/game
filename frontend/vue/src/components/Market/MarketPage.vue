@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: Сделать перевод; x,y в одну колонку;  -->
   <DataTable
     v-if="orders?.filter(item => item.sell).length"
     :value="orders?.filter(item => item.sell)"
@@ -19,24 +18,22 @@
 
     <Column
       field="amount"
-      header="Amount"
+      :header="t('orders.columns.amount')"
       class="w-1/6"
     />
     <Column
       field="priceForUnit"
-      header="Price"
+      :header="t('orders.columns.price')"
       class="w-1/6"
     />
     <Column
-      field="x"
-      header="X"
+      :header="t(`map.cell`)"
       class="w-1/6"
-    />
-    <Column
-      field="y"
-      header="Y"
-      class="w-1/6"
-    />
+    >
+      <template #body="{data}: {data: Order}">
+        {{ data.x }}x{{ data.y }}
+      </template>
+    </Column>
   </DataTable>
   <DataTable
     v-if="orders?.filter(item => !item.sell).length"
@@ -67,7 +64,7 @@
       class="w-1/6"
     >
       <template #header>
-        <span class="invisible">Amount</span>
+        <span class="invisible">{{ t('orders.columns.amount') }}</span>
       </template>
     </Column>
     <Column
@@ -75,23 +72,17 @@
       class="w-1/6"
     >
       <template #header>
-        <span class="invisible">Price</span>
+        <span class="invisible">{{ t('orders.columns.price') }}</span>
       </template>
     </Column>
     <Column
-      field="x"
       class="w-1/6"
     >
       <template #header>
-        <span class="invisible">X</span>
+        <span class="invisible">{{ t('map.cell') }}</span>
       </template>
-    </Column>
-    <Column
-      field="y"
-      class="w-1/6"
-    >
-      <template #header>
-        <span class="invisible">Y</span>
+      <template #body="{data}: {data: Order}">
+        {{ data.x }}x{{ data.y }}
       </template>
     </Column>
   </DataTable>
@@ -103,6 +94,7 @@
     :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :header="!order.sell ? 'You\'ll sell' : 'You\'ll buy'"
+    @hide="messageData = {} as BackData; amount = 0"
   >
     <div class="flex flex-col gap-4">
       <MessageBlock
@@ -165,14 +157,17 @@ const showOrder = (event: DataTableRowClickEvent) => {
 }
 
 const buyRowClass = (data) => {
-  const index = orders.value.filter(item => !item.sell).findIndex(item => item.id === data.id)
+  const index = orders.value.filter(item => !item.sell).findIndex(item => item._id === data._id)
+  console.log(data)
+  console.log(orders.value)
+  console.log(orders.value.filter(item => !item.sell))
   const bg = index % 2 === 0 ? 'bg-green-50' : 'bg-green-100'
 
   return [bg, 'cursor-pointer hover:bg-gray-100']
 }
 
 const sellRowClass = (data) => {
-  const index = orders.value.filter(item => item.sell).findIndex(item => item.id === data.id)
+  const index = orders.value.filter(item => item.sell).findIndex(item => item._id === data._id)
   const bg = index % 2 === 0 ? 'bg-red-50' : 'bg-red-100'
 
   return [bg, 'cursor-pointer hover:bg-gray-100']
@@ -186,9 +181,11 @@ const execOrder = () => {
     messageData.value = data.value
 
     setTimeout(() => {
-      showModal.value = false
-      messageData.value = {} as BackData
-      execute()
+      if (!data.value.text) {
+        showModal.value = false
+        messageData.value = {} as BackData
+        execute()
+      }
     }, 2000)
   })
 }

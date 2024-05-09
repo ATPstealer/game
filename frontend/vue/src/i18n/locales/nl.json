@@ -19,6 +19,8 @@
     "builder": "Gebouw Bouwer",
     "coefficient efficiency": "Coëfficiënt efficiëntie",
     "construct new building": "Creëer Nieuwe Gebouw",
+    "destroy": "Vernietigen",
+    "destroyConfirm": "Weet u zeker dat u het gebouw wilt vernietigen?",
     "finish": "Voltooien",
     "hiring": {
       "average salary": "Gemiddeld salaris",
@@ -56,8 +58,8 @@
         "selling": "Verkopen"
       },
       "types": {
-        "grocery": "Kruidenier",
-        "gas station": "Tankstation"
+        "gas station": "Tankstation",
+        "grocery": "Kruidenier"
       }
     },
     "title": "Gebouwen",

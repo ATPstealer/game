@@ -19,6 +19,8 @@
     "builder": "Building Builder",
     "coefficient efficiency": "Coefficient efficiency",
     "construct new building": "Construct New Building",
+    "destroy": "Destroy",
+    "destroyConfirm": "Are you sure you want to destroy the building?",
     "finish": "Finish",
     "hiring": {
       "average salary": "Average salary",
@@ -56,8 +58,8 @@
         "selling": "Selling"
       },
       "types": {
-        "grocery": "Grocery",
-        "gas station": "Gas station"
+        "gas station": "Gas station",
+        "grocery": "Grocery"
       }
     },
     "title": "Buildings",

@@ -1,10 +1,15 @@
 import type { EventHookOn } from '@vueuse/core'
 import type { Ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMyFetch } from '@/composables/useMyFetch'
+import { useNotify } from '@/composables/useNotify'
 import type { BackData } from '@/types'
 import type { ConstructBuildingPayload, SearchBuildingParams } from '@/types/Buildings/index.interface'
 
 export const useBuildings = () => {
+  const  { setWarning } = useNotify()
+  const { t } = useI18n()
+
   const constructBuilding = (payload: ConstructBuildingPayload): {data: Ref<BackData>; onFetchFinally: EventHookOn<Response>} => {
     const { data, onFetchFinally } = useMyFetch('/building/construct').post(payload).json()
 
@@ -60,12 +65,24 @@ export const useBuildings = () => {
       onFetchResponse
     }
   }
+  const destroyBuilding = (id: string) => {
+    const { data, onFetchResponse } = useMyFetch(`/building/destroy?_id=${id}`).delete().json()
+
+    onFetchResponse(() => {
+      setWarning(t(`codes.${data.value.code.toString()}`))
+    })
+
+    return {
+      onFetchResponse
+    }
+  }
 
   return {
     constructBuilding,
     getBuildings,
     startProduction,
     setPrice,
-    setHiring
+    setHiring,
+    destroyBuilding
   }
 }

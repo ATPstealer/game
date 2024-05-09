@@ -25,6 +25,7 @@
         class="w-full"
         :feedback="false"
         input-id="password"
+        @keydown.enter="submit"
       />
       <label
         for="password"
