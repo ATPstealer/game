@@ -121,7 +121,7 @@ func GetMyLands(m *mongo.Database, userId primitive.ObjectID) ([]LandLord, error
 
 	cursor, err := m.Collection("landLords").Find(ctx, bson.M{"userId": userId})
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute mongoDB query: %w", err)
+		return nil, err
 	}
 
 	var landLords []LandLord
@@ -132,17 +132,21 @@ func GetMyLands(m *mongo.Database, userId primitive.ObjectID) ([]LandLord, error
 	return landLords, nil
 }
 
+func GetUserLandInCell(m *mongo.Database, userId primitive.ObjectID, x int, y int) (LandLord, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var landLord LandLord
+
+	err := m.Collection("landLords").FindOne(ctx, bson.M{"userId": userId, "x": x, "y": y}).Decode(&landLord)
+	return landLord, err
+}
+
 func CheckEnoughLandForBuilding(m *mongo.Database, userId primitive.ObjectID, square int, x int, y int) (bool, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	var myLandInCell LandLord
-	err := m.Collection("landLords").FindOne(ctx,
-		bson.M{
-			"userId": userId,
-			"x":      x,
-			"y":      y,
-		}).Decode(&myLandInCell)
+	myLandInCell, err := GetUserLandInCell(m, userId, x, y)
 	if err != nil {
 		log.Println("Can't get my cell lands: " + err.Error())
 		return false, err
