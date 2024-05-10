@@ -124,7 +124,7 @@ const { t } = useI18n()
 const { getMap } = useMap()
 const { data: map, isFetching: isMapFetching } = getMap()
 const getAverageSalary = () => {
-  if (map.value?.length) {
+  if (map.value?.length && props?.building) {
     return  map.value.filter(item => item.x === props.building.x && item.y === props.building.y)[0].averageSalary
   }
 
