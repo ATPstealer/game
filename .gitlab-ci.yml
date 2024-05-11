@@ -100,7 +100,7 @@ backend-scheduler-staging:
       --set-string cronjob.image.version=${CI_PIPELINE_IID}
       -f ./deployment/helm/application/backend-scheduler-staging-values.yaml
       --history-max 2
-      ./deployment/helm/scheduler
+      ./deployment/helm/application
   only:
     - master
     - /^ci-.*$/
