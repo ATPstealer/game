@@ -8,6 +8,7 @@ application:
   imagePullSecrets: image-pull-secrets
 
 service:
+  enabled: true
   name: frontend-vue-staging-srv
   port: 80
 

@@ -98,7 +98,7 @@ backend-scheduler-staging:
   script:
     - helm upgrade --install backend-scheduler-staging -n game
       --set-string cronjob.image.version=${CI_PIPELINE_IID}
-      -f ./deployment/helm/scheduler/backend-scheduler-staging-values.yaml
+      -f ./deployment/helm/application/backend-scheduler-staging-values.yaml
       --history-max 2
       ./deployment/helm/scheduler
   only:

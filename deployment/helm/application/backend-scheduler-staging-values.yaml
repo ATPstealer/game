@@ -1,12 +1,27 @@
-cronjob:
-  name: scheduler-staging
-  period: "*/1 * * * *"
+replicaCount: 1
+
+application:
+  name: backend-api-staging
   image:
-    name: registry.gl.kube.atpstealer.com/mav/game/backend-scheduler/staging
+    name: registry.gl.kube.atpstealer.com/mav/game/backend-api/staging
     version: 1
   imagePullSecrets: image-pull-secrets
 
+service:
+  enabled: false
+
+ingress:
+  enabled: false
+
 env:
+  - name: GOOGLE_API
+    secretKeyRef:
+      name: app
+      key: GOOGLE_API
+  - name: GOOGLE_SHEET_ID
+    secretKeyRef:
+      name: app
+      key: GOOGLE_SHEET_ID_STAGING
   - name: MONGO_DATABASE
     secretKeyRef:
       name: app
@@ -27,3 +42,4 @@ env:
     secretKeyRef:
       name: app
       key: MONGO_USER
+

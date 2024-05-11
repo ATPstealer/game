@@ -3,11 +3,12 @@ replicaCount: 1
 application:
   name: backend-api-staging
   image:
-    name: registry.gl.kube.atpstealer.com/mav/game/backend-api/staging
+    name: registry.gl.kube.atpstealer.com/mav/game/backend-scheduler/staging
     version: 1
   imagePullSecrets: image-pull-secrets
 
 service:
+  enabled: true
   name: backend-api-staging
   port: 8000
 
@@ -19,26 +20,6 @@ ingress:
   tls: false
 
 env:
-  - name: DB_DATABASE
-    secretKeyRef:
-      name: app
-      key: DB_DATABASE_STAGING
-  - name: DB_HOST
-    secretKeyRef:
-      name: app
-      key: DB_HOST
-  - name: DB_PASSWORD
-    secretKeyRef:
-      name: mysql-secrets
-      key: MYSQL_ROOT_PASSWORD
-  - name: DB_PORT
-    secretKeyRef:
-      name: app
-      key: DB_PORT
-  - name: DB_USER
-    secretKeyRef:
-      name: app
-      key: DB_USER
   - name: GOOGLE_API
     secretKeyRef:
       name: app
