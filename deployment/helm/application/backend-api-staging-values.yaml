@@ -3,7 +3,7 @@ replicaCount: 1
 application:
   name: backend-api-staging
   image:
-    name: registry.gl.kube.atpstealer.com/mav/game/backend-scheduler/staging
+    name: registry.gl.kube.atpstealer.com/mav/game/backend-api/staging
     version: 1
   imagePullSecrets: image-pull-secrets
 
