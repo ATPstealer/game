@@ -13,8 +13,9 @@
     <template #help>
       <slot name="buildingHelp" />
     </template>
-    <div v-if="!loading" />
-    <slot name="building" />
+    <div v-if="!loading">
+      <slot name="building" />
+    </div>
   </Layout>
 </template>
 
