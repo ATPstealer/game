@@ -15,8 +15,10 @@ spec:
       containers:
         - name: {{ .Values.application.name }}
           image: {{ .Values.application.image.name }}:{{ .Values.application.image.version }}
+          {{ if .Values.service.enabled}}
           ports:
             - containerPort: {{ .Values.service.port }}
+          {{ end }}
           env:
             {{- range .Values.env }}
             - name: {{ .name }}
