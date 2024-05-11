@@ -6,6 +6,7 @@ application:
     name: registry.gl.kube.atpstealer.com/mav/game/backend-scheduler/staging
     version: 1
   imagePullSecrets: image-pull-secrets
+  replicas: 1
 
 service:
   enabled: false

@@ -6,6 +6,7 @@ application:
     name: registry.gl.kube.atpstealer.com/mav/game/frontend-vue/staging
     version: 1
   imagePullSecrets: image-pull-secrets
+  replicas: 2
 
 service:
   enabled: true
