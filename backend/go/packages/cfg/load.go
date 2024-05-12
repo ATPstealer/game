@@ -11,7 +11,7 @@ type Vars struct {
 	Secure        bool   `env:"SECURE" default:"false"`
 	GoogleAPI     string `env:"GOOGLE_API"`
 	GoogleSheetID string `env:"GOOGLE_SHEET_ID"`
-	Init          bool   `env:"INIT" default:"true"` // change to separate run
+	Init          bool   `env:"INIT" default:"true"`
 	MongoUser     string `env:"MONGO_USER" default:"root"`
 	MongoPassword string `env:"MONGO_PASSWORD"`
 	MongoHost     string `env:"MONGO_HOST" default:"localhost"`

@@ -3,6 +3,10 @@ import i18n from '@/i18n'
 
 export const timeValues = computed(() => [
   {
+    value: 60 * 1000000000,
+    label: `${i18n.global.t('common.minute', 1)}`
+  },
+  {
     value: 3600 * 1000000000,
     label: `${i18n.global.t('common.hour', 1)}`
   },

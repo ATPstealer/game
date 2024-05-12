@@ -14,6 +14,11 @@ func main() {
 	cfg.LoadConfig()            // global cfg.Config
 	db.MongoConnect(cfg.Config) // global db.M
 
+	log.Printf("Run scheduler and init: " + time.Now().String())
+	alive(db.M)
+	models.Init(db.M, cfg.Config)
+	log.Printf("Finish of scheduler and init: " + time.Now().String())
+
 	everyMinute := time.NewTicker(1 * time.Minute)
 	every10Minutes := time.NewTicker(10 * time.Minute)
 

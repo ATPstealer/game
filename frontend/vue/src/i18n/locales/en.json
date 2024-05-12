@@ -106,6 +106,7 @@
     "day": "{n} day | {n} days",
     "from": "from",
     "hour": "{n} hour | {n} hours",
+    "minute": "{n} minute | {n} minutes",
     "in": "in",
     "level": "level",
     "move": "Move",

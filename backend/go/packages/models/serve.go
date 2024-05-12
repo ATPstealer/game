@@ -187,6 +187,11 @@ func importDataInTable(m *mongo.Database, tableName string, rows [][]interface{}
 			fmt.Println("Import table production_blueprints failed")
 		}
 	}
+	if tableName == "equipment_types" {
+		if err := equipmentTypesImport(m, rows); err != nil {
+			fmt.Println("Import table production_blueprints failed")
+		}
+	}
 	return nil
 }
 
@@ -325,6 +330,63 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
 		if err != nil {
 			log.Fatal("Error while updating resourceTypes:", err)
+		}
+	}
+	return nil
+}
+
+func equipmentTypesImport(m *mongo.Database, rows [][]interface{}) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
+	defer cancel()
+
+	for _, row := range rows[1:] {
+		id, err := strconv.ParseUint(row[1].(string), 10, 64)
+		if err != nil {
+			log.Println("Can't get Uint from Google sheet Id field: ", err)
+		}
+		resourceTypeId, err := strconv.ParseUint(row[3].(string), 10, 64)
+		if err != nil {
+			log.Println("Can't get Uint from Google sheet ResourceTypeId field: ", err)
+		}
+		durability, err := strconv.ParseInt(row[4].(string), 10, 32)
+		if err != nil {
+			log.Println("Can't get Int from Google sheet Durability field: ", err)
+		}
+		blueprintIds := make([]uint, 0)
+		if err := json.Unmarshal([]byte(row[5].(string)), &blueprintIds); err != nil {
+			log.Println("Error while unmarshalling BlueprintIds:", err)
+			return err
+		}
+		effectId, err := strconv.ParseUint(row[6].(string), 10, 64)
+		if err != nil {
+			log.Println("Can't get Uint from Google sheet EffectId field: ", err)
+		}
+		value, err := strconv.ParseFloat(row[7].(string), 64)
+		if err != nil {
+			log.Println("Can't get Float64 from Google sheet Value field: ", err)
+		}
+		square, err := strconv.ParseFloat(row[8].(string), 64)
+		if err != nil {
+			log.Println("Can't get Float64 from Google sheet Square field: ", err)
+		}
+
+		equipmentTypeMongo := EquipmentType{
+			Id:             uint(id),
+			Name:           row[2].(string),
+			ResourceTypeId: uint(resourceTypeId),
+			Durability:     int(durability),
+			BlueprintIds:   blueprintIds,
+			EffectId:       uint(effectId),
+			Value:          value,
+			Square:         square,
+		}
+
+		collection := m.Collection("equipmentTypes")
+		filter := bson.D{{"id", equipmentTypeMongo.Id}}
+		update := bson.D{{"$set", equipmentTypeMongo}}
+		_, err = collection.UpdateOne(ctx, filter, update, options.Update().SetUpsert(true))
+		if err != nil {
+			log.Fatal("Error while updating equipmentType:", err)
 		}
 	}
 	return nil
