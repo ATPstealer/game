@@ -87,6 +87,7 @@ const selectedBlueprint = ref<number>(0)
 const messageData = ref<BackData>()
 
 const { t } = useI18n()
+const { startProduction } = useBuildings()
 
 const { data, onFetchResponse } = useGetData('/building/blueprints')
 onFetchResponse(() => {
@@ -109,7 +110,6 @@ const selectBlueprint = (event: number) => {
 
 const start = () => {
   messageData.value = {} as BackData
-  const { startProduction } = useBuildings()
 
   const payload = {
     buildingId: props.building._id,
@@ -118,6 +118,7 @@ const start = () => {
   }
 
   const { data, onFetchResponse } = startProduction(payload)
+  
   onFetchResponse(() => {
     messageData.value = data.value
   })
