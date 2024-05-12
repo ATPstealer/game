@@ -1,7 +1,7 @@
 <template>
   <BuildingTemplate :building="building" :loading="isFetching">
     <template #building>
-      Storage
+      <StorageBuilding :building="building" />
     </template>
     <template #buildingHelp>
       <p>{{ t(`buildings.hiring.help`) }}</p>
@@ -13,6 +13,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import BuildingTemplate from '@/components/Buildings/BuildingTemplate.vue'
+import StorageBuilding from '@/components/Buildings/StorageBuilding/StorageBuilding.vue'
 import { useGetData } from '@/composables/useGetData'
 import type { Building } from '@/types/Buildings/index.interface'
 

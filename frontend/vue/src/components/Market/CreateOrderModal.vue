@@ -84,7 +84,7 @@
       :label="resource? t('common.sell') : t('common.create')"
       @click="create"
       class="self-center w-1/2 mt-4"
-      :disabled="!amount || !priceForUnit || !resourceTypeId"
+      :disabled="!amount || !priceForUnit || (!resource && !resourceTypeId)"
     />
   </div>
 </template>
