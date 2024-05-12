@@ -1,7 +1,6 @@
 <template>
   <DataTable
-    v-if="!isFetching"
-    :value="resources"
+    :value="resources?.filter(resource => resource?.resourceType?.name)"
     size="small"
     striped-rows
   >
@@ -10,7 +9,7 @@
     >
       <template #body="{data}: {data: Resource}">
         <span class="clickable-item" @click="openMoveResource(data)">
-          {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
+          {{ t(`resources.types.${data?.resourceType?.name?.toLowerCase()}`) }}
         </span>
       </template>
     </Column>
@@ -31,7 +30,6 @@
       </template>
     </Column>
   </DataTable>
-  <Loading v-else />
 
   <Dialog
     v-model:visible="moveResourcesModal"
@@ -67,13 +65,17 @@ import DataTable from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Loading from '@/components/Common/Loading.vue'
 import CreateOrderModal from '@/components/Market/CreateOrderModal.vue'
 import MoveResource from '@/components/Resources/MoveResource.vue'
-import { useGetData } from '@/composables/useGetData'
 import { Resource } from '@/types/Resources/index.interface'
 
-const { data: resources, isFetching, execute } = useGetData<Resource[]>('/resource/my')
+interface Props {
+  resources: Resource[];
+  execute: () => void;
+}
+
+const props = defineProps<Props>()
+
 const { t } = useI18n()
 
 const moveResourcesModal = ref<boolean>(false)
@@ -92,11 +94,11 @@ const openSellResource = (resource: Resource) => {
 
 const onCloseOrderModal = () => {
   sellResourcesModal.value = false
-  execute()
+  props.execute()
 }
 
 const onCloseMoveModal = () => {
   moveResourcesModal.value = false
-  execute()
+  props.execute()
 }
 </script>

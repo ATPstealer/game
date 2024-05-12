@@ -16,6 +16,7 @@
     <div v-if="!loading">
       <slot name="building" />
     </div>
+    <Loading v-else />
   </Layout>
 </template>
 
@@ -27,6 +28,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import Hiring from '@/components/Buildings/Hiring.vue'
 import Layout from '@/components/Common/Layout.vue'
+import Loading from '@/components/Common/Loading.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import type { Building } from '@/types/Buildings/index.interface'
 
