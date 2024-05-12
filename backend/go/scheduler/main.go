@@ -3,6 +3,7 @@ package main
 import (
 	"backend/packages/cfg"
 	"backend/packages/db"
+	"backend/packages/models"
 	"backend/scheduler/gameLive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
@@ -12,13 +13,25 @@ import (
 func main() {
 	cfg.LoadConfig()            // global cfg.Config
 	db.MongoConnect(cfg.Config) // global db.M
-	for {
-		start := time.Now()
-		log.Printf(start.String())
-		alive(db.M)
 
+	everyMinute := time.NewTicker(1 * time.Minute)
+	every10Minutes := time.NewTicker(10 * time.Minute)
+
+	defer everyMinute.Stop()
+	defer every10Minutes.Stop()
+
+	for {
 		select {
-		case <-time.After(time.Until(start.Add(1 * time.Minute))):
+		case <-everyMinute.C:
+			log.Printf("Scheduler start: " + time.Now().String())
+			alive(db.M)
+			log.Printf("Scheduler finish: " + time.Now().String())
+		case <-every10Minutes.C:
+			log.Printf("DB serve has been started: " + time.Now().String())
+			models.Init(db.M, cfg.Config)     // Init database if Config.Init is True
+			models.MongoIndex(db.M)           // Indexes for find nickname and email addresses due to registration
+			models.DeleteObsoleteTokens(db.M) // clean old user's tokens
+			log.Printf("DB serve has been finished: " + time.Now().String())
 		}
 	}
 }
