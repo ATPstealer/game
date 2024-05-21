@@ -158,9 +158,6 @@ const showOrder = (event: DataTableRowClickEvent) => {
 
 const buyRowClass = (data) => {
   const index = orders.value.filter(item => !item.sell).findIndex(item => item._id === data._id)
-  console.log(data)
-  console.log(orders.value)
-  console.log(orders.value.filter(item => !item.sell))
   const bg = index % 2 === 0 ? 'bg-green-50' : 'bg-green-100'
 
   return [bg, 'cursor-pointer hover:bg-gray-100']
