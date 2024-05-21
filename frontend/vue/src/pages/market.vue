@@ -82,7 +82,7 @@ const y = ref<number>()
 const currentResource = ref<number>(0)
 const params = ref<MarketParams>({} as MarketParams)
 const sellResourcesModal = ref<boolean>(false)
-const resourcesTypes = ref<ResourceType[]>([{ id: 0, name: 'All' }])
+const resourcesTypes = ref<ResourceType[]>([{ id: 0, name: 'All' } as ResourceType])
 
 const { data: settings } = useGetData<Record<Coords, number>>('/settings')
 const { data: resourcesTypesData, onFetchResponse } = useGetData<ResourceType[]>('/resource/types')
