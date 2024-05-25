@@ -172,12 +172,12 @@ func importFromDataSheet(m *mongo.Database) {
 }
 
 func importDataInTable(m *mongo.Database, tableName string, rows [][]interface{}) error {
-	if tableName == "building_types" {
+	if tableName == "buildingTypes" {
 		if err := buildingTypesImport(m, rows); err != nil {
 			fmt.Println("Import table building_types failed")
 		}
 	}
-	if tableName == "resource_types" {
+	if tableName == "resourceTypes" {
 		if err := resourceTypesImport(m, rows); err != nil {
 			fmt.Println("Import table resource_types failed")
 		}
@@ -187,7 +187,7 @@ func importDataInTable(m *mongo.Database, tableName string, rows [][]interface{}
 			fmt.Println("Import table production_blueprints failed")
 		}
 	}
-	if tableName == "equipment_types" {
+	if tableName == "equipmentTypes" {
 		if err := equipmentTypesImport(m, rows); err != nil {
 			fmt.Println("Import table production_blueprints failed")
 		}
