@@ -38,10 +38,6 @@ func CellAveragePrices(m *mongo.Database) {
 			}
 			demand := resourceType.Demand * cell.Population
 			cellGoods := findCellGoods(cell.X, cell.Y, resourceType.Id, &stores)
-			if cell.X == 0 && cell.Y == 0 {
-				log.Println(cellGoods, demand)
-
-			}
 			averagePrice := getAveragePrice(demand, cellGoods)
 			addOrChangeEvolutionPrice(&evolutionPrices, cell.X, cell.Y, resourceType.Id, averagePrice, demand)
 		}
