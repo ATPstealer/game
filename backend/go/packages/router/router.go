@@ -30,6 +30,7 @@ func MakeRouter() *gin.Engine {
 	building.POST("/construct", controllers.ConstructBuilding)
 	building.GET("/my", controllers.GetMyBuildings)
 	building.POST("/start_work", controllers.StartWork)
+	building.POST("/stop_work", controllers.StopWork)
 	building.POST("/hiring", controllers.SetHiring)
 	building.DELETE("/destroy", controllers.DestroyBuilding)
 

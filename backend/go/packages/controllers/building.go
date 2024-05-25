@@ -145,6 +145,32 @@ func StartWork(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -10})
 }
 
+func StopWork(c *gin.Context) {
+	var startWorkPayload models.StartWorkPayload
+	var err error
+	if err = include.GetPayload(c, &startWorkPayload); err != nil {
+		return
+	}
+
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	err = models.StopWork(db.M, userId, startWorkPayload)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "this building don't belong you") {
+			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"code": -13})
+}
+
 func SetHiring(c *gin.Context) {
 	var hiringPayload models.HiringPayload
 	if err := include.GetPayload(c, &hiringPayload); err != nil {

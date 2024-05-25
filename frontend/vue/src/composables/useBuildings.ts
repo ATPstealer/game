@@ -48,6 +48,15 @@ export const useBuildings = () => {
     }
   }
 
+  const stopWork = (payload: { buildingId: string }): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/building/stop_work').post(payload).json()
+
+    return {
+      data,
+      onFetchResponse
+    }
+  }
+
   const setPrice = (payload: { price: any; resourceTypeId: any; buildingId: string }) => {
     const { onFetchResponse, isFetching } = useMyFetch('/store/goods/set').post(payload).json()
 
@@ -81,6 +90,7 @@ export const useBuildings = () => {
     constructBuilding,
     getBuildings,
     startProduction,
+    stopWork,
     setPrice,
     setHiring,
     destroyBuilding

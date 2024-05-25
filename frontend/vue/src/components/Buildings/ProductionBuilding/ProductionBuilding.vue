@@ -1,8 +1,5 @@
 <template>
   <div class="flex flex-col gap-4" v-if="building?.buildingType?.title">
-    <h1 class="text-center">
-      {{ t('common.production') }} - {{ t(`buildings.types.${building.buildingType.title.toLowerCase()}`) }}
-    </h1>
     <MessageBlock
       v-if="messageData?.code"
       v-bind="messageData"

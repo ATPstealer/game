@@ -1,5 +1,6 @@
 {
   "codes": {
+    "-13": "Job was canceled",
     "-12": "Building has been destroyed :(",
     "-11": "Hiring details changed",
     "-10": "Job was started",

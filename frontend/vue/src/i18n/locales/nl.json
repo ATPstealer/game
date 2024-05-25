@@ -20,6 +20,7 @@
     "coefficient efficiency": "Coëfficiënt efficiëntie",
     "construct new building": "Creëer Nieuwe Gebouw",
     "destroy": "Vernietigen",
+    "stop work": "Stop werk",
     "destroyConfirm": "Weet u zeker dat u het gebouw wilt vernietigen?",
     "finish": "Voltooien",
     "hiring": {
@@ -121,7 +122,8 @@
     "to": "naar",
     "type": "type",
     "where": "Waar",
-    "yes": "Ja"
+    "yes": "Ja",
+    "confirm": "Weet je het zeker?"
   },
   "lands": {
     "title": "Landen"

@@ -1,9 +1,4 @@
 <template>
-  <h3 class="mb-5 text-center" v-if="building && building.buildingType && building.buildingType.buildingSubGroup">
-    {{ t(`buildings.store.types.${building.buildingType.buildingSubGroup.toLowerCase()}`) }}
-    {{ t(`buildings.store.name`) }}
-  </h3>
-
   <DataTable
     v-if="tableData?.length"
     :value="tableData"

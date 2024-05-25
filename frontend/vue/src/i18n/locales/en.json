@@ -21,6 +21,7 @@
     "construct new building": "Construct New Building",
     "destroy": "Destroy",
     "destroyConfirm": "Are you sure you want to destroy the building?",
+    "stop work": "Stop work",
     "finish": "Finish",
     "hiring": {
       "average salary": "Average salary",
@@ -122,7 +123,8 @@
     "to": "to",
     "type": "type",
     "where": "Where",
-    "yes": "Yes"
+    "yes": "Yes",
+    "confirm": "Are you sure?"
   },
   "lands": {
     "title": "Lands"

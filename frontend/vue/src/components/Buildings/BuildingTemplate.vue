@@ -9,6 +9,13 @@
         size="small"
         severity="danger"
       />
+      <Button
+          :label="t(`buildings.stop work`)"
+          @click="confirmStopWork($event, building._id)"
+          class="w-max"
+          size="small"
+          severity="danger"
+      />
     </template>
     <template #help>
       <slot name="buildingHelp" />
@@ -42,7 +49,7 @@ const { t } = useI18n()
 
 defineProps<Props>()
 
-const { destroyBuilding } = useBuildings()
+const { destroyBuilding, stopWork } = useBuildings()
 const confirm = useConfirm()
 
 const confirmDelete = (event: any, id: string) => {
@@ -63,6 +70,27 @@ const destroy = (id: string) => {
     router.push({ name: 'Buildings' })
   })
 }
+
+const confirmStopWork = (event: any, id: string) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: t('common.confirm'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger p-button-sm',
+    acceptLabel: t('common.yes'),
+    rejectLabel: t('common.no'),
+    accept: () => stop(id)
+  })
+}
+
+const stop = (id: string) => {
+  const payload = {
+    buildingId: id,
+  }
+  const { onFetchResponse } = stopWork(payload)
+  onFetchResponse(() => {})
+}
+
 </script>
 
 <style scoped>

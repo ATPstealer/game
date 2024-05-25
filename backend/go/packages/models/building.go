@@ -493,6 +493,34 @@ func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPa
 	return nil
 }
 
+func StopWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, payload.BuildingId)
+	if err != nil {
+		log.Println("Can't find buildings: " + err.Error())
+		return err
+	}
+
+	if building.UserId != userId {
+		err := errors.New("this building don't belong you")
+		log.Println(err)
+		return err
+	}
+
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
+		"$set": bson.M{
+			"status":      ReadyStatus,
+			"production":  nil,
+			"workStarted": nil,
+			"workEnd":     nil,
+		},
+	})
+
+	return err
+}
+
 func GetBuildingsStores(m *mongo.Database) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
