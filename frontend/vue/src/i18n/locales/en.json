@@ -21,7 +21,6 @@
     "construct new building": "Construct New Building",
     "destroy": "Destroy",
     "destroyConfirm": "Are you sure you want to destroy the building?",
-    "stop work": "Stop work",
     "finish": "Finish",
     "hiring": {
       "average salary": "Average salary",
@@ -43,6 +42,7 @@
       "use": "Use"
     },
     "status": "Status",
+    "stop work": "Stop work",
     "store": {
       "columns": {
         "name": "Name",
@@ -100,6 +100,7 @@
     "amount": "Amount",
     "build": "Build",
     "buy": "Buy",
+    "confirm": "Are you sure?",
     "construct": "Construct",
     "coordinates": "coordinates",
     "cost": "Cost",
@@ -107,9 +108,9 @@
     "day": "{n} day | {n} days",
     "from": "from",
     "hour": "{n} hour | {n} hours",
-    "minute": "{n} minute | {n} minutes",
     "in": "in",
     "level": "level",
+    "minute": "{n} minute | {n} minutes",
     "move": "Move",
     "no": "No",
     "owner": "Owner",
@@ -123,8 +124,7 @@
     "to": "to",
     "type": "type",
     "where": "Where",
-    "yes": "Yes",
-    "confirm": "Are you sure?"
+    "yes": "Yes"
   },
   "lands": {
     "title": "Lands"
@@ -211,6 +211,7 @@
       "iron": "Iron",
       "iron ore": "Iron ore",
       "livestock": "Livestock",
+      "machine tool": "Machine tool",
       "milk": "Milk",
       "oil": "Oil",
       "pasta": "Pasta",
@@ -220,6 +221,7 @@
       "rice": "Rice",
       "schlack": "Schlack",
       "soda": "Soda",
+      "toolbox": "Toolbox",
       "vegetables": "Vegetables",
       "water": "Water",
       "wood": "Wood"

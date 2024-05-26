@@ -20,7 +20,6 @@
     "coefficient efficiency": "Coëfficiënt efficiëntie",
     "construct new building": "Creëer Nieuwe Gebouw",
     "destroy": "Vernietigen",
-    "stop work": "Stop werk",
     "destroyConfirm": "Weet u zeker dat u het gebouw wilt vernietigen?",
     "finish": "Voltooien",
     "hiring": {
@@ -43,6 +42,7 @@
       "use": "Gebruik"
     },
     "status": "Status",
+    "stop work": "Stop werk",
     "store": {
       "columns": {
         "name": "Naam",
@@ -100,6 +100,7 @@
     "amount": "Bedrag",
     "build": "Bouw",
     "buy": "Koop",
+    "confirm": "Weet je het zeker?",
     "construct": "Bouw",
     "coordinates": "coördinaten",
     "cost": "Kosten",
@@ -122,8 +123,7 @@
     "to": "naar",
     "type": "type",
     "where": "Waar",
-    "yes": "Ja",
-    "confirm": "Weet je het zeker?"
+    "yes": "Ja"
   },
   "lands": {
     "title": "Landen"
@@ -210,6 +210,7 @@
       "iron": "Ijzer",
       "iron ore": "Ijzererts",
       "livestock": "Vee",
+      "machine tool": "Werktuigmachine",
       "milk": "Melk",
       "oil": "Olie",
       "pasta": "Pasta",
@@ -219,6 +220,7 @@
       "rice": "Rijst",
       "schlack": "Slak",
       "soda": "Frisdrank",
+      "toolbox": "Hulpmiddel",
       "vegetables": "Groenten",
       "water": "Water",
       "wood": "Hout"

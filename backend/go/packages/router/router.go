@@ -53,6 +53,9 @@ func MakeRouter() *gin.Engine {
 	resource.POST("/move", controllers.ResourceMove)
 	resource.GET("/my_logistics", controllers.GetMyLogistics)
 
+	equipment := router.Group("/api/v2/equipment")
+	equipment.GET("/types", controllers.GetEquipmentTypes)
+
 	storage := router.Group("/api/v2/storage")
 	storage.Use(AuthMiddleware())
 	storage.GET("/my", controllers.GetMyStorages)

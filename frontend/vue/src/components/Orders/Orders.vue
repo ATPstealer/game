@@ -1,6 +1,6 @@
 <template>
   <h2 class="mb-5 text-center">
-    {{ t(`storages.title`) }}
+    {{ t(`orders.title`) }}
   </h2>
   <DataTable
     v-if="!isFetching"
