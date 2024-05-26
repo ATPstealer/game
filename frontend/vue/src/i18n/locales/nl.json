@@ -21,7 +21,7 @@
     "construct new building": "Creëer Nieuwe Gebouw",
     "destroy": "Vernietigen",
     "destroyConfirm": "Weet u zeker dat u het gebouw wilt vernietigen?",
-    "finish": "Voltooien",
+    "finish": "Finish",
     "hiring": {
       "average salary": "Gemiddeld salaris",
       "help": "Inhuren vindt één keer per dag plaats. Om 00:00Z. Hoe hoger het salaris, hoe meer werknemers naar uw onderneming zullen komen. Stel het vereiste aantal werknemers in in de kolom “Inhuurbehoeften”.",
@@ -253,5 +253,8 @@
     "planning": "Planning",
     "title": "Gebruiker",
     "wits": "Geestigheid"
+  },
+  "equipment": {
+    "title": "Apparatuur"
   }
 }

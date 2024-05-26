@@ -55,6 +55,8 @@ func MakeRouter() *gin.Engine {
 
 	equipment := router.Group("/api/v2/equipment")
 	equipment.GET("/types", controllers.GetEquipmentTypes)
+	equipment.Use(AuthMiddleware())
+	equipment.GET("/my", controllers.GetMyEquipment)
 
 	storage := router.Group("/api/v2/storage")
 	storage.Use(AuthMiddleware())

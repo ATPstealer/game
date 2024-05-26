@@ -1,4 +1,4 @@
-export const userPages = ['main', 'buildings', 'lands', 'resources', 'logistics', 'storages', 'orders']
+export const userPages = ['main', 'buildings', 'lands', 'resources', 'equipment', 'logistics', 'storages', 'orders']
 
 export const worldPages = ['map', 'search-building', 'market' ]
 

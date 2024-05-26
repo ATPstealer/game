@@ -29,6 +29,17 @@ type ResourceWithData struct {
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 }
 
+type ResourceAsEquipment struct {
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
+	Amount         float64            `json:"amount" bson:"amount"`
+	X              int                `json:"x" bson:"x"`
+	Y              int                `json:"y" bson:"y"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+	EquipmentType  EquipmentType      `json:"equipmentType" bson:"equipmentType"`
+}
+
 func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -86,7 +97,7 @@ func AddResource(m *mongo.Database, resourceTypeId uint, userId primitive.Object
 	return err
 }
 
-func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int) ([]bson.M, error) {
+func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int) ([]ResourceWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -119,28 +130,11 @@ func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int
 		return nil, err
 	}
 
-	var resources []bson.M
+	var resources []ResourceWithData
 	if err = cursor.All(ctx, &resources); err != nil {
 		log.Println(err)
 	}
 	return resources, nil
-}
-
-func GetResourceInCell(m *mongo.Database, resourceTypeID uint, userId primitive.ObjectID, x int, y int) (Resource, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	var resource Resource
-	err := m.Collection("resources").FindOne(ctx, bson.M{
-		"userId":         userId,
-		"x":              x,
-		"y":              y,
-		"resourceTypeId": resourceTypeID,
-	}).Decode(&resource)
-	if err != nil {
-		log.Println("Can't get resources: " + err.Error())
-	}
-	return resource, err
 }
 
 func CheckEnoughResources(m *mongo.Database, resourceTypeId uint, userId primitive.ObjectID, x int, y int, amount float64) bool {
@@ -159,4 +153,57 @@ func CheckEnoughResources(m *mongo.Database, resourceTypeId uint, userId primiti
 	}
 
 	return resource.Amount >= amount
+}
+
+func GetMyEquipment(m *mongo.Database, userId primitive.ObjectID, x *int, y *int) ([]ResourceAsEquipment, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{}
+	filter = append(filter, bson.E{Key: "userId", Value: userId})
+	if x != nil {
+		filter = append(filter, bson.E{Key: "x", Value: *x})
+	}
+	if y != nil {
+		filter = append(filter, bson.E{Key: "y", Value: *y})
+	}
+
+	matchStage := bson.D{{"$match", filter}}
+	lookupResourceType := bson.D{{"$lookup", bson.D{
+		{"from", "resourceTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "id"},
+		{"as", "resourceType"},
+	}}}
+	unwindResourceType := bson.D{{"$unwind", bson.D{
+		{"path", "$resourceType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	lookupEquipmentType := bson.D{{"$lookup", bson.D{
+		{"from", "equipmentTypes"},
+		{"localField", "resourceTypeId"},
+		{"foreignField", "resourceTypeId"},
+		{"as", "equipmentType"},
+	}}}
+	unwindEquipmentType := bson.D{{"$unwind", bson.D{
+		{"path", "$equipmentType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	filterEquipment := bson.D{{"$match", bson.D{{"equipmentType", bson.D{{"$not", bson.D{{"$size", 0}}}}}}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupEquipmentType, filterEquipment, unwindEquipmentType, lookupResourceType, unwindResourceType}
+
+	cursor, err := m.Collection("resources").Aggregate(ctx, pipeline)
+	if err != nil {
+		log.Println("Can't get resources: " + err.Error())
+		return nil, err
+	}
+
+	var resources []ResourceAsEquipment
+	if err = cursor.All(ctx, &resources); err != nil {
+		log.Println(err)
+	}
+	return resources, nil
 }
