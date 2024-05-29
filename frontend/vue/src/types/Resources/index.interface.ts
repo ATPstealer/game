@@ -5,10 +5,11 @@ export interface Resource {
   x: number;
   y: number;
   resourceType: ResourceType;
+  name: string;
 }
 
 export interface ResourceAmount {
-  resourceId: number;
+  resourceId: string;
   amount: number;
 }
 

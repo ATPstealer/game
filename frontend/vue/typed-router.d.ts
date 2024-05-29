@@ -54,6 +54,7 @@ declare module 'vue-router/auto/routes' {
     'Resources': RouteRecordInfo<'Resources', '/resources', Record<never, never>, Record<never, never>>,
     'SearchBuilding': RouteRecordInfo<'SearchBuilding', '/search-building', Record<never, never>, Record<never, never>>,
     'Storages': RouteRecordInfo<'Storages', '/storages', Record<never, never>, Record<never, never>>,
+    'Test': RouteRecordInfo<'Test', '/test', Record<never, never>, Record<never, never>>,
   }
 }
 
