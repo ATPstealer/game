@@ -12,7 +12,7 @@
 
   <div class="flex justify-between mt-10 h-[500px]">
     <div class="self-center">
-      <div v-if="produce.length" class="flex flex-col gap-2">
+      <div v-if="parts.length" class="flex flex-col gap-2">
         <span
           class="item"
           v-for="partResource in parts"
@@ -66,7 +66,7 @@ const produce = computed(() => {
       return resource.resourceId === chosen.value?.id
     })
   })
-
+  console.log('propduce', bpUsed)
   const used = bpUsed.map(item => item.producedResources.map(i => i.resourceId)).flat()
 
   const ids = uniq(used)
@@ -84,6 +84,8 @@ const parts  = computed(() => {
       return resource.resourceId === chosen.value?.id
     })
   })
+
+  console.log('parts', bpUsed)
 
   const used = bpUsed.map(item => item.usedResources.map(i => i.resourceId)).flat()
 
