@@ -12,11 +12,12 @@
 
   <div class="flex justify-between mt-10 h-[500px]">
     <div class="self-center">
-      <div v-if="produce.length" class="flex flex-col gap-2">
+      <div v-if="parts.length" class="flex flex-col gap-2">
         <span
           class="item"
           v-for="partResource in parts"
           :key="partResource.id"
+          @click="chosen = partResource"
         >
           {{ partResource.name }}
         </span>
@@ -35,6 +36,7 @@
           class="item"
           v-for="producedResource in produce"
           :key="producedResource.id"
+          @click="chosen = producedResource"
         >
           {{ producedResource.name }}
         </span>
