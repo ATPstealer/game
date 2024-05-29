@@ -1,5 +1,6 @@
 export interface Resource {
   _id: string;
+  id: string;
   resourceTypeId: number;
   amount: number;
   x: number;

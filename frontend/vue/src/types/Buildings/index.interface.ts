@@ -9,6 +9,8 @@ export interface ConstructBuildingPayload {
 
 export interface Building {
   _id: string;
+  id: string;
+  title: string;
   typeId: number;
   square: number;
   x: number;
@@ -44,7 +46,7 @@ export interface Blueprint {
   name: string;
   producedResources: ResourceAmount[];
   usedResources: ResourceAmount[];
-  producedInId: number;
+  producedInId: string;
   productionTime: number;
 }
 
