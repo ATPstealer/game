@@ -33,8 +33,8 @@
     <Divider layout="vertical" />
     <div class="column-block">
       <span class="column-header">Resource</span>
-      <div v-if="chosen">
-        <span>{{ chosen.name }}</span>
+      <div v-if="chosen" class="flex flex-col gap-2">
+        <span class="text-xl underline text-center">{{ chosen.name }}</span>
         <div v-if="computedData?.blueprints?.length" class="flex flex-col gap-2">
           <Divider />
           <span>Blueprints</span>
