@@ -3,7 +3,7 @@
     <span
       v-for="resource in resourceTypes"
       :key="resource._id"
-      class="p-2 border border-solid cursor-pointer hover:bg-amber-100"
+      class="item"
       @click="chosen = resource"
     >
       {{ resource.name }}
@@ -11,7 +11,17 @@
   </div>
 
   <div class="flex justify-between mt-10 h-[500px]">
-    <div>1</div>
+    <div class="self-center">
+      <div v-if="produce.length" class="flex flex-col gap-2">
+        <span
+          class="item"
+          v-for="partResource in parts"
+          :key="partResource.id"
+        >
+          {{ partResource.name }}
+        </span>
+      </div>
+    </div>
     <Divider layout="vertical" />
     <div class="self-center">
       <div v-if="chosen">
@@ -19,13 +29,22 @@
       </div>
     </div>
     <Divider layout="vertical" />
-    <div>3</div>
+    <div class="self-center">
+      <div v-if="produce.length" class="flex flex-col gap-2">
+        <span
+          class="item"
+          v-for="producedResource in produce"
+          :key="producedResource.id"
+        >
+          {{ producedResource.name }}
+        </span>
+      </div>
+    </div>
   </div>
-
-  {{ produce }}
 </template>
 
 <script setup lang="ts">
+import { uniq } from 'lodash'
 import Divider from 'primevue/divider'
 import { computed, ref } from 'vue'
 import { useGetData } from '@/composables/useGetData'
@@ -42,17 +61,17 @@ const produce = computed(() => {
     return []
   }
 
-  const bp = blueprints.value.filter(item => {
+  const bpUsed = blueprints.value.filter(item => {
     return item.usedResources.some(resource => {
       return resource.resourceId === chosen.value?.id
     })
   })
 
-  const result = bp.map(item => {
+  const used = bpUsed.map(item => item.producedResources.map(i => i.resourceId)).flat()
 
-  })
+  const ids = uniq(used)
 
-  return []
+  return resourceTypes?.value.filter(item => ids.includes(item.id))
 })
 
 const parts  = computed(() => {
@@ -60,18 +79,23 @@ const parts  = computed(() => {
     return []
   }
 
-  const bp = blueprints.value.filter(item => {
-    console.log(item)
-
-    return item.producedResources.some(resource => resource.resourceId === chosen.value?._id)
+  const bpUsed = blueprints.value.filter(item => {
+    return item.producedResources.some(resource => {
+      return resource.resourceId === chosen.value?.id
+    })
   })
-  console.log(bp)
 
-  return []
+  const used = bpUsed.map(item => item.usedResources.map(i => i.resourceId)).flat()
+
+  const ids = uniq(used)
+
+  return resourceTypes?.value.filter(item => ids.includes(item.id))
 })
 
 </script>
 
 <style scoped>
-
+.item {
+  @apply p-2 border border-solid cursor-pointer hover:bg-amber-100;
+}
 </style>
