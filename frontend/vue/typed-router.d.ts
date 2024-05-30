@@ -51,10 +51,10 @@ declare module 'vue-router/auto/routes' {
     'Map': RouteRecordInfo<'Map', '/map', Record<never, never>, Record<never, never>>,
     'Market': RouteRecordInfo<'Market', '/market', Record<never, never>, Record<never, never>>,
     'Orders': RouteRecordInfo<'Orders', '/orders', Record<never, never>, Record<never, never>>,
+    'Pipelines': RouteRecordInfo<'Pipelines', '/pipelines', Record<never, never>, Record<never, never>>,
     'Resources': RouteRecordInfo<'Resources', '/resources', Record<never, never>, Record<never, never>>,
     'SearchBuilding': RouteRecordInfo<'SearchBuilding', '/search-building', Record<never, never>, Record<never, never>>,
     'Storages': RouteRecordInfo<'Storages', '/storages', Record<never, never>, Record<never, never>>,
-    'Test': RouteRecordInfo<'Test', '/test', Record<never, never>, Record<never, never>>,
   }
 }
 

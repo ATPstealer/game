@@ -1,19 +1,19 @@
 <template>
-  <div v-if="resourceTypes?.length" class="flex gap-2 flex-wrap">
-    <span
-      v-for="resource in resourceTypes"
-      :key="resource.id"
-      class="item item-hover"
-      @click="chosen = resource"
-      :class="{'bg-amber-100' : resource.id === chosen?.id }"
-    >
-      {{ resource.name }}
-    </span>
-  </div>
-
-  <div class="flex justify-evenly items-center mt-10 h-[600px]">
-    <div class="column-block">
-      <span class="column-header">Produced from</span>
+  <PipelinesTemplate :headers="headers">
+    <template #items>
+      <div v-if="resourceTypes?.length" class="flex gap-2 flex-wrap">
+        <span
+          v-for="resource in resourceTypes"
+          :key="resource.id"
+          class="pipeline-item pipeline-item-hover"
+          :class="{'bg-amber-100' : resource.id === chosen?.id }"
+          @click="chosen = resource"
+        >
+          {{ t(`resources.types.${resource.name.toLowerCase()}`) }}
+        </span>
+      </div>
+    </template>
+    <template #first-column>
       <div v-if="computedData?.usedResources?.length" class="flex flex-col gap-2">
         <div
           v-for="partResource in computedData.usedResources"
@@ -21,29 +21,27 @@
           class="flex relative"
         >
           <span
-            class="item item-hover"
+            class="pipeline-item pipeline-item-hover"
             @click="chosen = partResource"
           >
-            {{ partResource.name }}
+            {{ t(`resources.types.${partResource.name.toLowerCase()}`) }}
           </span>
           <span class="font-bold absolute -right-4 translate-x-full top-1/2 -translate-y-1/2">{{ getAmount(partResource) }}</span>
         </div>
       </div>
-    </div>
-    <Divider layout="vertical" />
-    <div class="column-block">
-      <span class="column-header">Resource</span>
+    </template>
+    <template #second-column>
       <div v-if="chosen" class="flex flex-col gap-2">
-        <span class="text-xl underline text-center">{{ chosen.name }}</span>
+        <span class="text-xl underline text-center">{{ t(`resources.types.${chosen.name.toLowerCase()}`) }}</span>
         <div v-if="computedData?.blueprints?.length" class="flex flex-col gap-2">
           <Divider />
           <span>Blueprints</span>
           <div
             v-for="bp in computedData.blueprints"
             :key="bp.id"
-            class="item item-hover"
-            @mouseover="bpHovered = bp"
+            class="pipeline-item pipeline-item-hover"
             @mouseleave="bpHovered = {} as Blueprint"
+            @mouseover="bpHovered = bp"
           >
             {{ bp.name }}
           </div>
@@ -54,39 +52,47 @@
           <div
             v-for="building in computedData.buildings"
             :key="building.id"
-            class="item !cursor-default"
+            class="pipeline-item !cursor-default"
           >
-            {{ building.title }}
+            {{ t(`buildings.types.${building.title.toLowerCase()}`) }}
           </div>
         </div>
       </div>
-    </div>
-    <Divider layout="vertical" />
-    <div class="column-block">
-      <span class="column-header">Used in</span>
-      <div v-if="computedData?.producedResources?.length" class="flex flex-col gap-2 m-auto">
+    </template>
+    <template #third-column>
+      <div
+        v-if="computedData?.producedResources?.length"
+        class="flex flex-col gap-2 m-auto"
+        :class="{'pipeline-column-grid': computedData?.producedResources?.length > 10}"
+      >
         <span
-          class="item item-hover"
           v-for="producedResource in computedData.producedResources"
           :key="producedResource.id"
+          class="pipeline-item pipeline-item-hover"
           @click="chosen = producedResource"
         >
-          {{ producedResource.name }}
+          {{ t(`resources.types.${producedResource.name.toLowerCase()}`) }}
         </span>
       </div>
-    </div>
-  </div>
+    </template>
+  </PipelinesTemplate>
 </template>
 
 <script setup lang="ts">
 import { uniq } from 'lodash'
 import isEmpty from 'lodash/isEmpty'
 import Divider from 'primevue/divider'
-import { computed, ref } from 'vue'
-import { useGetData } from '@/composables/useGetData'
+import { computed, ref, toRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+import PipelinesTemplate from '@/components/Pipelines/PipelinesTemplate.vue'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { Resource } from '@/types/Resources/index.interface'
 
+interface Props {
+  resourceTypes: Resource[];
+  blueprints: Blueprint[];
+  buildingsTypes: Building[];
+}
 interface Pipeline {
   usedResources: Resource[];
   producedResources: Resource[];
@@ -94,12 +100,17 @@ interface Pipeline {
   buildings: Building[];
 }
 
-const chosen = ref<Resource>()
+const props = defineProps<Props>()
+const resourceTypes = toRef(props, 'resourceTypes')
+const blueprints = toRef(props, 'blueprints')
+const buildingsTypes = toRef(props, 'buildingsTypes')
+
+const chosen = ref<Resource>(resourceTypes?.value?.[0] || {} as Resource)
 const bpHovered = ref<Blueprint>({} as Blueprint)
 
-const { data: resourceTypes } = useGetData<Resource[]>('/resource/types')
-const { data: blueprints } = useGetData<Blueprint[]>('/building/blueprints')
-const { data: buildingsTypes } = useGetData<Building[]>('/building/types')
+const { t } = useI18n()
+// TODO: добавить переводы
+const headers = ['Produced from', 'Resource', 'Used in']
 
 const computedData = computed<Pipeline>(() => {
   if (!chosen.value) {
@@ -141,19 +152,5 @@ const getAmount = (resource: Resource) => {
 </script>
 
 <style scoped>
-.item {
-  @apply p-2 border border-solid cursor-pointer min-w-[120px] flex justify-center;
-}
 
-.item-hover {
-  @apply hover:bg-amber-100;
-}
-
-.column-block {
-  @apply min-w-[200px] relative h-full flex items-center justify-center;
-}
-
-.column-header {
-  @apply absolute top-0 text-lg font-bold;
-}
 </style>

@@ -236,6 +236,24 @@ module.exports = {
     '@typescript-eslint/type-annotation-spacing': 'error',
 
     // добавляем строчку перед return
-    'newline-before-return': 'error'
+    'newline-before-return': 'error',
+
+    // сортировка пропсов компонентов и блоков
+    "vue/attributes-order": ["warn", {
+      "order": [
+        "DEFINITION",
+        "LIST_RENDERING",
+        "CONDITIONALS",
+        "RENDER_MODIFIERS",
+        "GLOBAL",
+        ["UNIQUE", "SLOT"],
+        "TWO_WAY_BINDING",
+        "OTHER_DIRECTIVES",
+        "OTHER_ATTR",
+        "CONTENT",
+        "EVENTS",
+      ],
+      "alphabetical": true
+    }],
   }
 }

@@ -25,6 +25,7 @@ export interface Building {
   onStrike: boolean;
   buildingType: BuildingType;
   goods: Goods[];
+  buildingGroup: string;
 }
 
 export interface BuildingType {

@@ -2,16 +2,16 @@
   <div class="flex justify-between items-center w-full">
     <div class="flex gap-8">
       <Button
+        aria-controls="overlay_user"
+        aria-haspopup="true"
+        class="header-item"
+        :label="t('menu.business')"
         text
         @click="toggleUserItems"
-        :label="t('menu.business')"
-        aria-haspopup="true"
-        aria-controls="overlay_user"
-        class="header-item"
       />
       <Menu
-        ref="userMenu"
         id="overlay_user"
+        ref="userMenu"
         :model="userItems"
         :popup="true"
       >
@@ -26,17 +26,41 @@
         </template>
       </Menu>
       <Button
+        aria-controls="overlay_world"
+        aria-haspopup="true"
+        class="header-item"
+        :label="t('menu.world')"
         text
         @click="toggleWorldItems"
-        :label="t('menu.world')"
-        aria-haspopup="true"
-        aria-controls="overlay_world"
-        class="header-item"
       />
       <Menu
-        ref="worldMenu"
         id="overlay_world"
+        ref="worldMenu"
         :model="worldItems"
+        :popup="true"
+      >
+        <template #item="{item}">
+          <router-link
+            active-class="font-bold"
+            class="menu-item"
+            :to="item.path"
+          >
+            {{ item.label }}
+          </router-link>
+        </template>
+      </Menu>
+      <Button
+        aria-controls="overlay_help"
+        aria-haspopup="true"
+        class="header-item"
+        :label="t('menu.help')"
+        text
+        @click="toggleHelpItems"
+      />
+      <Menu
+        id="overlay_help"
+        ref="helpMenu"
+        :model="helpItems"
         :popup="true"
       >
         <template #item="{item}">
@@ -53,16 +77,16 @@
     <div class="flex items-center gap-8">
       <div v-if="!user?.nickName" class="flex gap-4">
         <Button
-          :label="t('account.login')"
-          @click="emits('show-login')"
           class="text-white"
+          :label="t('account.login')"
           severity="success"
+          @click="emits('show-login')"
         />
         <Button
-          :label="t('account.signup')"
-          @click="emits('show-signup')"
           class="text-white"
+          :label="t('account.signup')"
           severity="info"
+          @click="emits('show-signup')"
         />
       </div>
       <div v-else class="flex items-center gap-4">
@@ -73,9 +97,9 @@
           {{ moneyFormat(user?.money) }}
         </p>
         <Button
-          text
-          :label="t('account.logout')"
           class="header-item p-0"
+          :label="t('account.logout')"
+          text
           @click="emits('sign-out')"
         />
       </div>
@@ -99,6 +123,7 @@ interface Props {
   user: User | undefined;
   userItems: MenuItem[];
   worldItems: MenuItem[];
+  helpItems: MenuItem[];
 }
 
 defineProps<Props>()
@@ -111,6 +136,7 @@ const emits = defineEmits<{
 
 const userMenu = ref()
 const worldMenu = ref()
+const helpMenu = ref()
 
 const { t } = useI18n()
 
@@ -119,6 +145,10 @@ const toggleUserItems = (event) => {
 }
 const toggleWorldItems = (event) => {
   worldMenu.value.toggle(event)
+}
+
+const toggleHelpItems = (event) => {
+  helpMenu.value.toggle(event)
 }
 </script>
 

@@ -98,7 +98,10 @@
   },
   "common": {
     "amount": "Amount",
+    "blueprint": "Blueprint",
     "build": "Build",
+    "building": "Building",
+    "buildings": "{n} building | {n} buildings",
     "buy": "Buy",
     "confirm": "Are you sure?",
     "construct": "Construct",
@@ -125,6 +128,9 @@
     "type": "type",
     "where": "Where",
     "yes": "Yes"
+  },
+  "equipment": {
+    "title": "Equipment"
   },
   "lands": {
     "title": "Lands"
@@ -157,6 +163,7 @@
   },
   "menu": {
     "business": "Business",
+    "help": "Help",
     "world": "World"
   },
   "orders": {
@@ -172,6 +179,9 @@
     },
     "help": "To close an order, click on his type.",
     "title": "Orders"
+  },
+  "pipelines": {
+    "title": "Pipelines"
   },
   "resources": {
     "choose": "Сhoose resource",
@@ -254,8 +264,5 @@
     "planning": "Planning",
     "title": "User",
     "wits": "Wits"
-  },
-  "equipment": {
-    "title": "Equipment"
   }
 }

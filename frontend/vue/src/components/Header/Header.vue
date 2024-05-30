@@ -2,39 +2,41 @@
   <header>
     <div class="bg-gray-500 h-8 py-8 px-4 flex">
       <HeaderDesktop
+        class="hidden md:flex"
+        :help-items="helpItems"
         :user="user"
         :user-items="userItems"
         :world-items="worldItems"
         @show-login="loginModal = true"
         @show-signup="signUpModal = true"
         @sign-out="signOut"
-        class="hidden md:flex"
       />
       <HeaderMobile
+        class="md:hidden"
+        :help-items="helpItems"
         :user="user"
         :user-items="userItems"
         :world-items="worldItems"
         @show-login="loginModal = true"
         @show-signup="signUpModal = true"
         @sign-out="signOut"
-        class="md:hidden"
       />
     </div>
     <Dialog
       v-model:visible="loginModal"
-      modal
-      :header="t('account.login')"
-      :style="{ width: '25rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      :header="t('account.login')"
+      modal
+      :style="{ width: '25rem' }"
     >
       <LoginForm @close="close" @sign-up="loginModal = false; signUpModal = true" />
     </Dialog>
     <Dialog
       v-model:visible="signUpModal"
-      modal
-      :header="t('account.signup')"
-      :style="{ width: '25rem' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      :header="t('account.signup')"
+      modal
+      :style="{ width: '25rem' }"
     >
       <SignUpForm @close="close" @log-in="signUpModal = false; loginModal = true" />
     </Dialog>
@@ -48,7 +50,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import LoginForm from '@/components/Common/LoginForm.vue'
 import SignUpForm from '@/components/Common/SignUpForm.vue'
-import { userPages, worldPages } from '@/components/Header/constants'
+import { helpPages, userPages, worldPages } from '@/components/Header/constants'
 import HeaderDesktop from '@/components/Header/HeaderDesktop.vue'
 import HeaderMobile from '@/components/Header/HeaderMobile.vue'
 import { useGetData } from '@/composables/useGetData'
@@ -73,6 +75,15 @@ const userItems = computed<MenuItem[]>(() =>
 
 const worldItems = computed<MenuItem[]>(() =>
   worldPages.map(page => {
+    return {
+      label: t(`${page}.title`),
+      path: `/${page}`
+    }
+  })
+)
+
+const helpItems = computed<MenuItem[]>(() =>
+  helpPages.map(page => {
     return {
       label: t(`${page}.title`),
       path: `/${page}`

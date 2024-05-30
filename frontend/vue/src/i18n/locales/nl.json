@@ -98,7 +98,10 @@
   },
   "common": {
     "amount": "Bedrag",
+    "blueprint": "Blauwdruk",
     "build": "Bouw",
+    "building": " gebouw",
+    "buildings": "{n} gebouw | {n} gebouwen",
     "buy": "Koop",
     "confirm": "Weet je het zeker?",
     "construct": "Bouw",
@@ -124,6 +127,9 @@
     "type": "type",
     "where": "Waar",
     "yes": "Ja"
+  },
+  "equipment": {
+    "title": "Apparatuur"
   },
   "lands": {
     "title": "Landen"
@@ -156,6 +162,7 @@
   },
   "menu": {
     "business": "Zaken",
+    "help": "Hulp",
     "world": "Wereld"
   },
   "orders": {
@@ -171,6 +178,9 @@
     },
     "help": "Om een bestelling te sluiten, klik op zijn type.",
     "title": "Bestellingen"
+  },
+  "pipelines": {
+    "title": "Pipelinieën"
   },
   "resources": {
     "choose": "Kies resource",
@@ -253,8 +263,5 @@
     "planning": "Planning",
     "title": "Gebruiker",
     "wits": "Geestigheid"
-  },
-  "equipment": {
-    "title": "Apparatuur"
   }
 }
