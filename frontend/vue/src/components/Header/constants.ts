@@ -2,6 +2,8 @@ export const userPages = ['main', 'buildings', 'lands', 'resources', 'equipment'
 
 export const worldPages = ['map', 'search-building', 'market' ]
 
+export const helpPages = ['pipelines']
+
 export const languages = [
   {
     key: 'en',
