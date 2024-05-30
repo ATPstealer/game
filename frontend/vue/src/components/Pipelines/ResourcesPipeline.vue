@@ -63,7 +63,7 @@
       <div
         v-if="computedData?.producedResources?.length"
         class="flex flex-col gap-2 m-auto"
-        :class="{'pipeline-column-grid': computedData?.producedResources?.length > 10}"
+        :class="{'!grid !grid-cols-2': computedData?.producedResources?.length > 10}"
       >
         <span
           v-for="producedResource in computedData.producedResources"

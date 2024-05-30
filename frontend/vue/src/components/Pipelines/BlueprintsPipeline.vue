@@ -29,7 +29,7 @@
       <div
         v-if="computedData?.prodBlueprints?.length"
         class="flex flex-col gap-2"
-        :class="{'pipeline-column-grid': computedData?.prodBlueprints?.length > 10}"
+        :class="{'!grid !grid-cols-2': computedData?.prodBlueprints?.length > 10}"
       >
         <div v-for="item in computedData.prodBlueprints" :key="item.id">
           <span class="pipeline-item pipeline-item-hover" @click="chosen = item">{{ t(`buildings.types.${item.name.toLowerCase()}`) }}</span>
