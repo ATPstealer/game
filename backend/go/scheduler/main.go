@@ -15,8 +15,8 @@ func main() {
 	db.MongoConnect(cfg.Config) // global db.M
 
 	log.Printf("Run scheduler and init: " + time.Now().String())
-	alive(db.M)
 	models.Init(db.M, cfg.Config)
+	alive(db.M)
 	log.Printf("Finish of scheduler and init: " + time.Now().String())
 
 	everyMinute := time.NewTicker(1 * time.Minute)
