@@ -126,10 +126,20 @@
     "to": "naar",
     "type": "type",
     "where": "Waar",
-    "yes": "Ja"
+    "yes": "Ja",
+    "value": "Waarde"
   },
   "equipment": {
-    "title": "Apparatuur"
+    "title": "Apparatuur",
+    "columns": {
+      "name": "Apparatuur",
+      "effect": "Effect",
+      "durability": "Duurzaamheid"
+    },
+    "effect": {
+      "1": "Voegt productiviteit van werknemers toe",
+      "2": "Verminder de vervuiling"
+    }
   },
   "lands": {
     "title": "Landen"

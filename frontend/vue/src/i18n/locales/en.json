@@ -127,10 +127,20 @@
     "to": "to",
     "type": "type",
     "where": "Where",
-    "yes": "Yes"
+    "yes": "Yes",
+    "value": "Value"
   },
   "equipment": {
-    "title": "Equipment"
+    "title": "Equipment",
+    "columns": {
+      "name": "Equipment",
+      "effect": "Effect",
+      "durability": "Durability"
+    },
+    "effect": {
+      "1": "Adds worker productivity",
+      "2": "Decrease pollution"
+    }
   },
   "lands": {
     "title": "Lands"
