@@ -222,3 +222,19 @@ func DestroyBuilding(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"code": -12})
 }
+
+func InstallEquipment(c *gin.Context) {
+	var installEquipmentPayload models.InstallEquipmentPayload
+	if err := include.GetPayload(c, &installEquipmentPayload); err != nil {
+		return
+	}
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	if err := models.InstallEquipment(db.M, userId, installEquipmentPayload); err != nil {
+		return
+	}
+
+}

@@ -38,6 +38,7 @@ type Building struct {
 	OnStrike    bool               `json:"onStrike" bson:"onStrike"`
 	Production  *Production        `json:"production" bson:"production"`
 	Goods       *[]Goods           `json:"goods" bson:"goods"`
+	Equipment   *[]Equipment       `json:"equipment" bson:"equipment"`
 }
 
 type Production struct {
@@ -51,6 +52,12 @@ type Goods struct {
 	Revenue        float64          `json:"revenue" bson:"revenue"`
 	SellStarted    time.Time        `json:"sellStarted" bson:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status" bson:"status"`
+}
+
+type Equipment struct {
+	EquipmentTypeId uint `json:"equipmentTypeId" bson:"equipmentTypeId"`
+	Amount          int  `json:"amount" bson:"amount"`
+	Durability      int  `json:"durability" bson:"durability"`
 }
 
 type ConstructBuildingPayload struct {
@@ -593,8 +600,6 @@ func BuildingGoodsStatsUpdate(m *mongo.Database, buildingId primitive.ObjectID, 
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	log.Println(buildingId, resourceTypeId, sellSum, revenue)
-
 	filter := bson.D{{"_id", buildingId}}
 	update := bson.D{{"$set",
 		bson.D{
@@ -610,4 +615,67 @@ func BuildingGoodsStatsUpdate(m *mongo.Database, buildingId primitive.ObjectID, 
 
 	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
 	return err
+}
+
+type InstallEquipmentPayload struct {
+	BuildingId      primitive.ObjectID `json:"buildingId"`
+	EquipmentTypeId uint               `json:"equipmentTypeId"`
+	Amount          int                `json:"amount"`
+}
+
+func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquipment InstallEquipmentPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	// TODO Проверить что хватает ресуров и вычесть. Добавить правильный Дурабилити. Вернуть ошибки, обработать их
+
+	var building Building
+	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": installEquipment.BuildingId}).Decode(&building)
+	if err != nil {
+		return err
+	}
+
+	if building.UserId != userId {
+		err := errors.New("this building don't belong you")
+		log.Println(err)
+		return err
+	}
+
+	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
+	if index != -1 {
+		(*building.Equipment)[index].Amount += installEquipment.Amount
+		update := bson.M{
+			"$set": bson.M{
+				"equipment.$[id].amount": (*building.Equipment)[index].Amount,
+			},
+		}
+		updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{
+				bson.D{{"id.equipmentTypeId", installEquipment.EquipmentTypeId}},
+			},
+		})
+		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId}, update, updateOpts)
+	} else {
+		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: 100}
+		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
+			bson.M{
+				"$push": bson.M{
+					"equipment": newEquipment,
+				},
+			},
+		)
+	}
+	return err
+}
+
+func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {
+	if equipments == nil {
+		return -1
+	}
+	for i, v := range *equipments {
+		if v.EquipmentTypeId == equipmentTypeId {
+			return i
+		}
+	}
+	return -1
 }

@@ -32,6 +32,7 @@ func MakeRouter() *gin.Engine {
 	building.POST("/start_work", controllers.StartWork)
 	building.POST("/stop_work", controllers.StopWork)
 	building.POST("/hiring", controllers.SetHiring)
+	building.POST("/install_equipment", controllers.InstallEquipment)
 	building.DELETE("/destroy", controllers.DestroyBuilding)
 
 	data := router.Group("/api/v2/data")
