@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center w-full">
-    <div class="flex gap-4" v-if="user?.nickName">
+    <div v-if="user?.nickName" class="flex gap-4">
       <p class="font-bold text-white">
         {{ user.nickName }}
       </p>
@@ -8,26 +8,26 @@
         {{ moneyFormat(user?.money) }}
       </p>
     </div>
-    <div v-else class="flex gap-4">
-      <Button
-        :label="t('account.login')"
-        @click="emits('show-login')"
-        class="text-white"
-        severity="success"
-      />
-      <Button
-        :label="t('account.signup')"
-        @click="emits('show-signup')"
-        class="text-white"
-        severity="info"
-      />
-    </div>
+    <!--    <div v-else class="flex gap-4">-->
+    <!--      <Button-->
+    <!--        class="text-white"-->
+    <!--        :label="t('account.login')"-->
+    <!--        severity="success"-->
+    <!--        @click="emits('show-login')"-->
+    <!--      />-->
+    <!--      <Button-->
+    <!--        class="text-white"-->
+    <!--        :label="t('account.signup')"-->
+    <!--        severity="info"-->
+    <!--        @click="emits('show-signup')"-->
+    <!--      />-->
+    <!--    </div>-->
     <Button
+      class="ml-auto text-white"
       icon="pi pi-bars"
       size="large"
       text
       @click="showSidebar = true"
-      class="ml-auto text-white"
     />
     <Sidebar v-model:visible="showSidebar">
       <div class="h-full flex flex-col items-start">
@@ -38,9 +38,10 @@
           <router-link
             v-for="item in userItems"
             :key="item.label"
-            :to="item.path"
-            class="menu-item"
             active-class="font-bold"
+            class="menu-item"
+            :to="item.path"
+            @click="showSidebar = false"
           >
             {{ item.label }}
           </router-link>
@@ -50,21 +51,22 @@
           <router-link
             v-for="item in worldItems"
             :key="item.label"
-            :to="item.path"
-            class="menu-item"
             active-class="font-bold"
+            class="menu-item"
+            :to="item.path"
+            @click="showSidebar = false"
           >
             {{ item.label }}
           </router-link>
         </div>
         <div class="mt-16 flex justify-between items-center w-full">
           <Button
-            :label="t('account.logout')"
-            text
-            severity="secondary"
-            @click="emits('sign-out')"
-            class="p-0"
             v-if="user?.nickName"
+            class="p-0"
+            :label="t('account.logout')"
+            severity="secondary"
+            text
+            @click="emits('sign-out')"
           />
           <LangSelect />
         </div>

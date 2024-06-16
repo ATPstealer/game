@@ -12,8 +12,8 @@
         input-id="nickname"
       />
       <label
-        for="nickname"
         class="block text-gray-700 text-sm font-medium"
+        for="nickname"
       >
         {{ t('account.nickname') }}
       </label>
@@ -21,30 +21,30 @@
     <div class="p-float-label">
       <Password
         v-model="pass"
-        input-class="w-full"
         class="w-full"
         :feedback="false"
+        input-class="w-full"
         input-id="password"
         @keydown.enter="submit"
       />
       <label
-        for="password"
         class="block text-gray-700 text-sm font-medium"
+        for="password"
       >
         {{ t('account.password') }}
       </label>
     </div>
     <div class="flex items-center justify-between">
       <Button
-        type="submit"
-        severity="info"
         :label="t('account.login')"
+        severity="info"
+        type="submit"
         @click="submit"
       />
       <Button
+        :label="t('account.signup')"
         severity="info"
         text
-        :label="t('account.signup')"
         @click="emits('sign-up')"
       />
     </div>

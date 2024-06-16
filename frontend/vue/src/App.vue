@@ -9,12 +9,12 @@
       }"
     />
     <Breadcrumb
+      v-if="breadcrumbs.length"
       :home="home"
       :model="breadcrumbs"
-      v-if="breadcrumbs.length"
       :pt="{
         root: {
-          class: 'w-[500px] mb-4 -ml-12'
+          class: 'md:w-[500px] md:mb-4 md:-ml-12'
         }
       }"
     >
@@ -22,8 +22,8 @@
         <router-link
           v-if="item.route"
           v-slot="{ href, navigate }"
-          :to="item.route"
           custom
+          :to="item.route"
         >
           <a
             :href="href"
