@@ -75,21 +75,21 @@
       </Menu>
     </div>
     <div class="flex items-center gap-8">
-      <div v-if="!user?.nickName" class="flex gap-4">
-        <Button
-          class="text-white"
-          :label="t('account.login')"
-          severity="success"
-          @click="emits('show-login')"
-        />
-        <Button
-          class="text-white"
-          :label="t('account.signup')"
-          severity="info"
-          @click="emits('show-signup')"
-        />
-      </div>
-      <div v-else class="flex items-center gap-4">
+      <!--      <div v-if="!user?.nickName" class="flex gap-4">-->
+      <!--        <Button-->
+      <!--          class="text-white"-->
+      <!--          :label="t('account.login')"-->
+      <!--          severity="success"-->
+      <!--          @click="emits('show-login')"-->
+      <!--        />-->
+      <!--        <Button-->
+      <!--          class="text-white"-->
+      <!--          :label="t('account.signup')"-->
+      <!--          severity="info"-->
+      <!--          @click="emits('show-signup')"-->
+      <!--        />-->
+      <!--      </div>-->
+      <div class="flex items-center gap-4">
         <p class="header-item">
           {{ user?.nickName }}
         </p>
