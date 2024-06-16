@@ -1,7 +1,6 @@
 package models
 
 import (
-	"backend/packages/db"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -658,7 +657,7 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 
 	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
 	if index != -1 {
-		return updateEquipmentAmount(db.M, ctx, building, index, equipmentType.Id, installEquipment.Amount)
+		return updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
 	} else {
 		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: equipmentType.Durability}
 		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
