@@ -38,7 +38,7 @@ func GetEquipmentTypesByID(m *mongo.Database, typeId uint) (EquipmentType, error
 	defer cancel()
 
 	var equipmentType EquipmentType
-	err := m.Collection("EquipmentTypes").FindOne(ctx, bson.M{"id": typeId}).Decode(&equipmentType)
+	err := m.Collection("equipmentTypes").FindOne(ctx, bson.M{"id": typeId}).Decode(&equipmentType)
 	if err != nil {
 		log.Println("Can't get resource type: " + err.Error())
 	}

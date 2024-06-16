@@ -1,6 +1,7 @@
 package models
 
 import (
+	"backend/packages/db"
 	"context"
 	"errors"
 	"go.mongodb.org/mongo-driver/bson"
@@ -627,8 +628,6 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	// TODO Проверить что хватает ресуров и вычесть. Добавить правильный Дурабилити. Вернуть ошибки, обработать их
-
 	var building Building
 	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": installEquipment.BuildingId}).Decode(&building)
 	if err != nil {
@@ -641,22 +640,27 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 		return err
 	}
 
+	equipmentType, err := GetEquipmentTypesByID(m, installEquipment.EquipmentTypeId)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if !CheckEnoughResources(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(installEquipment.Amount)) {
+		return errors.New("not enough resources in this cell")
+	}
+
+	err = AddResource(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(-installEquipment.Amount))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
 	if index != -1 {
-		(*building.Equipment)[index].Amount += installEquipment.Amount
-		update := bson.M{
-			"$set": bson.M{
-				"equipment.$[id].amount": (*building.Equipment)[index].Amount,
-			},
-		}
-		updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
-			Filters: []interface{}{
-				bson.D{{"id.equipmentTypeId", installEquipment.EquipmentTypeId}},
-			},
-		})
-		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId}, update, updateOpts)
+		return updateEquipmentAmount(db.M, ctx, building, index, equipmentType.Id, installEquipment.Amount)
 	} else {
-		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: 100}
+		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: equipmentType.Durability}
 		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
 			bson.M{
 				"$push": bson.M{
@@ -678,4 +682,20 @@ func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {
 		}
 	}
 	return -1
+}
+
+func updateEquipmentAmount(m *mongo.Database, ctx context.Context, building Building, index int, equipmentTypeId uint, amount int) error {
+	(*building.Equipment)[index].Amount += amount
+	update := bson.M{
+		"$set": bson.M{
+			"equipment.$[id].amount": (*building.Equipment)[index].Amount,
+		},
+	}
+	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"id.equipmentTypeId", equipmentTypeId}},
+		},
+	})
+	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update, updateOpts)
+	return err
 }

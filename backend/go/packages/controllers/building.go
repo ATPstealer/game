@@ -234,7 +234,14 @@ func InstallEquipment(c *gin.Context) {
 	}
 
 	if err := models.InstallEquipment(db.M, userId, installEquipmentPayload); err != nil {
+		if strings.Contains(err.Error(), "this building don't belong you") {
+			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough resources in this cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 22, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		}
 		return
 	}
-
+	c.JSON(http.StatusOK, gin.H{"code": -12})
 }
