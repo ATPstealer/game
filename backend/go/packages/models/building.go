@@ -645,17 +645,32 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 		return err
 	}
 
-	if !CheckEnoughResources(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(installEquipment.Amount)) {
-		return errors.New("not enough resources in this cell")
+	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
+
+	if installEquipment.Amount >= 0 {
+		if !CheckEnoughResources(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(installEquipment.Amount)) {
+			return errors.New("not enough resources in this cell")
+		}
+	} else {
+		if index != -1 {
+			if (*building.Equipment)[index].Amount < (-1)*installEquipment.Amount {
+				return errors.New("not enough equipment here")
+			}
+		} else {
+			return errors.New("not enough equipment here")
+		}
 	}
 
-	err = AddResource(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(-installEquipment.Amount))
+	resourceAdd := installEquipment.Amount
+	if installEquipment.Amount < 0 {
+		resourceAdd++ // If you uninstall the equipment, you lose one
+	}
+	err = AddResource(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(-resourceAdd))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
 	if index != -1 {
 		return updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
 	} else {
@@ -669,6 +684,7 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 		)
 	}
 	return err
+
 }
 
 func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {
