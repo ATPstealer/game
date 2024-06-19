@@ -40,13 +40,19 @@
       </template>
     </Column>
     <Column
+        :header="t(`common.amount`)"
+    >
+      <template #body="{data}: {data: Equipment}">
+        {{ data.amount }}
+      </template>
+    </Column>
+    <Column
         :header="t(`map.cell`)"
     >
       <template #body="{data}: {data: Resource}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
-
   </DataTable>
 </template>
 
