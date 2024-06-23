@@ -149,6 +149,7 @@ type BuildingWithData struct {
 	NickName     string             `json:"nickName"`
 	Production   *Production        `json:"production"`
 	Goods        *[]Goods           `json:"goods"`
+	Equipment    *[]Equipment       `json:"equipment"`
 }
 
 func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]BuildingWithData, error) {

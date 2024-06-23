@@ -2,6 +2,7 @@
   <Layout>
     <template #options>
       <Hiring v-if="!loading" :building="building" />
+      <Equipment v-if="!loading" :building="building"/>
       <Button
         :label="t(`buildings.destroy`)"
         @click="confirmDelete($event, building._id)"
@@ -38,6 +39,7 @@ import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import type { Building } from '@/types/Buildings/index.interface'
+import Equipment from "@/components/Buildings/Equipment.vue";
 
 interface Props {
   building: Building;

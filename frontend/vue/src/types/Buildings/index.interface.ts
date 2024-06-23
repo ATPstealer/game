@@ -26,6 +26,7 @@ export interface Building {
   buildingType: BuildingType;
   goods: Goods[];
   buildingGroup: string;
+  equipment: Equipment[];
 }
 
 export interface BuildingType {
@@ -67,3 +68,10 @@ export interface Goods {
   status?: string;
   sellStarted: string;
 }
+
+export interface Equipment {
+  equipmentTypeId: number;
+  durability: number;
+  amount: number;
+}
+
