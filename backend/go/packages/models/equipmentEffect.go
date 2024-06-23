@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-// TODO добавить учет количества рабочих и количество оборудования.
-
 type EquipmentEffect struct {
 	EffectId    uint    `json:"effectId" bson:"effectId"`
 	BlueprintId uint    `json:"blueprintId" bson:"blueprintId"`
@@ -22,6 +20,7 @@ func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 	if err != nil {
 		return err
 	}
+	equipmentEfficiency := countEfficiency(building)
 
 	equipmentEffects := new([]EquipmentEffect)
 	if building.Equipment != nil {
@@ -33,10 +32,10 @@ func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 			}
 
 			if len(equipmentType.BlueprintIds) == 0 {
-				addEffect(equipmentEffects, equipmentType.EffectId, 0, equipmentType.Value*float64(equipment.Amount))
+				addEffect(equipmentEffects, equipmentType.EffectId, 0, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount))
 			} else {
 				for _, blueprintId := range equipmentType.BlueprintIds {
-					addEffect(equipmentEffects, equipmentType.EffectId, blueprintId, equipmentType.Value*float64(equipment.Amount))
+					addEffect(equipmentEffects, equipmentType.EffectId, blueprintId, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount))
 				}
 			}
 		}
@@ -70,4 +69,26 @@ func saveEquipmentEffects(m *mongo.Database, equipmentEffects *[]EquipmentEffect
 		log.Println("Error updating building with equipment effects:", err)
 	}
 	return err
+}
+
+func countEfficiency(building Building) float64 {
+	equipmentAmount := countEquipment(building.Equipment)
+	var equipmentEfficiency float64
+	if equipmentAmount != 0 {
+		equipmentEfficiency = float64(building.Workers) / float64(equipmentAmount)
+	}
+	if equipmentEfficiency > 1 {
+		equipmentEfficiency = 1
+	}
+	return equipmentEfficiency
+}
+
+func countEquipment(equipments *[]Equipment) int {
+	count := int(0)
+	if equipments != nil {
+		for _, equipment := range *equipments {
+			count += equipment.Amount
+		}
+	}
+	return count
 }
