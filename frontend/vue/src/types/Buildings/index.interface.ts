@@ -27,6 +27,7 @@ export interface Building {
   goods: Goods[];
   buildingGroup: string;
   equipment: Equipment[];
+  equipmentEffect: EquipmentEffect[];
 }
 
 export interface BuildingType {
@@ -75,3 +76,8 @@ export interface Equipment {
   amount: number;
 }
 
+export interface EquipmentEffect {
+  EffectId: number;
+  BlueprintId: number;
+  Value: number;
+}

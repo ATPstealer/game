@@ -131,25 +131,26 @@ type FindBuildingParams struct {
 }
 
 type BuildingWithData struct {
-	Id           primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	TypeId       uint               `json:"typeId"`
-	UserId       primitive.ObjectID `json:"userId"`
-	X            int                `json:"x"`
-	Y            int                `json:"y"`
-	Square       int                `json:"square"`
-	Level        int                `json:"level"`
-	Status       BuildingStatus     `json:"status"`
-	WorkStarted  time.Time          `json:"workStarted"`
-	WorkEnd      time.Time          `json:"workEnd"`
-	HiringNeeds  int                `json:"hiringNeeds"`
-	Salary       float64            `json:"salary"`
-	Workers      int                `json:"workers"`
-	OnStrike     bool               `json:"onStrike"`
-	BuildingType BuildingType       `json:"buildingType"`
-	NickName     string             `json:"nickName"`
-	Production   *Production        `json:"production"`
-	Goods        *[]Goods           `json:"goods"`
-	Equipment    *[]Equipment       `json:"equipment"`
+	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	TypeId          uint               `json:"typeId"`
+	UserId          primitive.ObjectID `json:"userId"`
+	X               int                `json:"x"`
+	Y               int                `json:"y"`
+	Square          int                `json:"square"`
+	Level           int                `json:"level"`
+	Status          BuildingStatus     `json:"status"`
+	WorkStarted     time.Time          `json:"workStarted"`
+	WorkEnd         time.Time          `json:"workEnd"`
+	HiringNeeds     int                `json:"hiringNeeds"`
+	Salary          float64            `json:"salary"`
+	Workers         int                `json:"workers"`
+	OnStrike        bool               `json:"onStrike"`
+	BuildingType    BuildingType       `json:"buildingType"`
+	NickName        string             `json:"nickName"`
+	Production      *Production        `json:"production"`
+	Goods           *[]Goods           `json:"goods"`
+	Equipment       *[]Equipment       `json:"equipment"`
+	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
 }
 
 func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]BuildingWithData, error) {
@@ -628,6 +629,8 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
+	// TODO проверить что хватает площади
+
 	var building Building
 	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": installEquipment.BuildingId}).Decode(&building)
 	if err != nil {
@@ -673,7 +676,7 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 	}
 
 	if index != -1 {
-		return updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
+		err = updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
 	} else {
 		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: equipmentType.Durability}
 		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
@@ -684,7 +687,16 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 			},
 		)
 	}
-	return err
+	if err != nil {
+		return err
+	}
+
+	err = countEffects(m, building.Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }
 
@@ -702,6 +714,14 @@ func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {
 
 func updateEquipmentAmount(m *mongo.Database, ctx context.Context, building Building, index int, equipmentTypeId uint, amount int) error {
 	(*building.Equipment)[index].Amount += amount
+	if (*building.Equipment)[index].Amount == 0 {
+		update := bson.D{
+			{"$pull", bson.D{{"equipment", bson.D{{"equipmentTypeId", equipmentTypeId}}}}},
+		}
+		_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update)
+		return err
+	}
+
 	update := bson.M{
 		"$set": bson.M{
 			"equipment.$[id].amount": (*building.Equipment)[index].Amount,

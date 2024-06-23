@@ -1,5 +1,5 @@
 <template>
-  {{ props.building.equipment }}
+  {{ props.building.equipmentEffect }}
 </template>
 
 
