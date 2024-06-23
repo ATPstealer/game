@@ -19,6 +19,13 @@
       </template>
     </Column>
     <Column
+        :header="t(`common.blueprint`)"
+    >
+      <template #body="{data}: {data: Equipment}">
+        {{ data.equipmentType.blueprintIds }}
+      </template>
+    </Column>
+    <Column
         :header="t(`common.value`)"
     >
       <template #body="{data}: {data: Equipment}">
