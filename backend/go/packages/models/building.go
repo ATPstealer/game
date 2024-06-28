@@ -29,6 +29,7 @@ type Building struct {
 	Y           int                `json:"y" bson:"y"`
 	Square      int                `json:"square" bson:"square"`
 	Level       int                `json:"level" bson:"level"`
+	SquareInUse float64            `json:"squareInUse" bson:"squareInUse"`
 	Status      BuildingStatus     `json:"status" bson:"status"`
 	WorkStarted time.Time          `json:"workStarted" bson:"workStarted"`
 	WorkEnd     time.Time          `json:"workEnd" bson:"workEnd"`
@@ -137,6 +138,7 @@ type BuildingWithData struct {
 	X               int                `json:"x"`
 	Y               int                `json:"y"`
 	Square          int                `json:"square"`
+	SquareInUse     float64            `json:"squareInUse"`
 	Level           int                `json:"level"`
 	Status          BuildingStatus     `json:"status"`
 	WorkStarted     time.Time          `json:"workStarted"`
@@ -629,8 +631,6 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
-	// TODO проверить что хватает площади
-
 	var building Building
 	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": installEquipment.BuildingId}).Decode(&building)
 	if err != nil {
@@ -647,6 +647,10 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 	if err != nil {
 		log.Println(err)
 		return err
+	}
+
+	if equipmentType.Square*float64(installEquipment.Amount)+building.SquareInUse > float64(building.Square*building.Level) {
+		return errors.New("not enough space")
 	}
 
 	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
@@ -696,8 +700,14 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 		return err
 	}
 
-	return nil
+	_, err = m.Collection("buildings").UpdateOne(ctx,
+		bson.M{"_id": installEquipment.BuildingId},
+		bson.M{"$set": bson.M{"squareInUse": equipmentType.Square*float64(installEquipment.Amount) + building.SquareInUse}})
+	if err != nil {
+		return err
+	}
 
+	return nil
 }
 
 func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {

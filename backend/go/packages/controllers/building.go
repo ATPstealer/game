@@ -240,6 +240,8 @@ func InstallEquipment(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 22, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "not enough equipment here") {
 			c.JSON(http.StatusOK, gin.H{"code": 33, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough space") {
+			c.JSON(http.StatusOK, gin.H{"code": 34, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		}
