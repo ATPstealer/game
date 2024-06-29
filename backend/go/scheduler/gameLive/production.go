@@ -36,14 +36,11 @@ func Production(m *mongo.Database) {
 		workTime := now.Sub(building.WorkStarted).Seconds()
 		blueprint := blueprints[building.Production.BlueprintId-1]
 
-		log.Println(workTime)
-
 		// Formula of production pace
 		equipmentImpact := getEquipmentImpact(building, blueprint.Id)
 		// The level and square are taken into account through workers
 		productionCycles := int((workTime / blueprint.ProductionTime.Seconds()) * (float64(building.Workers) + equipmentImpact) / float64(building.BuildingType.Workers))
 		blueprintCycles := float64(productionCycles) * float64(building.BuildingType.Workers) / (float64(building.Workers) + equipmentImpact)
-		log.Print(productionCycles, blueprintCycles)
 
 		if productionCycles == 0 {
 			continue
@@ -105,7 +102,6 @@ func getEquipmentImpact(building models.BuildingWithData, blueprintId uint) floa
 			equipmentImpact += equipmentEffect.Value
 		}
 	}
-	log.Print(equipmentImpact)
 	return equipmentImpact
 }
 
