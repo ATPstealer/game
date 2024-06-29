@@ -1,5 +1,10 @@
 ## Production formula:
-One production cycle = blueprint time * ( workers building demand / workers hired )    
+
+One production cycle = blueprint time * ( workers building demand / ( workers hired + equipment impact))  
+The equipment adds speed to production. One worker is taken as a unit of change.  
+The efficiency of using equipment depends on the number of workers. To get maximum efficiency you need to have a ratio:
+Number of workers >= number of equipment.
+If there is a shortage of workers, efficiency decreases proportionately.
 
 ## Hiring formula:    
 SUM for n buildings    

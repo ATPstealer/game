@@ -22,24 +22,25 @@ const (
 )
 
 type Building struct {
-	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	TypeId      uint               `json:"typeId" bson:"typeId"`
-	UserId      primitive.ObjectID `json:"userId" bson:"userId"`
-	X           int                `json:"x" bson:"x"`
-	Y           int                `json:"y" bson:"y"`
-	Square      int                `json:"square" bson:"square"`
-	Level       int                `json:"level" bson:"level"`
-	SquareInUse float64            `json:"squareInUse" bson:"squareInUse"`
-	Status      BuildingStatus     `json:"status" bson:"status"`
-	WorkStarted time.Time          `json:"workStarted" bson:"workStarted"`
-	WorkEnd     time.Time          `json:"workEnd" bson:"workEnd"`
-	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
-	Salary      float64            `json:"salary" bson:"salary"`
-	Workers     int                `json:"workers" bson:"workers"`
-	OnStrike    bool               `json:"onStrike" bson:"onStrike"`
-	Production  *Production        `json:"production" bson:"production"`
-	Goods       *[]Goods           `json:"goods" bson:"goods"`
-	Equipment   *[]Equipment       `json:"equipment" bson:"equipment"`
+	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	TypeId          uint               `json:"typeId" bson:"typeId"`
+	UserId          primitive.ObjectID `json:"userId" bson:"userId"`
+	X               int                `json:"x" bson:"x"`
+	Y               int                `json:"y" bson:"y"`
+	Square          int                `json:"square" bson:"square"`
+	Level           int                `json:"level" bson:"level"`
+	SquareInUse     float64            `json:"squareInUse" bson:"squareInUse"`
+	Status          BuildingStatus     `json:"status" bson:"status"`
+	WorkStarted     time.Time          `json:"workStarted" bson:"workStarted"`
+	WorkEnd         time.Time          `json:"workEnd" bson:"workEnd"`
+	HiringNeeds     int                `json:"hiringNeeds" bson:"hiringNeeds"`
+	Salary          float64            `json:"salary" bson:"salary"`
+	Workers         int                `json:"workers" bson:"workers"`
+	OnStrike        bool               `json:"onStrike" bson:"onStrike"`
+	Production      *Production        `json:"production" bson:"production"`
+	Goods           *[]Goods           `json:"goods" bson:"goods"`
+	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
+	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
 }
 
 type Production struct {
