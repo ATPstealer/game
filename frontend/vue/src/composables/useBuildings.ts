@@ -86,6 +86,15 @@ export const useBuildings = () => {
     }
   }
 
+  const installEquipment = (payload: any): {data: Ref<BackData>; onFetchResponse: EventHookOn<Response>} => {
+    const { data, onFetchResponse } = useMyFetch('/building/install_equipment').post(payload).json()
+
+    return {
+      data,
+      onFetchResponse
+    }
+  }
+
   return {
     constructBuilding,
     getBuildings,
@@ -93,6 +102,7 @@ export const useBuildings = () => {
     stopWork,
     setPrice,
     setHiring,
-    destroyBuilding
+    destroyBuilding,
+    installEquipment
   }
 }

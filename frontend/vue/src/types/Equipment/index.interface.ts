@@ -1,4 +1,4 @@
-import type {ResourceType} from "@/types/Resources/index.interface";
+import type { ResourceType } from '@/types/Resources/index.interface'
 
 export interface EquipmentType {
     id: number;
@@ -17,8 +17,12 @@ export interface Equipment {
     amount: number;
     x: number;
     y: number;
-    resourceType: ResourceType
-    equipmentType: EquipmentType
+    resourceType: ResourceType;
+    equipmentType: EquipmentType;
 }
 
-
+export interface BuildingEquipment {
+    durability: number;
+    equipmentTypeId: number;
+    amount: number;
+}

@@ -1,22 +1,27 @@
 <template>
   <Layout>
     <template #options>
-      <Hiring v-if="!loading" :building="building" />
-      <Equipment v-if="!loading" :building="building"/>
-      <Button
-        :label="t(`buildings.destroy`)"
-        @click="confirmDelete($event, building._id)"
-        class="w-max"
-        size="small"
-        severity="danger"
-      />
-      <Button
-          :label="t(`buildings.stop work`)"
-          @click="confirmStopWork($event, building._id)"
-          class="w-max"
-          size="small"
-          severity="danger"
-      />
+      <div class="flex flex-col gap-8">
+        <Hiring v-if="!loading" :building="building" />
+        <Equipment v-if="!loading" :building="building" />
+        <Divider />
+        <div class="flex flex-col gap-4">
+          <Button
+            class="w-max"
+            :label="t(`buildings.destroy`)"
+            severity="danger"
+            size="small"
+            @click="confirmDelete($event, building._id)"
+          />
+          <Button
+            class="w-max"
+            :label="t(`buildings.stop work`)"
+            severity="danger"
+            size="small"
+            @click="confirmStopWork($event, building._id)"
+          />
+        </div>
+      </div>
     </template>
     <template #help>
       <slot name="buildingHelp" />
@@ -31,15 +36,16 @@
 <script setup lang="ts">
 
 import Button from 'primevue/button'
+import Divider from 'primevue/divider'
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import Equipment from '@/components/Buildings/Equipment.vue'
 import Hiring from '@/components/Buildings/Hiring.vue'
 import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import type { Building } from '@/types/Buildings/index.interface'
-import Equipment from "@/components/Buildings/Equipment.vue";
 
 interface Props {
   building: Building;
@@ -87,7 +93,7 @@ const confirmStopWork = (event: any, id: string) => {
 
 const stop = (id: string) => {
   const payload = {
-    buildingId: id,
+    buildingId: id
   }
   const { onFetchResponse } = stopWork(payload)
   onFetchResponse(() => {})

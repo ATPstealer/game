@@ -109,6 +109,7 @@
     "cost": "Cost",
     "create": "Create",
     "day": "{n} day | {n} days",
+    "equipment": "equipment",
     "from": "from",
     "hour": "{n} hour | {n} hours",
     "in": "in",
@@ -126,21 +127,21 @@
     "time": "Time",
     "to": "to",
     "type": "type",
+    "value": "Value",
     "where": "Where",
-    "yes": "Yes",
-    "value": "Value"
+    "yes": "Yes"
   },
   "equipment": {
-    "title": "Equipment",
     "columns": {
-      "name": "Equipment",
+      "durability": "Durability",
       "effect": "Effect",
-      "durability": "Durability"
+      "name": "Equipment"
     },
     "effect": {
       "1": "Adds worker productivity",
       "2": "Decrease pollution"
-    }
+    },
+    "title": "Equipment"
   },
   "lands": {
     "title": "Lands"

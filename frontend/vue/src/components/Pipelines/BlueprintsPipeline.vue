@@ -47,6 +47,8 @@ import type { Blueprint } from '@/types/Buildings/index.interface'
 
 interface Props {
   blueprints: Blueprint[];
+  selectedId?: number;
+
 }
 
 interface Pipeline {
@@ -56,12 +58,13 @@ interface Pipeline {
 
 const props = defineProps<Props>()
 const blueprints = toRef(props, 'blueprints')
+const selectedId = toRef(props, 'selectedId')
 
 const { t } = useI18n()
 
-const chosen = ref<Blueprint>(blueprints?.value?.[0] || {} as Blueprint)
+const chosen = ref<Blueprint | undefined>(selectedId.value ? blueprints.value.find(bp => bp.id === selectedId.value) : blueprints?.value?.[0])
 // TODO: добавить переводы
-const headers = ['Нужны ресурсы из', t('common.blueprint'), 'Производит ресурсы лдя']
+const headers = ['Нужны ресурсы из', t('common.blueprint'), 'Производит ресурсы для']
 
 const computedData = computed<Pipeline>(() => {
   if (!chosen.value) {

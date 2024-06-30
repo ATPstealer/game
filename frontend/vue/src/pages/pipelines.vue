@@ -26,6 +26,7 @@
       <BlueprintsPipeline
         v-if="selected === 'blueprint'"
         :blueprints="blueprints"
+        :selected-id="+route?.query.id"
       />
     </template>
   </Layout>
@@ -35,6 +36,7 @@
 import RadioButton from 'primevue/radiobutton'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import Layout from '@/components/Common/Layout.vue'
 import BlueprintsPipeline from '@/components/Pipelines/BlueprintsPipeline.vue'
 import BuildingsPipeline from '@/components/Pipelines/BuildingsPipeline.vue'
@@ -44,11 +46,13 @@ import { useGetData } from '@/composables/useGetData'
 import { Blueprint, Building } from '@/types/Buildings/index.interface'
 import { Resource } from '@/types/Resources/index.interface'
 
+const route = useRoute()
+
 const { data: resourceTypes } = useGetData<Resource[]>('/resource/types')
 const { data: blueprints } = useGetData<Blueprint[]>('/building/blueprints')
 const { data: buildingsTypes } = useGetData<Building[]>('/building/types')
 
-const selected = ref('blueprint')
+const selected = ref(route.query.selected || 'resource')
 
 const { t } = useI18n()
 </script>

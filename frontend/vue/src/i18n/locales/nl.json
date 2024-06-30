@@ -109,6 +109,7 @@
     "cost": "Kosten",
     "create": "Creëer",
     "day": "{n} dag | {n} dagen",
+    "equipment": "apparatuur",
     "from": "van",
     "hour": "{n} uur | {n} uur",
     "in": "in",
@@ -125,21 +126,21 @@
     "time": "Tijd",
     "to": "naar",
     "type": "type",
+    "value": "Waarde",
     "where": "Waar",
-    "yes": "Ja",
-    "value": "Waarde"
+    "yes": "Ja"
   },
   "equipment": {
-    "title": "Apparatuur",
     "columns": {
-      "name": "Apparatuur",
+      "durability": "Duurzaamheid",
       "effect": "Effect",
-      "durability": "Duurzaamheid"
+      "name": "Apparatuur"
     },
     "effect": {
       "1": "Voegt productiviteit van werknemers toe",
       "2": "Verminder de vervuiling"
-    }
+    },
+    "title": "Apparatuur"
   },
   "lands": {
     "title": "Landen"
