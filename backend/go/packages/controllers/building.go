@@ -247,5 +247,5 @@ func InstallEquipment(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"code": -12})
+	c.JSON(http.StatusOK, gin.H{"code": -14})
 }
