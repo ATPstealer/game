@@ -2,8 +2,8 @@
   <div class="flex flex-col md:flex-row h-full">
     <Button
       v-if="!showOptions"
-      :label="t('layout.settings')"
       class="fixed bottom-0 md:bottom-auto md:top-1/3 left-0 z-10"
+      :label="t('layout.settings')"
       :pt="{
         label: {
           class: 'md:w-[1px] whitespace-pre-line break-all -ml-1.5'
@@ -17,21 +17,23 @@
     >
       <Button
         v-if="showOptions"
-        icon="pi pi-angle-double-left"
         class="hide-button top-1/2 -right-4 hidden md:block"
+        icon="pi pi-angle-double-left"
         rounded
         size="small"
         @click="showOptions = false"
       />
       <Button
         v-if="showOptions"
-        icon="pi pi-angle-double-up"
         class="hide-button -bottom-4 right-1/2 translate-x-1/2 md:hidden"
+        icon="pi pi-angle-double-up"
         rounded
         size="small"
         @click="showOptions = false"
       />
-      <span class="font-bold text-xl">{{ t('layout.settings') }}</span>
+      <p class="font-bold text-xl mb-4">
+        {{ t('layout.settings') }}
+      </p>
       <slot name="options" />
     </div>
     <div class="w-full">
@@ -39,8 +41,8 @@
     </div>
     <Button
       v-if="!showHelp"
-      :label="t('layout.help')"
       class="fixed bottom-0 md:bottom-auto md:top-1/3 right-0 z-10"
+      :label="t('layout.help')"
       :pt="{
         label: {
           class: 'md:w-[1px] whitespace-pre-line break-all -ml-1.5'
@@ -53,16 +55,16 @@
     >
       <Button
         v-if="showHelp"
-        icon="pi pi-angle-double-right"
         class="hide-button top-1/2 -left-4 hidden md:block"
+        icon="pi pi-angle-double-right"
         rounded
         size="small"
         @click="showHelp = false"
       />
       <Button
         v-if="showHelp"
-        icon="pi pi-angle-double-down"
         class="hide-button -top-4 right-1/2 translate-x-1/2 md:hidden"
+        icon="pi pi-angle-double-down"
         rounded
         size="small"
         @click="showHelp = false"
@@ -98,7 +100,7 @@ const { t } = useI18n()
 
 <style scoped>
 .sidebar {
-  @apply flex-col gap-8 border-0  border-solid border-gray-200 p-4 pb-8 hidden
+  @apply flex-col border-0 border-solid border-gray-200 p-4 pb-8 hidden
   md:flex md:pr-8 md:pb-4 relative transition-all md:w-[280px] md:min-w-[280px];
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4" v-if="building?.buildingType?.title">
+  <div v-if="building?.buildingType?.title" class="flex flex-col gap-4">
     <MessageBlock
       v-if="messageData?.code"
       v-bind="messageData"
@@ -14,15 +14,15 @@
             </div>
             <Dropdown
               v-model="duration"
-              :options="timeValues"
               option-label="label"
               option-value="value"
+              :options="timeValues"
             />
             <Button
-              :disabled="!selectedBlueprint"
-              @click="start"
-              :label="t('buildings.production.startWork')"
               class-name="w-full"
+              :disabled="!selectedBlueprint"
+              :label="t('buildings.production.startWork')"
+              @click="start"
             />
           </div>
         </template>
@@ -36,6 +36,7 @@
           <p><span>{{ t('common.status') }}</span>: {{ building?.status }}</p>
           <p><span>{{ t('common.coordinates') }}</span>: {{ building?.x }}:{{ building?.y }}</p>
           <p><span>{{ t('common.level') }}</span> x <span>{{ t('common.square') }}</span>: {{ building?.level }}x{{ building?.square }}</p>
+          <p><span>Занято места</span> {{ Math.round(building.squareInUse / (building.square * building.level) * 100) }}%</p>
         </template>
       </Card>
     </div>
@@ -47,6 +48,7 @@
         v-for="blueprint in blueprints"
         :key="blueprint.id"
         :blueprint="blueprint"
+        :building="building"
         :resource-types="resourceTypes"
         :selected-blueprint="selectedBlueprint"
         @select="selectBlueprint"

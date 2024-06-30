@@ -1,3 +1,4 @@
+import type { BuildingEquipment } from '@/types/Equipment/index.interface'
 import type { ResourceAmount } from '@/types/Resources/index.interface'
 
 export interface ConstructBuildingPayload {
@@ -13,6 +14,7 @@ export interface Building {
   title: string;
   typeId: number;
   square: number;
+  squareInUse: number;
   x: number;
   y: number;
   level: number;
@@ -26,7 +28,7 @@ export interface Building {
   buildingType: BuildingType;
   goods: Goods[];
   buildingGroup: string;
-  equipment: Equipment[];
+  equipment: BuildingEquipment[];
   equipmentEffect: EquipmentEffect[];
 }
 
@@ -70,14 +72,8 @@ export interface Goods {
   sellStarted: string;
 }
 
-export interface Equipment {
-  equipmentTypeId: number;
-  durability: number;
-  amount: number;
-}
-
 export interface EquipmentEffect {
-  EffectId: number;
-  BlueprintId: number;
-  Value: number;
+  effectId: number;
+  blueprintId: number;
+  value: number;
 }

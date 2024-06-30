@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import BuildingTemplate from '@/components/Buildings/BuildingTemplate.vue'
@@ -23,11 +23,13 @@ const { t } = useI18n()
 
 const building = ref<Building>({} as Building)
 
-const { data, onFetchResponse, isFetching } = useGetData<Building[]>(`/building/my?_id=${route.params.id}`)
+const { data, onFetchResponse, isFetching, execute } = useGetData<Building[]>(`/building/my?_id=${route.params.id}`)
 
 onFetchResponse(() => {
   building.value = data.value[0]
 })
+
+provide('execute', execute)
 
 </script>
 

@@ -1,11 +1,11 @@
 <template>
   <Message
-    :severity="code <= 0 ? 'success' : 'error'"
     :pt="{
       wrapper: {
         class: '!p-2'
       }
     }"
+    :severity="code <= 0 ? 'success' : 'error'"
   >
     {{ message }}
   </Message>
