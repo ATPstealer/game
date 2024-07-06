@@ -67,6 +67,10 @@ const emits = defineEmits<{(e: 'select', value: number)}>()
 const buildingIcon = findResourceName(props.resourceTypes, +props.blueprint.producedResources[0].resourceId )
 
 const getCycling = () => {
+  console.log(props.building.equipmentEffect)
+  if (!props.building.equipmentEffect) {
+    return Math.round(props.blueprint.productionTime * props.building.hiringNeeds / props.building.workers / 1000000000)
+  }
   const effectValue = props.building.equipmentEffect.reduce((acc: { bp: number; all: number }, effect: EquipmentEffect) => {
     if (effect.blueprintId === props.blueprint.id) {
       acc.bp += effect.value
