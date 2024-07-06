@@ -746,3 +746,17 @@ func updateEquipmentAmount(m *mongo.Database, ctx context.Context, building Buil
 	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update, updateOpts)
 	return err
 }
+
+func GetBuildingsForEquipmentRecount(m *mongo.Database) ([]Building, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var buildings []Building
+	cursor, err := m.Collection("buildings").Find(ctx, bson.M{"equipment": bson.M{"$ne": nil}})
+	if err != nil {
+		return buildings, err
+	}
+
+	err = cursor.All(ctx, &buildings)
+	return buildings, err
+}
