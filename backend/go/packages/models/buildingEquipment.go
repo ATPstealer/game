@@ -77,18 +77,15 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 
 	if index != -1 {
 		err = updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
+		if err != nil {
+			return err
+		}
 	} else {
 		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: equipmentType.Durability}
-		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
-			bson.M{
-				"$push": bson.M{
-					"equipment": newEquipment,
-				},
-			},
-		)
-	}
-	if err != nil {
-		return err
+		err = addEquipment(m, ctx, &building, newEquipment)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = countEffects(m, building.Id)
@@ -139,6 +136,31 @@ func updateEquipmentAmount(m *mongo.Database, ctx context.Context, building Buil
 		},
 	})
 	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update, updateOpts)
+	return err
+}
+
+func addEquipment(m *mongo.Database, ctx context.Context, building *Building, newEquipment Equipment) error {
+	var err error
+	if (*building).Equipment != nil {
+		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": (*building).Id},
+			bson.M{
+				"$push": bson.M{
+					"equipment": newEquipment,
+				},
+			},
+		)
+	} else {
+		var newEquipmentArray []Equipment
+		newEquipmentArray = append(newEquipmentArray, newEquipment)
+		log.Println(newEquipment, newEquipmentArray)
+		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": (*building).Id},
+			bson.M{
+				"$set": bson.M{
+					"equipment": &newEquipmentArray,
+				},
+			},
+		)
+	}
 	return err
 }
 

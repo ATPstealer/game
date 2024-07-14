@@ -39,7 +39,7 @@ type Building struct {
 	Production      *Production        `json:"production" bson:"production"`
 	Goods           *[]Goods           `json:"goods" bson:"goods"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
-	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
+	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"  bson:"equipmentEffect"`
 }
 
 type ConstructBuildingPayload struct {
