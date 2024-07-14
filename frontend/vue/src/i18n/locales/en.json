@@ -139,7 +139,8 @@
     },
     "effect": {
       "1": "Adds worker productivity",
-      "2": "Decrease pollution"
+      "2": "Decrease pollution",
+      "3": "Providing logistic capacity"
     },
     "title": "Equipment"
   },

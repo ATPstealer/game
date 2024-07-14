@@ -138,7 +138,8 @@
     },
     "effect": {
       "1": "Voegt productiviteit van werknemers toe",
-      "2": "Verminder de vervuiling"
+      "2": "Verminder de vervuiling",
+      "3": "Logistieke capaciteit bieden"
     },
     "title": "Apparatuur"
   },
