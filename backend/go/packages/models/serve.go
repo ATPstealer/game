@@ -296,32 +296,31 @@ func productionBlueprintsImport(m *mongo.Database, rows [][]interface{}) error {
 		if err != nil {
 			log.Println("Can't get time.Duration from Google sheet Id field: ", err)
 		}
-		var producedResources, usedResources []ResourceAmount
-		if err := json.Unmarshal([]byte(row[2].(string)), &producedResources); err != nil {
-			log.Println("Error while unmarshalling ProducedResources:", err)
-			return err
-		}
-
-		if err := json.Unmarshal([]byte(row[3].(string)), &usedResources); err != nil {
-			log.Println("Error while unmarshalling UsedResources:", err)
-			return err
-		}
-		producedInID, err := strconv.ParseUint(row[4].(string), 10, 32)
+		producedInID, err := strconv.ParseUint(row[3].(string), 10, 32)
 		if err != nil {
 			log.Println("Can't get UInt from Google sheet ProducedInId field: ", err)
 		}
-		productionTime, err := strconv.ParseInt(row[5].(string), 10, 32)
+		productionTime, err := strconv.ParseInt(row[4].(string), 10, 32)
 		if err != nil {
 			log.Println("Can't get UInt from Google sheet ProductionTime field: ", err)
+		}
+		var producedResources, usedResources []ResourceAmount
+		if err := json.Unmarshal([]byte(row[5].(string)), &producedResources); err != nil {
+			log.Println("Error while unmarshalling ProducedResources:", err)
+			return err
+		}
+		if err := json.Unmarshal([]byte(row[6].(string)), &usedResources); err != nil {
+			log.Println("Error while unmarshalling UsedResources:", err)
+			return err
 		}
 
 		blueprintMongo := Blueprint{
 			Id:                uint(id),
-			Name:              row[6].(string),
-			ProducedResources: producedResources,
-			UsedResources:     usedResources,
+			Name:              row[2].(string),
 			ProducedInId:      uint(producedInID),
 			ProductionTime:    time.Second * time.Duration(productionTime),
+			ProducedResources: producedResources,
+			UsedResources:     usedResources,
 		}
 
 		collection := m.Collection("blueprints")
@@ -365,7 +364,11 @@ func equipmentTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		if err != nil {
 			log.Println("Can't get Float64 from Google sheet Value field: ", err)
 		}
-		square, err := strconv.ParseFloat(row[8].(string), 64)
+		valueSecond, err := strconv.ParseFloat(row[8].(string), 64)
+		if err != nil {
+			log.Println("Can't get Float64 from Google sheet Square field: ", err)
+		}
+		square, err := strconv.ParseFloat(row[9].(string), 64)
 		if err != nil {
 			log.Println("Can't get Float64 from Google sheet Square field: ", err)
 		}
@@ -379,6 +382,7 @@ func equipmentTypesImport(m *mongo.Database, rows [][]interface{}) error {
 			EffectId:       uint(effectId),
 			Value:          value,
 			Square:         square,
+			ValueSecond:    valueSecond,
 		}
 
 		collection := m.Collection("equipmentTypes")

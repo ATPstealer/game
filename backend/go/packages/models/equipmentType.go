@@ -16,6 +16,7 @@ type EquipmentType struct {
 	BlueprintIds   []uint  `json:"blueprintIds" bson:"blueprintIds"`
 	EffectId       uint    `json:"effectId" bson:"effectId"`
 	Value          float64 `json:"value" bson:"value"`
+	ValueSecond    float64 `json:"valueSecond" bson:"valueSecond"`
 	Square         float64 `json:"square" bson:"square"`
 }
 
