@@ -117,7 +117,7 @@ func GetMyBuildings(c *gin.Context) {
 }
 
 func StartWork(c *gin.Context) {
-	var startWorkPayload models.StartWorkPayload
+	var startWorkPayload models.StartProductionPayload
 	var err error
 	if err = include.GetPayload(c, &startWorkPayload); err != nil {
 		return
@@ -128,7 +128,7 @@ func StartWork(c *gin.Context) {
 		return
 	}
 
-	err = models.StartWork(db.M, userId, startWorkPayload)
+	err = models.StartProduction(db.M, userId, startWorkPayload)
 	if err != nil {
 		if strings.Contains(err.Error(), "building busy") {
 			c.JSON(http.StatusOK, gin.H{"code": 28, "text": err.Error()})
@@ -146,7 +146,7 @@ func StartWork(c *gin.Context) {
 }
 
 func StopWork(c *gin.Context) {
-	var startWorkPayload models.StartWorkPayload
+	var startWorkPayload models.StartProductionPayload
 	var err error
 	if err = include.GetPayload(c, &startWorkPayload); err != nil {
 		return
@@ -157,7 +157,7 @@ func StopWork(c *gin.Context) {
 		return
 	}
 
-	err = models.StopWork(db.M, userId, startWorkPayload)
+	err = models.StopProduction(db.M, userId, startWorkPayload)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "this building don't belong you") {

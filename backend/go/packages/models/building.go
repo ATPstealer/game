@@ -6,7 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
 )
@@ -41,25 +40,6 @@ type Building struct {
 	Goods           *[]Goods           `json:"goods" bson:"goods"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
-}
-
-type Production struct {
-	BlueprintId uint `json:"blueprintId" bson:"blueprintId"`
-}
-
-type Goods struct {
-	ResourceTypeId uint             `json:"resourceTypeId" bson:"resourceTypeId"`
-	Price          float64          `json:"price" bson:"price"`
-	SellSum        int              `json:"sellSum" bson:"sellSum"`
-	Revenue        float64          `json:"revenue" bson:"revenue"`
-	SellStarted    time.Time        `json:"sellStarted" bson:"sellStarted"`
-	Status         StoreGoodsStatus `json:"status" bson:"status"`
-}
-
-type Equipment struct {
-	EquipmentTypeId uint `json:"equipmentTypeId" bson:"equipmentTypeId"`
-	Amount          int  `json:"amount" bson:"amount"`
-	Durability      int  `json:"durability" bson:"durability"`
 }
 
 type ConstructBuildingPayload struct {
@@ -306,6 +286,48 @@ func GetBuildingById(m *mongo.Database, buildingId primitive.ObjectID) (Building
 	return building, err
 }
 
+func DestroyBuilding(m *mongo.Database, userId primitive.ObjectID, buildingId primitive.ObjectID) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, buildingId)
+	if err != nil {
+		log.Println("Can't get building: " + err.Error())
+		return err
+	}
+	if userId != building.UserId && building.UserId != primitive.NilObjectID {
+		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
+	}
+
+	_, err = m.Collection("buildings").DeleteOne(ctx, bson.M{"_id": buildingId, "userId": userId})
+	if err != nil {
+		log.Println("Failed to delete building: " + err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, status BuildingStatus) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx,
+		bson.M{"_id": buildingId},
+		bson.M{"$set": bson.M{"status": status}})
+	return err
+}
+
+func BuildingSetWorkStarted(m *mongo.Database, buildingId primitive.ObjectID, timeStart time.Time) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx,
+		bson.M{"_id": buildingId},
+		bson.M{"$set": bson.M{"workStarted": timeStart}})
+	return err
+}
+
 type HiringPayload struct {
 	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	Salary      float64            `json:"salary" bson:"salary"`
@@ -341,54 +363,6 @@ func SetHiring(m *mongo.Database, userId primitive.ObjectID, payload HiringPaylo
 	return err
 }
 
-func DestroyBuilding(m *mongo.Database, userId primitive.ObjectID, buildingId primitive.ObjectID) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	building, err := GetBuildingById(m, buildingId)
-	if err != nil {
-		log.Println("Can't get building: " + err.Error())
-		return err
-	}
-	if userId != building.UserId && building.UserId != primitive.NilObjectID {
-		return errors.New("for attempting to destroy someone else's building, inevitable punishment awaits you")
-	}
-
-	_, err = m.Collection("buildings").DeleteOne(ctx, bson.M{"_id": buildingId, "userId": userId})
-	if err != nil {
-		log.Println("Failed to delete building: " + err.Error())
-		return err
-	}
-
-	return nil
-}
-
-func GetAllReadyStorages(m *mongo.Database) ([]Building, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	var readyStorages []Building
-
-	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1}
-	cursor, err := m.Collection("buildings").Find(ctx, filter)
-	if err != nil {
-		return readyStorages, err
-	}
-
-	err = cursor.All(ctx, &readyStorages)
-	return readyStorages, err
-}
-
-func BuildingStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, status BuildingStatus) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	_, err := m.Collection("buildings").UpdateOne(ctx,
-		bson.M{"_id": buildingId},
-		bson.M{"$set": bson.M{"status": status}})
-	return err
-}
-
 func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -400,363 +374,6 @@ func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
 	}
 
 	var buildings []Building
-	err = cursor.All(ctx, &buildings)
-	return buildings, err
-}
-
-func GetProduction(m *mongo.Database) ([]BuildingWithData, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{
-		{"workEnd", bson.D{{"$gt", time.Now()}}},
-		{"production", bson.D{{"$ne", nil}}},
-	}
-	matchStage := bson.D{{"$match", filter}}
-
-	lookupBuildingType := bson.D{{"$lookup", bson.D{
-		{"from", "buildingTypes"},
-		{"localField", "typeId"},
-		{"foreignField", "id"},
-		{"as", "buildingType"},
-	}}}
-
-	unwindBuildingType := bson.D{{"$unwind", bson.D{
-		{"path", "$buildingType"},
-		{"preserveNullAndEmptyArrays", true},
-	}}}
-
-	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
-	if err != nil {
-		log.Println("Can't get productions: " + err.Error())
-		return nil, err
-	}
-
-	var buildingWithData []BuildingWithData
-	if err = cursor.All(ctx, &buildingWithData); err != nil {
-		log.Println(err)
-	}
-	return buildingWithData, nil
-}
-
-func BuildingSetWorkStarted(m *mongo.Database, buildingId primitive.ObjectID, timeStart time.Time) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	_, err := m.Collection("buildings").UpdateOne(ctx,
-		bson.M{"_id": buildingId},
-		bson.M{"$set": bson.M{"workStarted": timeStart}})
-	return err
-}
-
-type StartWorkPayload struct {
-	BuildingId  primitive.ObjectID
-	BlueprintId uint
-	Duration    time.Duration
-}
-
-func StartWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPayload) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	building, err := GetBuildingById(m, payload.BuildingId)
-	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
-		return err
-	}
-	if building.Status != ReadyStatus {
-		return errors.New("building busy")
-	}
-	if building.UserId != userId {
-		err := errors.New("this building don't belong you")
-		log.Println(err)
-		return err
-	}
-	blueprintResult, err := GetBlueprintById(m, payload.BlueprintId)
-	if err != nil {
-		log.Println("invalid blueprint" + err.Error())
-		return err
-	}
-	if blueprintResult.ProducedInId != building.TypeId {
-		err := errors.New("can't product it here")
-		return err
-	}
-
-	now := time.Now()
-	end := now.Add(payload.Duration)
-
-	production := Production{
-		BlueprintId: payload.BlueprintId,
-	}
-
-	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
-		"$set": bson.M{
-			"status":      ProductionStatus,
-			"workStarted": now,
-			"workEnd":     end,
-			"production":  &production,
-		},
-	})
-	if err != nil {
-		log.Println("Failed to update building: " + err.Error())
-		return err
-	}
-	return nil
-}
-
-func StopWork(m *mongo.Database, userId primitive.ObjectID, payload StartWorkPayload) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	building, err := GetBuildingById(m, payload.BuildingId)
-	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
-		return err
-	}
-
-	if building.UserId != userId {
-		err := errors.New("this building don't belong you")
-		log.Println(err)
-		return err
-	}
-
-	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
-		"$set": bson.M{
-			"status":      ReadyStatus,
-			"production":  nil,
-			"workStarted": nil,
-			"workEnd":     nil,
-		},
-	})
-
-	return err
-}
-
-func GetBuildingsStores(m *mongo.Database) ([]BuildingWithData, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{
-		{"workEnd", bson.D{{"$gt", time.Now()}}},
-		{"goods", bson.D{{"$ne", nil}}},
-	}
-	matchStage := bson.D{{"$match", filter}}
-
-	lookupBuildingType := bson.D{{"$lookup", bson.D{
-		{"from", "buildingTypes"},
-		{"localField", "typeId"},
-		{"foreignField", "id"},
-		{"as", "buildingType"},
-	}}}
-
-	unwindBuildingType := bson.D{{"$unwind", bson.D{
-		{"path", "$buildingType"},
-		{"preserveNullAndEmptyArrays", true},
-	}}}
-
-	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
-	if err != nil {
-		log.Println("Can't get productions: " + err.Error())
-		return nil, err
-	}
-
-	var buildingWithData []BuildingWithData
-	if err = cursor.All(ctx, &buildingWithData); err != nil {
-		log.Println(err)
-	}
-	return buildingWithData, nil
-}
-
-func BuildingGoodsStatusUpdate(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, status StoreGoodsStatus) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{{"_id", buildingId}}
-	update := bson.D{{"$set", bson.D{{"goods.$[elem].status", status}}}}
-	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
-		Filters: []interface{}{
-			bson.D{{"elem.resourceTypeId", resourceTypeId}},
-		},
-	})
-
-	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
-	return err
-}
-
-func BuildingSetSellStarted(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, timeStart time.Time) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{{"_id", buildingId}}
-	update := bson.D{{"$set", bson.D{{"goods.$[elem].sellStarted", timeStart}}}}
-	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
-		Filters: []interface{}{
-			bson.D{{"elem.resourceTypeId", resourceTypeId}},
-		},
-	})
-
-	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
-	return err
-}
-
-func BuildingGoodsStatsUpdate(m *mongo.Database, buildingId primitive.ObjectID, resourceTypeId uint, sellSum int, revenue float64) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{{"_id", buildingId}}
-	update := bson.D{{"$set",
-		bson.D{
-			{"goods.$[elem].sellSum", sellSum},
-			{"goods.$[elem].revenue", revenue},
-		},
-	}}
-	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
-		Filters: []interface{}{
-			bson.D{{"elem.resourceTypeId", resourceTypeId}},
-		},
-	})
-
-	_, err := m.Collection("buildings").UpdateOne(ctx, filter, update, updateOpts)
-	return err
-}
-
-type InstallEquipmentPayload struct {
-	BuildingId      primitive.ObjectID `json:"buildingId"`
-	EquipmentTypeId uint               `json:"equipmentTypeId"`
-	Amount          int                `json:"amount"`
-}
-
-func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquipment InstallEquipmentPayload) error {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	var building Building
-	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": installEquipment.BuildingId}).Decode(&building)
-	if err != nil {
-		return err
-	}
-
-	if building.UserId != userId {
-		err := errors.New("this building don't belong you")
-		log.Println(err)
-		return err
-	}
-
-	equipmentType, err := GetEquipmentTypesByID(m, installEquipment.EquipmentTypeId)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	if equipmentType.Square*float64(installEquipment.Amount)+building.SquareInUse > float64(building.Square*building.Level) {
-		return errors.New("not enough space")
-	}
-
-	index := getEquipmentPosition(building.Equipment, installEquipment.EquipmentTypeId)
-
-	if installEquipment.Amount >= 0 {
-		if !CheckEnoughResources(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(installEquipment.Amount)) {
-			return errors.New("not enough resources in this cell")
-		}
-	} else {
-		if index != -1 {
-			if (*building.Equipment)[index].Amount < (-1)*installEquipment.Amount {
-				return errors.New("not enough equipment here")
-			}
-		} else {
-			return errors.New("not enough equipment here")
-		}
-	}
-
-	resourceAdd := installEquipment.Amount
-	if installEquipment.Amount < 0 {
-		resourceAdd++ // If you uninstall the equipment, you lose one
-	}
-	err = AddResource(m, equipmentType.ResourceTypeId, userId, building.X, building.Y, float64(-resourceAdd))
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	if index != -1 {
-		err = updateEquipmentAmount(m, ctx, building, index, equipmentType.Id, installEquipment.Amount)
-	} else {
-		newEquipment := Equipment{EquipmentTypeId: installEquipment.EquipmentTypeId, Amount: installEquipment.Amount, Durability: equipmentType.Durability}
-		_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": installEquipment.BuildingId},
-			bson.M{
-				"$push": bson.M{
-					"equipment": newEquipment,
-				},
-			},
-		)
-	}
-	if err != nil {
-		return err
-	}
-
-	err = countEffects(m, building.Id)
-	if err != nil {
-		return err
-	}
-
-	_, err = m.Collection("buildings").UpdateOne(ctx,
-		bson.M{"_id": installEquipment.BuildingId},
-		bson.M{"$set": bson.M{"squareInUse": equipmentType.Square*float64(installEquipment.Amount) + building.SquareInUse}})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func getEquipmentPosition(equipments *[]Equipment, equipmentTypeId uint) int {
-	if equipments == nil {
-		return -1
-	}
-	for i, v := range *equipments {
-		if v.EquipmentTypeId == equipmentTypeId {
-			return i
-		}
-	}
-	return -1
-}
-
-func updateEquipmentAmount(m *mongo.Database, ctx context.Context, building Building, index int, equipmentTypeId uint, amount int) error {
-	(*building.Equipment)[index].Amount += amount
-	if (*building.Equipment)[index].Amount == 0 {
-		update := bson.D{
-			{"$pull", bson.D{{"equipment", bson.D{{"equipmentTypeId", equipmentTypeId}}}}},
-		}
-		_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update)
-		return err
-	}
-
-	update := bson.M{
-		"$set": bson.M{
-			"equipment.$[id].amount": (*building.Equipment)[index].Amount,
-		},
-	}
-	updateOpts := options.Update().SetArrayFilters(options.ArrayFilters{
-		Filters: []interface{}{
-			bson.D{{"id.equipmentTypeId", equipmentTypeId}},
-		},
-	})
-	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, update, updateOpts)
-	return err
-}
-
-func GetBuildingsForEquipmentRecount(m *mongo.Database) ([]Building, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	var buildings []Building
-	cursor, err := m.Collection("buildings").Find(ctx, bson.M{"equipment": bson.M{"$ne": nil}})
-	if err != nil {
-		return buildings, err
-	}
-
 	err = cursor.All(ctx, &buildings)
 	return buildings, err
 }

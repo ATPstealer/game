@@ -10,7 +10,7 @@ import (
 )
 
 func Production(m *mongo.Database) {
-	buildings, err := models.GetProduction(m)
+	buildings, err := models.GetBuildingsProduction(m)
 	if err != nil {
 		log.Println("Can't get productions: " + err.Error())
 		return
