@@ -1,15 +1,15 @@
 <template>
   <DataTable
     v-if="!isFetching"
-    :value="buildings"
     size="small"
+    :value="buildings"
   >
     <Column
       :header="t(`buildings.one`)"
     >
       <template #body="{data}: {data: Building}">
         <p class="col-span-1 font-bold">
-          <router-link :to="{name: `Buildings${data.buildingType.buildingGroup}NameId`, params: {id: data._id, name: data.buildingType.title.toLowerCase()}}" class="link">
+          <router-link class="link" :to="{name: `Buildings${data.buildingType.buildingGroup}NameId`, params: {id: data._id, name: data.buildingType.title.toLowerCase()}}">
             {{ t(`buildings.types.${data.buildingType.title.toLowerCase()}`) }} {{ data.level }}x{{ data.square }}
           </router-link>
         </p>
@@ -26,16 +26,16 @@
       :header="t(`buildings.status`)"
     >
       <template #body="{data}: {data: Building}">
-        {{ t(`status.${data.status.toLowerCase()}`) }}
+        {{ t(`status.${data?.status?.toLowerCase()}`) }}
       </template>
     </Column>
     <Column
       :header="t(`buildings.finish`)"
     >
       <template #body="{data}: {data: Building}">
-        <span v-if="getTimeDiff(data.workEnd) > 0">
-          {{ formatDuration(getTimeDiff(data.workEnd)) }}
-        </span>
+        <div class="min-w-28 max-w-28">
+          {{ getTime(data.workEnd, 'Достроено') }}
+        </div>
       </template>
     </Column>
   </DataTable>
@@ -48,11 +48,11 @@ import DataTable from 'primevue/datatable'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
-import { Building } from '@/types/Buildings/index.interface'
-import { formatDuration } from '@/utils/formatDuration'
-import { getTimeDiff } from '@/utils/getTimeDiff'
+import { useTimer } from '@/composables/useTimer'
+import type { Building } from '@/types/Buildings/index.interface'
 
 const { data: buildings, isFetching } = useGetData<Building[]>('/building/my')
+const { getTime } = useTimer()
 
 const { t } = useI18n()
 </script>

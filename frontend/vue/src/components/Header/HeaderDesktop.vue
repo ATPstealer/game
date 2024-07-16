@@ -90,13 +90,14 @@
       <!--        />-->
       <!--      </div>-->
       <div class="flex items-center gap-4">
-        <p class="header-item">
+        <p v-if="user?.nickName" class="header-item">
           {{ user?.nickName }}
         </p>
-        <p class="header-item">
+        <p v-if="user?.money" class="header-item">
           {{ moneyFormat(user?.money) }}
         </p>
         <Button
+          v-if="user?.nickName"
           class="header-item p-0"
           :label="t('account.logout')"
           text

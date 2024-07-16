@@ -20,7 +20,7 @@ export interface Building {
   level: number;
   status?: string;
   workStarted: string;
-  workEnd: string;
+  workEnd: Date;
   hiringNeeds: number;
   salary: number;
   workers: number;
