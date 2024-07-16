@@ -52,11 +52,10 @@ interface Props {
   loading: boolean;
 }
 
-const router = useRouter()
-const { t } = useI18n()
-
 defineProps<Props>()
 
+const router = useRouter()
+const { t } = useI18n()
 const { destroyBuilding, stopWork } = useBuildings()
 const confirm = useConfirm()
 

@@ -1,8 +1,8 @@
 <template>
   <ResourcesList
-    :resources="resources"
-    :execute="execute"
     v-if="resources?.length"
+    :execute="execute"
+    :resources="resources"
   />
   <div v-else>
     тут рыбы нет

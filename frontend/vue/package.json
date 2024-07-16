@@ -19,6 +19,7 @@
     "autoprefixer": "10",
     "axios": "1.6.2",
     "crypto-js": "4.2.0",
+    "dayjs": "1.11.11",
     "lodash": "4.17.21",
     "pinia": "2.1.7",
     "postcss": "8",

@@ -29,7 +29,7 @@
         v-bind="messageData"
       />
       <DataTable
-        v-if="process === 'add'"
+        v-if="process === 'add' && availableEquipment.length"
         :loading="loading"
         :value="availableEquipment"
       >
@@ -84,7 +84,11 @@
           </template>
         </Column>
       </DataTable>
-      <DataTable v-if="process=== 'delete'" :value="availableEquipment">
+      <DataTable
+        v-if="process === 'delete' && availableEquipment?.length"
+        :loading="loading"
+        :value="availableEquipment"
+      >
         <Column field="name" header="Название" />
         <Column field="amount" header="Количество" />
         <Column field="durability" header="Прочность" />
@@ -109,6 +113,9 @@
           </template>
         </Column>
       </DataTable>
+      <div v-if="!loading && !availableEquipment?.length">
+        Доступное оборудование отсутствует
+      </div>
     </Dialog>
 
     <div v-if="building?.equipmentEffect?.length && blueprints?.length">
@@ -136,7 +143,7 @@ import Dialog from 'primevue/dialog'
 import Divider from 'primevue/divider'
 import InputNumber from 'primevue/inputnumber'
 import Tag from 'primevue/tag'
-import { inject, ref, watch } from 'vue'
+import { inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
@@ -174,16 +181,24 @@ const openModal = (event: string) => {
     getCurrentEquipment()
     onCurrentEquipmentResponse(() => {
       availableEquipment.value = [...currentEquipment.value]
+
       amount.value = availableEquipment.value.reduce((acc: Record<string, number>, cur: Equipment) => {
         acc[cur.equipmentType.id] = 1
 
         return acc
       }, {})
+
       loading.value = false
     })
   }
 
   else {
+    if (!props?.building?.equipment?.length) {
+      availableEquipment.value = []
+      loading.value = false
+
+      return
+    }
     const localEquipment = props.building.equipment.map(eq => eq.equipmentTypeId)
 
     availableEquipment.value = [...equipmentTypes.value.filter(eq => localEquipment.includes(eq.id))].map(eq => {
@@ -198,6 +213,8 @@ const openModal = (event: string) => {
 
       return acc
     }, {})
+
+    loading.value = false
   }
 }
 

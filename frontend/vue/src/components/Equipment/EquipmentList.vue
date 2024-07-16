@@ -97,7 +97,7 @@ import { useI18n } from 'vue-i18n'
 import { useGetData } from '@/composables/useGetData'
 import type { Blueprint } from '@/types/Buildings/index.interface'
 import type { Equipment } from '@/types/Equipment/index.interface'
-import { Resource } from '@/types/Resources/index.interface'
+import type { Resource } from '@/types/Resources/index.interface'
 
 interface Props {
   equipments: Equipment[];
@@ -109,11 +109,11 @@ const { t } = useI18n()
 const popover = ref()
 const bps = ref<Blueprint[]>([])
 
+const { data: blueprints } = useGetData<Blueprint[]>('/building/blueprints')
+
 const toggleOP = (event: any, blueprintsIds: number[]) => {
   popover.value.toggle(event)
   bps.value = blueprints.value.filter(item => blueprintsIds.includes(item.id))
 }
-
-const { data: blueprints } = useGetData('/building/blueprints')
 
 </script>
