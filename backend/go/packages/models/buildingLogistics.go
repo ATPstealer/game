@@ -18,33 +18,6 @@ type Logistics struct {
 	Revenue     float64 `json:"revenue" bson:"revenue"`
 }
 
-// TODO: переделать все поиска зданий на этот вариант
-func GetAllReadyLogisticsHubs(m *mongo.Database) ([]Building, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	var readyLogisticsHubs []Building
-
-	logisticsTypes, err := GetBuildingTypesByBuildingGroup(m, "Logistics")
-	if err != nil {
-		return readyLogisticsHubs, err
-	}
-
-	var typeIds []uint
-	for _, logisticsType := range logisticsTypes {
-		typeIds = append(typeIds, logisticsType.Id)
-	}
-
-	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": bson.M{"$in": typeIds}}
-	cursor, err := m.Collection("buildings").Find(ctx, filter)
-	if err != nil {
-		return readyLogisticsHubs, err
-	}
-
-	err = cursor.All(ctx, &readyLogisticsHubs)
-	return readyLogisticsHubs, err
-}
-
 func LogisticsReset(m *mongo.Database, building Building) error {
 	logisticsEquipmentEffect, err := findLogisticsEffect(m, building.EquipmentEffect)
 	if err != nil {

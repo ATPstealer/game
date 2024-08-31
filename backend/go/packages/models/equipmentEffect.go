@@ -17,7 +17,7 @@ type EquipmentEffect struct {
 	ValueSecond float64 `json:"valueSecond" bson:"valueSecond"`
 }
 
-func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
+func CountEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 	building, err := GetBuildingById(m, buildingId)
 	if err != nil {
 		return err

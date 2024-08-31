@@ -32,7 +32,12 @@ func DurabilityRecount(m *mongo.Database) {
 				log.Fatal(err)
 			}
 		}
+		err = models.CountEffects(m, building.Id)
+		if err != nil {
+			log.Fatalln("Can't recount building effects", building.Id, ":", err.Error())
+		}
 	}
+
 }
 
 func getMaxDurability(equipmentId uint, equipmentTypes *[]models.EquipmentType) int {

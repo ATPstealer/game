@@ -7,7 +7,7 @@ import (
 )
 
 func LogisticsReset(m *mongo.Database) {
-	buildings, err := models.GetAllReadyLogisticsHubs(m)
+	buildings, err := models.GetAllReadyBuildingByGroup(m, "Logistics")
 	if err != nil {
 		log.Println(err)
 		return

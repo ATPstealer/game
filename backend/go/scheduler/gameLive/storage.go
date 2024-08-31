@@ -29,7 +29,7 @@ func StoragesUpdate(m *mongo.Database) {
 		findResource(&storages, resource)
 	}
 
-	buildingStorages, err := models.GetAllReadyStorages(m)
+	buildingStorages, err := models.GetAllReadyBuildingByGroup(m, "Storage")
 	if err != nil {
 		log.Println(err)
 	}

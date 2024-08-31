@@ -379,3 +379,29 @@ func GetBuildingsForHiring(m *mongo.Database) ([]Building, error) {
 	err = cursor.All(ctx, &buildings)
 	return buildings, err
 }
+
+func GetAllReadyBuildingByGroup(m *mongo.Database, group string) ([]Building, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var readyLogisticsHubs []Building
+
+	logisticsTypes, err := GetBuildingTypesByBuildingGroup(m, group)
+	if err != nil {
+		return readyLogisticsHubs, err
+	}
+
+	var typeIds []uint
+	for _, logisticsType := range logisticsTypes {
+		typeIds = append(typeIds, logisticsType.Id)
+	}
+
+	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": bson.M{"$in": typeIds}}
+	cursor, err := m.Collection("buildings").Find(ctx, filter)
+	if err != nil {
+		return readyLogisticsHubs, err
+	}
+
+	err = cursor.All(ctx, &readyLogisticsHubs)
+	return readyLogisticsHubs, err
+}

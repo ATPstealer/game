@@ -95,7 +95,7 @@ func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquip
 		}
 	}
 
-	err = countEffects(m, building.Id)
+	err = CountEffects(m, building.Id)
 	if err != nil {
 		return err
 	}
