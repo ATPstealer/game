@@ -38,6 +38,7 @@ type Building struct {
 	OnStrike        bool               `json:"onStrike" bson:"onStrike"`
 	Production      *Production        `json:"production" bson:"production"`
 	Goods           *[]Goods           `json:"goods" bson:"goods"`
+	Logistics       *Logistics         `json:"logistics" bson:"logistics"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"  bson:"equipmentEffect"`
 }
@@ -132,6 +133,7 @@ type BuildingWithData struct {
 	NickName        string             `json:"nickName"`
 	Production      *Production        `json:"production"`
 	Goods           *[]Goods           `json:"goods"`
+	Logistics       *Logistics         `json:"logistics"`
 	Equipment       *[]Equipment       `json:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
 }

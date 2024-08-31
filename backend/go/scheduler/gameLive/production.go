@@ -98,7 +98,7 @@ func getEquipmentImpact(building models.BuildingWithData, blueprintId uint) floa
 	}
 	equipmentImpact := 0.0
 	for _, equipmentEffect := range *building.EquipmentEffect {
-		if equipmentEffect.EffectId == 1 && (equipmentEffect.BlueprintId == 0 || equipmentEffect.BlueprintId == blueprintId) {
+		if equipmentEffect.EffectId == models.WorkerProductivity && (equipmentEffect.BlueprintId == 0 || equipmentEffect.BlueprintId == blueprintId) {
 			equipmentImpact += equipmentEffect.Value
 		}
 	}

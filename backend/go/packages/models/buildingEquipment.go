@@ -23,6 +23,13 @@ type InstallEquipmentPayload struct {
 	Amount          int                `json:"amount"`
 }
 
+// EffectsId https://docs.google.com/spreadsheets/d/18DblwMx9a-YnLh7hfqwSC5a3Sc-_bRybMWMWp-isgO0/edit?pli=1&gid=1818870012#gid=1818870012
+const (
+	WorkerProductivity = 1
+	DecreasePollution  = 2
+	LogisticsCapacity  = 3
+)
+
 func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquipment InstallEquipmentPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()

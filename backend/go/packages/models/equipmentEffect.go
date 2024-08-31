@@ -13,6 +13,8 @@ type EquipmentEffect struct {
 	EffectId    uint    `json:"effectId" bson:"effectId"`
 	BlueprintId uint    `json:"blueprintId" bson:"blueprintId"`
 	Value       float64 `json:"value" bson:"value"`
+	// Second value is considered as an average for all equipment, taking into account the first value.
+	ValueSecond float64 `json:"valueSecond" bson:"valueSecond"`
 }
 
 func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
@@ -25,17 +27,17 @@ func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 	equipmentEffects := new([]EquipmentEffect)
 	if building.Equipment != nil {
 		for _, equipment := range *building.Equipment {
-			log.Println(equipment)
+
 			equipmentType, err := GetEquipmentTypesByID(m, equipment.EquipmentTypeId)
 			if err != nil {
 				return err
 			}
 
 			if len(equipmentType.BlueprintIds) == 0 {
-				addEffect(equipmentEffects, equipmentType.EffectId, 0, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount))
+				addEffect(equipmentEffects, equipmentType.EffectId, 0, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount), equipmentType.ValueSecond)
 			} else {
 				for _, blueprintId := range equipmentType.BlueprintIds {
-					addEffect(equipmentEffects, equipmentType.EffectId, blueprintId, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount))
+					addEffect(equipmentEffects, equipmentType.EffectId, blueprintId, equipmentEfficiency*equipmentType.Value*float64(equipment.Amount), equipmentType.ValueSecond)
 				}
 			}
 		}
@@ -46,10 +48,12 @@ func countEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 	return saveEquipmentEffects(m, equipmentEffects, buildingId)
 }
 
-func addEffect(equipmentEffects *[]EquipmentEffect, effectId uint, blueprintId uint, value float64) {
+func addEffect(equipmentEffects *[]EquipmentEffect, effectId uint, blueprintId uint, value float64, valueSecond float64) {
 	for i, effect := range *equipmentEffects {
 		if effect.EffectId == effectId && effect.BlueprintId == blueprintId {
-			(*equipmentEffects)[i].Value += value
+			v := (*equipmentEffects)[i].Value + value
+			(*equipmentEffects)[i].ValueSecond = (*equipmentEffects)[i].ValueSecond*((*equipmentEffects)[i].Value/v) + valueSecond*(value/v)
+			(*equipmentEffects)[i].Value = v
 			return
 		}
 	}
@@ -57,6 +61,7 @@ func addEffect(equipmentEffects *[]EquipmentEffect, effectId uint, blueprintId u
 		EffectId:    effectId,
 		BlueprintId: blueprintId,
 		Value:       value,
+		ValueSecond: valueSecond,
 	})
 }
 
@@ -71,6 +76,7 @@ func saveEquipmentEffects(m *mongo.Database, equipmentEffects *[]EquipmentEffect
 	return err
 }
 
+// Equipment efficiency decreases with a shortage of workers
 func countEfficiency(building Building) float64 {
 	equipmentAmount := countEquipment(building.Equipment)
 	var equipmentEfficiency float64

@@ -20,6 +20,42 @@ type StartProductionPayload struct {
 	Duration    time.Duration
 }
 
+func GetBuildingsProduction(m *mongo.Database) ([]BuildingWithData, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{
+		{"workEnd", bson.D{{"$gt", time.Now()}}},
+		{"production", bson.D{{"$ne", nil}}},
+	}
+	matchStage := bson.D{{"$match", filter}}
+
+	lookupBuildingType := bson.D{{"$lookup", bson.D{
+		{"from", "buildingTypes"},
+		{"localField", "typeId"},
+		{"foreignField", "id"},
+		{"as", "buildingType"},
+	}}}
+
+	unwindBuildingType := bson.D{{"$unwind", bson.D{
+		{"path", "$buildingType"},
+		{"preserveNullAndEmptyArrays", true},
+	}}}
+
+	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
+	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
+	if err != nil {
+		log.Println("Can't get productions: " + err.Error())
+		return nil, err
+	}
+
+	var buildingWithData []BuildingWithData
+	if err = cursor.All(ctx, &buildingWithData); err != nil {
+		log.Println(err)
+	}
+	return buildingWithData, nil
+}
+
 func StartProduction(m *mongo.Database, userId primitive.ObjectID, payload StartProductionPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -95,40 +131,4 @@ func StopProduction(m *mongo.Database, userId primitive.ObjectID, payload StartP
 	})
 
 	return err
-}
-
-func GetBuildingsProduction(m *mongo.Database) ([]BuildingWithData, error) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
-	defer cancel()
-
-	filter := bson.D{
-		{"workEnd", bson.D{{"$gt", time.Now()}}},
-		{"production", bson.D{{"$ne", nil}}},
-	}
-	matchStage := bson.D{{"$match", filter}}
-
-	lookupBuildingType := bson.D{{"$lookup", bson.D{
-		{"from", "buildingTypes"},
-		{"localField", "typeId"},
-		{"foreignField", "id"},
-		{"as", "buildingType"},
-	}}}
-
-	unwindBuildingType := bson.D{{"$unwind", bson.D{
-		{"path", "$buildingType"},
-		{"preserveNullAndEmptyArrays", true},
-	}}}
-
-	pipeline := mongo.Pipeline{matchStage, lookupBuildingType, unwindBuildingType}
-	cursor, err := m.Collection("buildings").Aggregate(ctx, pipeline)
-	if err != nil {
-		log.Println("Can't get productions: " + err.Error())
-		return nil, err
-	}
-
-	var buildingWithData []BuildingWithData
-	if err = cursor.All(ctx, &buildingWithData); err != nil {
-		log.Println(err)
-	}
-	return buildingWithData, nil
 }

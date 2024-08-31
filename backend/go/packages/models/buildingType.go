@@ -43,3 +43,17 @@ func GetBuildingTypeById(m *mongo.Database, typeId uint) (BuildingType, error) {
 	err := res.Decode(&buildingType)
 	return buildingType, err
 }
+
+func GetBuildingTypesByBuildingGroup(m *mongo.Database, group string) ([]BuildingType, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var buildingTypes []BuildingType
+	cursor, err := m.Collection("buildingTypes").Find(ctx, bson.M{"buildingGroup": group})
+	if err != nil {
+		return buildingTypes, err
+	}
+
+	err = cursor.All(ctx, &buildingTypes)
+	return buildingTypes, err
+}

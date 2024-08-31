@@ -26,4 +26,6 @@ func transform(m *mongo.Database) {
 	evolution.Payroll(m)
 	log.Println("=== Durability Recount ===")
 	evolution.DurabilityRecount(m)
+	log.Println("=== Logistics Recount ===")
+	evolution.LogisticsReset(m)
 }

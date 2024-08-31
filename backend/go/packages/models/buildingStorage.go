@@ -13,7 +13,7 @@ func GetAllReadyStorages(m *mongo.Database) ([]Building, error) {
 
 	var readyStorages []Building
 
-	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1}
+	filter := bson.M{"status": ReadyStatus, "onStrike": false, "typeId": 1} // TODO: надо конечно не так искать!
 	cursor, err := m.Collection("buildings").Find(ctx, filter)
 	if err != nil {
 		return readyStorages, err
