@@ -49,7 +49,7 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 		return errors.New("there is not enough storage capacity in the destination sector")
 	}
 
-	// FORMULA: logistic
+	// FORMULA: logistics
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
 	price := (resourceType.Weight + resourceType.Volume) * distance * logisticPayload.Amount / 1000
 	if !CheckEnoughMoney(m, userId, price) {

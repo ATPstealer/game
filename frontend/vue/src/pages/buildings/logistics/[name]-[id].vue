@@ -1,7 +1,7 @@
 <template>
   <BuildingTemplate :building="building" :loading="isFetching">
     <template #building>
-      Logistic
+      Logistics
     </template>
     <template #buildingHelp>
       <p>{{ t(`buildings.hiring.help`) }}</p>
