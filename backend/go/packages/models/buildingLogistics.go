@@ -69,7 +69,7 @@ func LogisticsReset(m *mongo.Database, building Building) error {
 }
 
 func findLogisticsEffect(m *mongo.Database, equipmentEffects *[]EquipmentEffect) (EquipmentEffect, error) {
-	if *equipmentEffects != nil {
+	if equipmentEffects != nil {
 		for index, equipmentEffect := range *equipmentEffects {
 			if equipmentEffect.EffectId == LogisticsCapacity {
 				return (*equipmentEffects)[index], nil
