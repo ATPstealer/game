@@ -9,7 +9,7 @@ import (
 func LogisticsReset(m *mongo.Database) {
 	buildings, err := models.GetAllReadyBuildingByGroup(m, "Logistics")
 	if err != nil {
-		log.Println(err)
+		log.Println("Can't get buildings for logistics update", err)
 		return
 	}
 	for _, building := range buildings {
