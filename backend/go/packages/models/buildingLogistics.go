@@ -77,3 +77,48 @@ func updateBuildingLogistics(m *mongo.Database, buildingId primitive.ObjectID, l
 	}
 	return nil
 }
+
+type FindLogisticsParams struct {
+	X           *int
+	Y           *int
+	MinCapacity *float64
+}
+
+func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsParams) ([]Logistics, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	filter := bson.D{}
+	if findLogisticsParams.X != nil {
+		filter = append(filter, bson.E{Key: "x", Value: *findLogisticsParams.X})
+	}
+	if findLogisticsParams.Y != nil {
+		filter = append(filter, bson.E{Key: "y", Value: *findLogisticsParams.Y})
+	}
+	if findLogisticsParams.MinCapacity != nil {
+		filter = append(filter, bson.E{Key: "logistics.capacity", Value: bson.D{{Key: "$gte", Value: *findLogisticsParams.MinCapacity}}})
+	}
+
+	var logistics []Logistics
+	var buildings []Building
+	cursor, err := m.Collection("buildings").Find(ctx, filter)
+	if err != nil {
+		return logistics, err
+	}
+	if err = cursor.All(ctx, &buildings); err != nil {
+		return logistics, err
+	}
+
+	logistics = getLogistics(buildings)
+	return logistics, err
+}
+
+func getLogistics(buildings []Building) []Logistics {
+	var logistics []Logistics
+	for _, building := range buildings {
+		if building.Logistics != nil {
+			logistics = append(logistics, *building.Logistics)
+		}
+	}
+	return logistics
+}

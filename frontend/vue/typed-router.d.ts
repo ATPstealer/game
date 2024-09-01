@@ -41,10 +41,10 @@ declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     'Root': RouteRecordInfo<'Root', '/', Record<never, never>, Record<never, never>>,
     'Buildings': RouteRecordInfo<'Buildings', '/buildings', Record<never, never>, Record<never, never>>,
-    'BuildingsLogisticNameId': RouteRecordInfo<'BuildingsLogisticNameId', '/buildings/logistics/:name-:id', {
-      name: ParamValue<true>,
-      id: ParamValue<true>
-    }, { name: ParamValue<false>, id: ParamValue<false> }>,
+      'BuildingsLogisticsNameId': RouteRecordInfo<'BuildingsLogisticsNameId', '/buildings/logistics/:name-:id', {
+          name: ParamValue<true>,
+          id: ParamValue<true>
+      }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsProductionNameId': RouteRecordInfo<'BuildingsProductionNameId', '/buildings/production/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsStorageNameId': RouteRecordInfo<'BuildingsStorageNameId', '/buildings/storage/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsStoreNameId': RouteRecordInfo<'BuildingsStoreNameId', '/buildings/store/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
