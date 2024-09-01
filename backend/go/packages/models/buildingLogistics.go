@@ -84,7 +84,16 @@ type FindLogisticsParams struct {
 	MinCapacity *float64
 }
 
-func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsParams) ([]Logistics, error) {
+type LogisticsWithData struct {
+	X          int                `json:"x"`
+	Y          int                `json:"y"`
+	BuildingId primitive.ObjectID `json:"buildingId"`
+	Capacity   float64            `json:"capacity"`
+	Speed      float64            `json:"speed"`
+	Price      float64            `json:"price"`
+}
+
+func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsParams) ([]LogisticsWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -99,7 +108,7 @@ func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsPa
 		filter = append(filter, bson.E{Key: "logistics.capacity", Value: bson.D{{Key: "$gte", Value: *findLogisticsParams.MinCapacity}}})
 	}
 
-	var logistics []Logistics
+	var logistics []LogisticsWithData
 	var buildings []Building
 	cursor, err := m.Collection("buildings").Find(ctx, filter)
 	if err != nil {
@@ -113,11 +122,18 @@ func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsPa
 	return logistics, err
 }
 
-func getLogistics(buildings []Building) []Logistics {
-	var logistics []Logistics
+func getLogistics(buildings []Building) []LogisticsWithData {
+	var logistics []LogisticsWithData
 	for _, building := range buildings {
 		if building.Logistics != nil {
-			logistics = append(logistics, *building.Logistics)
+			logistics = append(logistics, LogisticsWithData{
+				X:          building.X,
+				Y:          building.Y,
+				BuildingId: building.Id,
+				Capacity:   building.Logistics.Capacity,
+				Speed:      building.Logistics.Speed,
+				Price:      building.Logistics.Price,
+			})
 		}
 	}
 	return logistics
