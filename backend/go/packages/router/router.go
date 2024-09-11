@@ -76,5 +76,9 @@ func MakeRouter() *gin.Engine {
 	market.DELETE("/order/close", controllers.CloseMyOrder)
 	market.POST("/order/execute", controllers.ExecuteOrder)
 
+	logistics := router.Group("/api/v2/logistics")
+	logistics.Use(AuthMiddleware())
+	logistics.POST("/set_price", controllers.SetLogisticsPrice)
+
 	return router
 }

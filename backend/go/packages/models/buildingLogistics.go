@@ -194,3 +194,36 @@ func WithdrawLogisticsCapacity(m *mongo.Database, buildingId primitive.ObjectID,
 	}
 	return nil
 }
+
+type LogisticsPriceParams struct {
+	BuildingId primitive.ObjectID `json:"buildingId"`
+	Price      float64            `json:"price"`
+}
+
+func SetLogisticsPrice(m *mongo.Database, userId primitive.ObjectID, logisticsPriceParams LogisticsPriceParams) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	if logisticsPriceParams.Price < 0 {
+		return errors.New("price can't be negative")
+	}
+
+	building, err := GetBuildingById(m, logisticsPriceParams.BuildingId)
+	if err != nil {
+		log.Println("Can't get building by Id: " + err.Error())
+		return err
+	}
+
+	if building.UserId != userId {
+		err := errors.New("this building don't belong you")
+		return err
+	}
+
+	building.Logistics.Price = logisticsPriceParams.Price
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
+		"$set": bson.M{
+			"logistics": &building.Logistics,
+		},
+	})
+	return err
+}

@@ -117,7 +117,6 @@ func StopProduction(m *mongo.Database, userId primitive.ObjectID, payload StartP
 
 	if building.UserId != userId {
 		err := errors.New("this building don't belong you")
-		log.Println(err)
 		return err
 	}
 
