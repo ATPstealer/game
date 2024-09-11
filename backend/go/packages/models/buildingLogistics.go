@@ -138,3 +138,59 @@ func getLogistics(buildings []Building) []LogisticsWithData {
 	}
 	return logistics
 }
+
+func GetLogisticsPriceAndSpeed(m *mongo.Database, buildingId primitive.ObjectID) (float64, float64) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var building Building
+	err := m.Collection("buildings").FindOne(ctx, bson.M{"_id": buildingId}).Decode(&building)
+	if err != nil {
+		log.Println("Can't get building by Id: " + err.Error())
+		return 0.0, 0.0
+	}
+
+	if building.Logistics != nil {
+		return building.Logistics.Price, building.Logistics.Speed
+	}
+	return 0.0, 0.0
+}
+
+func CheckEnoughCapacity(m *mongo.Database, buildingId primitive.ObjectID, capacity float64) bool {
+	building, err := GetBuildingById(m, buildingId)
+	if err != nil {
+		log.Println("Can't get building by Id: " + err.Error())
+		return false
+	}
+	return building.Logistics.Capacity >= capacity
+}
+
+func WithdrawLogisticsCapacity(m *mongo.Database, buildingId primitive.ObjectID, capacity float64) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, buildingId)
+	if err != nil {
+		log.Println("Can't get building by Id: " + err.Error())
+		return err
+	}
+	if building.Logistics == nil {
+		return errors.New("not enough capacity in this hub")
+	}
+	if building.Logistics.Capacity < capacity {
+		return errors.New("not enough capacity in this hub")
+	}
+
+	building.Logistics.Capacity -= capacity
+	building.Logistics.Revenue += capacity * building.Logistics.Price
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": building.Id}, bson.M{
+		"$set": bson.M{
+			"logistics": &building.Logistics,
+		},
+	})
+	if err != nil {
+		log.Println("Failed to update building: " + err.Error())
+		return err
+	}
+	return nil
+}

@@ -62,7 +62,7 @@ func StartProduction(m *mongo.Database, userId primitive.ObjectID, payload Start
 
 	building, err := GetBuildingById(m, payload.BuildingId)
 	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
+		log.Println("Can't get building by Id: " + err.Error())
 		return err
 	}
 	if building.Status != ReadyStatus {
@@ -111,7 +111,7 @@ func StopProduction(m *mongo.Database, userId primitive.ObjectID, payload StartP
 
 	building, err := GetBuildingById(m, payload.BuildingId)
 	if err != nil {
-		log.Println("Can't find buildings: " + err.Error())
+		log.Println("Can't get building by Id: " + err.Error())
 		return err
 	}
 

@@ -24,14 +24,16 @@ type Logistic struct {
 }
 
 type LogisticPayload struct {
-	ResourceTypeId uint    `json:"resourceTypeId"`
-	Amount         float64 `json:"amount"`
-	FromX          int     `json:"fromX"`
-	FromY          int     `json:"fromY"`
-	ToX            int     `json:"toX"`
-	ToY            int     `json:"toY"`
+	BuildingId     primitive.ObjectID `json:"buildingId"`
+	ResourceTypeId uint               `json:"resourceTypeId"`
+	Amount         float64            `json:"amount"`
+	FromX          int                `json:"fromX"`
+	FromY          int                `json:"fromY"`
+	ToX            int                `json:"toX"`
+	ToY            int                `json:"toY"`
 }
 
+// TODO: расчитать скорость
 func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayload LogisticPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -49,21 +51,36 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 		return errors.New("there is not enough storage capacity in the destination sector")
 	}
 
-	// FORMULA: logistics
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))
-	price := (resourceType.Weight + resourceType.Volume) * distance * logisticPayload.Amount / 1000
-	if !CheckEnoughMoney(m, userId, price) {
-		return errors.New("not enough money")
-	} else {
-		if err := AddMoney(m, userId, (-1)*price); err != nil {
-			return err
-		}
+	hubPrice, hubSpeed := GetLogisticsPriceAndSpeed(m, logisticPayload.BuildingId)
+	if hubPrice <= 0 || hubSpeed <= 0 {
+		return errors.New("can't get logistics price or speed")
 	}
 
+	// FORMULA: logistics
+	capacity := ((resourceType.Weight + resourceType.Volume) / 1000) * distance * logisticPayload.Amount
+	log.Println(capacity)
+	price := capacity * hubPrice
+	log.Println(price)
+
+	if !CheckEnoughCapacity(m, logisticPayload.BuildingId, capacity) {
+		return errors.New("not enough capacity in this hub")
+	}
+	if !CheckEnoughMoney(m, userId, price) {
+		return errors.New("not enough money")
+	}
+
+	if err := AddMoney(m, userId, (-1)*price); err != nil {
+		return err
+	}
 	if err := AddResource(m, logisticPayload.ResourceTypeId, userId, logisticPayload.FromX, logisticPayload.FromY, (-1)*logisticPayload.Amount); err != nil {
 		return err
 	}
+	if err := WithdrawLogisticsCapacity(m, logisticPayload.BuildingId, capacity); err != nil {
+		return err
+	}
 
+	// FORMULA: One cell is 100km. hubSpeed in km/h.
 	logistic := Logistic{
 		ResourceTypeId: logisticPayload.ResourceTypeId,
 		UserId:         userId,
@@ -72,7 +89,7 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 		FromY:          logisticPayload.FromY,
 		ToX:            logisticPayload.ToX,
 		ToY:            logisticPayload.ToY,
-		WorkEnd:        time.Now().Add(time.Second * time.Duration(distance*600)),
+		WorkEnd:        time.Now().Add(time.Second * time.Duration(distance*3600*100/hubSpeed)),
 	}
 	_, err = m.Collection("logistics").InsertOne(ctx, &logistic)
 	return err
