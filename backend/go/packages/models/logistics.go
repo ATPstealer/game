@@ -33,7 +33,7 @@ type LogisticPayload struct {
 	ToY            int                `json:"toY"`
 }
 
-// TODO: расчитать скорость
+// TODO: сделать отправку только из хаба в тойже точке, что и ресурс
 func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayload LogisticPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
