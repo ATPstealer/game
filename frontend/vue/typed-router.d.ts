@@ -41,10 +41,7 @@ declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     'Root': RouteRecordInfo<'Root', '/', Record<never, never>, Record<never, never>>,
     'Buildings': RouteRecordInfo<'Buildings', '/buildings', Record<never, never>, Record<never, never>>,
-    'BuildingsLogisticsNameId': RouteRecordInfo<'BuildingsLogisticsNameId', '/buildings/logistics/:name-:id', {
-      name: ParamValue<true>,
-      id: ParamValue<true>
-    }, { name: ParamValue<false>, id: ParamValue<false> }>,
+    'BuildingsLogisticsNameId': RouteRecordInfo<'BuildingsLogisticsNameId', '/buildings/logistics/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsProductionNameId': RouteRecordInfo<'BuildingsProductionNameId', '/buildings/production/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsStorageNameId': RouteRecordInfo<'BuildingsStorageNameId', '/buildings/storage/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'BuildingsStoreNameId': RouteRecordInfo<'BuildingsStoreNameId', '/buildings/store/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
@@ -53,6 +50,7 @@ declare module 'vue-router/auto/routes' {
     'Lands': RouteRecordInfo<'Lands', '/lands', Record<never, never>, Record<never, never>>,
     'Login': RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>,
     'Logistics': RouteRecordInfo<'Logistics', '/logistics', Record<never, never>, Record<never, never>>,
+    'LogisticsCreate': RouteRecordInfo<'LogisticsCreate', '/logistics/create', Record<never, never>, Record<never, never>>,
     'Map': RouteRecordInfo<'Map', '/map', Record<never, never>, Record<never, never>>,
     'Market': RouteRecordInfo<'Market', '/market', Record<never, never>, Record<never, never>>,
     'Orders': RouteRecordInfo<'Orders', '/orders', Record<never, never>, Record<never, never>>,

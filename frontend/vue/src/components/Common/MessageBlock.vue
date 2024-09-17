@@ -6,6 +6,7 @@
       }
     }"
     :severity="code <= 0 ? 'success' : 'error'"
+    @close="emits('close-message')"
   >
     {{ message }}
   </Message>
@@ -25,6 +26,9 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const emits = defineEmits<{(e: 'close-message'): void}>()
+
 const { t, locale } = useI18n()
 
 const codeText = ref<string>(t(`codes.${props.code.toString()}`))

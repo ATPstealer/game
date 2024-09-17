@@ -36,4 +36,14 @@ export interface ResourceMovePayload {
   fromY: number;
   toX: number;
   toY: number;
+  buildingId: string;
+}
+
+export interface LogisticHub {
+  x: number;
+  y: number;
+  buildingId: string;
+  capacity: number;
+  speed: number;
+  price: number;
 }
