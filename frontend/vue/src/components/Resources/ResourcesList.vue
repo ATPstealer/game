@@ -1,8 +1,8 @@
 <template>
   <DataTable
-    :value="resources?.filter(resource => resource?.resourceType?.name)"
     size="small"
     striped-rows
+    :value="resources?.filter(resource => resource?.resourceType?.name)"
   >
     <Column
       :header="t(`resources.columns.name`)"
@@ -17,7 +17,7 @@
       :header="t(`resources.columns.amount`)"
     >
       <template #body="{data}: {data: Resource}">
-        <span @click="openSellResource(data)" class="clickable-item">
+        <span class="clickable-item" @click="openSellResource(data)">
           {{ data.amount }}
         </span>
       </template>
@@ -33,11 +33,11 @@
 
   <Dialog
     v-model:visible="moveResourcesModal"
-    modal
-    :header="t('resources.move.header')"
-    :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :dismissable-mask="true"
+    :header="t('resources.move.header')"
+    modal
+    :style="{ width: '25rem' }"
   >
     <MoveResource
       :resource="currentResource"
@@ -47,11 +47,11 @@
 
   <Dialog
     v-model:visible="sellResourcesModal"
-    modal
-    :header="t('resources.sell.header')"
-    :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :dismissable-mask="true"
+    :header="t('resources.sell.header')"
+    modal
+    :style="{ width: '25rem' }"
   >
     <CreateOrderModal
       :resource="currentResource"

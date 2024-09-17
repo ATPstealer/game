@@ -1,5 +1,6 @@
 <template>
   <Layout :show-options-prop="false">
+    <Button label="Отправить груз" @click="$router.push({ name: 'LogisticsCreate' })" />
     <Logistics />
     <template #help>
       {{ t(`logistics.help`) }}
@@ -8,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import Button from 'primevue/button'
 import { useI18n } from 'vue-i18n'
 import Layout from '@/components/Common/Layout.vue'
 import Logistics from '@/components/Logistics/Logistics.vue'
