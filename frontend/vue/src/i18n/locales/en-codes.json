@@ -54,6 +54,7 @@
     "34": "Not enough space",
     "35": "Not enough capacity in this hub",
     "36": "Price can't be negative",
+    "37": "Resource in different cell",
     "4": "User with email %email already exists",
     "6": "Can't find user in database. Check nickname",
     "7": "Wrong password",

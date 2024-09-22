@@ -73,6 +73,8 @@ func ResourceMove(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "not enough capacity in this hub") {
 			c.JSON(http.StatusOK, gin.H{"code": 35, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "resource in different cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 37, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
 		}

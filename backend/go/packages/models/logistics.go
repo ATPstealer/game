@@ -33,7 +33,6 @@ type LogisticPayload struct {
 	ToY            int                `json:"toY"`
 }
 
-// TODO: сделать отправку только из хаба в тойже точке, что и ресурс
 func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayload LogisticPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -49,6 +48,10 @@ func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayl
 	}
 	if !CheckEnoughStorage(m, userId, logisticPayload.ToX, logisticPayload.ToY, logisticPayload.Amount*resourceType.Volume) {
 		return errors.New("there is not enough storage capacity in the destination sector")
+	}
+
+	if !CheckBuildingCell(m, logisticPayload.BuildingId, logisticPayload.FromX, logisticPayload.FromY) {
+		return errors.New("resource in different cell")
 	}
 
 	distance := math.Sqrt(math.Pow(float64(logisticPayload.FromX-logisticPayload.ToX), 2) + math.Pow(float64(logisticPayload.FromY-logisticPayload.ToY), 2))

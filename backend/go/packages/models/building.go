@@ -405,3 +405,12 @@ func GetAllReadyBuildingByGroup(m *mongo.Database, group string) ([]Building, er
 	err = cursor.All(ctx, &readyLogisticsHubs)
 	return readyLogisticsHubs, err
 }
+
+func CheckBuildingCell(m *mongo.Database, buildingId primitive.ObjectID, x int, y int) bool {
+	building, err := GetBuildingById(m, buildingId)
+	if err != nil {
+		log.Println("can't check buildings", buildingId, "cell:", err)
+		return false
+	}
+	return building.X == x && building.Y == y
+}
