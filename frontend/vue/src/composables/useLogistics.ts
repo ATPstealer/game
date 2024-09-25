@@ -1,4 +1,5 @@
 import { useGetData } from '@/composables/useGetData'
+import { useMyFetch } from '@/composables/useMyFetch'
 import type { LogisticHub } from '@/types/Resources/index.interface'
 
 export const useLogistics = () => {
@@ -11,7 +12,17 @@ export const useLogistics = () => {
     }
   }
 
+  const setHubPrice = ({ buildingId, price }: { buildingId: string; price: number }) => {
+    const { data, onFetchResponse } = useMyFetch('/logistics/set_price').post({ price, buildingId }).json()
+
+    return {
+      data,
+      onFetchResponse
+    }
+  }
+
   return {
-    getHubs
+    getHubs,
+    setHubPrice
   }
 }

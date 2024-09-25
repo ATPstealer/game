@@ -33,7 +33,7 @@
       :header="t(`buildings.finish`)"
     >
       <template #body="{data}: {data: Building}">
-        <div class="min-w-[96px] max-w-[96px]">
+        <div class="min-w-[120px] max-w-[120px]">
           {{ getTime(data.workEnd, 'Достроено') }}
         </div>
       </template>

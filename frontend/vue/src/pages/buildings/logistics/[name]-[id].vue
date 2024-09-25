@@ -1,7 +1,7 @@
 <template>
   <BuildingTemplate :building="building" :loading="isFetching">
     <template #building>
-      Logistics
+      <LogisticsBuilding :building="building" />
     </template>
     <template #buildingHelp>
       <p>{{ t(`buildings.hiring.help`) }}</p>
@@ -10,19 +10,21 @@
 </template>
 
 <script setup lang="ts">
-import {provide, ref} from 'vue'
-import {useI18n} from 'vue-i18n'
-import {useRoute} from 'vue-router'
+import { provide, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import BuildingTemplate from '@/components/Buildings/BuildingTemplate.vue'
-import {useGetData} from '@/composables/useGetData'
-import type {Building} from '@/types/Buildings/index.interface'
+import LogisticsBuilding from '@/components/Buildings/LogisticsBuilding/LogisticsBuilding.vue'
+import { useGetData } from '@/composables/useGetData'
+import type { Building } from '@/types/Buildings/index.interface'
 
 const route = useRoute()
-const {t} = useI18n()
+const { t } = useI18n()
 
 const building = ref<Building>({} as Building)
+const price = ref(0)
 
-const {data, onFetchResponse, isFetching, execute} = useGetData<Building[]>(`/building/my?_id=${route.params.id}`)
+const { data, onFetchResponse, isFetching, execute } = useGetData<Building[]>(`/building/my?_id=${route.params.id}`)
 
 onFetchResponse(() => {
   building.value = data.value[0]

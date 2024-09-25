@@ -1,91 +1,105 @@
 <template>
   <Layout class="mt-8" :show-options-prop="false">
-    <Card class="max-w-screen-xl mx-auto mt-16">
+    <Card class="max-w-screen-xl mx-auto xl:mt-16">
       <template #content>
         <div v-if="!isFetching" class="flex flex-col gap-4">
           <MessageBlock
             v-if="messageData"
             class="mb-8"
-            :code="messageData.code"
+            v-bind="messageData"
             @close-message="messageData = undefined"
           />
-          <div class="flex gap-4 items-center" :class="{'mt-28': !messageData}">
+          <div
+            class="flex flex-col gap-8 xl:flex-row xl:gap-4 xl:items-center"
+            :class="{'xl:mt-28': !messageData}"
+          >
             <FloatLabel>
               <Dropdown
                 id="resource"
                 v-model="resource"
-                class="max-w-[200px] min-w-[200px]"
+                class="w-full xl:max-w-[200px] xl:min-w-[200px]"
                 :option-label="e => t(`resources.types.${e.name?.toLowerCase()}`)"
                 option-value="id"
                 :options="computedResources"
-                placeholder="Выберите ресурс"
+                :placeholder="t('resources.choose')"
               />
-              <label for="resource">Выберите ресурс</label>
+              <label for="resource">{{ t('resources.choose') }}</label>
             </FloatLabel>
             <FloatLabel>
               <Dropdown
                 id="from"
                 v-model="from"
-                class="max-w-[200px] min-w-[200px]"
+                class="w-full xl:max-w-[200px] xl:min-w-[200px]"
                 :disabled="!resource || computedFrom.length === 1"
                 :option-label="e => `${e.cell} (${e.amount})`"
                 :option-value="e => e.cell"
                 :options="computedFrom"
-                placeholder="Откуда"
+                :placeholder="t('common.from')"
               />
-              <label for="from">Откуда</label>
+              <label for="from">{{ t('common.from') }}</label>
             </FloatLabel>
             <FloatLabel>
               <Dropdown
                 id="to"
                 v-model="to"
-                class="max-w-[150px] min-w-[150px]"
+                class="w-full xl:max-w-[150px] xl:min-w-[150px]"
                 :disabled="!from"
                 filter
                 :options="computedTo"
-                placeholder="Куда"
+                :placeholder="t('common.to')"
               />
-              <label for="to">Куда</label>
+              <label for="to">{{ t('common.to') }}</label>
             </FloatLabel>
             <FloatLabel>
               <InputNumber
                 id="amount"
                 v-model="amount"
+                class="w-full xl:w-auto"
                 :disabled="!to"
                 :max="computedFrom?.find(item => item.cell === from)?.amount"
                 show-buttons
-                @input="e => amount = +e.value"
+                @input="e => amount = +e!.value"
               />
-              <label for="amount">Количество</label>
+              <label for="amount">{{ t('common.amount') }}</label>
             </FloatLabel>
-            <div v-tooltip="!hub ? 'Выберите хаб' : ''">
+            <div id="table" />
+            <div
+              v-tooltip.bottom="!hub ? `${t('logistics.chooseHub')}` : ''"
+              class="w-max"
+              tabindex="0"
+            >
               <Button
                 :disabled="!hub"
-                label="Отправить груз"
+                :label="t('logistics.send')"
                 severity="info"
                 type="submit"
                 @click="create"
               />
             </div>
           </div>
-          <div>
-            <span>Необходимая вместимость: </span> <span v-if="capacity >= 0">{{ capacity }}</span>
+          <div class="flex flex-col gap-4">
+            <p><span class="font-bold">{{ t('logistics.reqCapacity') }}</span>: <span v-if="capacity >= 0" class="font-bold">{{ capacity }}</span></p>
+            <p><span class="font-bold">{{ t('logistics.cost') }}</span>: <span v-if="amount && price" class="font-bold">{{ amount * price }}$</span></p>
           </div>
-
+          <!--          <Teleport :disabled="isDesktop" to="#table">-->
           <DataTable
             :row-class="rowClass"
             selection-mode="single"
             :value="hubs"
             @row-click="onRowClick"
           >
-            <template #empty>
-              <span v-if="capacity >= 0">В данной ячейке нет хабов с нужной вместимостью, попробуйте выбрать другую ячейку или уменьшить количество груза</span>
-              <span v-else>Сначала заполните другие шаги</span>
+            <template #header>
+              <h3>{{ t('logistics.hub') }}</h3>
             </template>
-            <Column field="capacity" header="Вместимость" />
-            <Column field="speed" header="Скорость" />
-            <Column field="price" header="Стоимость" />
+            <template #empty>
+              <span v-if="capacity >= 0">{{ t('logistics.noHubs') }}</span>
+              <span v-else>{{ t('common.completeSteps') }}</span>
+            </template>
+            <Column field="capacity" :header="t('logistics.capacity')" />
+            <Column field="speed" :header="t('logistics.speed')" />
+            <Column field="price" :header="t('common.price')" />
           </DataTable>
+          <!--          </Teleport>-->
         </div>
         <Loading v-else />
       </template>
@@ -94,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+// import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Column from 'primevue/column'
@@ -125,6 +140,10 @@ const to = ref<string>()
 const amount = ref<number>()
 const hub = ref<string>('')
 const messageData = ref<BackData>()
+const price = ref<number>(0)
+
+// const breakpoints = useBreakpoints(breakpointsTailwind)
+// const isDesktop = breakpoints.greater('md')
 
 const { t } = useI18n()
 const { getMap } = useMap()
@@ -217,11 +236,12 @@ const hubs = computed(() => {
   const fromX = Number(from.value?.split('x')[0])
   const fromY = Number(from.value?.split('x')[1])
 
-  return hubsData.value.filter(hub => hub.x === fromX && hub.y === fromY).filter(hub => hub.capacity >= capacity.value)
+  return hubsData.value.filter(hub => hub.x === fromX && hub.y === fromY).filter(hub => hub.capacity >= capacity.value).filter(hub => hub.price > 0)
 })
 
 const onRowClick = (event: DataTableRowClickEvent) => {
   hub.value = event.data.buildingId
+  price.value = event.data.price
 }
 
 const rowClass = (data: LogisticHub) => {

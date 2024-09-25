@@ -103,6 +103,7 @@
     "building": "Building",
     "buildings": "{n} building | {n} buildings",
     "buy": "Buy",
+    "completeSteps": "Complete the other steps first",
     "confirm": "Are you sure?",
     "construct": "Construct",
     "coordinates": "coordinates",
@@ -118,6 +119,7 @@
     "move": "Move",
     "no": "No",
     "owner": "Owner",
+    "price": "Price",
     "production": "Production",
     "reset": "Reset",
     "resource": "Resource",
@@ -152,6 +154,8 @@
     "settings": "Settings"
   },
   "logistics": {
+    "capacity": "Capacity",
+    "chooseHub": "Choose hub",
     "columns": {
       "amount": "Amount",
       "finish": "Finish",
@@ -159,7 +163,13 @@
       "resource": "Resource",
       "to": "To"
     },
+    "cost": "Transportation cost",
     "help": "On this page, the tasks for cargo transportation are displayed.",
+    "hub": "Hub",
+    "noHubs": "There are no hubs with the required capacity in this cell, try choosing another cell or reducing the amount of cargo",
+    "reqCapacity": "Required capacity",
+    "send": "Send cargo",
+    "speed": "Speed",
     "title": "Logistics"
   },
   "main": {

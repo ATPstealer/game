@@ -103,6 +103,7 @@
     "building": " gebouw",
     "buildings": "{n} gebouw | {n} gebouwen",
     "buy": "Koop",
+    "completeSteps": "Voer eerst de andere stappen uit",
     "confirm": "Weet je het zeker?",
     "construct": "Bouw",
     "coordinates": "coördinaten",
@@ -117,6 +118,7 @@
     "move": "Verplaatsen",
     "no": "Nee",
     "owner": "Eigenaar",
+    "price": "Prijs",
     "production": "Productie",
     "reset": "Reset",
     "resource": "Resource",
@@ -151,6 +153,8 @@
     "settings": "Instellingen"
   },
   "logistics": {
+    "capacity": "Capaciteit",
+    "chooseHub": "Kies hub",
     "columns": {
       "amount": "Bedrag",
       "finish": "Voltooien",
@@ -158,7 +162,13 @@
       "resource": "Resource",
       "to": "Naar"
     },
+    "cost": "Transportkosten",
     "help": "Op deze pagina worden de taken voor vrachtvervoer weergegeven.",
+    "hub": "middelpunt",
+    "noHubs": "Er zijn geen hubs met de benodigde capaciteit in deze cel, probeer een andere cel te kiezen of de hoeveelheid vracht te verminderen",
+    "reqCapacity": "Vereiste capaciteit",
+    "send": "Vracht sturen",
+    "speed": "Snelheid",
     "title": "Logistiek"
   },
   "main": {
