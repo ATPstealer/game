@@ -4,9 +4,9 @@
   </h2>
   <DataTable
     v-if="!isFetching"
-    :value="logistics"
     size="small"
     striped-rows
+    :value="logistics"
   >
     <Column
       :header="t(`logistics.columns.resource`)"
@@ -50,7 +50,7 @@ import DataTable from 'primevue/datatable'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'
-import { Logistic } from '@/types'
+import type { Logistic } from '@/types'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTimeDiff } from '@/utils/getTimeDiff'
 

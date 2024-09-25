@@ -30,6 +30,7 @@ export interface Building {
   buildingGroup: string;
   equipment: BuildingEquipment[];
   equipmentEffect: EquipmentEffect[];
+  logistics: LogisticsData;
 }
 
 export interface BuildingType {
@@ -76,4 +77,12 @@ export interface EquipmentEffect {
   effectId: number;
   blueprintId: number;
   value: number;
+}
+
+export interface LogisticsData {
+  capacity: number;
+  price: number;
+  speed: number;
+  capacityMax: number;
+  revenue: number;
 }

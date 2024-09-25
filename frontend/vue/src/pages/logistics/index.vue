@@ -1,6 +1,6 @@
 <template>
   <Layout :show-options-prop="false">
-    <Button label="Отправить груз" @click="$router.push({ name: 'LogisticsCreate' })" />
+    <Button :label="t('logistics.send')" @click="$router.push({ name: 'LogisticsCreate' })" />
     <Logistics />
     <template #help>
       {{ t(`logistics.help`) }}

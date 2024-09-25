@@ -29,7 +29,7 @@
       text
       @click="showSidebar = true"
     />
-    <Sidebar v-model:visible="showSidebar">
+    <Sidebar v-model:visible="showSidebar" :pt="{ closeButton: {class: 'ml-auto'}}">
       <div class="h-full flex flex-col items-start">
         <div class="flex flex-col gap-2">
           <h3 class="underline font-bold">

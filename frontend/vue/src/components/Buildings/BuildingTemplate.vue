@@ -26,7 +26,7 @@
     <template #help>
       <slot name="buildingHelp" />
     </template>
-    <div v-if="!loading">
+    <div v-if="!loading" class="p-4">
       <slot name="building" />
     </div>
     <Loading v-else />
