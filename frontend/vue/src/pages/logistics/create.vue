@@ -79,7 +79,7 @@
           </div>
           <div class="flex flex-col gap-4">
             <p><span class="font-bold">{{ t('logistics.reqCapacity') }}</span>: <span v-if="capacity >= 0" class="font-bold">{{ capacity }}</span></p>
-            <p><span class="font-bold">{{ t('logistics.cost') }}</span>: <span v-if="amount && price" class="font-bold">{{ amount * price }}$</span></p>
+            <p><span class="font-bold">{{ t('logistics.cost') }}</span>: <span v-if="price" class="font-bold">{{ capacity * price }}$</span></p>
           </div>
           <!--          <Teleport :disabled="isDesktop" to="#table">-->
           <DataTable
