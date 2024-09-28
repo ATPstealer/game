@@ -1,6 +1,6 @@
 module backend
 
-go 1.20
+go 1.23.1
 
 require (
 	github.com/gin-gonic/gin v1.9.1
@@ -8,12 +8,12 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.3
 	go.mongodb.org/mongo-driver v1.13.1
-	golang.org/x/oauth2 v0.9.0
+	golang.org/x/oauth2 v0.22.0
 	google.golang.org/api v0.47.0
 )
 
 require (
-	cloud.google.com/go/compute/metadata v0.2.0 // indirect
+	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
@@ -37,8 +37,8 @@ require (
 	golang.org/x/tools v0.25.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384 // indirect
-	google.golang.org/grpc v1.52.0-dev // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/grpc v1.67.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )
 
 require (
