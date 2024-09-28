@@ -1,4 +1,4 @@
-basePath: /api/v2
+basePath: /
 host: staging.game.kube.atpstealer.com
 info:
   contact: { }

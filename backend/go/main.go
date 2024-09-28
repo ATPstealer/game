@@ -11,7 +11,7 @@ import (
 // @title Game API
 // @version 2.0
 // @host staging.game.kube.atpstealer.com
-// @BasePath /api/v2
+// @BasePath /
 
 func main() {
 	cfg.LoadConfig()            // global cfg.Config

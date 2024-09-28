@@ -41,7 +41,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
 	Host:             "staging.game.kube.atpstealer.com",
-	BasePath:         "/api/v2",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Game API",
 	Description:      "",
