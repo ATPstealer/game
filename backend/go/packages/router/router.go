@@ -16,7 +16,7 @@ func MakeRouter() *gin.Engine {
 		router.Use(CORSMiddleware()) // disable CORS policy, but I need it on prod !!!
 	}
 
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/api/v2/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("/api/v2/settings", controllers.GetSettings)
 
