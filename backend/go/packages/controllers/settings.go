@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+// @Summary Get Settings
+// @Description Get application settings
+// @ID get-settings
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v2/settings [get]
 func GetSettings(c *gin.Context) {
 	settings, err := models.GetSettings(db.M)
 	if err != nil {

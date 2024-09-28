@@ -1,9 +1,12 @@
 package router
 
 import (
+	_ "backend/docs" // Import generated docs
 	"backend/packages/cfg"
 	"backend/packages/controllers"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func MakeRouter() *gin.Engine {
@@ -12,6 +15,8 @@ func MakeRouter() *gin.Engine {
 	if !cfg.Config.Secure {
 		router.Use(CORSMiddleware()) // disable CORS policy, but I need it on prod !!!
 	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	router.GET("/api/v2/settings", controllers.GetSettings)
 
