@@ -8,6 +8,11 @@ import (
 	"log"
 )
 
+// @title Game API
+// @version 2.0
+// @host staging.game.kube.atpstealer.com
+// @BasePath /api/v2
+
 func main() {
 	cfg.LoadConfig()            // global cfg.Config
 	db.MongoConnect(cfg.Config) // global db.M

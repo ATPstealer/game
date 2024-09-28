@@ -1,0 +1,21 @@
+basePath: /api/v2
+host: staging.game.kube.atpstealer.com
+info:
+  contact: { }
+  title: Game API
+  version: "2.0"
+paths:
+  /api/v2/settings:
+    get:
+      description: Get application settings
+      operationId: get-settings
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Settings
+swagger: "2.0"
