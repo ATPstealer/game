@@ -24,7 +24,7 @@ type Cell struct {
 	Crime            float64            `json:"crime" bson:"crime"`
 	Medicine         float64            `json:"medicine" bson:"medicine"`
 	AverageSalary    float64            `json:"averageSalary" bson:"averageSalary"`
-}
+} // @name cell
 
 func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {
 	if squareForBuy <= 0 {

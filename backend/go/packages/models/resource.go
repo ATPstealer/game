@@ -17,7 +17,7 @@ type Resource struct {
 	Amount         float64            `json:"amount" bson:"amount"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-}
+} // @name resource
 
 type ResourceWithData struct {
 	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
@@ -27,7 +27,7 @@ type ResourceWithData struct {
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
-}
+} // @name resourceWithData
 
 type ResourceAsEquipment struct {
 	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
@@ -38,7 +38,7 @@ type ResourceAsEquipment struct {
 	Y              int                `json:"y" bson:"y"`
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 	EquipmentType  EquipmentType      `json:"equipmentType" bson:"equipmentType"`
-}
+} // @name resourceAsEquipment
 
 func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -21,7 +21,7 @@ type Logistic struct {
 	ToX            int                `json:"toX" bson:"toX"`
 	ToY            int                `json:"toY" bson:"toY"`
 	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
-}
+} // @name logistic
 
 type LogisticPayload struct {
 	BuildingId     primitive.ObjectID `json:"buildingId"`
@@ -31,7 +31,7 @@ type LogisticPayload struct {
 	FromY          int                `json:"fromY"`
 	ToX            int                `json:"toX"`
 	ToY            int                `json:"toY"`
-}
+} // @name logisticPayload
 
 func StartLogisticJob(m *mongo.Database, userId primitive.ObjectID, logisticPayload LogisticPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
@@ -109,7 +109,7 @@ type LogisticWithData struct {
 	ToY            int                `json:"toY" bson:"toY"`
 	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
-}
+} // @name logisticWithData
 
 func GetMyLogistics(m *mongo.Database, userId primitive.ObjectID) ([]LogisticWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

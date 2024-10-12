@@ -16,12 +16,12 @@ type Blueprint struct {
 	UsedResources     []ResourceAmount `json:"usedResources" bson:"usedResources"`
 	ProducedInId      uint             `json:"producedInId" bson:"producedInId"`
 	ProductionTime    time.Duration    `json:"productionTime" bson:"productionTime"`
-}
+} // @name blueprint
 
 type ResourceAmount struct {
 	ResourceId uint    `json:"resourceId" bson:"resourceId"`
 	Amount     float64 `json:"amount" bson:"amount"`
-}
+} // @name resourceAmount
 
 func GetBlueprints(m *mongo.Database, blueprintId uint) ([]Blueprint, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

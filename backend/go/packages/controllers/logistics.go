@@ -9,6 +9,18 @@ import (
 	"strings"
 )
 
+// GetLogisticsCapacity
+//
+//	@Summary	Get the logistics capacity in cell
+//	@Tags		logistics
+//	@Accept		json
+//	@Produce	json
+//	@Param		x			query		int		false	"x"
+//	@Param		y			query		int		false	"y"
+//	@Param		minCapacity	query		number	false	"Minimum capacity"
+//	@Success	200			{object}	JSONResult{data=[]models.LogisticsWithData}
+//	@Failure	500			{object}	JSONResult
+//	@Router		/resource/logistics [get]
 func GetLogisticsCapacity(c *gin.Context) {
 	var findLogisticsParams models.FindLogisticsParams
 
@@ -36,12 +48,23 @@ func GetLogisticsCapacity(c *gin.Context) {
 
 	logisticsCapacity, err := models.GetLogisticsCapacity(db.M, findLogisticsParams)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": logisticsCapacity})
 }
 
+// SetLogisticsPrice
+//
+//	@Summary	Set the logistics price
+//	@Tags		logistics
+//	@Accept		json
+//	@Produce	json
+//	@Param		logisticsPriceParams	body		models.LogisticsPriceParams	true	"Logistics price parameters"
+//	@Success	200						{object}	JSONResult
+//	@Failure	401						{object}	JSONResult
+//	@Failure	500						{object}	JSONResult
+//	@Router		/logistics/set_price [post]
 func SetLogisticsPrice(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
@@ -61,7 +84,7 @@ func SetLogisticsPrice(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "price can't be negative") {
 			c.JSON(http.StatusOK, gin.H{"code": 36, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}

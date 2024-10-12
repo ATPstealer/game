@@ -18,7 +18,7 @@ type EquipmentType struct {
 	Value          float64 `json:"value" bson:"value"`
 	ValueSecond    float64 `json:"valueSecond" bson:"valueSecond"`
 	Square         float64 `json:"square" bson:"square"`
-}
+} // @name equipmentType
 
 func GetAllEquipmentTypes(m *mongo.Database) ([]EquipmentType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

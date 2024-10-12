@@ -18,7 +18,7 @@ type EvolutionPrice struct {
 	SellSum        int                `json:"sellSum" bson:"sellSum"`
 	RevenueSum     float64            `json:"revenueSum" bson:"revenueSum"`
 	SpendMax       float64            `json:"spendMax" bson:"spendMax"`
-}
+} // @name evolutionPrice
 
 func GetAllEvolutionPrices(m *mongo.Database) ([]EvolutionPrice, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -16,7 +16,7 @@ type Storage struct {
 	VolumeMax      float64            `json:"volumeMax" bson:"volumeMax"`
 	X              int                `json:"x" bson:"x"`
 	Y              int                `json:"y" bson:"y"`
-}
+} // @name storage
 
 func GetAllStorages(m *mongo.Database) ([]Storage, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

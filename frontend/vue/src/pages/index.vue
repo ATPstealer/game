@@ -10,10 +10,9 @@
 </template>
 
 <script setup lang="ts">
-
 import { useQuery } from '@tanstack/vue-query'
 import { ref } from 'vue'
-import { getApiV2BuildingTypes } from '@/api'
+import {getBuildingTypes} from '@/api'
 import Characteristics from '@/components/Characteristics/Characteristics.vue'
 import Layout from '@/components/Common/Layout.vue'
 
@@ -21,7 +20,7 @@ const messageData = ref()
 
 const { data, isPending  } = useQuery({
   queryKey: ['buildingTypes'],
-  queryFn: getApiV2BuildingTypes
+  queryFn: getBuildingTypes
 })
 
 </script>

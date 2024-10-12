@@ -15,7 +15,7 @@ type EquipmentEffect struct {
 	Value       float64 `json:"value" bson:"value"`
 	// Second value is considered as an average for all equipment, taking into account the first value.
 	ValueSecond float64 `json:"valueSecond" bson:"valueSecond"`
-}
+} // @name equipmentEffect
 
 func CountEffects(m *mongo.Database, buildingId primitive.ObjectID) error {
 	building, err := GetBuildingById(m, buildingId)

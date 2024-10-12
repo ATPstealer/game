@@ -15,13 +15,13 @@ type Equipment struct {
 	EquipmentTypeId uint `json:"equipmentTypeId" bson:"equipmentTypeId"`
 	Amount          int  `json:"amount" bson:"amount"`
 	Durability      int  `json:"durability" bson:"durability"`
-}
+} // @name equipment
 
 type InstallEquipmentPayload struct {
 	BuildingId      primitive.ObjectID `json:"buildingId"`
 	EquipmentTypeId uint               `json:"equipmentTypeId"`
 	Amount          int                `json:"amount"`
-}
+} // @name installEquipmentPayload
 
 // EffectsId https://docs.google.com/spreadsheets/d/18DblwMx9a-YnLh7hfqwSC5a3Sc-_bRybMWMWp-isgO0/edit?pli=1&gid=1818870012#gid=1818870012
 const (

@@ -9,6 +9,17 @@ import (
 	"strings"
 )
 
+// SetStoreGoods
+//
+//		@Summary	Set prices for goods in the store
+//	 @Tags store
+//		@Accept		json
+//		@Produce	json
+//		@Param		storeGoodsPayload	body		models.StoreGoodsPayload	true	"Store goods payload"
+//		@Success	200					{object}	JSONResult{}
+//		@Failure	401					{object}	JSONResult
+//		@Failure	500					{object}	JSONResult
+//		@Router		/store/goods/set [post]
 func SetStoreGoods(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
@@ -30,7 +41,7 @@ func SetStoreGoods(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "can't sell here") {
 			c.JSON(http.StatusOK, gin.H{"code": 20, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}

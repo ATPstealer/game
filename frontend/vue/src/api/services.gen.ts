@@ -2,30 +2,136 @@
 
 import { createClient, createConfig, type Options } from '@hey-api/client-fetch'
 import type {
-  PostApiV2BuildingConstructData,
-  PostApiV2BuildingConstructError,
-  PostApiV2BuildingConstructResponse,
-  GetApiV2BuildingTypesError,
-  GetApiV2BuildingTypesResponse,
+  GetBuildingBlueprintsData,
+  GetBuildingBlueprintsError,
+  GetBuildingBlueprintsResponse,
+  PostBuildingConstructData,
+  PostBuildingConstructError,
+  PostBuildingConstructResponse,
+  DeleteBuildingDestroyData,
+  DeleteBuildingDestroyError,
+  DeleteBuildingDestroyResponse,
+  PostBuildingGetData,
+  PostBuildingGetError,
+  PostBuildingGetResponse,
+  PostBuildingHiringData,
+  PostBuildingHiringError,
+  PostBuildingHiringResponse,
+  PostBuildingInstallEquipmentData,
+  PostBuildingInstallEquipmentError,
+  PostBuildingInstallEquipmentResponse,
+  GetBuildingMyData,
+  GetBuildingMyError,
+  GetBuildingMyResponse,
+  PostBuildingStartWorkData,
+  PostBuildingStartWorkError,
+  PostBuildingStartWorkResponse,
+  PostBuildingStopWorkData,
+  PostBuildingStopWorkError,
+  PostBuildingStopWorkResponse,
+  GetBuildingTypesError,
+  GetBuildingTypesResponse,
+  GetUsernamesByPrefixData,
+  GetUsernamesByPrefixError,
+  GetUsernamesByPrefixResponse,
+  GetEquipmentMyData,
+  GetEquipmentMyError,
+  GetEquipmentMyResponse,
+  GetEquipmentTypesError,
+  GetEquipmentTypesResponse,
+  PostLogisticsSetPriceData,
+  PostLogisticsSetPriceError,
+  PostLogisticsSetPriceResponse,
+  GetMapError,
+  GetMapResponse,
+  GetMapAllLandLordsError,
+  GetMapAllLandLordsResponse,
+  PostMapBuyLandData,
+  PostMapBuyLandError,
+  PostMapBuyLandResponse,
+  GetMapCellOwnersData,
+  GetMapCellOwnersError,
+  GetMapCellOwnersResponse,
+  GetMapMyError,
+  GetMapMyResponse,
+  DeleteMarketOrderCloseData,
+  DeleteMarketOrderCloseError,
+  DeleteMarketOrderCloseResponse,
+  PostMarketOrderCreateData,
+  PostMarketOrderCreateError,
+  PostMarketOrderCreateResponse,
+  PostMarketOrderExecuteData,
+  PostMarketOrderExecuteError,
+  PostMarketOrderExecuteResponse,
+  GetMarketOrderMyError,
+  GetMarketOrderMyResponse,
+  GetOrdersData,
+  GetOrdersError,
+  GetOrdersResponse,
+  GetResourceLogisticsData,
+  GetResourceLogisticsError,
+  GetResourceLogisticsResponse,
+  PostResourceMoveData,
+  PostResourceMoveError,
+  PostResourceMoveResponse,
+  GetResourceMyData,
+  GetResourceMyError,
+  GetResourceMyResponse,
+  GetResourceMyLogisticsError,
+  GetResourceMyLogisticsResponse,
+  GetResourceTypesError,
+  GetResourceTypesResponse,
   GetSettingsError,
-  GetSettingsResponse
+  GetSettingsResponse,
+  GetStorageMyError,
+  GetStorageMyResponse,
+  PostStoreGoodsSetData,
+  PostStoreGoodsSetError,
+  PostStoreGoodsSetResponse,
+  PostUserCreateData,
+  PostUserCreateError,
+  PostUserCreateResponse,
+  GetUserDataError,
+  GetUserDataResponse,
+  PostUserLoginData,
+  PostUserLoginError,
+  PostUserLoginResponse,
+  DeleteUserLoginError,
+  DeleteUserLoginResponse
 } from './types.gen'
 
+// CHANGE THIS FUNC AFTER EVERY GENERATION
 export const client = createClient(createConfig({
   baseUrl: `${import.meta.env.VITE_API}`,
   credentials: 'include'
 }))
 
 /**
- * Construct a new building
- * Endpoint for constructing a new building given the payload details.
+ * Get blueprints
+ * Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.
  */
-export const postApiV2BuildingConstruct = <ThrowOnError extends boolean = false>(
-  options: Options<PostApiV2BuildingConstructData, ThrowOnError>
+export const getBuildingBlueprints = <ThrowOnError extends boolean = false>(
+    options?: Options<GetBuildingBlueprintsData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetBuildingBlueprintsResponse,
+      GetBuildingBlueprintsError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/blueprints'
+  })
+}
+
+/**
+ * Construct a new building
+ */
+export const postBuildingConstruct = <ThrowOnError extends boolean = false>(
+    options: Options<PostBuildingConstructData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-    PostApiV2BuildingConstructResponse,
-    PostApiV2BuildingConstructError,
+      PostBuildingConstructResponse,
+      PostBuildingConstructError,
     ThrowOnError
   >({
     ...options,
@@ -34,15 +140,123 @@ export const postApiV2BuildingConstruct = <ThrowOnError extends boolean = false>
 }
 
 /**
- * Get all building types
- * Return all available building types from the database
+ * Destroy an existing building
  */
-export const getApiV2BuildingTypes = <ThrowOnError extends boolean = false>(
+export const deleteBuildingDestroy = <ThrowOnError extends boolean = false>(
+    options: Options<DeleteBuildingDestroyData, ThrowOnError>
+) => {
+  return (options?.client ?? client).delete<
+      DeleteBuildingDestroyResponse,
+      DeleteBuildingDestroyError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/destroy'
+  })
+}
+
+/**
+ * Fetch the list of buildings
+ */
+export const postBuildingGet = <ThrowOnError extends boolean = false>(
+    options?: Options<PostBuildingGetData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostBuildingGetResponse,
+      PostBuildingGetError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/get'
+  })
+}
+
+/**
+ * Set hiring details for a building
+ */
+export const postBuildingHiring = <ThrowOnError extends boolean = false>(
+    options: Options<PostBuildingHiringData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostBuildingHiringResponse,
+      PostBuildingHiringError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/hiring'
+  })
+}
+
+/**
+ * Install equipment in a building
+ */
+export const postBuildingInstallEquipment = <ThrowOnError extends boolean = false>(
+    options: Options<PostBuildingInstallEquipmentData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostBuildingInstallEquipmentResponse,
+      PostBuildingInstallEquipmentError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/install_equipment'
+  })
+}
+
+/**
+ * Fetch the user's buildings
+ * Optionally filter by building ID.
+ */
+export const getBuildingMy = <ThrowOnError extends boolean = false>(
+    options?: Options<GetBuildingMyData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetBuildingMyResponse, GetBuildingMyError, ThrowOnError>({
+    ...options,
+    url: '/building/my'
+  })
+}
+
+/**
+ * Start work in the building
+ */
+export const postBuildingStartWork = <ThrowOnError extends boolean = false>(
+    options: Options<PostBuildingStartWorkData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostBuildingStartWorkResponse,
+      PostBuildingStartWorkError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/start_work'
+  })
+}
+
+/**
+ * Stops any work in building. Later he should stop only the works available for stopping.
+ */
+export const postBuildingStopWork = <ThrowOnError extends boolean = false>(
+    options: Options<PostBuildingStopWorkData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostBuildingStopWorkResponse,
+      PostBuildingStopWorkError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/building/stop_work'
+  })
+}
+
+/**
+ * Get all building types
+ */
+export const getBuildingTypes = <ThrowOnError extends boolean = false>(
   options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-    GetApiV2BuildingTypesResponse,
-    GetApiV2BuildingTypesError,
+      GetBuildingTypesResponse,
+      GetBuildingTypesError,
     ThrowOnError
   >({
     ...options,
@@ -51,8 +265,296 @@ export const getApiV2BuildingTypes = <ThrowOnError extends boolean = false>(
 }
 
 /**
+ * Get usernames by prefix
+ * Retrieve a list of usernames that match the given prefix
+ */
+export const getUsernamesByPrefix = <ThrowOnError extends boolean = false>(
+    options?: Options<GetUsernamesByPrefixData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetUsernamesByPrefixResponse,
+      GetUsernamesByPrefixError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/data/users_by_prefix'
+  })
+}
+
+/**
+ * Return user's equipment
+ */
+export const getEquipmentMy = <ThrowOnError extends boolean = false>(
+    options?: Options<GetEquipmentMyData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetEquipmentMyResponse, GetEquipmentMyError, ThrowOnError>(
+      {
+        ...options,
+        url: '/equipment/my'
+      }
+  )
+}
+
+/**
+ * Get all equipment types
+ */
+export const getEquipmentTypes = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetEquipmentTypesResponse,
+      GetEquipmentTypesError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/equipment/types'
+  })
+}
+
+/**
+ * Set the logistics price
+ */
+export const postLogisticsSetPrice = <ThrowOnError extends boolean = false>(
+    options: Options<PostLogisticsSetPriceData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostLogisticsSetPriceResponse,
+      PostLogisticsSetPriceError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/logistics/set_price'
+  })
+}
+
+/**
+ * Return map cells
+ * Returns the list of all map cells
+ */
+export const getMap = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetMapResponse, GetMapError, ThrowOnError>({
+    ...options,
+    url: '/map'
+  })
+}
+
+/**
+ * Return all landowners
+ */
+export const getMapAllLandLords = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetMapAllLandLordsResponse,
+      GetMapAllLandLordsError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/map/all_land_lords'
+  })
+}
+
+/**
+ * Buy land in cell
+ */
+export const postMapBuyLand = <ThrowOnError extends boolean = false>(
+    options: Options<PostMapBuyLandData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostMapBuyLandResponse,
+      PostMapBuyLandError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/map/buy_land'
+  })
+}
+
+/**
+ * Get the landlords in cell
+ */
+export const getMapCellOwners = <ThrowOnError extends boolean = false>(
+    options: Options<GetMapCellOwnersData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetMapCellOwnersResponse,
+      GetMapCellOwnersError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/map/cell_owners'
+  })
+}
+
+/**
+ * Return user's lands
+ */
+export const getMapMy = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetMapMyResponse, GetMapMyError, ThrowOnError>({
+    ...options,
+    url: '/map/my'
+  })
+}
+
+/**
+ * Close user's order
+ */
+export const deleteMarketOrderClose = <ThrowOnError extends boolean = false>(
+    options: Options<DeleteMarketOrderCloseData, ThrowOnError>
+) => {
+  return (options?.client ?? client).delete<
+      DeleteMarketOrderCloseResponse,
+      DeleteMarketOrderCloseError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/market/order/close'
+  })
+}
+
+/**
+ * Create a new market order
+ */
+export const postMarketOrderCreate = <ThrowOnError extends boolean = false>(
+    options: Options<PostMarketOrderCreateData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostMarketOrderCreateResponse,
+      PostMarketOrderCreateError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/market/order/create'
+  })
+}
+
+/**
+ * Partially execute an  order
+ */
+export const postMarketOrderExecute = <ThrowOnError extends boolean = false>(
+    options: Options<PostMarketOrderExecuteData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostMarketOrderExecuteResponse,
+      PostMarketOrderExecuteError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/market/order/execute'
+  })
+}
+
+/**
+ * Get my orders
+ */
+export const getMarketOrderMy = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetMarketOrderMyResponse,
+      GetMarketOrderMyError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/market/order/my'
+  })
+}
+
+/**
+ * Fetches orders based on various query parameters
+ */
+export const getOrders = <ThrowOnError extends boolean = false>(
+    options?: Options<GetOrdersData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetOrdersResponse, GetOrdersError, ThrowOnError>({
+    ...options,
+    url: '/orders'
+  })
+}
+
+/**
+ * Get the logistics capacity in cell
+ */
+export const getResourceLogistics = <ThrowOnError extends boolean = false>(
+    options?: Options<GetResourceLogisticsData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetResourceLogisticsResponse,
+      GetResourceLogisticsError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/resource/logistics'
+  })
+}
+
+/**
+ * Initiates a resource movement
+ */
+export const postResourceMove = <ThrowOnError extends boolean = false>(
+    options: Options<PostResourceMoveData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostResourceMoveResponse,
+      PostResourceMoveError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/resource/move'
+  })
+}
+
+/**
+ * Get user's resources
+ */
+export const getResourceMy = <ThrowOnError extends boolean = false>(
+    options?: Options<GetResourceMyData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetResourceMyResponse, GetResourceMyError, ThrowOnError>({
+    ...options,
+    url: '/resource/my'
+  })
+}
+
+/**
+ * Get user's logistics tasks
+ */
+export const getResourceMyLogistics = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetResourceMyLogisticsResponse,
+      GetResourceMyLogisticsError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/resource/my_logistics'
+  })
+}
+
+/**
+ * Return all resource types from database
+ */
+export const getResourceTypes = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+      GetResourceTypesResponse,
+      GetResourceTypesError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/resource/types'
+  })
+}
+
+/**
  * Get General Game Settings
- * Get application settings
+ * X Y dimension, Interest rate, etc
  */
 export const getSettings = <ThrowOnError extends boolean = false>(
   options?: Options<unknown, ThrowOnError>
@@ -60,5 +562,91 @@ export const getSettings = <ThrowOnError extends boolean = false>(
   return (options?.client ?? client).get<GetSettingsResponse, GetSettingsError, ThrowOnError>({
     ...options,
     url: '/settings'
+  })
+}
+
+/**
+ * Return user's storages
+ */
+export const getStorageMy = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetStorageMyResponse, GetStorageMyError, ThrowOnError>({
+    ...options,
+    url: '/storage/my'
+  })
+}
+
+/**
+ * Set prices for goods in the store
+ */
+export const postStoreGoodsSet = <ThrowOnError extends boolean = false>(
+    options: Options<PostStoreGoodsSetData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostStoreGoodsSetResponse,
+      PostStoreGoodsSetError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/store/goods/set'
+  })
+}
+
+/**
+ * Create a new user
+ */
+export const postUserCreate = <ThrowOnError extends boolean = false>(
+    options: Options<PostUserCreateData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+      PostUserCreateResponse,
+      PostUserCreateError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/user/create'
+  })
+}
+
+/**
+ * Get user data
+ */
+export const getUserData = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<GetUserDataResponse, GetUserDataError, ThrowOnError>({
+    ...options,
+    url: '/user/data'
+  })
+}
+
+/**
+ * Authenticate a user
+ * Validate user credentials and provide a JWT token
+ */
+export const postUserLogin = <ThrowOnError extends boolean = false>(
+    options: Options<PostUserLoginData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<PostUserLoginResponse, PostUserLoginError, ThrowOnError>({
+    ...options,
+    url: '/user/login'
+  })
+}
+
+/**
+ * Logout a user
+ * Logout a user by deleting their secure token
+ */
+export const deleteUserLogin = <ThrowOnError extends boolean = false>(
+    options?: Options<unknown, ThrowOnError>
+) => {
+  return (options?.client ?? client).delete<
+      DeleteUserLoginResponse,
+      DeleteUserLoginError,
+      ThrowOnError
+  >({
+    ...options,
+    url: '/user/login'
   })
 }

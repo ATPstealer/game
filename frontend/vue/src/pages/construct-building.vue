@@ -103,11 +103,11 @@ import { type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import {
-  type models_BuildingType,
-  type models_ConstructBuildingPayload,
-  type PostApiV2BuildingConstructResponse
+  type buildingType,
+  type constructBuildingPayload,
+  type PostBuildingConstructResponse
 } from '@/api'
-import { getApiV2BuildingTypesOptions, postApiV2BuildingConstructMutation } from '@/api/@tanstack/vue-query.gen'
+import {getBuildingTypesOptions, postBuildingConstructMutation} from '@/api/@tanstack/vue-query.gen'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import type { BackData } from '@/types'
@@ -119,18 +119,18 @@ const { query } = useRoute()
 
 const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
-const buildingType = ref<models_BuildingType>({} as models_BuildingType)
+const buildingType = ref<BuildingType>({} as BuildingType)
 const square = ref<number>(10)
-const messageData = ref<PostApiV2BuildingConstructResponse>()
+const messageData = ref<PostBuildingConstructResponse>()
 
 const { t } = useI18n()
 
 const { data: buildingTypes, isSuccess } = useQuery({
-  ...getApiV2BuildingTypesOptions()
+  ...getBuildingTypesOptions()
 })
 
 const constructBuilding = useMutation({
-  ...postApiV2BuildingConstructMutation(),
+  ...postBuildingConstructMutation(),
   onSuccess: (data) => {
     messageData.value = data
   }
@@ -145,7 +145,7 @@ watch(isSuccess, () => {
 const construct = () => {
   messageData.value = {} as BackData
 
-  const payload: models_ConstructBuildingPayload = {
+  const payload: constructBuildingPayload = {
     x: x.value,
     y: y.value,
     typeId: buildingType.value.id,

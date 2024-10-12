@@ -5,4 +5,4 @@ type JSONResult struct {
 	Text   string      `json:"text"`
 	Data   interface{} `json:"data"`
 	Values interface{} `json:"values"`
-}
+} //@name jsonResult

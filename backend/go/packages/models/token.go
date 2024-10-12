@@ -17,7 +17,7 @@ type Token struct {
 	Token     string             `json:"token" bson:"token"`
 	TTL       time.Duration      `json:"ttl" bson:"ttl"`
 	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
-}
+} // @name token
 
 func CreateToken(m *mongo.Database, nickName string) (Token, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -17,7 +17,7 @@ type User struct {
 	Password        string             `json:"password" bson:"password"`
 	Money           float64            `json:"money" bson:"money"`
 	Characteristics Characteristics    `json:"characteristics" bson:"characteristics"`
-}
+} // @name user
 
 type Characteristics struct {
 	Memory       int `json:"memory" bson:"memory"`
@@ -27,14 +27,14 @@ type Characteristics struct {
 	Multitasking int `json:"multitasking" bson:"multitasking"`
 	Management   int `json:"management" bson:"management"`
 	Planning     int `json:"planning" bson:"planning"`
-}
+} // @name characteristics
 
 type UserPayload struct {
 	NickName string `json:"nickName"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	TTL      int    `json:"ttl"`
-}
+} // @name userPayload
 
 func CreateUser(m *mongo.Database, nickName string, email string, password string) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
