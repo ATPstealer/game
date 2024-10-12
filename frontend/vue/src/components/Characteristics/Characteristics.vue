@@ -4,9 +4,9 @@
       <h2 class="font-bold mb-2 text-2xl">
         {{ t('user.characteristics') }}
       </h2>
-      <div class="grid gap-1" v-if="!isFetching">
+      <div v-if="!isFetching" class="grid gap-1">
         <p v-for="char in Object.keys(characteristics)" :key="char">
-          {{ t(`user.${char}`) }}: {{ characteristics[char] }}
+          {{ t(`user.${char}`) }}: {{ characteristics[char as keyof Characteristics] }}
         </p>
       </div>
       <Loading v-else />
@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import Card from 'primevue/card'
-import { computed, Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
 import { useGetData } from '@/composables/useGetData'

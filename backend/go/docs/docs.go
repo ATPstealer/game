@@ -15,24 +15,203 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v2/building/construct": {
+            "post": {
+                "description": "Endpoint for constructing a new building given the payload details.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Buildings"
+                ],
+                "summary": "Construct a new building",
+                "parameters": [
+                    {
+                        "description": "Building construction payload",
+                        "name": "constructBuildingPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ConstructBuildingPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "values": {
+                                            "$ref": "#/definitions/models.ConstructBuildingPayload"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v2/building/types": {
+            "get": {
+                "description": "Return all available building types from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "buildings"
+                ],
+                "summary": "Get all building types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controllers.JSONResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.BuildingType"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.JSONResult"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v2/settings": {
             "get": {
                 "description": "Get application settings",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get Settings",
+                "summary": "Get General Game Settings",
                 "operationId": "get-settings",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/controllers.JSONResult"
                         }
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "controllers.JSONResult": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "text": {
+                    "type": "string"
+                },
+                "values": {}
+            }
+        },
+        "models.BuildingType": {
+            "type": "object",
+            "properties": {
+                "buildTime": {
+                    "$ref": "#/definitions/time.Duration"
+                },
+                "buildingGroup": {
+                    "type": "string"
+                },
+                "buildingSubGroup": {
+                    "type": "string"
+                },
+                "capacity": {
+                    "type": "number"
+                },
+                "cost": {
+                    "type": "number"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "requirements": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "workers": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ConstructBuildingPayload": {
+            "type": "object",
+            "properties": {
+                "square": {
+                    "type": "integer"
+                },
+                "typeId": {
+                    "type": "integer"
+                },
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                }
+            }
+        },
+        "time.Duration": {
+            "type": "integer",
+            "enum": [
+                -9223372036854775808,
+                9223372036854775807,
+                1,
+                1000,
+                1000000,
+                1000000000,
+                60000000000,
+                3600000000000
+            ],
+            "x-enum-varnames": [
+                "minDuration",
+                "maxDuration",
+                "Nanosecond",
+                "Microsecond",
+                "Millisecond",
+                "Second",
+                "Minute",
+                "Hour"
+            ]
         }
     }
 }`

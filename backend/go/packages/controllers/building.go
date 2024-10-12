@@ -28,6 +28,15 @@ func GetBlueprints(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": blueprints})
 }
 
+// GetBuildingsTypes godoc
+// @Summary Get all building types
+// @Description Return all available building types from the database
+// @Tags buildings
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} JSONResult{data=[]models.BuildingType}
+// @Failure 500 {object} JSONResult
+// @Router /api/v2/building/types [get]
 func GetBuildingsTypes(c *gin.Context) {
 	buildingTypes, err := models.GetAllBuildingTypes(db.M)
 	if err != nil {
@@ -38,6 +47,15 @@ func GetBuildingsTypes(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": buildingTypes})
 }
 
+// ConstructBuilding godoc
+// @Summary Construct a new building
+// @Description Endpoint for constructing a new building given the payload details.
+// @Tags Buildings
+// @Accept json
+// @Produce json
+// @Param constructBuildingPayload body models.ConstructBuildingPayload true "Building construction payload"
+// @Success 200 {object} JSONResult{values=models.ConstructBuildingPayload}
+// @Router /api/v2/building/construct [post]
 func ConstructBuilding(c *gin.Context) {
 	var constructBuildingPayload models.ConstructBuildingPayload
 	if err := include.GetPayload(c, &constructBuildingPayload); err != nil {
