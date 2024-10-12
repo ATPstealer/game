@@ -11,15 +11,15 @@ import (
 
 // SetStoreGoods
 //
-//		@Summary	Set prices for goods in the store
-//	 @Tags store
-//		@Accept		json
-//		@Produce	json
-//		@Param		storeGoodsPayload	body		models.StoreGoodsPayload	true	"Store goods payload"
-//		@Success	200					{object}	JSONResult{}
-//		@Failure	401					{object}	JSONResult
-//		@Failure	500					{object}	JSONResult
-//		@Router		/store/goods/set [post]
+//	@Summary	Set prices for goods in the store
+//	@Tags		store
+//	@Accept		json
+//	@Produce	json
+//	@Param		storeGoodsPayload	body		models.StoreGoodsPayload	true	"Store goods payload"
+//	@Success	200					{object}	JSONResult{}
+//	@Failure	401					{object}	JSONResult
+//	@Failure	500					{object}	JSONResult
+//	@Router		/store/goods/set [post]
 func SetStoreGoods(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {

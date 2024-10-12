@@ -39,6 +39,7 @@ type Building struct {
 	Production      *Production        `json:"production" bson:"production"`
 	Goods           *[]Goods           `json:"goods" bson:"goods"`
 	Logistics       *Logistics         `json:"logistics" bson:"logistics"`
+	CreditTerms     *[]CreditTerms     `json:"creditTerms" bson:"creditTerms"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"  bson:"equipmentEffect"`
 } // @name building

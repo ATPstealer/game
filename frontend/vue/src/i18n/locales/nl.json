@@ -81,7 +81,8 @@
       "recycling plant": "Recyclage installatie",
       "refinery": "Raffinaderij",
       "storage": "Opslag",
-      "water pump": "Waterpomp"
+      "water pump": "Waterpomp",
+      "bank": "Bank"
     },
     "typesDescriptions": {
       "energy plant": "Voorziet energie",
@@ -93,7 +94,8 @@
       "mine": "Mijnbouw middelen",
       "refinery": "Olie raffinage",
       "storage": "Slaat iets op",
-      "water pump": "Voorziet water"
+      "water pump": "Voorziet water",
+      "bank": "Geeft leningen uit"
     }
   },
   "common": {

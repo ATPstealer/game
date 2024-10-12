@@ -177,6 +177,19 @@ definitions:
       "y":
         type: integer
     type: object
+  creditTermsPayload:
+    properties:
+      adding:
+        type: boolean
+      buildingId:
+        type: string
+      limit:
+        type: number
+      rate:
+        type: number
+      rating:
+        type: number
+    type: object
   equipment:
     properties:
       amount:
@@ -594,6 +607,36 @@ info:
   title: Game API
   version: "2.0"
 paths:
+  /bank/credit_terms:
+    post:
+      consumes:
+        - application/json
+      description: Limit > 0, Rate > 0
+      parameters:
+        - description: Credit terms payload
+          in: body
+          name: CreditTermsPayload
+          required: true
+          schema:
+            $ref: '#/definitions/creditTermsPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Add / Change / Delete credit terms in bank contracts
+      tags:
+        - bank
   /building/blueprints:
     get:
       consumes:

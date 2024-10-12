@@ -15,6 +15,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/bank/credit_terms": {
+            "post": {
+                "description": "Limit \u003e 0, Rate \u003e 0",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Add / Change / Delete credit terms in bank contracts",
+                "parameters": [
+                    {
+                        "description": "Credit terms payload",
+                        "name": "CreditTermsPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/creditTermsPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
         "/building/blueprints": {
             "get": {
                 "description": "Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.",
@@ -1972,6 +2018,26 @@ const docTemplate = `{
                 },
                 "y": {
                     "type": "integer"
+                }
+            }
+        },
+        "creditTermsPayload": {
+            "type": "object",
+            "properties": {
+                "adding": {
+                    "type": "boolean"
+                },
+                "buildingId": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "number"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },

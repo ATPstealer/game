@@ -52,7 +52,7 @@ func CreateUser(c *gin.Context) {
 //	@Param			userPayload	body		models.UserPayload		true	"User login payload"
 //	@Success		200			{object}	JSONResult{data=string}	"JWT Token"
 //	@Failure		200			{object}	JSONResult
-//	@Router	/user/login [post]
+//	@Router			/user/login [post]
 func Login(c *gin.Context) {
 	var userPayload models.UserPayload
 	if err := include.GetPayload(c, &userPayload); err != nil {
