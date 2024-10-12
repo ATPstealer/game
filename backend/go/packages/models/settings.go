@@ -10,7 +10,7 @@ import (
 type Settings struct {
 	Key   string  `bson:"key" json:"key"`
 	Value float64 `bson:"value" json:"value"`
-}
+} // @name settings
 
 func GetSettings(m *mongo.Database) (map[string]float64, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -16,7 +16,7 @@ type Logistics struct {
 	Speed       float64 `json:"speed" bson:"speed"`
 	Price       float64 `json:"price" bson:"price"`
 	Revenue     float64 `json:"revenue" bson:"revenue"`
-}
+} // @name logistics
 
 func LogisticsReset(m *mongo.Database, building Building) error {
 	logisticsEquipmentEffect, err := findLogisticsEffect(m, building.EquipmentEffect)
@@ -82,7 +82,7 @@ type FindLogisticsParams struct {
 	X           *int
 	Y           *int
 	MinCapacity *float64
-}
+} // @name findLogisticsParams
 
 type LogisticsWithData struct {
 	X          int                `json:"x"`
@@ -91,7 +91,7 @@ type LogisticsWithData struct {
 	Capacity   float64            `json:"capacity"`
 	Speed      float64            `json:"speed"`
 	Price      float64            `json:"price"`
-}
+} // @name logisticsWithData
 
 func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsParams) ([]LogisticsWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
@@ -198,7 +198,7 @@ func WithdrawLogisticsCapacity(m *mongo.Database, buildingId primitive.ObjectID,
 type LogisticsPriceParams struct {
 	BuildingId primitive.ObjectID `json:"buildingId"`
 	Price      float64            `json:"price"`
-}
+} // @name logisticsPriceParams
 
 func SetLogisticsPrice(m *mongo.Database, userId primitive.ObjectID, logisticsPriceParams LogisticsPriceParams) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

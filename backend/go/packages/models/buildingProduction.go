@@ -12,13 +12,13 @@ import (
 
 type Production struct {
 	BlueprintId uint `json:"blueprintId" bson:"blueprintId"`
-}
+} // @name production
 
 type StartProductionPayload struct {
 	BuildingId  primitive.ObjectID
 	BlueprintId uint
 	Duration    time.Duration
-}
+} // @name startProductionPayload
 
 func GetBuildingsProduction(m *mongo.Database) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

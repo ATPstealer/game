@@ -18,13 +18,13 @@ type LandLord struct {
 	Square int                `json:"square"`
 	X      int                `json:"x"`
 	Y      int                `json:"y"`
-}
+} // @name landLord
 
 type BuyLandPayload struct {
 	X      int `json:"x"`
 	Y      int `json:"y"`
 	Square int `json:"square"`
-}
+} // @name buyLandPayload
 
 func BuyLand(m *mongo.Database, userId primitive.ObjectID, payload BuyLandPayload) (float64, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

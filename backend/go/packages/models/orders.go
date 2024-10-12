@@ -19,7 +19,7 @@ type Order struct {
 	Amount         float64            `json:"amount" bson:"amount"`
 	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
 	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
-}
+} // @name order
 
 func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
@@ -59,7 +59,7 @@ func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) er
 	return err
 }
 
-type OrderMongoWithData struct {
+type OrderWithData struct {
 	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
 	X              int                `json:"x" bson:"x"`
@@ -70,9 +70,9 @@ type OrderMongoWithData struct {
 	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
 	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
 	NickName       string             `json:"nickName" bson:"nickName"`
-}
+} // @name orderWithData
 
-func GetMyOrders(m *mongo.Database, userId primitive.ObjectID) ([]OrderMongoWithData, error) {
+func GetMyOrders(m *mongo.Database, userId primitive.ObjectID) ([]OrderWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -131,7 +131,7 @@ func GetMyOrders(m *mongo.Database, userId primitive.ObjectID) ([]OrderMongoWith
 		return nil, err
 	}
 
-	var orders []OrderMongoWithData
+	var orders []OrderWithData
 	if err = cursor.All(ctx, &orders); err != nil {
 		log.Println(err)
 	}
@@ -149,9 +149,9 @@ type FindOrderParams struct {
 	OrderField     *string
 	Order          *int
 	Page           *int
-}
+} // @name findOrderParams
 
-func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongoWithData, error) {
+func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
@@ -254,7 +254,7 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 		return nil, err
 	}
 
-	var orders []OrderMongoWithData
+	var orders []OrderWithData
 	if err = cursor.All(ctx, &orders); err != nil {
 		log.Println(err)
 	}
@@ -264,7 +264,7 @@ func GetOrders(m *mongo.Database, findOrderParams FindOrderParams) ([]OrderMongo
 type ExecuteOrderPayload struct {
 	OrderId primitive.ObjectID
 	Amount  float64
-}
+} // @name executeOrderPayload
 
 func GetOrderByID(m *mongo.Database, orderId primitive.ObjectID) (Order, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

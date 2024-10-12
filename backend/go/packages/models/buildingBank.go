@@ -5,10 +5,10 @@ type Bank struct {
 	LoansLimit        float64 `json:"loansLimit" bson:"loansLimit"`
 	BorrowedFromState float64 `json:"borrowedFromState" bson:"borrowedFromState"`
 	BorrowedLimit     float64 `json:"borrowedLimit" bson:"borrowedLimit"`
-}
+} // @name bank
 
 type CreditTerms struct {
 	Limit  float64 `json:"limit" bson:"limit"`
 	Rate   float64 `json:"rate" bson:"rate"`
 	Rating float64 `json:"rating" bson:"rating"`
-}
+} // @name creditTerms

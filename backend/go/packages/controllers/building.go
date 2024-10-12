@@ -11,6 +11,17 @@ import (
 	"strings"
 )
 
+// GetBlueprints
+//
+//	@Summary		Get blueprints
+//	@Description	Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.
+//	@Tags			blueprints
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	query		string	false	"Blueprint ID"
+//	@Success		200	{object}	JSONResult{data=[]models.Blueprint}
+//	@Failure		500	{object}	JSONResult
+//	@Router			/building/blueprints [get]
 func GetBlueprints(c *gin.Context) {
 	var blueprintId uint
 	var err error
@@ -23,39 +34,41 @@ func GetBlueprints(c *gin.Context) {
 	blueprints, err := models.GetBlueprints(db.M, blueprintId)
 	if err != nil {
 		log.Printf("Can't get blueprints: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": blueprints})
 }
 
-// GetBuildingsTypes godoc
-// @Summary Get all building types
-// @Description Return all available building types from the database
-// @Tags buildings
-// @Accept  json
-// @Produce  json
-// @Success 200 {object} JSONResult{data=[]models.BuildingType}
-// @Failure 500 {object} JSONResult
-// @Router /api/v2/building/types [get]
+// GetBuildingsTypes
+//
+//	@Summary	Get all building types
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Success	200	{object}	JSONResult{data=[]models.BuildingType}
+//	@Failure	500	{object}	JSONResult
+//	@Router		/building/types [get]
 func GetBuildingsTypes(c *gin.Context) {
 	buildingTypes, err := models.GetAllBuildingTypes(db.M)
 	if err != nil {
 		log.Println("Can't get building types: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": buildingTypes})
 }
 
-// ConstructBuilding godoc
-// @Summary Construct a new building
-// @Description Endpoint for constructing a new building given the payload details.
-// @Tags Buildings
-// @Accept json
-// @Produce json
-// @Param constructBuildingPayload body models.ConstructBuildingPayload true "Building construction payload"
-// @Success 200 {object} JSONResult{values=models.ConstructBuildingPayload}
-// @Router /api/v2/building/construct [post]
+// ConstructBuilding
+//
+//	@Summary	Construct a new building
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		constructBuildingPayload	body		models.ConstructBuildingPayload	true	"Building construction payload"
+//	@Success	200							{object}	JSONResult{values=models.ConstructBuildingPayload}
+//	@Failure	401							{object}	JSONResult
+//	@Failure	500							{object}	JSONResult
+//	@Router		/building/construct [post]
 func ConstructBuilding(c *gin.Context) {
 	var constructBuildingPayload models.ConstructBuildingPayload
 	if err := include.GetPayload(c, &constructBuildingPayload); err != nil {
@@ -79,7 +92,7 @@ func ConstructBuilding(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "not enough money") {
 			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}
@@ -87,6 +100,16 @@ func ConstructBuilding(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -9, "values": constructBuildingPayload})
 }
 
+// GetBuildings
+//
+//	@Summary	Fetch the list of buildings
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		findBuildingsParams	body		models.FindBuildingParams	false	"Parameters to filter and sort buildings"
+//	@Success	200					{object}	JSONResult{values=[]models.BuildingWithData}
+//	@Failure	500					{object}	JSONResult
+//	@Router		/building/get [post]
 func GetBuildings(c *gin.Context) {
 	var findBuildingsParams models.FindBuildingParams
 	if err := include.GetPayload(c, &findBuildingsParams); err != nil {
@@ -107,12 +130,24 @@ func GetBuildings(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("Can't get buildings: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": buildings})
 }
 
+// GetMyBuildings
+//
+//	@Summary		Fetch the user's buildings
+//	@Tags			buildings
+//	@Description	Optionally filter by building ID.
+//	@Accept			json
+//	@Produce		json
+//	@Param			_id	query		string	false	"Building ID to filter by"
+//	@Success		200	{object}	JSONResult{data=[]models.BuildingWithData}
+//	@Failure		401	{object}	JSONResult
+//	@Failure		500	{object}	JSONResult
+//	@Router			/building/my [get]
 func GetMyBuildings(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
@@ -128,12 +163,23 @@ func GetMyBuildings(c *gin.Context) {
 	myBuildings, err := models.GetMyBuildings(db.M, userId, buildingId)
 	if err != nil {
 		log.Printf("Can't get my buildings: " + err.Error())
-		c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": myBuildings})
 }
 
+// StartWork
+//
+//	@Summary	Start work in the building
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		startWorkPayload	body		models.StartProductionPayload	true	"Start production payload"
+//	@Success	200					{object}	JSONResult
+//	@Failure	401					{object}	JSONResult
+//	@Failure	500					{object}	JSONResult
+//	@Router		/building/start_work [post]
 func StartWork(c *gin.Context) {
 	var startWorkPayload models.StartProductionPayload
 	var err error
@@ -155,7 +201,7 @@ func StartWork(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "can't product it here") {
 			c.JSON(http.StatusOK, gin.H{"code": 30, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}
@@ -163,6 +209,17 @@ func StartWork(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -10})
 }
 
+// StopWork
+//
+//	@Summary	Stops any work in building. Later he should stop only the works available for stopping.
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		startWorkPayload	body		models.StartProductionPayload	true	"Production stop payload"
+//	@Success	200					{object}	JSONResult
+//	@Failure	401					{object}	JSONResult
+//	@Failure	500					{object}	JSONResult
+//	@Router		/building/stop_work [post]
 func StopWork(c *gin.Context) {
 	var startWorkPayload models.StartProductionPayload
 	var err error
@@ -181,7 +238,7 @@ func StopWork(c *gin.Context) {
 		if strings.Contains(err.Error(), "this building don't belong you") {
 			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}
@@ -189,6 +246,17 @@ func StopWork(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -13})
 }
 
+// SetHiring
+//
+//	@Summary	Set hiring details for a building
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		hiringPayload	body		models.HiringPayload	true	"Details of hiring"
+//	@Success	200				{object}	JSONResult
+//	@Failure	401				{object}	JSONResult
+//	@Failure	500				{object}	JSONResult
+//	@Router		/building/hiring [post]
 func SetHiring(c *gin.Context) {
 	var hiringPayload models.HiringPayload
 	if err := include.GetPayload(c, &hiringPayload); err != nil {
@@ -210,7 +278,7 @@ func SetHiring(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "hiring needs more that maximum") {
 			c.JSON(http.StatusOK, gin.H{"code": 31, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}
@@ -218,6 +286,17 @@ func SetHiring(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -11})
 }
 
+// DestroyBuilding
+//
+//	@Summary	Destroy an existing building
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		_id	query		string	true	"Building ID"
+//	@Success	200	{object}	JSONResult
+//	@Failure	401	{object}	JSONResult
+//	@Failure	500	{object}	JSONResult
+//	@Router		/building/destroy [delete]
 func DestroyBuilding(c *gin.Context) {
 	userId, err := include.GetUserIdFromContext(c)
 	if err != nil {
@@ -233,7 +312,7 @@ func DestroyBuilding(c *gin.Context) {
 		if strings.Contains(err.Error(), "for attempting to destroy someone else's building, inevitable punishment awaits you") {
 			c.JSON(http.StatusOK, gin.H{"code": 32, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}
@@ -241,6 +320,17 @@ func DestroyBuilding(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -12})
 }
 
+// InstallEquipment
+//
+//	@Summary	Install equipment in a building
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		installEquipmentPayload	body		models.InstallEquipmentPayload	true	"Equipment installation payload"
+//	@Success	200						{object}	JSONResult
+//	@Failure	401						{object}	JSONResult
+//	@Failure	500						{object}	JSONResult
+//	@Router		/building/install_equipment [post]
 func InstallEquipment(c *gin.Context) {
 	var installEquipmentPayload models.InstallEquipmentPayload
 	if err := include.GetPayload(c, &installEquipmentPayload); err != nil {
@@ -261,7 +351,7 @@ func InstallEquipment(c *gin.Context) {
 		} else if strings.Contains(err.Error(), "not enough space") {
 			c.JSON(http.StatusOK, gin.H{"code": 34, "text": err.Error()})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"code": 100001, "text": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
 		return
 	}

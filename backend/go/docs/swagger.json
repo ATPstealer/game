@@ -6,11 +6,62 @@
         "version": "2.0"
     },
     "host": "staging.game.kube.atpstealer.com",
-    "basePath": "/",
+  "basePath": "/api/v2",
     "paths": {
-        "/api/v2/building/construct": {
+      "/building/blueprints": {
+        "get": {
+          "description": "Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "blueprints"
+          ],
+          "summary": "Get blueprints",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Blueprint ID",
+              "name": "id",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/blueprint"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/construct": {
             "post": {
-                "description": "Endpoint for constructing a new building given the payload details.",
                 "consumes": [
                     "application/json"
                 ],
@@ -18,7 +69,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Buildings"
+                  "buildings"
                 ],
                 "summary": "Construct a new building",
                 "parameters": [
@@ -28,7 +79,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.ConstructBuildingPayload"
+                          "$ref": "#/definitions/constructBuildingPayload"
                         }
                     }
                 ],
@@ -38,25 +89,370 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/controllers.JSONResult"
+                                  "$ref": "#/definitions/jsonResult"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
                                         "values": {
-                                            "$ref": "#/definitions/models.ConstructBuildingPayload"
+                                          "$ref": "#/definitions/constructBuildingPayload"
                                         }
                                     }
                                 }
                             ]
                         }
+                    },
+                  "401": {
+                    "description": "Unauthorized",
+                    "schema": {
+                      "$ref": "#/definitions/jsonResult"
                     }
+                  },
+                  "500": {
+                    "description": "Internal Server Error",
+                    "schema": {
+                      "$ref": "#/definitions/jsonResult"
+                    }
+                  }
                 }
             }
-        },
-        "/api/v2/building/types": {
+      },
+      "/building/destroy": {
+        "delete": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Destroy an existing building",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Building ID",
+              "name": "_id",
+              "in": "query",
+              "required": true
+                    }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/get": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Fetch the list of buildings",
+          "parameters": [
+            {
+              "description": "Parameters to filter and sort buildings",
+              "name": "findBuildingsParams",
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/findBuildingParams"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "values": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/buildingWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/hiring": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Set hiring details for a building",
+          "parameters": [
+            {
+              "description": "Details of hiring",
+              "name": "hiringPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/hiringPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/install_equipment": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Install equipment in a building",
+          "parameters": [
+            {
+              "description": "Equipment installation payload",
+              "name": "installEquipmentPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/installEquipmentPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/my": {
+        "get": {
+          "description": "Optionally filter by building ID.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Fetch the user's buildings",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Building ID to filter by",
+              "name": "_id",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/buildingWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/start_work": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Start work in the building",
+          "parameters": [
+            {
+              "description": "Start production payload",
+              "name": "startWorkPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/startProductionPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/stop_work": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "buildings"
+          ],
+          "summary": "Stops any work in building. Later he should stop only the works available for stopping.",
+          "parameters": [
+            {
+              "description": "Production stop payload",
+              "name": "startWorkPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/startProductionPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/building/types": {
             "get": {
-                "description": "Return all available building types from the database",
                 "consumes": [
                     "application/json"
                 ],
@@ -73,7 +469,7 @@
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/controllers.JSONResult"
+                                  "$ref": "#/definitions/jsonResult"
                                 },
                                 {
                                     "type": "object",
@@ -81,7 +477,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/models.BuildingType"
+                                              "$ref": "#/definitions/buildingType"
                                             }
                                         }
                                     }
@@ -92,25 +488,1214 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controllers.JSONResult"
+                          "$ref": "#/definitions/jsonResult"
                         }
                     }
                 }
             }
         },
-        "/api/v2/settings": {
+      "/data/users_by_prefix": {
             "get": {
-                "description": "Get application settings",
+              "description": "Retrieve a list of usernames that match the given prefix",
                 "produces": [
                     "application/json"
                 ],
+              "tags": [
+                "user"
+              ],
+              "summary": "Get usernames by prefix",
+              "operationId": "get-usernames-by-prefix",
+              "parameters": [
+                {
+                  "type": "string",
+                  "description": "Prefix to filter usernames",
+                  "name": "prefix",
+                  "in": "query"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/jsonResult"
+                  }
+                }
+              }
+            }
+      },
+      "/equipment/my": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "equipment"
+          ],
+          "summary": "Return user's equipment",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "x-coordinate of the equipment location",
+              "name": "x",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "y-coordinate of the equipment location",
+              "name": "y",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/resourceAsEquipment"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/equipment/types": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "equipment"
+          ],
+          "summary": "Get all equipment types",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/equipmentType"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/logistics/set_price": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "logistics"
+          ],
+          "summary": "Set the logistics price",
+          "parameters": [
+            {
+              "description": "Logistics price parameters",
+              "name": "logisticsPriceParams",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/logisticsPriceParams"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/map": {
+        "get": {
+          "description": "Returns the list of all map cells",
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "map"
+          ],
+          "summary": "Return map cells",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/cell"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/map/all_land_lords": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "map"
+          ],
+          "summary": "Return all landowners",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/landLord"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/map/buy_land": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "map"
+          ],
+          "summary": "Buy land in cell",
+          "parameters": [
+            {
+              "description": "Land purchase payload",
+              "name": "buyLandPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/buyLandPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "values": {
+                        "$ref": "#/definitions/buyLandPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/map/cell_owners": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "map"
+          ],
+          "summary": "Get the landlords in cell",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "X coordinate",
+              "name": "x",
+              "in": "query",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "Y coordinate",
+              "name": "y",
+              "in": "query",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/landLord"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/map/my": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "map"
+          ],
+          "summary": "Return user's lands",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/landLord"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/market/order/close": {
+        "delete": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "market"
+          ],
+          "summary": "Close user's order",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Order ID",
+              "name": "orderId",
+              "in": "query",
+              "required": true
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/market/order/create": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "market"
+          ],
+          "summary": "Create a new market order",
+          "parameters": [
+            {
+              "description": "Order payload",
+              "name": "orderPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/order"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/market/order/execute": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "market"
+          ],
+          "summary": "Partially execute an  order",
+          "parameters": [
+            {
+              "description": "Order execution payload",
+              "name": "executeOrderPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/executeOrderPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/market/order/my": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "market"
+          ],
+          "summary": "Get my orders",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/orderWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/orders": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "market"
+          ],
+          "summary": "Fetches orders based on various query parameters",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "Order ID",
+              "name": "id",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "User ID",
+              "name": "userId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "X coordinate",
+              "name": "x",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Y coordinate",
+              "name": "y",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Resource Type ID",
+              "name": "resourceTypeId",
+              "in": "query"
+            },
+            {
+              "type": "boolean",
+              "description": "Sell flag",
+              "name": "sell",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Limit number of orders",
+              "name": "limit",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Order",
+              "name": "order",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "Order Field",
+              "name": "orderField",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Page number",
+              "name": "page",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/orderWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/resource/logistics": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "logistics"
+          ],
+          "summary": "Get the logistics capacity in cell",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "x",
+              "name": "x",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "y",
+              "name": "y",
+              "in": "query"
+            },
+            {
+              "type": "number",
+              "description": "Minimum capacity",
+              "name": "minCapacity",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/logisticsWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/resource/move": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "logistics"
+          ],
+          "summary": "Initiates a resource movement",
+          "parameters": [
+            {
+              "description": "Resource movement payload",
+              "name": "logisticPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/logisticPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/resource/my": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "resources"
+          ],
+          "summary": "Get user's resources",
+          "parameters": [
+            {
+              "type": "integer",
+              "description": "X coordinate",
+              "name": "x",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "Y coordinate",
+              "name": "y",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/resourceWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/resource/my_logistics": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "logistics"
+          ],
+          "summary": "Get user's logistics tasks",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/logisticWithData"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/resource/types": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "resource"
+          ],
+          "summary": "Return all resource types from database",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/resourceType"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/settings": {
+        "get": {
+          "description": "X Y dimension, Interest rate, etc",
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "settings"
+          ],
                 "summary": "Get General Game Settings",
                 "operationId": "get-settings",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.JSONResult"
+                          "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                  "500": {
+                    "description": "Internal Server Error",
+                    "schema": {
+                      "$ref": "#/definitions/jsonResult"
+                    }
+                  }
+                }
+        }
+      },
+      "/storage/my": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "storage"
+          ],
+          "summary": "Return user's storages",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/definitions/storage"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/store/goods/set": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "store"
+          ],
+          "summary": "Set prices for goods in the store",
+          "parameters": [
+            {
+              "description": "Store goods payload",
+              "name": "storeGoodsPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/storeGoodsPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/user/create": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "user"
+          ],
+          "summary": "Create a new user",
+          "parameters": [
+            {
+              "description": "User creation payload",
+              "name": "userPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/userPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "values": {
+                        "$ref": "#/definitions/userPayload"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/user/data": {
+        "get": {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "user"
+          ],
+          "summary": "Get user data",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/definitions/jsonResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "$ref": "#/definitions/user"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
+      "/user/login": {
+        "post": {
+          "description": "Validate user credentials and provide a JWT token",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "user"
+          ],
+          "summary": "Authenticate a user",
+          "parameters": [
+            {
+              "description": "User login payload",
+              "name": "userPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/userPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        },
+        "delete": {
+          "description": "Logout a user by deleting their secure token",
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "user"
+          ],
+          "summary": "Logout a user",
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
                         }
                     }
                 }
@@ -118,20 +1703,53 @@
         }
     },
     "definitions": {
-        "controllers.JSONResult": {
+      "blueprint": {
             "type": "object",
             "properties": {
-                "code": {
+              "id": {
                     "type": "integer"
                 },
-                "data": {},
-                "text": {
+              "name": {
                     "type": "string"
                 },
-                "values": {}
+              "producedInId": {
+                "type": "integer"
+              },
+              "producedResources": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/resourceAmount"
+                }
+              },
+              "productionTime": {
+                "$ref": "#/definitions/time.Duration"
+              },
+              "usedResources": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/resourceAmount"
+                }
+              }
             }
-        },
-        "models.BuildingType": {
+      },
+      "buildingStatus": {
+        "type": "string",
+        "enum": [
+          "Construction",
+          "Ready",
+          "Production",
+          "ResourcesNeeded",
+          "StorageNeeded"
+        ],
+        "x-enum-varnames": [
+          "ConstructionStatus",
+          "ReadyStatus",
+          "ProductionStatus",
+          "ResourcesNeededStatus",
+          "StorageNeededStatus"
+        ]
+      },
+      "buildingType": {
             "type": "object",
             "properties": {
                 "buildTime": {
@@ -166,7 +1784,174 @@
                 }
             }
         },
-        "models.ConstructBuildingPayload": {
+      "buildingWithData": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "buildingType": {
+            "$ref": "#/definitions/buildingType"
+          },
+          "equipment": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/equipment"
+            }
+          },
+          "equipmentEffect": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/equipmentEffect"
+            }
+          },
+          "goods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/goods"
+            }
+          },
+          "hiringNeeds": {
+            "type": "integer"
+          },
+          "level": {
+            "type": "integer"
+          },
+          "logistics": {
+            "$ref": "#/definitions/logistics"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "onStrike": {
+            "type": "boolean"
+          },
+          "production": {
+            "$ref": "#/definitions/production"
+          },
+          "salary": {
+            "type": "number"
+          },
+          "square": {
+            "type": "integer"
+          },
+          "squareInUse": {
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/definitions/buildingStatus"
+          },
+          "typeId": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "workEnd": {
+            "type": "string"
+          },
+          "workStarted": {
+            "type": "string"
+          },
+          "workers": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "buyLandPayload": {
+        "type": "object",
+        "properties": {
+          "square": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "cell": {
+        "type": "object",
+        "properties": {
+          "SpendRate": {
+            "type": "number"
+          },
+          "_id": {
+            "type": "string"
+          },
+          "averageSalary": {
+            "type": "number"
+          },
+          "cellName": {
+            "type": "string"
+          },
+          "civilSavings": {
+            "type": "number"
+          },
+          "crime": {
+            "type": "number"
+          },
+          "education": {
+            "type": "number"
+          },
+          "medicine": {
+            "type": "number"
+          },
+          "pollution": {
+            "type": "number"
+          },
+          "population": {
+            "type": "number"
+          },
+          "square": {
+            "type": "integer"
+          },
+          "surfaceImagePath": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "characteristics": {
+        "type": "object",
+        "properties": {
+          "attention": {
+            "type": "integer"
+          },
+          "intelligence": {
+            "type": "integer"
+          },
+          "management": {
+            "type": "integer"
+          },
+          "memory": {
+            "type": "integer"
+          },
+          "multitasking": {
+            "type": "integer"
+          },
+          "planning": {
+            "type": "integer"
+          },
+          "wits": {
+            "type": "integer"
+          }
+        }
+      },
+      "constructBuildingPayload": {
             "type": "object",
             "properties": {
                 "square": {
@@ -183,6 +1968,555 @@
                 }
             }
         },
+      "equipment": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer"
+          },
+          "durability": {
+            "type": "integer"
+          },
+          "equipmentTypeId": {
+            "type": "integer"
+          }
+        }
+      },
+      "equipmentEffect": {
+        "type": "object",
+        "properties": {
+          "blueprintId": {
+            "type": "integer"
+          },
+          "effectId": {
+            "type": "integer"
+          },
+          "value": {
+            "type": "number"
+          },
+          "valueSecond": {
+            "description": "Second value is considered as an average for all equipment, taking into account the first value.",
+            "type": "number"
+          }
+        }
+      },
+      "equipmentType": {
+        "type": "object",
+        "properties": {
+          "blueprintIds": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "durability": {
+            "type": "integer"
+          },
+          "effectId": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "square": {
+            "type": "number"
+          },
+          "value": {
+            "type": "number"
+          },
+          "valueSecond": {
+            "type": "number"
+          }
+        }
+      },
+      "executeOrderPayload": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "orderId": {
+            "type": "string"
+          }
+        }
+      },
+      "findBuildingParams": {
+        "type": "object",
+        "properties": {
+          "buildingTypeId": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "order": {
+            "type": "string"
+          },
+          "orderField": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "goods": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "revenue": {
+            "type": "number"
+          },
+          "sellStarted": {
+            "type": "string"
+          },
+          "sellSum": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/definitions/storeGoodsStatus"
+          }
+        }
+      },
+      "hiringPayload": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "hiringNeeds": {
+            "type": "integer"
+          },
+          "salary": {
+            "type": "number"
+          }
+        }
+      },
+      "installEquipmentPayload": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "equipmentTypeId": {
+            "type": "integer"
+          }
+        }
+      },
+      "jsonResult": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer"
+          },
+          "data": {},
+          "text": {
+            "type": "string"
+          },
+          "values": {}
+        }
+      },
+      "landLord": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "square": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "logisticPayload": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "fromX": {
+            "type": "integer"
+          },
+          "fromY": {
+            "type": "integer"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "toX": {
+            "type": "integer"
+          },
+          "toY": {
+            "type": "integer"
+          }
+        }
+      },
+      "logisticWithData": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "fromX": {
+            "type": "integer"
+          },
+          "fromY": {
+            "type": "integer"
+          },
+          "resourceType": {
+            "$ref": "#/definitions/resourceType"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "toX": {
+            "type": "integer"
+          },
+          "toY": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "workEnd": {
+            "type": "string"
+          }
+        }
+      },
+      "logistics": {
+        "type": "object",
+        "properties": {
+          "capacity": {
+            "type": "number"
+          },
+          "capacityMax": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "revenue": {
+            "type": "number"
+          },
+          "speed": {
+            "type": "number"
+          }
+        }
+      },
+      "logisticsPriceParams": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          }
+        }
+      },
+      "logisticsWithData": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "capacity": {
+            "type": "number"
+          },
+          "price": {
+            "type": "number"
+          },
+          "speed": {
+            "type": "number"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "order": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "priceForUnit": {
+            "type": "number"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "sell": {
+            "description": "true - sell; false - buy",
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "orderWithData": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "priceForUnit": {
+            "type": "number"
+          },
+          "resourceType": {
+            "$ref": "#/definitions/resourceType"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "sell": {
+            "description": "true - sell; false - buy",
+            "type": "boolean"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "production": {
+        "type": "object",
+        "properties": {
+          "blueprintId": {
+            "type": "integer"
+          }
+        }
+      },
+      "resourceAmount": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "resourceId": {
+            "type": "integer"
+          }
+        }
+      },
+      "resourceAsEquipment": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "equipmentType": {
+            "$ref": "#/definitions/equipmentType"
+          },
+          "resourceType": {
+            "$ref": "#/definitions/resourceType"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "resourceType": {
+        "type": "object",
+        "properties": {
+          "demand": {
+            "type": "number"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "storeGroup": {
+            "type": "string"
+          },
+          "volume": {
+            "description": "m3",
+            "type": "number"
+          },
+          "weight": {
+            "description": "kg",
+            "type": "number"
+          }
+        }
+      },
+      "resourceWithData": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "resourceType": {
+            "$ref": "#/definitions/resourceType"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "startProductionPayload": {
+        "type": "object",
+        "properties": {
+          "blueprintId": {
+            "type": "integer"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "duration": {
+            "$ref": "#/definitions/time.Duration"
+          }
+        }
+      },
+      "storage": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "volumeMax": {
+            "type": "number"
+          },
+          "volumeOccupied": {
+            "type": "number"
+          },
+          "x": {
+            "type": "integer"
+          },
+          "y": {
+            "type": "integer"
+          }
+        }
+      },
+      "storeGoodsPayload": {
+        "type": "object",
+        "properties": {
+          "buildingId": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "resourceTypeId": {
+            "type": "integer"
+          }
+        }
+      },
+      "storeGoodsStatus": {
+        "type": "string",
+        "enum": [
+          "Selling",
+          "DemandSatisfied",
+          "HighPrice",
+          "NotEnoughMinerals",
+          "SpendingLimitReached",
+          "CapacityReached",
+          "OnStrike"
+        ],
+        "x-enum-varnames": [
+          "Selling",
+          "DemandSatisfied",
+          "HighPrice",
+          "NotEnoughMinerals",
+          "SpendingLimitReached",
+          "CapacityReached",
+          "OnStrike"
+        ]
+      },
         "time.Duration": {
             "type": "integer",
             "enum": [
@@ -205,6 +2539,46 @@
                 "Minute",
                 "Hour"
             ]
+        },
+      "user": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "characteristics": {
+            "$ref": "#/definitions/characteristics"
+          },
+          "email": {
+            "type": "string"
+          },
+          "money": {
+            "type": "number"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "userPayload": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "nickName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "ttl": {
+            "type": "integer"
+          }
+        }
         }
     }
 }

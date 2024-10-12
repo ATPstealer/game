@@ -1,15 +1,39 @@
-basePath: /
+basePath: /api/v2
 definitions:
-  controllers.JSONResult:
+  blueprint:
     properties:
-      code:
+      id:
         type: integer
-      data: { }
-      text:
+      name:
         type: string
-      values: { }
+      producedInId:
+        type: integer
+      producedResources:
+        items:
+          $ref: '#/definitions/resourceAmount'
+        type: array
+      productionTime:
+        $ref: '#/definitions/time.Duration'
+      usedResources:
+        items:
+          $ref: '#/definitions/resourceAmount'
+        type: array
     type: object
-  models.BuildingType:
+  buildingStatus:
+    enum:
+      - Construction
+      - Ready
+      - Production
+      - ResourcesNeeded
+      - StorageNeeded
+    type: string
+    x-enum-varnames:
+      - ConstructionStatus
+      - ReadyStatus
+      - ProductionStatus
+      - ResourcesNeededStatus
+      - StorageNeededStatus
+  buildingType:
     properties:
       buildTime:
         $ref: '#/definitions/time.Duration'
@@ -32,7 +56,117 @@ definitions:
       workers:
         type: integer
     type: object
-  models.ConstructBuildingPayload:
+  buildingWithData:
+    properties:
+      _id:
+        type: string
+      buildingType:
+        $ref: '#/definitions/buildingType'
+      equipment:
+        items:
+          $ref: '#/definitions/equipment'
+        type: array
+      equipmentEffect:
+        items:
+          $ref: '#/definitions/equipmentEffect'
+        type: array
+      goods:
+        items:
+          $ref: '#/definitions/goods'
+        type: array
+      hiringNeeds:
+        type: integer
+      level:
+        type: integer
+      logistics:
+        $ref: '#/definitions/logistics'
+      nickName:
+        type: string
+      onStrike:
+        type: boolean
+      production:
+        $ref: '#/definitions/production'
+      salary:
+        type: number
+      square:
+        type: integer
+      squareInUse:
+        type: number
+      status:
+        $ref: '#/definitions/buildingStatus'
+      typeId:
+        type: integer
+      userId:
+        type: string
+      workEnd:
+        type: string
+      workStarted:
+        type: string
+      workers:
+        type: integer
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  buyLandPayload:
+    properties:
+      square:
+        type: integer
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  cell:
+    properties:
+      _id:
+        type: string
+      SpendRate:
+        type: number
+      averageSalary:
+        type: number
+      cellName:
+        type: string
+      civilSavings:
+        type: number
+      crime:
+        type: number
+      education:
+        type: number
+      medicine:
+        type: number
+      pollution:
+        type: number
+      population:
+        type: number
+      square:
+        type: integer
+      surfaceImagePath:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  characteristics:
+    properties:
+      attention:
+        type: integer
+      intelligence:
+        type: integer
+      management:
+        type: integer
+      memory:
+        type: integer
+      multitasking:
+        type: integer
+      planning:
+        type: integer
+      wits:
+        type: integer
+    type: object
+  constructBuildingPayload:
     properties:
       square:
         type: integer
@@ -43,6 +177,371 @@ definitions:
       "y":
         type: integer
     type: object
+  equipment:
+    properties:
+      amount:
+        type: integer
+      durability:
+        type: integer
+      equipmentTypeId:
+        type: integer
+    type: object
+  equipmentEffect:
+    properties:
+      blueprintId:
+        type: integer
+      effectId:
+        type: integer
+      value:
+        type: number
+      valueSecond:
+        description: Second value is considered as an average for all equipment, taking
+          into account the first value.
+        type: number
+    type: object
+  equipmentType:
+    properties:
+      blueprintIds:
+        items:
+          type: integer
+        type: array
+      durability:
+        type: integer
+      effectId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      resourceTypeId:
+        type: integer
+      square:
+        type: number
+      value:
+        type: number
+      valueSecond:
+        type: number
+    type: object
+  executeOrderPayload:
+    properties:
+      amount:
+        type: number
+      orderId:
+        type: string
+    type: object
+  findBuildingParams:
+    properties:
+      buildingTypeId:
+        type: integer
+      id:
+        type: string
+      limit:
+        type: integer
+      nickName:
+        type: string
+      order:
+        type: string
+      orderField:
+        type: string
+      page:
+        type: integer
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  goods:
+    properties:
+      price:
+        type: number
+      resourceTypeId:
+        type: integer
+      revenue:
+        type: number
+      sellStarted:
+        type: string
+      sellSum:
+        type: integer
+      status:
+        $ref: '#/definitions/storeGoodsStatus'
+    type: object
+  hiringPayload:
+    properties:
+      buildingId:
+        type: string
+      hiringNeeds:
+        type: integer
+      salary:
+        type: number
+    type: object
+  installEquipmentPayload:
+    properties:
+      amount:
+        type: integer
+      buildingId:
+        type: string
+      equipmentTypeId:
+        type: integer
+    type: object
+  jsonResult:
+    properties:
+      code:
+        type: integer
+      data: { }
+      text:
+        type: string
+      values: { }
+    type: object
+  landLord:
+    properties:
+      _id:
+        type: string
+      square:
+        type: integer
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  logisticPayload:
+    properties:
+      amount:
+        type: number
+      buildingId:
+        type: string
+      fromX:
+        type: integer
+      fromY:
+        type: integer
+      resourceTypeId:
+        type: integer
+      toX:
+        type: integer
+      toY:
+        type: integer
+    type: object
+  logisticWithData:
+    properties:
+      _id:
+        type: string
+      amount:
+        type: number
+      fromX:
+        type: integer
+      fromY:
+        type: integer
+      resourceType:
+        $ref: '#/definitions/resourceType'
+      resourceTypeId:
+        type: integer
+      toX:
+        type: integer
+      toY:
+        type: integer
+      userId:
+        type: string
+      workEnd:
+        type: string
+    type: object
+  logistics:
+    properties:
+      capacity:
+        type: number
+      capacityMax:
+        type: number
+      price:
+        type: number
+      revenue:
+        type: number
+      speed:
+        type: number
+    type: object
+  logisticsPriceParams:
+    properties:
+      buildingId:
+        type: string
+      price:
+        type: number
+    type: object
+  logisticsWithData:
+    properties:
+      buildingId:
+        type: string
+      capacity:
+        type: number
+      price:
+        type: number
+      speed:
+        type: number
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  order:
+    properties:
+      _id:
+        type: string
+      amount:
+        type: number
+      priceForUnit:
+        type: number
+      resourceTypeId:
+        type: integer
+      sell:
+        description: true - sell; false - buy
+        type: boolean
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  orderWithData:
+    properties:
+      _id:
+        type: string
+      amount:
+        type: number
+      nickName:
+        type: string
+      priceForUnit:
+        type: number
+      resourceType:
+        $ref: '#/definitions/resourceType'
+      resourceTypeId:
+        type: integer
+      sell:
+        description: true - sell; false - buy
+        type: boolean
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  production:
+    properties:
+      blueprintId:
+        type: integer
+    type: object
+  resourceAmount:
+    properties:
+      amount:
+        type: number
+      resourceId:
+        type: integer
+    type: object
+  resourceAsEquipment:
+    properties:
+      _id:
+        type: string
+      amount:
+        type: number
+      equipmentType:
+        $ref: '#/definitions/equipmentType'
+      resourceType:
+        $ref: '#/definitions/resourceType'
+      resourceTypeId:
+        type: integer
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  resourceType:
+    properties:
+      demand:
+        type: number
+      id:
+        type: integer
+      name:
+        type: string
+      storeGroup:
+        type: string
+      volume:
+        description: m3
+        type: number
+      weight:
+        description: kg
+        type: number
+    type: object
+  resourceWithData:
+    properties:
+      _id:
+        type: string
+      amount:
+        type: number
+      resourceType:
+        $ref: '#/definitions/resourceType'
+      resourceTypeId:
+        type: integer
+      userId:
+        type: string
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  startProductionPayload:
+    properties:
+      blueprintId:
+        type: integer
+      buildingId:
+        type: string
+      duration:
+        $ref: '#/definitions/time.Duration'
+    type: object
+  storage:
+    properties:
+      _id:
+        type: string
+      userId:
+        type: string
+      volumeMax:
+        type: number
+      volumeOccupied:
+        type: number
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  storeGoodsPayload:
+    properties:
+      buildingId:
+        type: string
+      price:
+        type: number
+      resourceTypeId:
+        type: integer
+    type: object
+  storeGoodsStatus:
+    enum:
+      - Selling
+      - DemandSatisfied
+      - HighPrice
+      - NotEnoughMinerals
+      - SpendingLimitReached
+      - CapacityReached
+      - OnStrike
+    type: string
+    x-enum-varnames:
+      - Selling
+      - DemandSatisfied
+      - HighPrice
+      - NotEnoughMinerals
+      - SpendingLimitReached
+      - CapacityReached
+      - OnStrike
   time.Duration:
     enum:
       - -9223372036854775808
@@ -63,24 +562,81 @@ definitions:
       - Second
       - Minute
       - Hour
+  user:
+    properties:
+      _id:
+        type: string
+      characteristics:
+        $ref: '#/definitions/characteristics'
+      email:
+        type: string
+      money:
+        type: number
+      nickName:
+        type: string
+      password:
+        type: string
+    type: object
+  userPayload:
+    properties:
+      email:
+        type: string
+      nickName:
+        type: string
+      password:
+        type: string
+      ttl:
+        type: integer
+    type: object
 host: staging.game.kube.atpstealer.com
 info:
   contact: { }
   title: Game API
   version: "2.0"
 paths:
-  /api/v2/building/construct:
+  /building/blueprints:
+    get:
+      consumes:
+        - application/json
+      description: Fetches a list of blueprints. If an 'id' query parameter is provided,
+        fetches the blueprint with the specified ID.
+      parameters:
+        - description: Blueprint ID
+          in: query
+          name: id
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/blueprint'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get blueprints
+      tags:
+        - blueprints
+  /building/construct:
     post:
       consumes:
         - application/json
-      description: Endpoint for constructing a new building given the payload details.
       parameters:
         - description: Building construction payload
           in: body
           name: constructBuildingPayload
           required: true
           schema:
-            $ref: '#/definitions/models.ConstructBuildingPayload'
+            $ref: '#/definitions/constructBuildingPayload'
       produces:
         - application/json
       responses:
@@ -88,19 +644,60 @@ paths:
           description: OK
           schema:
             allOf:
-              - $ref: '#/definitions/controllers.JSONResult'
+              - $ref: '#/definitions/jsonResult'
               - properties:
                   values:
-                    $ref: '#/definitions/models.ConstructBuildingPayload'
+                    $ref: '#/definitions/constructBuildingPayload'
                 type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
       summary: Construct a new building
       tags:
-        - Buildings
-  /api/v2/building/types:
-    get:
+        - buildings
+  /building/destroy:
+    delete:
       consumes:
         - application/json
-      description: Return all available building types from the database
+      parameters:
+        - description: Building ID
+          in: query
+          name: _id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Destroy an existing building
+      tags:
+        - buildings
+  /building/get:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Parameters to filter and sort buildings
+          in: body
+          name: findBuildingsParams
+          schema:
+            $ref: '#/definitions/findBuildingParams'
       produces:
         - application/json
       responses:
@@ -108,23 +705,775 @@ paths:
           description: OK
           schema:
             allOf:
-              - $ref: '#/definitions/controllers.JSONResult'
+              - $ref: '#/definitions/jsonResult'
               - properties:
-                  data:
+                  values:
                     items:
-                      $ref: '#/definitions/models.BuildingType'
+                      $ref: '#/definitions/buildingWithData'
                     type: array
                 type: object
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controllers.JSONResult'
+            $ref: '#/definitions/jsonResult'
+      summary: Fetch the list of buildings
+      tags:
+        - buildings
+  /building/hiring:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Details of hiring
+          in: body
+          name: hiringPayload
+          required: true
+          schema:
+            $ref: '#/definitions/hiringPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Set hiring details for a building
+      tags:
+        - buildings
+  /building/install_equipment:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Equipment installation payload
+          in: body
+          name: installEquipmentPayload
+          required: true
+          schema:
+            $ref: '#/definitions/installEquipmentPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Install equipment in a building
+      tags:
+        - buildings
+  /building/my:
+    get:
+      consumes:
+        - application/json
+      description: Optionally filter by building ID.
+      parameters:
+        - description: Building ID to filter by
+          in: query
+          name: _id
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/buildingWithData'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Fetch the user's buildings
+      tags:
+        - buildings
+  /building/start_work:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Start production payload
+          in: body
+          name: startWorkPayload
+          required: true
+          schema:
+            $ref: '#/definitions/startProductionPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Start work in the building
+      tags:
+        - buildings
+  /building/stop_work:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Production stop payload
+          in: body
+          name: startWorkPayload
+          required: true
+          schema:
+            $ref: '#/definitions/startProductionPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Stops any work in building. Later he should stop only the works available
+        for stopping.
+      tags:
+        - buildings
+  /building/types:
+    get:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/buildingType'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
       summary: Get all building types
       tags:
         - buildings
-  /api/v2/settings:
+  /data/users_by_prefix:
     get:
-      description: Get application settings
+      description: Retrieve a list of usernames that match the given prefix
+      operationId: get-usernames-by-prefix
+      parameters:
+        - description: Prefix to filter usernames
+          in: query
+          name: prefix
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get usernames by prefix
+      tags:
+        - user
+  /equipment/my:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: x-coordinate of the equipment location
+          in: query
+          name: x
+          type: integer
+        - description: y-coordinate of the equipment location
+          in: query
+          name: "y"
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/resourceAsEquipment'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return user's equipment
+      tags:
+        - equipment
+  /equipment/types:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/equipmentType'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get all equipment types
+      tags:
+        - equipment
+  /logistics/set_price:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Logistics price parameters
+          in: body
+          name: logisticsPriceParams
+          required: true
+          schema:
+            $ref: '#/definitions/logisticsPriceParams'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Set the logistics price
+      tags:
+        - logistics
+  /map:
+    get:
+      description: Returns the list of all map cells
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/cell'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return map cells
+      tags:
+        - map
+  /map/all_land_lords:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/landLord'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return all landowners
+      tags:
+        - map
+  /map/buy_land:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Land purchase payload
+          in: body
+          name: buyLandPayload
+          required: true
+          schema:
+            $ref: '#/definitions/buyLandPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  values:
+                    $ref: '#/definitions/buyLandPayload'
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Buy land in cell
+      tags:
+        - map
+  /map/cell_owners:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: X coordinate
+          in: query
+          name: x
+          required: true
+          type: integer
+        - description: Y coordinate
+          in: query
+          name: "y"
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/landLord'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get the landlords in cell
+      tags:
+        - map
+  /map/my:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/landLord'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return user's lands
+      tags:
+        - map
+  /market/order/close:
+    delete:
+      consumes:
+        - application/json
+      parameters:
+        - description: Order ID
+          in: query
+          name: orderId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Close user's order
+      tags:
+        - market
+  /market/order/create:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Order payload
+          in: body
+          name: orderPayload
+          required: true
+          schema:
+            $ref: '#/definitions/order'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Create a new market order
+      tags:
+        - market
+  /market/order/execute:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Order execution payload
+          in: body
+          name: executeOrderPayload
+          required: true
+          schema:
+            $ref: '#/definitions/executeOrderPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Partially execute an  order
+      tags:
+        - market
+  /market/order/my:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/orderWithData'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get my orders
+      tags:
+        - market
+  /orders:
+    get:
+      parameters:
+        - description: Order ID
+          in: query
+          name: id
+          type: string
+        - description: User ID
+          in: query
+          name: userId
+          type: string
+        - description: X coordinate
+          in: query
+          name: x
+          type: integer
+        - description: Y coordinate
+          in: query
+          name: "y"
+          type: integer
+        - description: Resource Type ID
+          in: query
+          name: resourceTypeId
+          type: integer
+        - description: Sell flag
+          in: query
+          name: sell
+          type: boolean
+        - description: Limit number of orders
+          in: query
+          name: limit
+          type: integer
+        - description: Order
+          in: query
+          name: order
+          type: integer
+        - description: Order Field
+          in: query
+          name: orderField
+          type: string
+        - description: Page number
+          in: query
+          name: page
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/orderWithData'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Fetches orders based on various query parameters
+      tags:
+        - market
+  /resource/logistics:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: x
+          in: query
+          name: x
+          type: integer
+        - description: "y"
+          in: query
+          name: "y"
+          type: integer
+        - description: Minimum capacity
+          in: query
+          name: minCapacity
+          type: number
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/logisticsWithData'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get the logistics capacity in cell
+      tags:
+        - logistics
+  /resource/move:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Resource movement payload
+          in: body
+          name: logisticPayload
+          required: true
+          schema:
+            $ref: '#/definitions/logisticPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Initiates a resource movement
+      tags:
+        - logistics
+  /resource/my:
+    get:
+      parameters:
+        - description: X coordinate
+          in: query
+          name: x
+          type: integer
+        - description: Y coordinate
+          in: query
+          name: "y"
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/resourceWithData'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get user's resources
+      tags:
+        - resources
+  /resource/my_logistics:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/logisticWithData'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get user's logistics tasks
+      tags:
+        - logistics
+  /resource/types:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/resourceType'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return all resource types from database
+      tags:
+        - resource
+  /settings:
+    get:
+      description: X Y dimension, Interest rate, etc
       operationId: get-settings
       produces:
         - application/json
@@ -132,6 +1481,157 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.JSONResult'
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
       summary: Get General Game Settings
+      tags:
+        - settings
+  /storage/my:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/storage'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return user's storages
+      tags:
+        - storage
+  /store/goods/set:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Store goods payload
+          in: body
+          name: storeGoodsPayload
+          required: true
+          schema:
+            $ref: '#/definitions/storeGoodsPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Set prices for goods in the store
+      tags:
+        - store
+  /user/create:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: User creation payload
+          in: body
+          name: userPayload
+          required: true
+          schema:
+            $ref: '#/definitions/userPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  values:
+                    $ref: '#/definitions/userPayload'
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Create a new user
+      tags:
+        - user
+  /user/data:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    $ref: '#/definitions/user'
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get user data
+      tags:
+        - user
+  /user/login:
+    delete:
+      description: Logout a user by deleting their secure token
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Logout a user
+      tags:
+        - user
+    post:
+      consumes:
+        - application/json
+      description: Validate user credentials and provide a JWT token
+      parameters:
+        - description: User login payload
+          in: body
+          name: userPayload
+          required: true
+          schema:
+            $ref: '#/definitions/userPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Authenticate a user
+      tags:
+        - user
 swagger: "2.0"

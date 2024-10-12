@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-type BuildingStatus string
+type BuildingStatus string // @name buildingStatus
 
 const (
 	ConstructionStatus    BuildingStatus = "Construction"
@@ -41,14 +41,14 @@ type Building struct {
 	Logistics       *Logistics         `json:"logistics" bson:"logistics"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"  bson:"equipmentEffect"`
-}
+} // @name building
 
 type ConstructBuildingPayload struct {
 	TypeId uint `json:"typeId"`
 	X      int  `json:"x"`
 	Y      int  `json:"y"`
 	Square int  `json:"square"`
-}
+} // @name constructBuildingPayload
 
 func ConstructBuilding(m *mongo.Database, userId primitive.ObjectID, payload ConstructBuildingPayload) error {
 	enoughLand, err := CheckEnoughLandForBuilding(m, userId, payload.Square, payload.X, payload.Y)
@@ -111,7 +111,7 @@ type FindBuildingParams struct {
 	OrderField     *string             `json:"orderField"`
 	Order          *string             `json:"order"`
 	Page           *int                `json:"page"`
-}
+} // @name findBuildingParams
 
 type BuildingWithData struct {
 	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
@@ -136,7 +136,7 @@ type BuildingWithData struct {
 	Logistics       *Logistics         `json:"logistics"`
 	Equipment       *[]Equipment       `json:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
-}
+} // @name buildingWithData
 
 func GetBuildings(m *mongo.Database, findBuildingParams FindBuildingParams) ([]BuildingWithData, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
@@ -334,7 +334,7 @@ type HiringPayload struct {
 	BuildingID  primitive.ObjectID `json:"buildingId" bson:"buildingId"`
 	Salary      float64            `json:"salary" bson:"salary"`
 	HiringNeeds int                `json:"hiringNeeds" bson:"hiringNeeds"`
-}
+} // @name hiringPayload
 
 func SetHiring(m *mongo.Database, userId primitive.ObjectID, payload HiringPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -18,7 +18,7 @@ type BuildingType struct {
 	BuildingSubGroup string        `bson:"buildingSubGroup" json:"buildingSubGroup"`
 	Capacity         float64       `bson:"capacity" json:"capacity"`
 	Workers          int           `bson:"workers" json:"workers"`
-}
+} // @name buildingType
 
 func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

@@ -15,7 +15,7 @@ type ResourceType struct {
 	Weight     float64 `json:"weight" bson:"weight"` // kg
 	Demand     float64 `json:"demand" bson:"demand"`
 	StoreGroup string  `json:"storeGroup" bson:"storeGroup"`
-}
+} // @name resourceType
 
 func GetAllResourceTypes(m *mongo.Database) ([]ResourceType, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))

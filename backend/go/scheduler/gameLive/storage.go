@@ -102,7 +102,7 @@ func findBuildingStorage(storages *[]models.Storage, buildingStorage models.Buil
 	})
 }
 
-func findOrder(storages *[]models.Storage, order models.OrderMongoWithData) {
+func findOrder(storages *[]models.Storage, order models.OrderWithData) {
 	for i, storage := range *storages {
 		if storage.UserId == order.UserId && storage.X == order.X && storage.Y == order.Y {
 			(*storages)[i].VolumeOccupied += order.Amount * order.ResourceType.Volume

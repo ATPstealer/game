@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type StoreGoodsStatus string
+type StoreGoodsStatus string // @name storeGoodsStatus
 
 const (
 	Selling              StoreGoodsStatus = "Selling"
@@ -30,13 +30,13 @@ type Goods struct {
 	Revenue        float64          `json:"revenue" bson:"revenue"`
 	SellStarted    time.Time        `json:"sellStarted" bson:"sellStarted"`
 	Status         StoreGoodsStatus `json:"status" bson:"status"`
-}
+} // @name goods
 
 type StoreGoodsPayload struct {
 	BuildingId     primitive.ObjectID `json:"buildingId"`
 	ResourceTypeId uint               `json:"resourceTypeId"`
 	Price          float64            `json:"price"`
-}
+} // @name storeGoodsPayload
 
 func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGoodsPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
