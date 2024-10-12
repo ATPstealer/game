@@ -1,10 +1,127 @@
 basePath: /
+definitions:
+  controllers.JSONResult:
+    properties:
+      code:
+        type: integer
+      data: { }
+      text:
+        type: string
+      values: { }
+    type: object
+  models.BuildingType:
+    properties:
+      buildTime:
+        $ref: '#/definitions/time.Duration'
+      buildingGroup:
+        type: string
+      buildingSubGroup:
+        type: string
+      capacity:
+        type: number
+      cost:
+        type: number
+      description:
+        type: string
+      id:
+        type: integer
+      requirements:
+        type: string
+      title:
+        type: string
+      workers:
+        type: integer
+    type: object
+  models.ConstructBuildingPayload:
+    properties:
+      square:
+        type: integer
+      typeId:
+        type: integer
+      x:
+        type: integer
+      "y":
+        type: integer
+    type: object
+  time.Duration:
+    enum:
+      - -9223372036854775808
+      - 9223372036854775807
+      - 1
+      - 1000
+      - 1000000
+      - 1000000000
+      - 60000000000
+      - 3600000000000
+    type: integer
+    x-enum-varnames:
+      - minDuration
+      - maxDuration
+      - Nanosecond
+      - Microsecond
+      - Millisecond
+      - Second
+      - Minute
+      - Hour
 host: staging.game.kube.atpstealer.com
 info:
   contact: { }
   title: Game API
   version: "2.0"
 paths:
+  /api/v2/building/construct:
+    post:
+      consumes:
+        - application/json
+      description: Endpoint for constructing a new building given the payload details.
+      parameters:
+        - description: Building construction payload
+          in: body
+          name: constructBuildingPayload
+          required: true
+          schema:
+            $ref: '#/definitions/models.ConstructBuildingPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/controllers.JSONResult'
+              - properties:
+                  values:
+                    $ref: '#/definitions/models.ConstructBuildingPayload'
+                type: object
+      summary: Construct a new building
+      tags:
+        - Buildings
+  /api/v2/building/types:
+    get:
+      consumes:
+        - application/json
+      description: Return all available building types from the database
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/controllers.JSONResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/models.BuildingType'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.JSONResult'
+      summary: Get all building types
+      tags:
+        - buildings
   /api/v2/settings:
     get:
       description: Get application settings
@@ -15,7 +132,6 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Get Settings
+            $ref: '#/definitions/controllers.JSONResult'
+      summary: Get General Game Settings
 swagger: "2.0"

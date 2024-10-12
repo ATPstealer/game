@@ -6,7 +6,7 @@
         v-if="messageData?.code"
         v-bind="messageData"
       />
-      <Card v-if="buildingTypes">
+      <Card v-if="isSuccess">
         <template #content>
           <div class="flex flex-col gap-4">
             <p class="label !mb-0">
@@ -14,21 +14,21 @@
             </p>
             <div class="flex gap-4 w-full">
               <div class="coordinate">
-                <label for="x" class="label">X:</label>
+                <label class="label" for="x">X:</label>
                 <InputNumber
-                  show-buttons
                   v-model="x"
-                  input-id="x"
                   input-class="max-w-[70px] md:max-w-[unset]"
+                  input-id="x"
+                  show-buttons
                 />
               </div>
               <div class="coordinate">
-                <label for="y" class="label">Y:</label>
+                <label class="label" for="y">Y:</label>
                 <InputNumber
-                  show-buttons
                   v-model="y"
-                  input-id="y"
                   input-class="max-w-[70px] md:max-w-[unset]"
+                  input-id="y"
+                  show-buttons
                 />
               </div>
             </div>
@@ -36,10 +36,10 @@
               <div class="flex-1">
                 <label class="label">{{ t('common.build') }}:</label>
                 <Dropdown
-                  :options="buildingTypes"
                   v-model="buildingType"
-                  option-label="title"
                   class="w-full"
+                  option-label="title"
+                  :options="buildingTypes"
                 >
                   <template #option="{option}: {option: BuildingType}">
                     {{ getTranslation({parent: 'buildings.types', child: option.title}) }}
@@ -54,11 +54,11 @@
               </p>
             </div>
             <div class="flex flex-col">
-              <label for="square" class="label">{{ t('common.square') }}:</label>
+              <label class="label" for="square">{{ t('common.square') }}:</label>
               <InputNumber
-                show-buttons
                 v-model="square"
                 input-id="square"
+                show-buttons
               />
             </div>
             <div class="flex space-x-3">
@@ -82,8 +82,8 @@
               </div>
             </div>
             <Button
-              :label="t('common.construct')"
               class="bg-indigo-500"
+              :label="t('common.construct')"
               @click="construct"
             />
           </div>
@@ -94,17 +94,22 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
-import { ref } from 'vue'
+import { type Ref, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import {
+  type models_BuildingType,
+  type models_ConstructBuildingPayload,
+  type PostApiV2BuildingConstructResponse
+} from '@/api'
+import { getApiV2BuildingTypesOptions, postApiV2BuildingConstructMutation } from '@/api/@tanstack/vue-query.gen'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useBuildings } from '@/composables/useBuildings'
-import { useGetData } from '@/composables/useGetData'
 import type { BackData } from '@/types'
 import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
@@ -114,34 +119,40 @@ const { query } = useRoute()
 
 const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
-const buildingType = ref<BuildingType>({} as BuildingType)
+const buildingType = ref<models_BuildingType>({} as models_BuildingType)
 const square = ref<number>(10)
-const messageData = ref<BackData>()
+const messageData = ref<PostApiV2BuildingConstructResponse>()
 
-const { constructBuilding } = useBuildings()
 const { t } = useI18n()
 
-const { data: buildingTypes, onFetchResponse } = useGetData<BuildingType[]>('/building/types')
+const { data: buildingTypes, isSuccess } = useQuery({
+  ...getApiV2BuildingTypesOptions()
+})
 
-onFetchResponse(() => {
-  buildingType.value = buildingTypes.value[0]
+const constructBuilding = useMutation({
+  ...postApiV2BuildingConstructMutation(),
+  onSuccess: (data) => {
+    messageData.value = data
+  }
+})
+
+watch(isSuccess, () => {
+  if (isSuccess.value) {
+    buildingType.value = buildingTypes.value[0]
+  }
 })
 
 const construct = () => {
   messageData.value = {} as BackData
 
-  const payload = {
+  const payload: models_ConstructBuildingPayload = {
     x: x.value,
     y: y.value,
     typeId: buildingType.value.id,
     square: square.value
   }
 
-  const { data, onFetchFinally } = constructBuilding(payload)
-
-  onFetchFinally(() => {
-    messageData.value = data.value
-  })
+  constructBuilding.mutate({ body: { ...payload } })
 }
 
 </script>

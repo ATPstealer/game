@@ -8,4 +8,15 @@ to hosts in OS.
 If you try to use HTTPS you will receive certificate misconfiguration. <br> 
 localhost:3000 also impossible, because browser wants to send cookie to staging.game.kube.atpstealer.com/api
 
+# Swagger API generate
 
+back
+
+```aiignore
+swag init --parseDependency --parseInternal
+```
+
+front
+```aiignore
+npx @hey-api/openapi-ts --useOptions -i ../../backend/go/docs/swagger.json -o ./src/api -c @hey-api/client-fetch
+```

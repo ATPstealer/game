@@ -28,6 +28,8 @@ const (
 	WorkerProductivity = 1
 	DecreasePollution  = 2
 	LogisticsCapacity  = 3
+	LoansLimit         = 4
+	BorrowedLimit      = 5
 )
 
 func InstallEquipment(m *mongo.Database, userId primitive.ObjectID, installEquipment InstallEquipmentPayload) error {
