@@ -81,7 +81,8 @@
       "recycling plant": "Recycling plant",
       "refinery": "Refinery",
       "storage": "Storage",
-      "water pump": "Water Pump"
+      "water pump": "Water Pump",
+      "bank": "Bank"
     },
     "typesDescriptions": {
       "energy plant": "Provide energy",
@@ -93,7 +94,8 @@
       "mine": "Mining resources",
       "refinery": "Oil refining",
       "storage": "Store something",
-      "water pump": "Provide water"
+      "water pump": "Provide water",
+      "bank": "Issues loans"
     }
   },
   "common": {
