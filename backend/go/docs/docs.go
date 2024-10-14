@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/bank/credit_terms": {
             "post": {
-                "description": "Limit \u003e 0, Rate \u003e 0",
+                "description": "Limit \u003e 0, Rate \u003e 0. For change limit send payload: {\"Rate\": sameAsExisting, \"Rating\": sameAsExisting, \"Adding\": true}",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,6 +50,67 @@ const docTemplate = `{
                         "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank/get_credit_terms": {
+            "get": {
+                "description": "If defined return. Credit term where limit \u003e= in param, rate \u003c= in param, rating \u003c= in param.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Return credit terms",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Credit limit minimum threshold",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Credit rate maximum threshold",
+                        "name": "rate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Credit rating maximum threshold",
+                        "name": "rating",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/jsonResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/creditTerms"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -2021,6 +2082,20 @@ const docTemplate = `{
                 }
             }
         },
+        "creditTerms": {
+            "type": "object",
+            "properties": {
+                "limit": {
+                    "type": "number"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "creditTermsPayload": {
             "type": "object",
             "properties": {
@@ -2659,7 +2734,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "staging.game.kube.atpstealer.com",
+	Host:             "localhost:8000",
 	BasePath:         "/api/v2",
 	Schemes:          []string{},
 	Title:            "Game API",

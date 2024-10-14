@@ -101,3 +101,35 @@ func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) []Cr
 	}
 	return updatedCreditTerms
 }
+
+func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *float64) ([]CreditTerms, error) {
+	var creditTerms []CreditTerms
+	banks, err := GetAllReadyBuildingByGroup(m, "Bank")
+	log.Println(banks)
+	if err != nil {
+		log.Println(err)
+		return creditTerms, err
+	}
+
+	for _, bank := range banks {
+		if bank.CreditTerms != nil {
+			log.Println(bank.CreditTerms)
+			for _, ct := range *bank.CreditTerms {
+				log.Println(ct)
+				if limit != nil && !(ct.Limit >= *limit) {
+					break
+				}
+				log.Println(ct.Limit)
+				if rate != nil && !(ct.Rate <= *rate) {
+					break
+				}
+				if rating != nil && !(ct.Rating <= *rating) {
+					break
+				}
+				creditTerms = append(creditTerms, ct)
+			}
+		}
+	}
+	log.Println(creditTerms)
+	return creditTerms, nil
+}
