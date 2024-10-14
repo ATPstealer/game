@@ -74,6 +74,7 @@ func MakeRouter() *gin.Engine {
 	store.POST("/goods/set", controllers.SetStoreGoods)
 
 	bank := router.Group("/api/v2/bank")
+	bank.GET("/get_credit_terms", controllers.GetCreditTerms)
 	bank.Use(AuthMiddleware())
 	bank.POST("/credit_terms", controllers.AddOrDeleteCreditTerm)
 

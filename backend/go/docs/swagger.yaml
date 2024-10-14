@@ -177,6 +177,15 @@ definitions:
       "y":
         type: integer
     type: object
+  creditTerms:
+    properties:
+      limit:
+        type: number
+      rate:
+        type: number
+      rating:
+        type: number
+    type: object
   creditTermsPayload:
     properties:
       adding:
@@ -601,7 +610,7 @@ definitions:
       ttl:
         type: integer
     type: object
-host: staging.game.kube.atpstealer.com
+host: localhost:8000
 info:
   contact: { }
   title: Game API
@@ -611,7 +620,8 @@ paths:
     post:
       consumes:
         - application/json
-      description: Limit > 0, Rate > 0
+      description: 'Limit > 0, Rate > 0. For change limit send payload: {"Rate": sameAsExisting,
+        "Rating": sameAsExisting, "Adding": true}'
       parameters:
         - description: Credit terms payload
           in: body
@@ -637,6 +647,44 @@ paths:
       summary: Add / Change / Delete credit terms in bank contracts
       tags:
         - bank
+  /bank/get_credit_terms:
+    get:
+      consumes:
+        - application/json
+      description: If defined return. Credit term where limit >= in param, rate <=
+        in param, rating <= in param.
+      parameters:
+        - description: Credit limit minimum threshold
+          in: query
+          name: limit
+          type: number
+        - description: Credit rate maximum threshold
+          in: query
+          name: rate
+          type: number
+        - description: Credit rating maximum threshold
+          in: query
+          name: rating
+          type: number
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/creditTerms'
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Return credit terms
   /building/blueprints:
     get:
       consumes:
