@@ -18,11 +18,11 @@ import Message from 'primevue/message'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-interface Props {
+interface Props{
   code: number;
-  values?: Record<string, string | number>;
+  data?: any;
   text?: string;
-  status?: string;
+  values?: any;
 }
 
 const props = defineProps<Props>()

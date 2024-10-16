@@ -2,112 +2,116 @@
 
 import type { Options } from '@hey-api/client-fetch'
 import {
-    queryOptions,
-    type UseMutationOptions,
-    infiniteQueryOptions,
-    type InfiniteData
+  queryOptions,
+  type UseMutationOptions,
+  infiniteQueryOptions,
+  type InfiniteData
 } from '@tanstack/vue-query'
 import {
   client,
-    getBuildingBlueprints,
-    postBuildingConstruct,
-    deleteBuildingDestroy,
-    postBuildingGet,
-    postBuildingHiring,
-    postBuildingInstallEquipment,
-    getBuildingMy,
-    postBuildingStartWork,
-    postBuildingStopWork,
-    getBuildingTypes,
-    getUsernamesByPrefix,
-    getEquipmentMy,
-    getEquipmentTypes,
-    postLogisticsSetPrice,
-    getMap,
-    getMapAllLandLords,
-    postMapBuyLand,
-    getMapCellOwners,
-    getMapMy,
-    deleteMarketOrderClose,
-    postMarketOrderCreate,
-    postMarketOrderExecute,
-    getMarketOrderMy,
-    getOrders,
-    getResourceLogistics,
-    postResourceMove,
-    getResourceMy,
-    getResourceMyLogistics,
-    getResourceTypes,
-    getSettings,
-    getStorageMy,
-    postStoreGoodsSet,
-    postUserCreate,
-    getUserData,
-    postUserLogin,
-    deleteUserLogin
-} from '../services.gen'
+  postBankCreditTerms,
+  getBuildingBlueprints,
+  postBuildingConstruct,
+  deleteBuildingDestroy,
+  postBuildingGet,
+  postBuildingHiring,
+  postBuildingInstallEquipment,
+  getBuildingMy,
+  postBuildingStartWork,
+  postBuildingStopWork,
+  getBuildingTypes,
+  getUsernamesByPrefix,
+  getEquipmentMy,
+  getEquipmentTypes,
+  postLogisticsSetPrice,
+  getMap,
+  getMapAllLandLords,
+  postMapBuyLand,
+  getMapCellOwners,
+  getMapMy,
+  deleteMarketOrderClose,
+  postMarketOrderCreate,
+  postMarketOrderExecute,
+  getMarketOrderMy,
+  getOrders,
+  getResourceLogistics,
+  postResourceMove,
+  getResourceMy,
+  getResourceMyLogistics,
+  getResourceTypes,
+  getSettings,
+  getStorageMy,
+  postStoreGoodsSet,
+  postUserCreate,
+  getUserData,
+  postUserLogin,
+  deleteUserLogin
+} from '@/api'
 import type {
-    GetBuildingBlueprintsData,
-    PostBuildingConstructData,
-    PostBuildingConstructError,
-    PostBuildingConstructResponse,
-    DeleteBuildingDestroyData,
-    DeleteBuildingDestroyError,
-    DeleteBuildingDestroyResponse,
-    PostBuildingGetData,
-    PostBuildingGetError,
-    PostBuildingGetResponse,
-    PostBuildingHiringData,
-    PostBuildingHiringError,
-    PostBuildingHiringResponse,
-    PostBuildingInstallEquipmentData,
-    PostBuildingInstallEquipmentError,
-    PostBuildingInstallEquipmentResponse,
-    GetBuildingMyData,
-    PostBuildingStartWorkData,
-    PostBuildingStartWorkError,
-    PostBuildingStartWorkResponse,
-    PostBuildingStopWorkData,
-    PostBuildingStopWorkError,
-    PostBuildingStopWorkResponse,
-    GetUsernamesByPrefixData,
-    GetEquipmentMyData,
-    PostLogisticsSetPriceData,
-    PostLogisticsSetPriceError,
-    PostLogisticsSetPriceResponse,
-    PostMapBuyLandData,
-    PostMapBuyLandError,
-    PostMapBuyLandResponse,
-    GetMapCellOwnersData,
-    DeleteMarketOrderCloseData,
-    DeleteMarketOrderCloseError,
-    DeleteMarketOrderCloseResponse,
-    PostMarketOrderCreateData,
-    PostMarketOrderCreateError,
-    PostMarketOrderCreateResponse,
-    PostMarketOrderExecuteData,
-    PostMarketOrderExecuteError,
-    PostMarketOrderExecuteResponse,
-    GetOrdersData,
-    GetOrdersError,
-    GetOrdersResponse,
-    GetResourceLogisticsData,
-    PostResourceMoveData,
-    PostResourceMoveError,
-    PostResourceMoveResponse,
-    GetResourceMyData,
-    PostStoreGoodsSetData,
-    PostStoreGoodsSetError,
-    PostStoreGoodsSetResponse,
-    PostUserCreateData,
-    PostUserCreateError,
-    PostUserCreateResponse,
-    PostUserLoginData,
-    PostUserLoginError,
-    PostUserLoginResponse,
-    DeleteUserLoginError,
-    DeleteUserLoginResponse
-} from '../types.gen'
+  PostBankCreditTermsData,
+  PostBankCreditTermsError,
+  PostBankCreditTermsResponse,
+  GetBuildingBlueprintsData,
+  PostBuildingConstructData,
+  PostBuildingConstructError,
+  PostBuildingConstructResponse,
+  DeleteBuildingDestroyData,
+  DeleteBuildingDestroyError,
+  DeleteBuildingDestroyResponse,
+  PostBuildingGetData,
+  PostBuildingGetError,
+  PostBuildingGetResponse,
+  PostBuildingHiringData,
+  PostBuildingHiringError,
+  PostBuildingHiringResponse,
+  PostBuildingInstallEquipmentData,
+  PostBuildingInstallEquipmentError,
+  PostBuildingInstallEquipmentResponse,
+  GetBuildingMyData,
+  PostBuildingStartWorkData,
+  PostBuildingStartWorkError,
+  PostBuildingStartWorkResponse,
+  PostBuildingStopWorkData,
+  PostBuildingStopWorkError,
+  PostBuildingStopWorkResponse,
+  GetUsernamesByPrefixData,
+  GetEquipmentMyData,
+  PostLogisticsSetPriceData,
+  PostLogisticsSetPriceError,
+  PostLogisticsSetPriceResponse,
+  PostMapBuyLandData,
+  PostMapBuyLandError,
+  PostMapBuyLandResponse,
+  GetMapCellOwnersData,
+  DeleteMarketOrderCloseData,
+  DeleteMarketOrderCloseError,
+  DeleteMarketOrderCloseResponse,
+  PostMarketOrderCreateData,
+  PostMarketOrderCreateError,
+  PostMarketOrderCreateResponse,
+  PostMarketOrderExecuteData,
+  PostMarketOrderExecuteError,
+  PostMarketOrderExecuteResponse,
+  GetOrdersData,
+  GetOrdersError,
+  GetOrdersResponse,
+  GetResourceLogisticsData,
+  PostResourceMoveData,
+  PostResourceMoveError,
+  PostResourceMoveResponse,
+  GetResourceMyData,
+  PostStoreGoodsSetData,
+  PostStoreGoodsSetError,
+  PostStoreGoodsSetResponse,
+  PostUserCreateData,
+  PostUserCreateError,
+  PostUserCreateResponse,
+  PostUserLoginData,
+  PostUserLoginError,
+  PostUserLoginResponse,
+  DeleteUserLoginError,
+  DeleteUserLoginResponse
+} from '@/api'
 
 type QueryKey<TOptions extends Options> = [
   Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -140,972 +144,1010 @@ const createQueryKey = <TOptions extends Options>(
   if (options?.query) {
     params.query = options.query
   }
-  
+
   return params
 }
 
+export const postBankCreditTermsQueryKey = (options: Options<PostBankCreditTermsData>) => [
+  createQueryKey('postBankCreditTerms', options)
+]
+
+export const postBankCreditTermsOptions = (options: Options<PostBankCreditTermsData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBankCreditTerms({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
+
+      return data
+    },
+    queryKey: postBankCreditTermsQueryKey(options)
+  })
+}
+
+export const postBankCreditTermsMutation = () => {
+  const mutationOptions: UseMutationOptions<
+    PostBankCreditTermsResponse,
+    PostBankCreditTermsError,
+    Options<PostBankCreditTermsData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBankCreditTerms({
+        ...options,
+        throwOnError: true
+      })
+
+      return data
+    }
+  }
+
+  return mutationOptions
+}
+
 export const getBuildingBlueprintsQueryKey = (options?: Options<GetBuildingBlueprintsData>) => [
-    createQueryKey('getBuildingBlueprints', options)
+  createQueryKey('getBuildingBlueprints', options)
 ]
 
 export const getBuildingBlueprintsOptions = (options?: Options<GetBuildingBlueprintsData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getBuildingBlueprints({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getBuildingBlueprints({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getBuildingBlueprintsQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getBuildingBlueprintsQueryKey(options)
+  })
 }
 
 export const postBuildingConstructQueryKey = (options: Options<PostBuildingConstructData>) => [
-    createQueryKey('postBuildingConstruct', options)
+  createQueryKey('postBuildingConstruct', options)
 ]
 
 export const postBuildingConstructOptions = (options: Options<PostBuildingConstructData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postBuildingConstruct({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBuildingConstruct({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postBuildingConstructQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postBuildingConstructQueryKey(options)
+  })
 }
 
 export const postBuildingConstructMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostBuildingConstructResponse,
-        PostBuildingConstructError,
-        Options<PostBuildingConstructData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postBuildingConstruct({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostBuildingConstructResponse,
+    PostBuildingConstructError,
+    Options<PostBuildingConstructData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBuildingConstruct({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const deleteBuildingDestroyMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        DeleteBuildingDestroyResponse,
-        DeleteBuildingDestroyError,
-        Options<DeleteBuildingDestroyData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await deleteBuildingDestroy({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    DeleteBuildingDestroyResponse,
+    DeleteBuildingDestroyError,
+    Options<DeleteBuildingDestroyData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await deleteBuildingDestroy({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postBuildingGetQueryKey = (options?: Options<PostBuildingGetData>) => [
-    createQueryKey('postBuildingGet', options)
+  createQueryKey('postBuildingGet', options)
 ]
 
 export const postBuildingGetOptions = (options?: Options<PostBuildingGetData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postBuildingGet({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBuildingGet({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postBuildingGetQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postBuildingGetQueryKey(options)
+  })
 }
 
 const createInfiniteParams = <
-    K extends Pick<QueryKey<Options>[0], 'body' | 'headers' | 'path' | 'query'>
+  K extends Pick<QueryKey<Options>[0], 'body' | 'headers' | 'path' | 'query'>
 >(
     queryKey: QueryKey<Options>,
     page: K
-) => {
-    const params = queryKey[0]
-    if (page.body) {
-        params.body = {
-            ...(queryKey[0].body as any),
-            ...(page.body as any)
-        }
+  ) => {
+  const params = queryKey[0]
+  if (page.body) {
+    params.body = {
+      ...(queryKey[0].body as any),
+      ...(page.body as any)
     }
-    if (page.headers) {
-        params.headers = {
-            ...queryKey[0].headers,
-            ...page.headers
-        }
+  }
+  if (page.headers) {
+    params.headers = {
+      ...queryKey[0].headers,
+      ...page.headers
     }
-    if (page.path) {
-        params.path = {
-            ...queryKey[0].path,
-            ...page.path
-        }
+  }
+  if (page.path) {
+    params.path = {
+      ...queryKey[0].path,
+      ...page.path
     }
-    if (page.query) {
-        params.query = {
-            ...queryKey[0].query,
-            ...page.query
-        }
+  }
+  if (page.query) {
+    params.query = {
+      ...queryKey[0].query,
+      ...page.query
     }
+  }
 
-    return params as unknown as typeof page
+  return params as unknown as typeof page
 }
 
 export const postBuildingGetInfiniteQueryKey = (
-    options?: Options<PostBuildingGetData>
+  options?: Options<PostBuildingGetData>
 ): QueryKey<Options<PostBuildingGetData>> => [createQueryKey('postBuildingGet', options, true)]
 
 export const postBuildingGetInfiniteOptions = (options?: Options<PostBuildingGetData>) => {
-    return infiniteQueryOptions<
-        PostBuildingGetResponse,
-        PostBuildingGetError,
-        InfiniteData<PostBuildingGetResponse>,
-        QueryKey<Options<PostBuildingGetData>>,
-        number | Pick<QueryKey<Options<PostBuildingGetData>>[0], 'body' | 'headers' | 'path' | 'query'>
-    >(
+  return infiniteQueryOptions<
+    PostBuildingGetResponse,
+    PostBuildingGetError,
+    InfiniteData<PostBuildingGetResponse>,
+    QueryKey<Options<PostBuildingGetData>>,
+    number | Pick<QueryKey<Options<PostBuildingGetData>>[0], 'body' | 'headers' | 'path' | 'query'>
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey }) => {
         // @ts-ignore
-        {
-            queryFn: async ({pageParam, queryKey}) => {
-                // @ts-ignore
-                const page: Pick<
-                    QueryKey<Options<PostBuildingGetData>>[0],
-                    'body' | 'headers' | 'path' | 'query'
-                > =
-                    typeof pageParam === 'object'
-                        ? pageParam
-                        : {
-                            body: {
-                                page: pageParam
-                            }
-                        }
-                const params = createInfiniteParams(queryKey, page)
-                const {data} = await postBuildingGet({
-                    ...options,
-                    ...params,
-                    throwOnError: true
-                })
+        const page: Pick<
+          QueryKey<Options<PostBuildingGetData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+              body: {
+                page: pageParam
+              }
+            }
+        const params = createInfiniteParams(queryKey, page)
+        const { data } = await postBuildingGet({
+          ...options,
+          ...params,
+          throwOnError: true
+        })
 
-                return data
-            },
-            queryKey: postBuildingGetInfiniteQueryKey(options)
-        }
-    )
+        return data
+      },
+      queryKey: postBuildingGetInfiniteQueryKey(options)
+    }
+  )
 }
 
 export const postBuildingGetMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostBuildingGetResponse,
-        PostBuildingGetError,
-        Options<PostBuildingGetData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postBuildingGet({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostBuildingGetResponse,
+    PostBuildingGetError,
+    Options<PostBuildingGetData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBuildingGet({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postBuildingHiringQueryKey = (options: Options<PostBuildingHiringData>) => [
-    createQueryKey('postBuildingHiring', options)
+  createQueryKey('postBuildingHiring', options)
 ]
 
 export const postBuildingHiringOptions = (options: Options<PostBuildingHiringData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postBuildingHiring({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBuildingHiring({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postBuildingHiringQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postBuildingHiringQueryKey(options)
+  })
 }
 
 export const postBuildingHiringMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostBuildingHiringResponse,
-        PostBuildingHiringError,
-        Options<PostBuildingHiringData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postBuildingHiring({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostBuildingHiringResponse,
+    PostBuildingHiringError,
+    Options<PostBuildingHiringData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBuildingHiring({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postBuildingInstallEquipmentQueryKey = (
-    options: Options<PostBuildingInstallEquipmentData>
+  options: Options<PostBuildingInstallEquipmentData>
 ) => [createQueryKey('postBuildingInstallEquipment', options)]
 
 export const postBuildingInstallEquipmentOptions = (
-    options: Options<PostBuildingInstallEquipmentData>
+  options: Options<PostBuildingInstallEquipmentData>
 ) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postBuildingInstallEquipment({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBuildingInstallEquipment({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postBuildingInstallEquipmentQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postBuildingInstallEquipmentQueryKey(options)
+  })
 }
 
 export const postBuildingInstallEquipmentMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostBuildingInstallEquipmentResponse,
-        PostBuildingInstallEquipmentError,
-        Options<PostBuildingInstallEquipmentData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postBuildingInstallEquipment({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostBuildingInstallEquipmentResponse,
+    PostBuildingInstallEquipmentError,
+    Options<PostBuildingInstallEquipmentData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBuildingInstallEquipment({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getBuildingMyQueryKey = (options?: Options<GetBuildingMyData>) => [
-    createQueryKey('getBuildingMy', options)
+  createQueryKey('getBuildingMy', options)
 ]
 
 export const getBuildingMyOptions = (options?: Options<GetBuildingMyData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getBuildingMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getBuildingMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getBuildingMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getBuildingMyQueryKey(options)
+  })
 }
 
 export const postBuildingStartWorkQueryKey = (options: Options<PostBuildingStartWorkData>) => [
-    createQueryKey('postBuildingStartWork', options)
+  createQueryKey('postBuildingStartWork', options)
 ]
 
 export const postBuildingStartWorkOptions = (options: Options<PostBuildingStartWorkData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postBuildingStartWork({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postBuildingStartWork({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postBuildingStartWorkQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postBuildingStartWorkQueryKey(options)
+  })
 }
 
 export const postBuildingStartWorkInfiniteQueryKey = (
-    options: Options<PostBuildingStartWorkData>
+  options: Options<PostBuildingStartWorkData>
 ): QueryKey<Options<PostBuildingStartWorkData>> => [
-    createQueryKey('postBuildingStartWork', options, true)
+  createQueryKey('postBuildingStartWork', options, true)
 ]
 
 export const postBuildingStartWorkInfiniteOptions = (
-    options: Options<PostBuildingStartWorkData>
+  options: Options<PostBuildingStartWorkData>
 ) => {
-    return infiniteQueryOptions<
-        PostBuildingStartWorkResponse,
-        PostBuildingStartWorkError,
-        InfiniteData<PostBuildingStartWorkResponse>,
-        QueryKey<Options<PostBuildingStartWorkData>>,
-        | startProductionPayload
-        | Pick<QueryKey<Options<PostBuildingStartWorkData>>[0], 'body' | 'headers' | 'path' | 'query'>
-    >(
+  return infiniteQueryOptions<
+    PostBuildingStartWorkResponse,
+    PostBuildingStartWorkError,
+    InfiniteData<PostBuildingStartWorkResponse>,
+    QueryKey<Options<PostBuildingStartWorkData>>,
+    | StartProductionPayload
+    | Pick<QueryKey<Options<PostBuildingStartWorkData>>[0], 'body' | 'headers' | 'path' | 'query'>
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey }) => {
         // @ts-ignore
-        {
-            queryFn: async ({pageParam, queryKey}) => {
-                // @ts-ignore
-                const page: Pick<
-                    QueryKey<Options<PostBuildingStartWorkData>>[0],
-                    'body' | 'headers' | 'path' | 'query'
-                > =
-                    typeof pageParam === 'object'
-                        ? pageParam
-                        : {
-                            body: {
-                                startWorkPayload: pageParam
-                            }
-                        }
-                const params = createInfiniteParams(queryKey, page)
-                const {data} = await postBuildingStartWork({
-                    ...options,
-                    ...params,
-                    throwOnError: true
-                })
+        const page: Pick<
+          QueryKey<Options<PostBuildingStartWorkData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+              body: {
+                startWorkPayload: pageParam
+              }
+            }
+        const params = createInfiniteParams(queryKey, page)
+        const { data } = await postBuildingStartWork({
+          ...options,
+          ...params,
+          throwOnError: true
+        })
 
-                return data
-            },
-            queryKey: postBuildingStartWorkInfiniteQueryKey(options)
-        }
-    )
+        return data
+      },
+      queryKey: postBuildingStartWorkInfiniteQueryKey(options)
+    }
+  )
 }
 
 export const postBuildingStartWorkMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostBuildingStartWorkResponse,
-        PostBuildingStartWorkError,
-        Options<PostBuildingStartWorkData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postBuildingStartWork({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostBuildingStartWorkResponse,
+    PostBuildingStartWorkError,
+    Options<PostBuildingStartWorkData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postBuildingStartWork({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postBuildingStopWorkQueryKey = (options: Options<PostBuildingStopWorkData>) => [
-    createQueryKey('postBuildingStopWork', options)
+  createQueryKey('postBuildingStopWork', options)
 ]
 
 export const postBuildingStopWorkOptions = (options: Options<PostBuildingStopWorkData>) => {
   return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const {data} = await postBuildingStopWork({
+      const { data } = await postBuildingStopWork({
         ...options,
         ...queryKey[0],
         throwOnError: true
       })
-      
+
       return data
     },
-      queryKey: postBuildingStopWorkQueryKey(options)
+    queryKey: postBuildingStopWorkQueryKey(options)
   })
 }
 
 export const postBuildingStopWorkInfiniteQueryKey = (
-    options: Options<PostBuildingStopWorkData>
+  options: Options<PostBuildingStopWorkData>
 ): QueryKey<Options<PostBuildingStopWorkData>> => [
-    createQueryKey('postBuildingStopWork', options, true)
+  createQueryKey('postBuildingStopWork', options, true)
 ]
 
 export const postBuildingStopWorkInfiniteOptions = (options: Options<PostBuildingStopWorkData>) => {
-    return infiniteQueryOptions<
-        PostBuildingStopWorkResponse,
-        PostBuildingStopWorkError,
-        InfiniteData<PostBuildingStopWorkResponse>,
-        QueryKey<Options<PostBuildingStopWorkData>>,
-        | startProductionPayload
-        | Pick<QueryKey<Options<PostBuildingStopWorkData>>[0], 'body' | 'headers' | 'path' | 'query'>
-    >(
+  return infiniteQueryOptions<
+    PostBuildingStopWorkResponse,
+    PostBuildingStopWorkError,
+    InfiniteData<PostBuildingStopWorkResponse>,
+    QueryKey<Options<PostBuildingStopWorkData>>,
+    | StartProductionPayload
+    | Pick<QueryKey<Options<PostBuildingStopWorkData>>[0], 'body' | 'headers' | 'path' | 'query'>
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey }) => {
         // @ts-ignore
-        {
-            queryFn: async ({pageParam, queryKey}) => {
-                // @ts-ignore
-                const page: Pick<
-                    QueryKey<Options<PostBuildingStopWorkData>>[0],
-                    'body' | 'headers' | 'path' | 'query'
-                > =
-                    typeof pageParam === 'object'
-                        ? pageParam
-                        : {
-                            body: {
-                                startWorkPayload: pageParam
-                            }
-                        }
-                const params = createInfiniteParams(queryKey, page)
-                const {data} = await postBuildingStopWork({
-                    ...options,
-                    ...params,
-                    throwOnError: true
-                })
+        const page: Pick<
+          QueryKey<Options<PostBuildingStopWorkData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+              body: {
+                startWorkPayload: pageParam
+              }
+            }
+        const params = createInfiniteParams(queryKey, page)
+        const { data } = await postBuildingStopWork({
+          ...options,
+          ...params,
+          throwOnError: true
+        })
 
-                return data
-            },
-            queryKey: postBuildingStopWorkInfiniteQueryKey(options)
-        }
-    )
+        return data
+      },
+      queryKey: postBuildingStopWorkInfiniteQueryKey(options)
+    }
+  )
 }
 
 export const postBuildingStopWorkMutation = () => {
   const mutationOptions: UseMutationOptions<
-      PostBuildingStopWorkResponse,
-      PostBuildingStopWorkError,
-      Options<PostBuildingStopWorkData>
+    PostBuildingStopWorkResponse,
+    PostBuildingStopWorkError,
+    Options<PostBuildingStopWorkData>
   > = {
     mutationFn: async (options) => {
-        const {data} = await postBuildingStopWork({
+      const { data } = await postBuildingStopWork({
         ...options,
         throwOnError: true
       })
-      
+
       return data
     }
   }
-  
+
   return mutationOptions
 }
 
 export const getBuildingTypesQueryKey = (options?: Options) => [
-    createQueryKey('getBuildingTypes', options)
+  createQueryKey('getBuildingTypes', options)
 ]
 
 export const getBuildingTypesOptions = (options?: Options) => {
   return queryOptions({
     queryFn: async ({ queryKey }) => {
-        const {data} = await getBuildingTypes({
+      const { data } = await getBuildingTypes({
         ...options,
         ...queryKey[0],
         throwOnError: true
       })
-      
+
       return data
     },
-      queryKey: getBuildingTypesQueryKey(options)
+    queryKey: getBuildingTypesQueryKey(options)
   })
 }
 
 export const getUsernamesByPrefixQueryKey = (options?: Options<GetUsernamesByPrefixData>) => [
-    createQueryKey('getUsernamesByPrefix', options)
+  createQueryKey('getUsernamesByPrefix', options)
 ]
 
 export const getUsernamesByPrefixOptions = (options?: Options<GetUsernamesByPrefixData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getUsernamesByPrefix({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getUsernamesByPrefix({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getUsernamesByPrefixQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getUsernamesByPrefixQueryKey(options)
+  })
 }
 
 export const getEquipmentMyQueryKey = (options?: Options<GetEquipmentMyData>) => [
-    createQueryKey('getEquipmentMy', options)
+  createQueryKey('getEquipmentMy', options)
 ]
 
 export const getEquipmentMyOptions = (options?: Options<GetEquipmentMyData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getEquipmentMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getEquipmentMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getEquipmentMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getEquipmentMyQueryKey(options)
+  })
 }
 
 export const getEquipmentTypesQueryKey = (options?: Options) => [
-    createQueryKey('getEquipmentTypes', options)
+  createQueryKey('getEquipmentTypes', options)
 ]
 
 export const getEquipmentTypesOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getEquipmentTypes({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getEquipmentTypes({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getEquipmentTypesQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getEquipmentTypesQueryKey(options)
+  })
 }
 
 export const postLogisticsSetPriceQueryKey = (options: Options<PostLogisticsSetPriceData>) => [
-    createQueryKey('postLogisticsSetPrice', options)
+  createQueryKey('postLogisticsSetPrice', options)
 ]
 
 export const postLogisticsSetPriceOptions = (options: Options<PostLogisticsSetPriceData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postLogisticsSetPrice({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postLogisticsSetPrice({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postLogisticsSetPriceQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postLogisticsSetPriceQueryKey(options)
+  })
 }
 
 export const postLogisticsSetPriceMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostLogisticsSetPriceResponse,
-        PostLogisticsSetPriceError,
-        Options<PostLogisticsSetPriceData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postLogisticsSetPrice({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostLogisticsSetPriceResponse,
+    PostLogisticsSetPriceError,
+    Options<PostLogisticsSetPriceData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postLogisticsSetPrice({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getMapQueryKey = (options?: Options) => [createQueryKey('getMap', options)]
 
 export const getMapOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getMap({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getMap({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getMapQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getMapQueryKey(options)
+  })
 }
 
 export const getMapAllLandLordsQueryKey = (options?: Options) => [
-    createQueryKey('getMapAllLandLords', options)
+  createQueryKey('getMapAllLandLords', options)
 ]
 
 export const getMapAllLandLordsOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getMapAllLandLords({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getMapAllLandLords({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getMapAllLandLordsQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getMapAllLandLordsQueryKey(options)
+  })
 }
 
 export const postMapBuyLandQueryKey = (options: Options<PostMapBuyLandData>) => [
-    createQueryKey('postMapBuyLand', options)
+  createQueryKey('postMapBuyLand', options)
 ]
 
 export const postMapBuyLandOptions = (options: Options<PostMapBuyLandData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postMapBuyLand({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postMapBuyLand({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postMapBuyLandQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postMapBuyLandQueryKey(options)
+  })
 }
 
 export const postMapBuyLandMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostMapBuyLandResponse,
-        PostMapBuyLandError,
-        Options<PostMapBuyLandData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postMapBuyLand({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostMapBuyLandResponse,
+    PostMapBuyLandError,
+    Options<PostMapBuyLandData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postMapBuyLand({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getMapCellOwnersQueryKey = (options: Options<GetMapCellOwnersData>) => [
-    createQueryKey('getMapCellOwners', options)
+  createQueryKey('getMapCellOwners', options)
 ]
 
 export const getMapCellOwnersOptions = (options: Options<GetMapCellOwnersData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getMapCellOwners({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getMapCellOwners({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getMapCellOwnersQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getMapCellOwnersQueryKey(options)
+  })
 }
 
 export const getMapMyQueryKey = (options?: Options) => [createQueryKey('getMapMy', options)]
 
 export const getMapMyOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getMapMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getMapMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getMapMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getMapMyQueryKey(options)
+  })
 }
 
 export const deleteMarketOrderCloseMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        DeleteMarketOrderCloseResponse,
-        DeleteMarketOrderCloseError,
-        Options<DeleteMarketOrderCloseData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await deleteMarketOrderClose({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    DeleteMarketOrderCloseResponse,
+    DeleteMarketOrderCloseError,
+    Options<DeleteMarketOrderCloseData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await deleteMarketOrderClose({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postMarketOrderCreateQueryKey = (options: Options<PostMarketOrderCreateData>) => [
-    createQueryKey('postMarketOrderCreate', options)
+  createQueryKey('postMarketOrderCreate', options)
 ]
 
 export const postMarketOrderCreateOptions = (options: Options<PostMarketOrderCreateData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postMarketOrderCreate({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postMarketOrderCreate({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postMarketOrderCreateQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postMarketOrderCreateQueryKey(options)
+  })
 }
 
 export const postMarketOrderCreateMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostMarketOrderCreateResponse,
-        PostMarketOrderCreateError,
-        Options<PostMarketOrderCreateData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postMarketOrderCreate({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostMarketOrderCreateResponse,
+    PostMarketOrderCreateError,
+    Options<PostMarketOrderCreateData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postMarketOrderCreate({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postMarketOrderExecuteQueryKey = (options: Options<PostMarketOrderExecuteData>) => [
-    createQueryKey('postMarketOrderExecute', options)
+  createQueryKey('postMarketOrderExecute', options)
 ]
 
 export const postMarketOrderExecuteOptions = (options: Options<PostMarketOrderExecuteData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postMarketOrderExecute({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postMarketOrderExecute({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postMarketOrderExecuteQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postMarketOrderExecuteQueryKey(options)
+  })
 }
 
 export const postMarketOrderExecuteMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostMarketOrderExecuteResponse,
-        PostMarketOrderExecuteError,
-        Options<PostMarketOrderExecuteData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postMarketOrderExecute({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostMarketOrderExecuteResponse,
+    PostMarketOrderExecuteError,
+    Options<PostMarketOrderExecuteData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postMarketOrderExecute({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getMarketOrderMyQueryKey = (options?: Options) => [
-    createQueryKey('getMarketOrderMy', options)
+  createQueryKey('getMarketOrderMy', options)
 ]
 
 export const getMarketOrderMyOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getMarketOrderMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getMarketOrderMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getMarketOrderMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getMarketOrderMyQueryKey(options)
+  })
 }
 
 export const getOrdersQueryKey = (options?: Options<GetOrdersData>) => [
-    createQueryKey('getOrders', options)
+  createQueryKey('getOrders', options)
 ]
 
 export const getOrdersOptions = (options?: Options<GetOrdersData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getOrders({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getOrders({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getOrdersQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getOrdersQueryKey(options)
+  })
 }
 
 export const getOrdersInfiniteQueryKey = (
-    options?: Options<GetOrdersData>
+  options?: Options<GetOrdersData>
 ): QueryKey<Options<GetOrdersData>> => [createQueryKey('getOrders', options, true)]
 
 export const getOrdersInfiniteOptions = (options?: Options<GetOrdersData>) => {
-    return infiniteQueryOptions<
-        GetOrdersResponse,
-        GetOrdersError,
-        InfiniteData<GetOrdersResponse>,
-        QueryKey<Options<GetOrdersData>>,
-        number | Pick<QueryKey<Options<GetOrdersData>>[0], 'body' | 'headers' | 'path' | 'query'>
-    >(
+  return infiniteQueryOptions<
+    GetOrdersResponse,
+    GetOrdersError,
+    InfiniteData<GetOrdersResponse>,
+    QueryKey<Options<GetOrdersData>>,
+    number | Pick<QueryKey<Options<GetOrdersData>>[0], 'body' | 'headers' | 'path' | 'query'>
+  >(
+    // @ts-ignore
+    {
+      queryFn: async ({ pageParam, queryKey }) => {
         // @ts-ignore
-        {
-            queryFn: async ({pageParam, queryKey}) => {
-                // @ts-ignore
-                const page: Pick<
-                    QueryKey<Options<GetOrdersData>>[0],
-                    'body' | 'headers' | 'path' | 'query'
-                > =
-                    typeof pageParam === 'object'
-                        ? pageParam
-                        : {
-                            query: {
-                                page: pageParam
-                            }
-                        }
-                const params = createInfiniteParams(queryKey, page)
-                const {data} = await getOrders({
-                    ...options,
-                    ...params,
-                    throwOnError: true
-                })
+        const page: Pick<
+          QueryKey<Options<GetOrdersData>>[0],
+          'body' | 'headers' | 'path' | 'query'
+        > =
+          typeof pageParam === 'object'
+            ? pageParam
+            : {
+              query: {
+                page: pageParam
+              }
+            }
+        const params = createInfiniteParams(queryKey, page)
+        const { data } = await getOrders({
+          ...options,
+          ...params,
+          throwOnError: true
+        })
 
-                return data
-            },
-            queryKey: getOrdersInfiniteQueryKey(options)
-        }
-    )
+        return data
+      },
+      queryKey: getOrdersInfiniteQueryKey(options)
+    }
+  )
 }
 
 export const getResourceLogisticsQueryKey = (options?: Options<GetResourceLogisticsData>) => [
-    createQueryKey('getResourceLogistics', options)
+  createQueryKey('getResourceLogistics', options)
 ]
 
 export const getResourceLogisticsOptions = (options?: Options<GetResourceLogisticsData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getResourceLogistics({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getResourceLogistics({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getResourceLogisticsQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getResourceLogisticsQueryKey(options)
+  })
 }
 
 export const postResourceMoveQueryKey = (options: Options<PostResourceMoveData>) => [
-    createQueryKey('postResourceMove', options)
+  createQueryKey('postResourceMove', options)
 ]
 
 export const postResourceMoveOptions = (options: Options<PostResourceMoveData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postResourceMove({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postResourceMove({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postResourceMoveQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postResourceMoveQueryKey(options)
+  })
 }
 
 export const postResourceMoveMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostResourceMoveResponse,
-        PostResourceMoveError,
-        Options<PostResourceMoveData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postResourceMove({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostResourceMoveResponse,
+    PostResourceMoveError,
+    Options<PostResourceMoveData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postResourceMove({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getResourceMyQueryKey = (options?: Options<GetResourceMyData>) => [
-    createQueryKey('getResourceMy', options)
+  createQueryKey('getResourceMy', options)
 ]
 
 export const getResourceMyOptions = (options?: Options<GetResourceMyData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getResourceMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getResourceMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getResourceMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getResourceMyQueryKey(options)
+  })
 }
 
 export const getResourceMyLogisticsQueryKey = (options?: Options) => [
-    createQueryKey('getResourceMyLogistics', options)
+  createQueryKey('getResourceMyLogistics', options)
 ]
 
 export const getResourceMyLogisticsOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getResourceMyLogistics({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getResourceMyLogistics({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getResourceMyLogisticsQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getResourceMyLogisticsQueryKey(options)
+  })
 }
 
 export const getResourceTypesQueryKey = (options?: Options) => [
-    createQueryKey('getResourceTypes', options)
+  createQueryKey('getResourceTypes', options)
 ]
 
 export const getResourceTypesOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getResourceTypes({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getResourceTypes({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getResourceTypesQueryKey(options)
+      return data
+    },
+    queryKey: getResourceTypesQueryKey(options)
   })
 }
 
@@ -1119,7 +1161,7 @@ export const getSettingsOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-      
+
       return data
     },
     queryKey: getSettingsQueryKey(options)
@@ -1129,166 +1171,166 @@ export const getSettingsOptions = (options?: Options) => {
 export const getStorageMyQueryKey = (options?: Options) => [createQueryKey('getStorageMy', options)]
 
 export const getStorageMyOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getStorageMy({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getStorageMy({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getStorageMyQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getStorageMyQueryKey(options)
+  })
 }
 
 export const postStoreGoodsSetQueryKey = (options: Options<PostStoreGoodsSetData>) => [
-    createQueryKey('postStoreGoodsSet', options)
+  createQueryKey('postStoreGoodsSet', options)
 ]
 
 export const postStoreGoodsSetOptions = (options: Options<PostStoreGoodsSetData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postStoreGoodsSet({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postStoreGoodsSet({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postStoreGoodsSetQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postStoreGoodsSetQueryKey(options)
+  })
 }
 
 export const postStoreGoodsSetMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostStoreGoodsSetResponse,
-        PostStoreGoodsSetError,
-        Options<PostStoreGoodsSetData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postStoreGoodsSet({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostStoreGoodsSetResponse,
+    PostStoreGoodsSetError,
+    Options<PostStoreGoodsSetData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postStoreGoodsSet({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const postUserCreateQueryKey = (options: Options<PostUserCreateData>) => [
-    createQueryKey('postUserCreate', options)
+  createQueryKey('postUserCreate', options)
 ]
 
 export const postUserCreateOptions = (options: Options<PostUserCreateData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postUserCreate({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postUserCreate({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postUserCreateQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postUserCreateQueryKey(options)
+  })
 }
 
 export const postUserCreateMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostUserCreateResponse,
-        PostUserCreateError,
-        Options<PostUserCreateData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postUserCreate({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostUserCreateResponse,
+    PostUserCreateError,
+    Options<PostUserCreateData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postUserCreate({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const getUserDataQueryKey = (options?: Options) => [createQueryKey('getUserData', options)]
 
 export const getUserDataOptions = (options?: Options) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await getUserData({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getUserData({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: getUserDataQueryKey(options)
-    })
+      return data
+    },
+    queryKey: getUserDataQueryKey(options)
+  })
 }
 
 export const postUserLoginQueryKey = (options: Options<PostUserLoginData>) => [
-    createQueryKey('postUserLogin', options)
+  createQueryKey('postUserLogin', options)
 ]
 
 export const postUserLoginOptions = (options: Options<PostUserLoginData>) => {
-    return queryOptions({
-        queryFn: async ({queryKey}) => {
-            const {data} = await postUserLogin({
-                ...options,
-                ...queryKey[0],
-                throwOnError: true
-            })
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await postUserLogin({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
 
-            return data
-        },
-        queryKey: postUserLoginQueryKey(options)
-    })
+      return data
+    },
+    queryKey: postUserLoginQueryKey(options)
+  })
 }
 
 export const postUserLoginMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        PostUserLoginResponse,
-        PostUserLoginError,
-        Options<PostUserLoginData>
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await postUserLogin({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    PostUserLoginResponse,
+    PostUserLoginError,
+    Options<PostUserLoginData>
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await postUserLogin({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }
 
 export const deleteUserLoginMutation = () => {
-    const mutationOptions: UseMutationOptions<
-        DeleteUserLoginResponse,
-        DeleteUserLoginError,
-        Options
-    > = {
-        mutationFn: async (options) => {
-            const {data} = await deleteUserLogin({
-                ...options,
-                throwOnError: true
-            })
+  const mutationOptions: UseMutationOptions<
+    DeleteUserLoginResponse,
+    DeleteUserLoginError,
+    Options
+  > = {
+    mutationFn: async (options) => {
+      const { data } = await deleteUserLogin({
+        ...options,
+        throwOnError: true
+      })
 
-            return data
-        }
+      return data
     }
+  }
 
-    return mutationOptions
+  return mutationOptions
 }

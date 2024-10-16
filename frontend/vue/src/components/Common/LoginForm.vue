@@ -1,8 +1,8 @@
 <template>
   <MessageBlock
     v-if="messageData?.code"
-    v-bind="messageData"
     class="mb-4"
+    v-bind="messageData"
   />
   <div class="flex flex-col gap-8">
     <div class="p-float-label mt-4">
@@ -52,15 +52,17 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@tanstack/vue-query'
 import sha256 from 'crypto-js/sha256'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { JsonResult } from '@/api'
+import { postUserLoginMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
-import type { BackData } from '@/types'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -69,26 +71,31 @@ const emits = defineEmits<{
 
 const nickName = ref<string>('')
 const pass = ref<string>('')
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
-const { logIn } = useUser()
+const { setToken } = useUser()
+
+const logIn = useMutation({
+  ...postUserLoginMutation(),
+  onSuccess: (data: JsonResult) => {
+    messageData.value = data
+
+    if (data && data?.code <= 0) {
+      setToken(data)
+      setTimeout(() => {
+        emits('close')
+      }, 1000)
+    }
+  }
+})
 const submit = () => {
   const userData = {
     nickName: nickName.value,
     password: sha256(pass.value).toString()
   }
-  const { data, onFetchFinally } = logIn(userData)
 
-  onFetchFinally(() => {
-    messageData.value = data.value
-
-    if (data.value?.code <= 0) {
-      setTimeout(() => {
-        emits('close')
-      }, 1000)
-    }
-  })
+  logIn.mutate({ body: { ...userData } })
 }
 </script>
 

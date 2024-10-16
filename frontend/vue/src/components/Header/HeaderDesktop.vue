@@ -115,9 +115,9 @@ import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { User } from '@/api'
 import LangSelect from '@/components/Header/LangSelect.vue'
-import { User } from '@/types'
-import { MenuItem } from '@/types/Header/index.interface'
+import type { MenuItem } from '@/types/Header/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
@@ -141,14 +141,14 @@ const helpMenu = ref()
 
 const { t } = useI18n()
 
-const toggleUserItems = (event) => {
+const toggleUserItems = (event: any) => {
   userMenu.value.toggle(event)
 }
-const toggleWorldItems = (event) => {
+const toggleWorldItems = (event: any) => {
   worldMenu.value.toggle(event)
 }
 
-const toggleHelpItems = (event) => {
+const toggleHelpItems = (event: any) => {
   helpMenu.value.toggle(event)
 }
 </script>

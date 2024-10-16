@@ -9,7 +9,8 @@ export default defineConfig({
     format: 'prettier'
   },
   types: {
-    enums: 'typescript'
+    enums: 'typescript',
+    name: 'PascalCase'
   },
   plugins: ['@tanstack/vue-query']
 })

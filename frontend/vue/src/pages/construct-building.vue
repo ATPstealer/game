@@ -6,7 +6,7 @@
         v-if="messageData?.code"
         v-bind="messageData"
       />
-      <Card v-if="isSuccess">
+      <Card v-if="buildingType">
         <template #content>
           <div class="flex flex-col gap-4">
             <p class="label !mb-0">
@@ -42,15 +42,15 @@
                   :options="buildingTypes"
                 >
                   <template #option="{option}: {option: BuildingType}">
-                    {{ getTranslation({parent: 'buildings.types', child: option.title}) }}
+                    {{ getTranslation({parent: 'buildings.types', child: option.title!}) }}
                   </template>
                   <template #value="{value}: {value: BuildingType}">
-                    {{ getTranslation({parent: 'buildings.types', child: value.title}) }}
+                    {{ getTranslation({parent: 'buildings.types', child: value.title!}) }}
                   </template>
                 </Dropdown>
               </div>
               <p class="flex-1 self-start md:self-end text-xl md:pb-3">
-                {{ getTranslation({parent: 'buildings.typesDescriptions', child: buildingType.title}) }}
+                {{ getTranslation({parent: 'buildings.typesDescriptions', child: buildingType.title!}) }}
               </p>
             </div>
             <div class="flex flex-col">
@@ -68,7 +68,7 @@
                     {{ t('common.cost') }}:
                   </p>
                   <p class="text-xl underline">
-                    {{ buildingType.cost * square }}$
+                    {{ cost }}$
                   </p>
                 </div>
                 <div class="flex gap-4">
@@ -76,7 +76,7 @@
                     {{ t('common.time') }}:
                   </p>
                   <p class="text-xl underline">
-                    {{ formatDuration(buildingType.buildTime * square / 1000000000) }}
+                    {{ formatDuration(buildingType.buildTime! * square / 1000000000) }}
                   </p>
                 </div>
               </div>
@@ -99,19 +99,21 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
-import { type Ref, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import {
-  type buildingType,
-  type constructBuildingPayload,
+  type BuildingType,
+  type ConstructBuildingPayload,
   type PostBuildingConstructResponse
 } from '@/api'
-import {getBuildingTypesOptions, postBuildingConstructMutation} from '@/api/@tanstack/vue-query.gen'
+import {
+  getBuildingTypesOptions,
+  postBuildingConstructMutation
+} from '@/api/@tanstack/vue-query.gen'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import type { BackData } from '@/types'
-import type { BuildingType } from '@/types/Buildings/index.interface'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTranslation } from '@/utils/getTranslation'
 
@@ -119,14 +121,18 @@ const { query } = useRoute()
 
 const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
-const buildingType = ref<BuildingType>({} as BuildingType)
 const square = ref<number>(10)
 const messageData = ref<PostBuildingConstructResponse>()
 
 const { t } = useI18n()
 
-const { data: buildingTypes, isSuccess } = useQuery({
-  ...getBuildingTypesOptions()
+const cost = computed(() => {
+  return (buildingType.value.cost ?? 0) * square.value
+})
+
+const { data: buildingTypes, suspense } = useQuery({
+  ...getBuildingTypesOptions(),
+  select: (data) => data.data as BuildingType[]
 })
 
 const constructBuilding = useMutation({
@@ -136,16 +142,14 @@ const constructBuilding = useMutation({
   }
 })
 
-watch(isSuccess, () => {
-  if (isSuccess.value) {
-    buildingType.value = buildingTypes.value[0]
-  }
-})
+await suspense()
+
+const buildingType = ref<BuildingType>(buildingTypes.value ? buildingTypes.value[0] : {} as BuildingType)
 
 const construct = () => {
   messageData.value = {} as BackData
 
-  const payload: constructBuildingPayload = {
+  const payload: ConstructBuildingPayload = {
     x: x.value,
     y: y.value,
     typeId: buildingType.value.id,

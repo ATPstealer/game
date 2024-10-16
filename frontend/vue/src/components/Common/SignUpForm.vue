@@ -7,17 +7,17 @@
   <div class="flex flex-col gap-4">
     <div class="flex flex-col gap-1">
       <label
-        for="nickname"
         class="block text-gray-700 text-sm font-medium"
+        for="nickname"
       >
         {{ t('account.nickname') }}
       </label>
       <InputText
         v-model="nickName"
-        class="w-full"
-        input-id="nickname"
         aria-describedby="nickname-help"
+        class="w-full"
         :class="{'p-invalid': !nickNameValid}"
+        input-id="nickname"
       />
       <small
         v-if="!nickNameValid"
@@ -29,17 +29,17 @@
     </div>
     <div class="flex flex-col gap-1">
       <label
-        for="email"
         class="block text-gray-700 text-sm font-medium"
+        for="email"
       >
         {{ t('account.email') }}
       </label>
       <InputText
         v-model="email"
-        class="w-full"
-        input-id="email"
-        :class="{'p-invalid': !emailValid}"
         aria-describedby="email-help"
+        class="w-full"
+        :class="{'p-invalid': !emailValid}"
+        input-id="email"
       />
       <small
         v-if="!emailValid"
@@ -51,19 +51,19 @@
     </div>
     <div class="flex flex-col gap-1">
       <label
-        for="password"
         class="block text-gray-700 text-sm font-medium"
+        for="password"
       >
         {{ t('account.password') }}
       </label>
       <Password
         v-model="pass1"
-        input-class="w-full"
-        class="w-full"
-        :feedback="false"
-        input-id="password"
         aria-describedby="pass-help"
+        class="w-full"
         :class="{'p-invalid': !strongPassword}"
+        :feedback="false"
+        input-class="w-full"
+        input-id="password"
       />
       <small
         v-if="!strongPassword"
@@ -75,19 +75,19 @@
     </div>
     <div class="flex flex-col gap-1">
       <label
-        for="confirm"
         class="block text-gray-700 text-sm font-medium"
+        for="confirm"
       >
         {{ t('account.confirmPass') }}
       </label>
       <Password
         v-model="pass2"
-        input-class="w-full"
-        class="w-full"
-        :feedback="false"
-        input-id="confirm"
         aria-describedby="confirm-help"
+        class="w-full"
         :class="{'p-invalid': !matchPasswords}"
+        :feedback="false"
+        input-class="w-full"
+        input-id="confirm"
       />
       <small
         v-if="!matchPasswords"
@@ -99,32 +99,34 @@
     </div>
     <div class="flex gap-8 items-center justify-between">
       <Button
-        type="submit"
-        severity="info"
-        :label="t('account.signup')"
-        @click="submit"
         :disabled="!validForm"
+        :label="t('account.signup')"
+        severity="info"
+        type="submit"
+        @click="submit"
       />
       <Button
+        class="text-xs md:text-sm max-w-[50%]"
+        :label="t('account.haveAccount')"
         severity="info"
         text
-        :label="t('account.haveAccount')"
         @click="emits('log-in')"
-        class="text-xs md:text-sm max-w-[50%]"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@tanstack/vue-query'
 import sha256 from 'crypto-js/sha256'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { JsonResult } from '@/api'
+import { postUserCreateMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useUser } from '@/composables/useUser'
 import type { BackData } from '@/types'
 
 const emits = defineEmits<{
@@ -136,7 +138,7 @@ const nickName = ref<string>('nomel')
 const email = ref<string>('nomelnomel@gmail.com')
 const pass1 = ref<string>('qweASD123')
 const pass2 = ref<string>('qweASD123')
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
 
@@ -184,7 +186,18 @@ const validForm = computed(() => {
       pass2.value && matchPasswords.value
 })
 
-const { signUp } = useUser()
+const signUp = useMutation({
+  ...postUserCreateMutation(),
+  onSuccess: (data: JsonResult) => {
+    messageData.value = data
+
+    if (data && data.code === -1) {
+      setTimeout(() => {
+        emits('log-in')
+      }, 1000)
+    }
+  }
+})
 const submit = () => {
   messageData.value = {} as BackData
   const userData = {
@@ -192,17 +205,8 @@ const submit = () => {
     email: email.value,
     password: sha256(pass1.value).toString()
   }
-  const { data, onFetchFinally } = signUp(userData)
 
-  onFetchFinally(() => {
-    messageData.value = data.value
-
-    if (data.value && data.value?.status === 'success') {
-      setTimeout(() => {
-        emits('log-in')
-      }, 1000)
-    }
-  })
+  signUp.mutate({ body: { ...userData } })
 }
 </script>
 

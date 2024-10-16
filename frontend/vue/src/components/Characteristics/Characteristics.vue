@@ -4,37 +4,34 @@
       <h2 class="font-bold mb-2 text-2xl">
         {{ t('user.characteristics') }}
       </h2>
-      <div v-if="!isFetching" class="grid gap-1">
+      <div v-if="!isEmpty(characteristics)" class="grid gap-1">
         <p v-for="char in Object.keys(characteristics)" :key="char">
           {{ t(`user.${char}`) }}: {{ characteristics[char as keyof Characteristics] }}
         </p>
       </div>
-      <Loading v-else />
     </template>
   </Card>
 </template>
 
 <script setup lang="ts">
+import isEmpty from 'lodash/isEmpty'
+import { storeToRefs } from 'pinia'
 import Card from 'primevue/card'
-import { computed, type Ref } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Loading from '@/components/Common/Loading.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Characteristics, User } from '@/types'
+import type { Characteristics } from '@/api'
+import { useUserStore } from '@/stores/userStore'
 
 const { t } = useI18n()
-const { data, isFetching } = useGetData<User>('/user/data')
 
-const characteristics: Ref<Characteristics> = computed(() => {
-  return {
-    memory: data.value?.characteristics.memory,
-    intelligence: data.value?.characteristics.intelligence,
-    attention: data.value?.characteristics.attention,
-    wits: data.value?.characteristics.wits,
-    multitasking: data.value?.characteristics.multitasking,
-    management: data.value?.characteristics.management,
-    planning: data.value?.characteristics.planning
+const { userData } = storeToRefs(useUserStore())
+
+const characteristics = computed(() => {
+  if (!userData.value) {
+    return
   }
+
+  return userData.value.characteristics
 })
 
 </script>

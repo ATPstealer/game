@@ -267,6 +267,27 @@ export const constructBuildingPayloadSchema = {
   }
 } as const
 
+export const creditTermsPayloadSchema = {
+  type: 'object',
+  properties: {
+    adding: {
+      type: 'boolean'
+    },
+    buildingId: {
+      type: 'string'
+    },
+    limit: {
+      type: 'number'
+    },
+    rate: {
+      type: 'number'
+    },
+    rating: {
+      type: 'number'
+    }
+  }
+} as const
+
 export const equipmentSchema = {
   type: 'object',
   properties: {
@@ -296,7 +317,7 @@ export const equipmentEffectSchema = {
     },
     valueSecond: {
       description:
-          'Second value is considered as an average for all equipment, taking into account the first value.',
+        'Second value is considered as an average for all equipment, taking into account the first value.',
       type: 'number'
     }
   }
@@ -442,11 +463,14 @@ export const installEquipmentPayloadSchema = {
 
 export const jsonResultSchema = {
   type: 'object',
+  required: ['code'],
   properties: {
     code: {
       type: 'integer'
     },
-    data: {},
+    data: {
+      type: 'object'
+    },
     text: {
       type: 'string'
     },
