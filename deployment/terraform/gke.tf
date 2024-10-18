@@ -48,16 +48,17 @@ resource "google_compute_address" "load_balancer_2" { // mongo
   region        = var.region
 }
 
-resource "google_compute_address" "load_balancer_3" { // mysql
-  name          = "load-balancer-3"
-  ip_version    = "IPV4"
-  address_type  = "EXTERNAL"
-  region        = var.region
-}
-
 resource "google_compute_address" "load_balancer_4" { // ingress
   name          = "load-balancer-4"
   ip_version    = "IPV4"
   address_type  = "EXTERNAL"
   region        = var.region
+}
+
+resource "google_compute_address" "load_balancer_5" {
+  // mongo_2
+  name         = "load-balancer-5"
+  ip_version   = "IPV4"
+  address_type = "EXTERNAL"
+  region       = var.region
 }

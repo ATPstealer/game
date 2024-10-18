@@ -1,6 +1,19 @@
 auth:
   enabled: true
   existingSecret: mongodb-secrets
-service:
-  type: LoadBalancer
-  loadBalancerIP: 104.199.89.66
+architecture: replicaset
+replicaCount: 2
+externalAccess:
+  enabled: true
+  service:
+    type: LoadBalancer
+    loadBalancerIPs:
+      - 104.199.89.66
+      - 34.76.96.158
+resources:
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
