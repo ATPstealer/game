@@ -2,6 +2,9 @@
 
 import { createClient, createConfig, type Options } from '@hey-api/client-fetch'
 import type {
+  PostBankCreditTermsData,
+  PostBankCreditTermsError,
+  PostBankCreditTermsResponse,
   GetBuildingBlueprintsData,
   GetBuildingBlueprintsError,
   GetBuildingBlueprintsResponse,
@@ -100,23 +103,39 @@ import type {
   DeleteUserLoginResponse
 } from './types.gen'
 
-// CHANGE THIS FUNC AFTER EVERY GENERATION
 export const client = createClient(createConfig({
   baseUrl: `${import.meta.env.VITE_API}`,
   credentials: 'include'
 }))
 
 /**
+ * Add / Change / Delete credit terms in bank contracts
+ * Limit > 0, Rate > 0
+ */
+export const postBankCreditTerms = <ThrowOnError extends boolean = false>(
+  options: Options<PostBankCreditTermsData, ThrowOnError>
+) => {
+  return (options?.client ?? client).post<
+    PostBankCreditTermsResponse,
+    PostBankCreditTermsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: '/bank/credit_terms'
+  })
+}
+
+/**
  * Get blueprints
  * Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.
  */
 export const getBuildingBlueprints = <ThrowOnError extends boolean = false>(
-    options?: Options<GetBuildingBlueprintsData, ThrowOnError>
+  options?: Options<GetBuildingBlueprintsData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetBuildingBlueprintsResponse,
-      GetBuildingBlueprintsError,
-      ThrowOnError
+    GetBuildingBlueprintsResponse,
+    GetBuildingBlueprintsError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/blueprints'
@@ -127,11 +146,11 @@ export const getBuildingBlueprints = <ThrowOnError extends boolean = false>(
  * Construct a new building
  */
 export const postBuildingConstruct = <ThrowOnError extends boolean = false>(
-    options: Options<PostBuildingConstructData, ThrowOnError>
+  options: Options<PostBuildingConstructData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingConstructResponse,
-      PostBuildingConstructError,
+    PostBuildingConstructResponse,
+    PostBuildingConstructError,
     ThrowOnError
   >({
     ...options,
@@ -143,12 +162,12 @@ export const postBuildingConstruct = <ThrowOnError extends boolean = false>(
  * Destroy an existing building
  */
 export const deleteBuildingDestroy = <ThrowOnError extends boolean = false>(
-    options: Options<DeleteBuildingDestroyData, ThrowOnError>
+  options: Options<DeleteBuildingDestroyData, ThrowOnError>
 ) => {
   return (options?.client ?? client).delete<
-      DeleteBuildingDestroyResponse,
-      DeleteBuildingDestroyError,
-      ThrowOnError
+    DeleteBuildingDestroyResponse,
+    DeleteBuildingDestroyError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/destroy'
@@ -159,12 +178,12 @@ export const deleteBuildingDestroy = <ThrowOnError extends boolean = false>(
  * Fetch the list of buildings
  */
 export const postBuildingGet = <ThrowOnError extends boolean = false>(
-    options?: Options<PostBuildingGetData, ThrowOnError>
+  options?: Options<PostBuildingGetData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingGetResponse,
-      PostBuildingGetError,
-      ThrowOnError
+    PostBuildingGetResponse,
+    PostBuildingGetError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/get'
@@ -175,12 +194,12 @@ export const postBuildingGet = <ThrowOnError extends boolean = false>(
  * Set hiring details for a building
  */
 export const postBuildingHiring = <ThrowOnError extends boolean = false>(
-    options: Options<PostBuildingHiringData, ThrowOnError>
+  options: Options<PostBuildingHiringData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingHiringResponse,
-      PostBuildingHiringError,
-      ThrowOnError
+    PostBuildingHiringResponse,
+    PostBuildingHiringError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/hiring'
@@ -191,12 +210,12 @@ export const postBuildingHiring = <ThrowOnError extends boolean = false>(
  * Install equipment in a building
  */
 export const postBuildingInstallEquipment = <ThrowOnError extends boolean = false>(
-    options: Options<PostBuildingInstallEquipmentData, ThrowOnError>
+  options: Options<PostBuildingInstallEquipmentData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingInstallEquipmentResponse,
-      PostBuildingInstallEquipmentError,
-      ThrowOnError
+    PostBuildingInstallEquipmentResponse,
+    PostBuildingInstallEquipmentError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/install_equipment'
@@ -208,7 +227,7 @@ export const postBuildingInstallEquipment = <ThrowOnError extends boolean = fals
  * Optionally filter by building ID.
  */
 export const getBuildingMy = <ThrowOnError extends boolean = false>(
-    options?: Options<GetBuildingMyData, ThrowOnError>
+  options?: Options<GetBuildingMyData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetBuildingMyResponse, GetBuildingMyError, ThrowOnError>({
     ...options,
@@ -220,12 +239,12 @@ export const getBuildingMy = <ThrowOnError extends boolean = false>(
  * Start work in the building
  */
 export const postBuildingStartWork = <ThrowOnError extends boolean = false>(
-    options: Options<PostBuildingStartWorkData, ThrowOnError>
+  options: Options<PostBuildingStartWorkData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingStartWorkResponse,
-      PostBuildingStartWorkError,
-      ThrowOnError
+    PostBuildingStartWorkResponse,
+    PostBuildingStartWorkError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/start_work'
@@ -236,12 +255,12 @@ export const postBuildingStartWork = <ThrowOnError extends boolean = false>(
  * Stops any work in building. Later he should stop only the works available for stopping.
  */
 export const postBuildingStopWork = <ThrowOnError extends boolean = false>(
-    options: Options<PostBuildingStopWorkData, ThrowOnError>
+  options: Options<PostBuildingStopWorkData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostBuildingStopWorkResponse,
-      PostBuildingStopWorkError,
-      ThrowOnError
+    PostBuildingStopWorkResponse,
+    PostBuildingStopWorkError,
+    ThrowOnError
   >({
     ...options,
     url: '/building/stop_work'
@@ -254,9 +273,9 @@ export const postBuildingStopWork = <ThrowOnError extends boolean = false>(
 export const getBuildingTypes = <ThrowOnError extends boolean = false>(
   options?: Options<unknown, ThrowOnError>
 ) => {
-  return (options?.client ?? client).get<
-      GetBuildingTypesResponse,
-      GetBuildingTypesError,
+  return client.get<
+    GetBuildingTypesResponse,
+    GetBuildingTypesError,
     ThrowOnError
   >({
     ...options,
@@ -269,12 +288,12 @@ export const getBuildingTypes = <ThrowOnError extends boolean = false>(
  * Retrieve a list of usernames that match the given prefix
  */
 export const getUsernamesByPrefix = <ThrowOnError extends boolean = false>(
-    options?: Options<GetUsernamesByPrefixData, ThrowOnError>
+  options?: Options<GetUsernamesByPrefixData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetUsernamesByPrefixResponse,
-      GetUsernamesByPrefixError,
-      ThrowOnError
+    GetUsernamesByPrefixResponse,
+    GetUsernamesByPrefixError,
+    ThrowOnError
   >({
     ...options,
     url: '/data/users_by_prefix'
@@ -285,13 +304,13 @@ export const getUsernamesByPrefix = <ThrowOnError extends boolean = false>(
  * Return user's equipment
  */
 export const getEquipmentMy = <ThrowOnError extends boolean = false>(
-    options?: Options<GetEquipmentMyData, ThrowOnError>
+  options?: Options<GetEquipmentMyData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetEquipmentMyResponse, GetEquipmentMyError, ThrowOnError>(
-      {
-        ...options,
-        url: '/equipment/my'
-      }
+    {
+      ...options,
+      url: '/equipment/my'
+    }
   )
 }
 
@@ -299,12 +318,12 @@ export const getEquipmentMy = <ThrowOnError extends boolean = false>(
  * Get all equipment types
  */
 export const getEquipmentTypes = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetEquipmentTypesResponse,
-      GetEquipmentTypesError,
-      ThrowOnError
+    GetEquipmentTypesResponse,
+    GetEquipmentTypesError,
+    ThrowOnError
   >({
     ...options,
     url: '/equipment/types'
@@ -315,12 +334,12 @@ export const getEquipmentTypes = <ThrowOnError extends boolean = false>(
  * Set the logistics price
  */
 export const postLogisticsSetPrice = <ThrowOnError extends boolean = false>(
-    options: Options<PostLogisticsSetPriceData, ThrowOnError>
+  options: Options<PostLogisticsSetPriceData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostLogisticsSetPriceResponse,
-      PostLogisticsSetPriceError,
-      ThrowOnError
+    PostLogisticsSetPriceResponse,
+    PostLogisticsSetPriceError,
+    ThrowOnError
   >({
     ...options,
     url: '/logistics/set_price'
@@ -332,7 +351,7 @@ export const postLogisticsSetPrice = <ThrowOnError extends boolean = false>(
  * Returns the list of all map cells
  */
 export const getMap = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetMapResponse, GetMapError, ThrowOnError>({
     ...options,
@@ -344,12 +363,12 @@ export const getMap = <ThrowOnError extends boolean = false>(
  * Return all landowners
  */
 export const getMapAllLandLords = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetMapAllLandLordsResponse,
-      GetMapAllLandLordsError,
-      ThrowOnError
+    GetMapAllLandLordsResponse,
+    GetMapAllLandLordsError,
+    ThrowOnError
   >({
     ...options,
     url: '/map/all_land_lords'
@@ -360,12 +379,12 @@ export const getMapAllLandLords = <ThrowOnError extends boolean = false>(
  * Buy land in cell
  */
 export const postMapBuyLand = <ThrowOnError extends boolean = false>(
-    options: Options<PostMapBuyLandData, ThrowOnError>
+  options: Options<PostMapBuyLandData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostMapBuyLandResponse,
-      PostMapBuyLandError,
-      ThrowOnError
+    PostMapBuyLandResponse,
+    PostMapBuyLandError,
+    ThrowOnError
   >({
     ...options,
     url: '/map/buy_land'
@@ -376,12 +395,12 @@ export const postMapBuyLand = <ThrowOnError extends boolean = false>(
  * Get the landlords in cell
  */
 export const getMapCellOwners = <ThrowOnError extends boolean = false>(
-    options: Options<GetMapCellOwnersData, ThrowOnError>
+  options: Options<GetMapCellOwnersData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetMapCellOwnersResponse,
-      GetMapCellOwnersError,
-      ThrowOnError
+    GetMapCellOwnersResponse,
+    GetMapCellOwnersError,
+    ThrowOnError
   >({
     ...options,
     url: '/map/cell_owners'
@@ -392,7 +411,7 @@ export const getMapCellOwners = <ThrowOnError extends boolean = false>(
  * Return user's lands
  */
 export const getMapMy = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetMapMyResponse, GetMapMyError, ThrowOnError>({
     ...options,
@@ -404,12 +423,12 @@ export const getMapMy = <ThrowOnError extends boolean = false>(
  * Close user's order
  */
 export const deleteMarketOrderClose = <ThrowOnError extends boolean = false>(
-    options: Options<DeleteMarketOrderCloseData, ThrowOnError>
+  options: Options<DeleteMarketOrderCloseData, ThrowOnError>
 ) => {
   return (options?.client ?? client).delete<
-      DeleteMarketOrderCloseResponse,
-      DeleteMarketOrderCloseError,
-      ThrowOnError
+    DeleteMarketOrderCloseResponse,
+    DeleteMarketOrderCloseError,
+    ThrowOnError
   >({
     ...options,
     url: '/market/order/close'
@@ -420,12 +439,12 @@ export const deleteMarketOrderClose = <ThrowOnError extends boolean = false>(
  * Create a new market order
  */
 export const postMarketOrderCreate = <ThrowOnError extends boolean = false>(
-    options: Options<PostMarketOrderCreateData, ThrowOnError>
+  options: Options<PostMarketOrderCreateData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostMarketOrderCreateResponse,
-      PostMarketOrderCreateError,
-      ThrowOnError
+    PostMarketOrderCreateResponse,
+    PostMarketOrderCreateError,
+    ThrowOnError
   >({
     ...options,
     url: '/market/order/create'
@@ -436,12 +455,12 @@ export const postMarketOrderCreate = <ThrowOnError extends boolean = false>(
  * Partially execute an  order
  */
 export const postMarketOrderExecute = <ThrowOnError extends boolean = false>(
-    options: Options<PostMarketOrderExecuteData, ThrowOnError>
+  options: Options<PostMarketOrderExecuteData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostMarketOrderExecuteResponse,
-      PostMarketOrderExecuteError,
-      ThrowOnError
+    PostMarketOrderExecuteResponse,
+    PostMarketOrderExecuteError,
+    ThrowOnError
   >({
     ...options,
     url: '/market/order/execute'
@@ -452,12 +471,12 @@ export const postMarketOrderExecute = <ThrowOnError extends boolean = false>(
  * Get my orders
  */
 export const getMarketOrderMy = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetMarketOrderMyResponse,
-      GetMarketOrderMyError,
-      ThrowOnError
+    GetMarketOrderMyResponse,
+    GetMarketOrderMyError,
+    ThrowOnError
   >({
     ...options,
     url: '/market/order/my'
@@ -468,7 +487,7 @@ export const getMarketOrderMy = <ThrowOnError extends boolean = false>(
  * Fetches orders based on various query parameters
  */
 export const getOrders = <ThrowOnError extends boolean = false>(
-    options?: Options<GetOrdersData, ThrowOnError>
+  options?: Options<GetOrdersData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetOrdersResponse, GetOrdersError, ThrowOnError>({
     ...options,
@@ -480,12 +499,12 @@ export const getOrders = <ThrowOnError extends boolean = false>(
  * Get the logistics capacity in cell
  */
 export const getResourceLogistics = <ThrowOnError extends boolean = false>(
-    options?: Options<GetResourceLogisticsData, ThrowOnError>
+  options?: Options<GetResourceLogisticsData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetResourceLogisticsResponse,
-      GetResourceLogisticsError,
-      ThrowOnError
+    GetResourceLogisticsResponse,
+    GetResourceLogisticsError,
+    ThrowOnError
   >({
     ...options,
     url: '/resource/logistics'
@@ -496,12 +515,12 @@ export const getResourceLogistics = <ThrowOnError extends boolean = false>(
  * Initiates a resource movement
  */
 export const postResourceMove = <ThrowOnError extends boolean = false>(
-    options: Options<PostResourceMoveData, ThrowOnError>
+  options: Options<PostResourceMoveData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostResourceMoveResponse,
-      PostResourceMoveError,
-      ThrowOnError
+    PostResourceMoveResponse,
+    PostResourceMoveError,
+    ThrowOnError
   >({
     ...options,
     url: '/resource/move'
@@ -512,7 +531,7 @@ export const postResourceMove = <ThrowOnError extends boolean = false>(
  * Get user's resources
  */
 export const getResourceMy = <ThrowOnError extends boolean = false>(
-    options?: Options<GetResourceMyData, ThrowOnError>
+  options?: Options<GetResourceMyData, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetResourceMyResponse, GetResourceMyError, ThrowOnError>({
     ...options,
@@ -524,12 +543,12 @@ export const getResourceMy = <ThrowOnError extends boolean = false>(
  * Get user's logistics tasks
  */
 export const getResourceMyLogistics = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetResourceMyLogisticsResponse,
-      GetResourceMyLogisticsError,
-      ThrowOnError
+    GetResourceMyLogisticsResponse,
+    GetResourceMyLogisticsError,
+    ThrowOnError
   >({
     ...options,
     url: '/resource/my_logistics'
@@ -540,12 +559,12 @@ export const getResourceMyLogistics = <ThrowOnError extends boolean = false>(
  * Return all resource types from database
  */
 export const getResourceTypes = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<
-      GetResourceTypesResponse,
-      GetResourceTypesError,
-      ThrowOnError
+    GetResourceTypesResponse,
+    GetResourceTypesError,
+    ThrowOnError
   >({
     ...options,
     url: '/resource/types'
@@ -569,7 +588,7 @@ export const getSettings = <ThrowOnError extends boolean = false>(
  * Return user's storages
  */
 export const getStorageMy = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetStorageMyResponse, GetStorageMyError, ThrowOnError>({
     ...options,
@@ -581,12 +600,12 @@ export const getStorageMy = <ThrowOnError extends boolean = false>(
  * Set prices for goods in the store
  */
 export const postStoreGoodsSet = <ThrowOnError extends boolean = false>(
-    options: Options<PostStoreGoodsSetData, ThrowOnError>
+  options: Options<PostStoreGoodsSetData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostStoreGoodsSetResponse,
-      PostStoreGoodsSetError,
-      ThrowOnError
+    PostStoreGoodsSetResponse,
+    PostStoreGoodsSetError,
+    ThrowOnError
   >({
     ...options,
     url: '/store/goods/set'
@@ -597,12 +616,12 @@ export const postStoreGoodsSet = <ThrowOnError extends boolean = false>(
  * Create a new user
  */
 export const postUserCreate = <ThrowOnError extends boolean = false>(
-    options: Options<PostUserCreateData, ThrowOnError>
+  options: Options<PostUserCreateData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<
-      PostUserCreateResponse,
-      PostUserCreateError,
-      ThrowOnError
+    PostUserCreateResponse,
+    PostUserCreateError,
+    ThrowOnError
   >({
     ...options,
     url: '/user/create'
@@ -613,7 +632,7 @@ export const postUserCreate = <ThrowOnError extends boolean = false>(
  * Get user data
  */
 export const getUserData = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).get<GetUserDataResponse, GetUserDataError, ThrowOnError>({
     ...options,
@@ -626,7 +645,7 @@ export const getUserData = <ThrowOnError extends boolean = false>(
  * Validate user credentials and provide a JWT token
  */
 export const postUserLogin = <ThrowOnError extends boolean = false>(
-    options: Options<PostUserLoginData, ThrowOnError>
+  options: Options<PostUserLoginData, ThrowOnError>
 ) => {
   return (options?.client ?? client).post<PostUserLoginResponse, PostUserLoginError, ThrowOnError>({
     ...options,
@@ -639,12 +658,12 @@ export const postUserLogin = <ThrowOnError extends boolean = false>(
  * Logout a user by deleting their secure token
  */
 export const deleteUserLogin = <ThrowOnError extends boolean = false>(
-    options?: Options<unknown, ThrowOnError>
+  options?: Options<unknown, ThrowOnError>
 ) => {
   return (options?.client ?? client).delete<
-      DeleteUserLoginResponse,
-      DeleteUserLoginError,
-      ThrowOnError
+    DeleteUserLoginResponse,
+    DeleteUserLoginError,
+    ThrowOnError
   >({
     ...options,
     url: '/user/login'

@@ -37,7 +37,9 @@
         <span v-else class="text-color">{{ item.label }}</span>
       </template>
     </Breadcrumb>
-    <RouterView />
+    <suspense>
+      <RouterView />
+    </suspense>
     <Toast />
   </div>
   <div class="footer">

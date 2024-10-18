@@ -44,18 +44,20 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation, useQuery } from '@tanstack/vue-query'
+import { storeToRefs } from 'pinia'
 import Dialog from 'primevue/dialog'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import type { User } from '@/api'
+import { deleteUserLoginMutation, getUserDataOptions } from '@/api/@tanstack/vue-query.gen'
 import LoginForm from '@/components/Common/LoginForm.vue'
 import SignUpForm from '@/components/Common/SignUpForm.vue'
 import { helpPages, userPages, worldPages } from '@/components/Header/constants'
 import HeaderDesktop from '@/components/Header/HeaderDesktop.vue'
 import HeaderMobile from '@/components/Header/HeaderMobile.vue'
-import { useGetData } from '@/composables/useGetData'
-import { useUser } from '@/composables/useUser'
-import type { User } from '@/types'
+import { useUserStore } from '@/stores/userStore'
 import type { MenuItem } from '@/types/Header/index.interface'
 
 const { t } = useI18n()
@@ -92,11 +94,26 @@ const helpItems = computed<MenuItem[]>(() =>
 )
 
 const router = useRouter()
-const { logOut } = useUser()
 
-const { data, onFetchResponse } = useGetData<User>('/user/data')
-onFetchResponse(() => {
-  user.value = data.value
+const { data: userFetchedData, isSuccess, refetch } = useQuery({
+  ...getUserDataOptions(),
+  enabled: false,
+  select: data => data.data
+})
+
+const { userData } = storeToRefs(useUserStore())
+const { setUserData } = useUserStore()
+
+if (!userData.value) {
+  refetch()
+}
+
+const logout = useMutation({
+  ...deleteUserLoginMutation(),
+  onSuccess: () => {
+    localStorage.setItem('invalid', 'true')
+    router.go(0)
+  }
 })
 
 const close = () => {
@@ -105,11 +122,15 @@ const close = () => {
 }
 
 const signOut = () => {
-  const { onFetchResponse } = logOut()
-  onFetchResponse(() => {
-    router.go(0)
-  })
+  logout.mutate({})
 }
+
+watch(isSuccess, () => {
+  if (isSuccess.value) {
+    user.value = userFetchedData!.value
+    setUserData(userFetchedData!.value)
+  }
+})
 
 </script>
 

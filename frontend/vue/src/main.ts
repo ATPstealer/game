@@ -2,7 +2,7 @@ import '@/assets/main.css'
 import '@/assets/tailwind.css'
 import 'primevue/resources/themes/lara-light-teal/theme.css'
 import 'primeicons/primeicons.css'
-import { VueQueryPlugin } from '@tanstack/vue-query'
+import { VueQueryPlugin, type VueQueryPluginOptions } from '@tanstack/vue-query'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
@@ -13,11 +13,18 @@ import App from '@/App.vue'
 import i18n from '@/i18n'
 import router from '@/router'
 
-const vueQueryPluginOptions = {
+const vueQueryPluginOptions: VueQueryPluginOptions  = {
   queryClientConfig: {
     defaultOptions: {
       queries: {
-        select: (data: {data: any}) => data.data
+        select: (data: any) => {
+          return data.data
+        },
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        staleTime: Number.POSITIVE_INFINITY,
+        refetchInterval: Number.POSITIVE_INFINITY,
+        retry: false
       }
     }
   }
