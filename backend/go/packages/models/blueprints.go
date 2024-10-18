@@ -33,7 +33,7 @@ func GetBlueprints(m *mongo.Database, blueprintId uint) ([]Blueprint, error) {
 		filter["id"] = blueprintId
 	}
 	cursor, err := m.Collection("blueprints").Find(ctx, filter,
-		options.Find().SetSort(bson.D{{"blueprintId", 1}}))
+		options.Find().SetSort(bson.D{{"id", 1}}))
 	if err != nil {
 		log.Println("Can't get blueprints: " + err.Error())
 		return nil, err
