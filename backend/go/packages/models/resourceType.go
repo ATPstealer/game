@@ -9,12 +9,12 @@ import (
 )
 
 type ResourceType struct {
-	Id         uint    `json:"id" bson:"id"`
-	Name       string  `json:"name" bson:"name"`
-	Volume     float64 `json:"volume" bson:"volume"` // m3
-	Weight     float64 `json:"weight" bson:"weight"` // kg
-	Demand     float64 `json:"demand" bson:"demand"`
-	StoreGroup string  `json:"storeGroup" bson:"storeGroup"`
+	Id         uint    `json:"id" bson:"id" validate:"required"`
+	Name       string  `json:"name" bson:"name" validate:"required"`
+	Volume     float64 `json:"volume" bson:"volume" validate:"required"` // m3
+	Weight     float64 `json:"weight" bson:"weight" validate:"required"` // kg
+	Demand     float64 `json:"demand" bson:"demand" validate:"required"`
+	StoreGroup string  `json:"storeGroup" bson:"storeGroup" validate:"required"`
 } // @name resourceType
 
 func GetAllResourceTypes(m *mongo.Database) ([]ResourceType, error) {

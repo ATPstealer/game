@@ -24,7 +24,7 @@ const (
 )
 
 type Goods struct {
-	ResourceTypeId uint             `json:"resourceTypeId" bson:"resourceTypeId"`
+	ResourceTypeId uint             `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
 	Price          float64          `json:"price" bson:"price"`
 	SellSum        int              `json:"sellSum" bson:"sellSum"`
 	Revenue        float64          `json:"revenue" bson:"revenue"`
@@ -33,9 +33,9 @@ type Goods struct {
 } // @name goods
 
 type StoreGoodsPayload struct {
-	BuildingId     primitive.ObjectID `json:"buildingId"`
-	ResourceTypeId uint               `json:"resourceTypeId"`
-	Price          float64            `json:"price"`
+	BuildingId     primitive.ObjectID `json:"buildingId" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" validate:"required"`
+	Price          float64            `json:"price" validate:"required"`
 } // @name storeGoodsPayload
 
 func SetStoreGoods(m *mongo.Database, userId primitive.ObjectID, payload StoreGoodsPayload) error {

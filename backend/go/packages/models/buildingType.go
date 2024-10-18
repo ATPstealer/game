@@ -8,16 +8,16 @@ import (
 )
 
 type BuildingType struct {
-	Id               uint          `bson:"id" json:"id"`
-	Title            string        `bson:"title" json:"title"`
-	Description      string        `bson:"description" json:"description"`
-	Cost             float64       `bson:"cost" json:"cost"`
-	Requirements     string        `bson:"requirements" json:"requirements"`
-	BuildTime        time.Duration `bson:"buildTime" json:"buildTime"`
-	BuildingGroup    string        `bson:"buildingGroup" json:"buildingGroup"`
-	BuildingSubGroup string        `bson:"buildingSubGroup" json:"buildingSubGroup"`
-	Capacity         float64       `bson:"capacity" json:"capacity"`
-	Workers          int           `bson:"workers" json:"workers"`
+	Id               uint          `bson:"id" json:"id" validate:"required"`
+	Title            string        `bson:"title" json:"title" validate:"required"`
+	Description      string        `bson:"description" json:"description" validate:"required"`
+	Cost             float64       `bson:"cost" json:"cost" validate:"required"`
+	Requirements     string        `bson:"requirements" json:"requirements" validate:"required"`
+	BuildTime        time.Duration `bson:"buildTime" json:"buildTime" validate:"required"`
+	BuildingGroup    string        `bson:"buildingGroup" json:"buildingGroup" validate:"required"`
+	BuildingSubGroup string        `bson:"buildingSubGroup" json:"buildingSubGroup" validate:"required"`
+	Capacity         float64       `bson:"capacity" json:"capacity" validate:"required"`
+	Workers          int           `bson:"workers" json:"workers" validate:"required"`
 } // @name buildingType
 
 func GetAllBuildingTypes(m *mongo.Database) ([]BuildingType, error) {

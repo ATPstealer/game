@@ -13,10 +13,10 @@ import (
 )
 
 type Token struct {
-	UserId    primitive.ObjectID `json:"userId" bson:"userId"`
-	Token     string             `json:"token" bson:"token"`
-	TTL       time.Duration      `json:"ttl" bson:"ttl"`
-	CreatedAt time.Time          `json:"createdAt" bson:"createdAt"`
+	UserId    primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	Token     string             `json:"token" bson:"token" validate:"required"`
+	TTL       time.Duration      `json:"ttl" bson:"ttl" validate:"required"`
+	CreatedAt time.Time          `json:"createdAt" bson:"createdAt" validate:"required"`
 } // @name token
 
 func CreateToken(m *mongo.Database, nickName string) (Token, error) {

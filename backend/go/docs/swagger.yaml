@@ -18,6 +18,13 @@ definitions:
         items:
           $ref: '#/definitions/resourceAmount'
         type: array
+    required:
+      - id
+      - name
+      - producedInId
+      - producedResources
+      - productionTime
+      - usedResources
     type: object
   buildingStatus:
     enum:
@@ -55,6 +62,17 @@ definitions:
         type: string
       workers:
         type: integer
+    required:
+      - buildTime
+      - buildingGroup
+      - buildingSubGroup
+      - capacity
+      - cost
+      - description
+      - id
+      - requirements
+      - title
+      - workers
     type: object
   buildingWithData:
     properties:
@@ -108,6 +126,22 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - buildingType
+      - hiringNeeds
+      - level
+      - nickName
+      - onStrike
+      - salary
+      - square
+      - squareInUse
+      - status
+      - typeId
+      - userId
+      - workers
+      - x
+      - "y"
     type: object
   buyLandPayload:
     properties:
@@ -117,6 +151,10 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - square
+      - x
+      - "y"
     type: object
   cell:
     properties:
@@ -148,6 +186,20 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - SpendRate
+      - _id
+      - averageSalary
+      - cellName
+      - crime
+      - education
+      - medicine
+      - pollution
+      - population
+      - square
+      - surfaceImagePath
+      - x
+      - "y"
     type: object
   characteristics:
     properties:
@@ -165,6 +217,14 @@ definitions:
         type: integer
       wits:
         type: integer
+    required:
+      - attention
+      - intelligence
+      - management
+      - memory
+      - multitasking
+      - planning
+      - wits
     type: object
   constructBuildingPayload:
     properties:
@@ -176,6 +236,11 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - square
+      - typeId
+      - x
+      - "y"
     type: object
   creditTerms:
     properties:
@@ -185,6 +250,10 @@ definitions:
         type: number
       rating:
         type: number
+    required:
+      - limit
+      - rate
+      - rating
     type: object
   creditTermsPayload:
     properties:
@@ -198,6 +267,12 @@ definitions:
         type: number
       rating:
         type: number
+    required:
+      - adding
+      - buildingId
+      - limit
+      - rate
+      - rating
     type: object
   equipment:
     properties:
@@ -207,6 +282,10 @@ definitions:
         type: integer
       equipmentTypeId:
         type: integer
+    required:
+      - amount
+      - durability
+      - equipmentTypeId
     type: object
   equipmentEffect:
     properties:
@@ -220,6 +299,10 @@ definitions:
         description: Second value is considered as an average for all equipment, taking
           into account the first value.
         type: number
+    required:
+      - blueprintId
+      - effectId
+      - value
     type: object
   equipmentType:
     properties:
@@ -243,6 +326,15 @@ definitions:
         type: number
       valueSecond:
         type: number
+    required:
+      - durability
+      - effectId
+      - id
+      - name
+      - resourceTypeId
+      - square
+      - value
+      - valueSecond
     type: object
   executeOrderPayload:
     properties:
@@ -288,6 +380,8 @@ definitions:
         type: integer
       status:
         $ref: '#/definitions/storeGoodsStatus'
+    required:
+      - resourceTypeId
     type: object
   hiringPayload:
     properties:
@@ -306,15 +400,22 @@ definitions:
         type: string
       equipmentTypeId:
         type: integer
+    required:
+      - amount
+      - buildingId
+      - equipmentTypeId
     type: object
   jsonResult:
     properties:
       code:
+        example: 0
         type: integer
       data: { }
       text:
         type: string
       values: { }
+    required:
+      - code
     type: object
   landLord:
     properties:
@@ -328,6 +429,12 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - square
+      - userId
+      - x
+      - "y"
     type: object
   logisticPayload:
     properties:
@@ -381,6 +488,12 @@ definitions:
         type: number
       speed:
         type: number
+    required:
+      - capacity
+      - capacityMax
+      - price
+      - revenue
+      - speed
     type: object
   logisticsPriceParams:
     properties:
@@ -403,6 +516,13 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - buildingId
+      - capacity
+      - price
+      - speed
+      - x
+      - "y"
     type: object
   order:
     properties:
@@ -423,6 +543,15 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - amount
+      - priceForUnit
+      - resourceTypeId
+      - sell
+      - userId
+      - x
+      - "y"
     type: object
   orderWithData:
     properties:
@@ -447,11 +576,24 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - amount
+      - nickName
+      - priceForUnit
+      - resourceType
+      - resourceTypeId
+      - sell
+      - userId
+      - x
+      - "y"
     type: object
   production:
     properties:
       blueprintId:
         type: integer
+    required:
+      - blueprintId
     type: object
   resourceAmount:
     properties:
@@ -478,6 +620,15 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - amount
+      - equipmentType
+      - resourceType
+      - resourceTypeId
+      - userId
+      - x
+      - "y"
     type: object
   resourceType:
     properties:
@@ -495,6 +646,13 @@ definitions:
       weight:
         description: kg
         type: number
+    required:
+      - demand
+      - id
+      - name
+      - storeGroup
+      - volume
+      - weight
     type: object
   resourceWithData:
     properties:
@@ -512,6 +670,14 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - amount
+      - resourceType
+      - resourceTypeId
+      - userId
+      - x
+      - "y"
     type: object
   startProductionPayload:
     properties:
@@ -521,6 +687,10 @@ definitions:
         type: string
       duration:
         $ref: '#/definitions/time.Duration'
+    required:
+      - blueprintId
+      - buildingId
+      - duration
     type: object
   storage:
     properties:
@@ -536,6 +706,13 @@ definitions:
         type: integer
       "y":
         type: integer
+    required:
+      - _id
+      - userId
+      - volumeMax
+      - volumeOccupied
+      - x
+      - "y"
     type: object
   storeGoodsPayload:
     properties:
@@ -545,6 +722,10 @@ definitions:
         type: number
       resourceTypeId:
         type: integer
+    required:
+      - buildingId
+      - price
+      - resourceTypeId
     type: object
   storeGoodsStatus:
     enum:
@@ -598,6 +779,11 @@ definitions:
         type: string
       password:
         type: string
+    required:
+      - _id
+      - email
+      - nickName
+      - password
     type: object
   userPayload:
     properties:
@@ -609,8 +795,13 @@ definitions:
         type: string
       ttl:
         type: integer
+    required:
+      - email
+      - nickName
+      - password
+      - ttl
     type: object
-host: localhost:8000
+host: staging.game.kube.atpstealer.com
 info:
   contact: { }
   title: Game API

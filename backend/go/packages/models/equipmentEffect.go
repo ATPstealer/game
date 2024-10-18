@@ -10,9 +10,9 @@ import (
 )
 
 type EquipmentEffect struct {
-	EffectId    uint    `json:"effectId" bson:"effectId"`
-	BlueprintId uint    `json:"blueprintId" bson:"blueprintId"`
-	Value       float64 `json:"value" bson:"value"`
+	EffectId    uint    `json:"effectId" bson:"effectId" validate:"required"`
+	BlueprintId uint    `json:"blueprintId" bson:"blueprintId" validate:"required"`
+	Value       float64 `json:"value" bson:"value" validate:"required"`
 	// Second value is considered as an average for all equipment, taking into account the first value.
 	ValueSecond float64 `json:"valueSecond" bson:"valueSecond"`
 } // @name equipmentEffect

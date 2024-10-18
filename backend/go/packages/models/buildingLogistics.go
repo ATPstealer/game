@@ -11,11 +11,11 @@ import (
 )
 
 type Logistics struct {
-	CapacityMax float64 `json:"capacityMax" bson:"capacityMax"`
-	Capacity    float64 `json:"capacity" bson:"capacity"`
-	Speed       float64 `json:"speed" bson:"speed"`
-	Price       float64 `json:"price" bson:"price"`
-	Revenue     float64 `json:"revenue" bson:"revenue"`
+	CapacityMax float64 `json:"capacityMax" bson:"capacityMax" validate:"required"`
+	Capacity    float64 `json:"capacity" bson:"capacity" validate:"required"`
+	Speed       float64 `json:"speed" bson:"speed" validate:"required"`
+	Price       float64 `json:"price" bson:"price" validate:"required"`
+	Revenue     float64 `json:"revenue" bson:"revenue" validate:"required"`
 } // @name logistics
 
 func LogisticsReset(m *mongo.Database, building Building) error {
@@ -85,12 +85,12 @@ type FindLogisticsParams struct {
 } // @name findLogisticsParams
 
 type LogisticsWithData struct {
-	X          int                `json:"x"`
-	Y          int                `json:"y"`
-	BuildingId primitive.ObjectID `json:"buildingId"`
-	Capacity   float64            `json:"capacity"`
-	Speed      float64            `json:"speed"`
-	Price      float64            `json:"price"`
+	X          int                `json:"x" validate:"required"`
+	Y          int                `json:"y" validate:"required"`
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+	Capacity   float64            `json:"capacity" validate:"required"`
+	Speed      float64            `json:"speed" validate:"required"`
+	Price      float64            `json:"price" validate:"required"`
 } // @name logisticsWithData
 
 func GetLogisticsCapacity(m *mongo.Database, findLogisticsParams FindLogisticsParams) ([]LogisticsWithData, error) {

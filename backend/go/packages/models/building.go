@@ -45,10 +45,10 @@ type Building struct {
 } // @name building
 
 type ConstructBuildingPayload struct {
-	TypeId uint `json:"typeId"`
-	X      int  `json:"x"`
-	Y      int  `json:"y"`
-	Square int  `json:"square"`
+	TypeId uint `json:"typeId" validate:"required"`
+	X      int  `json:"x" validate:"required"`
+	Y      int  `json:"y" validate:"required"`
+	Square int  `json:"square" validate:"required"`
 } // @name constructBuildingPayload
 
 func ConstructBuilding(m *mongo.Database, userId primitive.ObjectID, payload ConstructBuildingPayload) error {
@@ -115,23 +115,23 @@ type FindBuildingParams struct {
 } // @name findBuildingParams
 
 type BuildingWithData struct {
-	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	TypeId          uint               `json:"typeId"`
-	UserId          primitive.ObjectID `json:"userId"`
-	X               int                `json:"x"`
-	Y               int                `json:"y"`
-	Square          int                `json:"square"`
-	SquareInUse     float64            `json:"squareInUse"`
-	Level           int                `json:"level"`
-	Status          BuildingStatus     `json:"status"`
+	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	TypeId          uint               `json:"typeId" validate:"required"`
+	UserId          primitive.ObjectID `json:"userId" validate:"required"`
+	X               int                `json:"x" validate:"required"`
+	Y               int                `json:"y" validate:"required"`
+	Square          int                `json:"square" validate:"required"`
+	SquareInUse     float64            `json:"squareInUse" validate:"required"`
+	Level           int                `json:"level" validate:"required"`
+	Status          BuildingStatus     `json:"status" validate:"required"`
 	WorkStarted     time.Time          `json:"workStarted"`
 	WorkEnd         time.Time          `json:"workEnd"`
-	HiringNeeds     int                `json:"hiringNeeds"`
-	Salary          float64            `json:"salary"`
-	Workers         int                `json:"workers"`
-	OnStrike        bool               `json:"onStrike"`
-	BuildingType    BuildingType       `json:"buildingType"`
-	NickName        string             `json:"nickName"`
+	HiringNeeds     int                `json:"hiringNeeds" validate:"required"`
+	Salary          float64            `json:"salary" validate:"required"`
+	Workers         int                `json:"workers" validate:"required"`
+	OnStrike        bool               `json:"onStrike" validate:"required"`
+	BuildingType    BuildingType       `json:"buildingType" validate:"required"`
+	NickName        string             `json:"nickName" validate:"required"`
 	Production      *Production        `json:"production"`
 	Goods           *[]Goods           `json:"goods"`
 	Logistics       *Logistics         `json:"logistics"`

@@ -8,8 +8,8 @@ import (
 )
 
 type Settings struct {
-	Key   string  `bson:"key" json:"key"`
-	Value float64 `bson:"value" json:"value"`
+	Key   string  `bson:"key" json:"key" validate:"required"`
+	Value float64 `bson:"value" json:"value" validate:"required"`
 } // @name settings
 
 func GetSettings(m *mongo.Database) (map[string]float64, error) {

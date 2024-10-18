@@ -9,15 +9,15 @@ import (
 )
 
 type EquipmentType struct {
-	Id             uint    `json:"id" bson:"id"`
-	Name           string  `json:"name" bson:"name"`
-	ResourceTypeId uint    `json:"resourceTypeId" bson:"resourceTypeId"`
-	Durability     int     `json:"durability" bson:"durability"`
+	Id             uint    `json:"id" bson:"id" validate:"required"`
+	Name           string  `json:"name" bson:"name" validate:"required"`
+	ResourceTypeId uint    `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	Durability     int     `json:"durability" bson:"durability" validate:"required"`
 	BlueprintIds   []uint  `json:"blueprintIds" bson:"blueprintIds"`
-	EffectId       uint    `json:"effectId" bson:"effectId"`
-	Value          float64 `json:"value" bson:"value"`
-	ValueSecond    float64 `json:"valueSecond" bson:"valueSecond"`
-	Square         float64 `json:"square" bson:"square"`
+	EffectId       uint    `json:"effectId" bson:"effectId" validate:"required"`
+	Value          float64 `json:"value" bson:"value" validate:"required"`
+	ValueSecond    float64 `json:"valueSecond" bson:"valueSecond" validate:"required"`
+	Square         float64 `json:"square" bson:"square" validate:"required"`
 } // @name equipmentType
 
 func GetAllEquipmentTypes(m *mongo.Database) ([]EquipmentType, error) {

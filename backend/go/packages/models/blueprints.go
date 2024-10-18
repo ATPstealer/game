@@ -10,12 +10,12 @@ import (
 )
 
 type Blueprint struct {
-	Id                uint             `json:"id" bson:"id"`
-	Name              string           `json:"name" bson:"name"`
-	ProducedResources []ResourceAmount `json:"producedResources" bson:"producedResources"`
-	UsedResources     []ResourceAmount `json:"usedResources" bson:"usedResources"`
-	ProducedInId      uint             `json:"producedInId" bson:"producedInId"`
-	ProductionTime    time.Duration    `json:"productionTime" bson:"productionTime"`
+	Id                uint             `json:"id" bson:"id" validate:"required"`
+	Name              string           `json:"name" bson:"name" validate:"required"`
+	ProducedResources []ResourceAmount `json:"producedResources" bson:"producedResources" validate:"required"`
+	UsedResources     []ResourceAmount `json:"usedResources" bson:"usedResources" validate:"required"`
+	ProducedInId      uint             `json:"producedInId" bson:"producedInId" validate:"required"`
+	ProductionTime    time.Duration    `json:"productionTime" bson:"productionTime" validate:"required"`
 } // @name blueprint
 
 type ResourceAmount struct {

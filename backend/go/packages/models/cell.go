@@ -10,20 +10,20 @@ import (
 )
 
 type Cell struct {
-	Id               primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	CellName         string             `json:"cellName" bson:"cellName" `
-	X                int                `json:"x" bson:"x"`
-	Y                int                `json:"y" bson:"y"`
-	SurfaceImagePath string             `json:"surfaceImagePath" bson:"surfaceImagePath"`
-	Square           int                `json:"square" bson:"square"`
-	Pollution        float64            `json:"pollution" bson:"pollution"`
-	Population       float64            `json:"population" bson:"population"`
-	CivilSavings     float64            `json:"civilSavings" bson:"civilSavings"`
-	SpendRate        float64            `json:"SpendRate" bson:"spendRate"`
-	Education        float64            `json:"education" bson:"education"`
-	Crime            float64            `json:"crime" bson:"crime"`
-	Medicine         float64            `json:"medicine" bson:"medicine"`
-	AverageSalary    float64            `json:"averageSalary" bson:"averageSalary"`
+	Id               primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	CellName         string             `json:"cellName" bson:"cellName" validate:"required"`
+	X                int                `json:"x" bson:"x" validate:"required"`
+	Y                int                `json:"y" bson:"y" validate:"required"`
+	SurfaceImagePath string             `json:"surfaceImagePath" bson:"surfaceImagePath" validate:"required"`
+	Square           int                `json:"square" bson:"square" validate:"required"`
+	Pollution        float64            `json:"pollution" bson:"pollution" validate:"required"`
+	Population       float64            `json:"population" bson:"population" validate:"required"`
+	CivilSavings     float64            `json:"civilSavings" bson:"civilSavings validate:"required"`
+	SpendRate        float64            `json:"SpendRate" bson:"spendRate" validate:"required"`
+	Education        float64            `json:"education" bson:"education" validate:"required"`
+	Crime            float64            `json:"crime" bson:"crime" validate:"required"`
+	Medicine         float64            `json:"medicine" bson:"medicine" validate:"required"`
+	AverageSalary    float64            `json:"averageSalary" bson:"averageSalary" validate:"required"`
 } // @name cell
 
 func CheckEnoughLand(m *mongo.Database, x int, y int, squareForBuy int) (bool, error) {

@@ -11,14 +11,14 @@ import (
 )
 
 type Order struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
-	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit" validate:"required"`
+	Sell           bool               `json:"sell" bson:"sell" validate:"required"` // true - sell; false - buy
 } // @name order
 
 func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) error {
@@ -60,16 +60,16 @@ func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) er
 }
 
 type OrderWithData struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit"`
-	Sell           bool               `json:"sell" bson:"sell"` // true - sell; false - buy
-	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
-	NickName       string             `json:"nickName" bson:"nickName"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	PriceForUnit   float64            `json:"priceForUnit" bson:"priceForUnit" validate:"required"`
+	Sell           bool               `json:"sell" bson:"sell" validate:"required"` // true - sell; false - buy
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType" validate:"required"`
+	NickName       string             `json:"nickName" bson:"nickName" validate:"required"`
 } // @name orderWithData
 
 func GetMyOrders(m *mongo.Database, userId primitive.ObjectID) ([]OrderWithData, error) {
