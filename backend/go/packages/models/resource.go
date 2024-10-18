@@ -11,33 +11,33 @@ import (
 )
 
 type Resource struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
 } // @name resource
 
 type ResourceWithData struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
-	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType" validate:"required"`
 } // @name resourceWithData
 
 type ResourceAsEquipment struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
-	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType"`
-	EquipmentType  EquipmentType      `json:"equipmentType" bson:"equipmentType"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
+	ResourceType   ResourceType       `json:"resourceType" bson:"resourceType" validate:"required"`
+	EquipmentType  EquipmentType      `json:"equipmentType" bson:"equipmentType" validate:"required"`
 } // @name resourceAsEquipment
 
 func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {

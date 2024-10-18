@@ -12,15 +12,15 @@ import (
 )
 
 type Equipment struct {
-	EquipmentTypeId uint `json:"equipmentTypeId" bson:"equipmentTypeId"`
-	Amount          int  `json:"amount" bson:"amount"`
-	Durability      int  `json:"durability" bson:"durability"`
+	EquipmentTypeId uint `json:"equipmentTypeId" bson:"equipmentTypeId" validate:"required"`
+	Amount          int  `json:"amount" bson:"amount" validate:"required"`
+	Durability      int  `json:"durability" bson:"durability" validate:"required"`
 } // @name equipment
 
 type InstallEquipmentPayload struct {
-	BuildingId      primitive.ObjectID `json:"buildingId"`
-	EquipmentTypeId uint               `json:"equipmentTypeId"`
-	Amount          int                `json:"amount"`
+	BuildingId      primitive.ObjectID `json:"buildingId" validate:"required"`
+	EquipmentTypeId uint               `json:"equipmentTypeId" validate:"required"`
+	Amount          int                `json:"amount" validate:"required"`
 } // @name installEquipmentPayload
 
 // EffectsId https://docs.google.com/spreadsheets/d/18DblwMx9a-YnLh7hfqwSC5a3Sc-_bRybMWMWp-isgO0/edit?pli=1&gid=1818870012#gid=1818870012

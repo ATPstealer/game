@@ -11,13 +11,13 @@ import (
 )
 
 type Production struct {
-	BlueprintId uint `json:"blueprintId" bson:"blueprintId"`
+	BlueprintId uint `json:"blueprintId" bson:"blueprintId" validate:"required"`
 } // @name production
 
 type StartProductionPayload struct {
-	BuildingId  primitive.ObjectID
-	BlueprintId uint
-	Duration    time.Duration
+	BuildingId  primitive.ObjectID `json:"buildingId" validate:"required"`
+	BlueprintId uint               `json:"blueprintId" validate:"required"`
+	Duration    time.Duration      `json:"duration" validate:"required"`
 } // @name startProductionPayload
 
 func GetBuildingsProduction(m *mongo.Database) ([]BuildingWithData, error) {

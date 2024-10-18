@@ -5,12 +5,12 @@
         "contact": {},
         "version": "2.0"
     },
-  "host": "localhost:8000",
+    "host": "staging.game.kube.atpstealer.com",
     "basePath": "/api/v2",
     "paths": {
         "/bank/credit_terms": {
             "post": {
-              "description": "Limit \u003e 0, Rate \u003e 0. For change limit send payload: {\"Rate\": sameAsExisting, \"Rating\": sameAsExisting, \"Adding\": true}",
+                "description": "Limit \u003e 0, Rate \u003e 0. For change limit send payload: {\"Rate\": sameAsExisting, \"Rating\": sameAsExisting, \"Adding\": true}",
                 "consumes": [
                     "application/json"
                 ],
@@ -54,67 +54,67 @@
                 }
             }
         },
-      "/bank/get_credit_terms": {
-        "get": {
-          "description": "If defined return. Credit term where limit \u003e= in param, rate \u003c= in param, rating \u003c= in param.",
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "summary": "Return credit terms",
-          "parameters": [
-            {
-              "type": "number",
-              "description": "Credit limit minimum threshold",
-              "name": "limit",
-              "in": "query"
-            },
-            {
-              "type": "number",
-              "description": "Credit rate maximum threshold",
-              "name": "rate",
-              "in": "query"
-            },
-            {
-              "type": "number",
-              "description": "Credit rating maximum threshold",
-              "name": "rating",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/jsonResult"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "data": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/definitions/creditTerms"
-                        }
-                      }
+        "/bank/get_credit_terms": {
+            "get": {
+                "description": "If defined return. Credit term where limit \u003e= in param, rate \u003c= in param, rating \u003c= in param.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Return credit terms",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "description": "Credit limit minimum threshold",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Credit rate maximum threshold",
+                        "name": "rate",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Credit rating maximum threshold",
+                        "name": "rating",
+                        "in": "query"
                     }
-                  }
-                ]
-              }
-            },
-            "500": {
-              "description": "Internal Server Error",
-              "schema": {
-                "$ref": "#/definitions/jsonResult"
-              }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/jsonResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/creditTerms"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
             }
-          }
-        }
-      },
+        },
         "/building/blueprints": {
             "get": {
                 "description": "Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.",
@@ -1812,6 +1812,14 @@
     "definitions": {
         "blueprint": {
             "type": "object",
+            "required": [
+                "id",
+                "name",
+                "producedInId",
+                "producedResources",
+                "productionTime",
+                "usedResources"
+            ],
             "properties": {
                 "id": {
                     "type": "integer"
@@ -1858,6 +1866,18 @@
         },
         "buildingType": {
             "type": "object",
+            "required": [
+                "buildTime",
+                "buildingGroup",
+                "buildingSubGroup",
+                "capacity",
+                "cost",
+                "description",
+                "id",
+                "requirements",
+                "title",
+                "workers"
+            ],
             "properties": {
                 "buildTime": {
                     "$ref": "#/definitions/time.Duration"
@@ -1893,6 +1913,23 @@
         },
         "buildingWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "buildingType",
+                "hiringNeeds",
+                "level",
+                "nickName",
+                "onStrike",
+                "salary",
+                "square",
+                "squareInUse",
+                "status",
+                "typeId",
+                "userId",
+                "workers",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -1973,6 +2010,11 @@
         },
         "buyLandPayload": {
             "type": "object",
+            "required": [
+                "square",
+                "x",
+                "y"
+            ],
             "properties": {
                 "square": {
                     "type": "integer"
@@ -1987,6 +2029,21 @@
         },
         "cell": {
             "type": "object",
+            "required": [
+                "SpendRate",
+                "_id",
+                "averageSalary",
+                "cellName",
+                "crime",
+                "education",
+                "medicine",
+                "pollution",
+                "population",
+                "square",
+                "surfaceImagePath",
+                "x",
+                "y"
+            ],
             "properties": {
                 "SpendRate": {
                     "type": "number"
@@ -2034,6 +2091,15 @@
         },
         "characteristics": {
             "type": "object",
+            "required": [
+                "attention",
+                "intelligence",
+                "management",
+                "memory",
+                "multitasking",
+                "planning",
+                "wits"
+            ],
             "properties": {
                 "attention": {
                     "type": "integer"
@@ -2060,6 +2126,12 @@
         },
         "constructBuildingPayload": {
             "type": "object",
+            "required": [
+                "square",
+                "typeId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "square": {
                     "type": "integer"
@@ -2075,22 +2147,34 @@
                 }
             }
         },
-      "creditTerms": {
-        "type": "object",
-        "properties": {
-          "limit": {
-            "type": "number"
-          },
-          "rate": {
-            "type": "number"
-          },
-          "rating": {
-            "type": "number"
-          }
-        }
-      },
+        "creditTerms": {
+            "type": "object",
+            "required": [
+                "limit",
+                "rate",
+                "rating"
+            ],
+            "properties": {
+                "limit": {
+                    "type": "number"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "creditTermsPayload": {
             "type": "object",
+            "required": [
+                "adding",
+                "buildingId",
+                "limit",
+                "rate",
+                "rating"
+            ],
             "properties": {
                 "adding": {
                     "type": "boolean"
@@ -2111,6 +2195,11 @@
         },
         "equipment": {
             "type": "object",
+            "required": [
+                "amount",
+                "durability",
+                "equipmentTypeId"
+            ],
             "properties": {
                 "amount": {
                     "type": "integer"
@@ -2125,6 +2214,11 @@
         },
         "equipmentEffect": {
             "type": "object",
+            "required": [
+                "blueprintId",
+                "effectId",
+                "value"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2143,6 +2237,16 @@
         },
         "equipmentType": {
             "type": "object",
+            "required": [
+                "durability",
+                "effectId",
+                "id",
+                "name",
+                "resourceTypeId",
+                "square",
+                "value",
+                "valueSecond"
+            ],
             "properties": {
                 "blueprintIds": {
                     "type": "array",
@@ -2224,6 +2328,9 @@
         },
         "goods": {
             "type": "object",
+            "required": [
+                "resourceTypeId"
+            ],
             "properties": {
                 "price": {
                     "type": "number"
@@ -2261,6 +2368,11 @@
         },
         "installEquipmentPayload": {
             "type": "object",
+            "required": [
+                "amount",
+                "buildingId",
+                "equipmentTypeId"
+            ],
             "properties": {
                 "amount": {
                     "type": "integer"
@@ -2275,9 +2387,13 @@
         },
         "jsonResult": {
             "type": "object",
+            "required": [
+                "code"
+            ],
             "properties": {
                 "code": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "data": {},
                 "text": {
@@ -2288,6 +2404,13 @@
         },
         "landLord": {
             "type": "object",
+            "required": [
+                "_id",
+                "square",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2369,6 +2492,13 @@
         },
         "logistics": {
             "type": "object",
+            "required": [
+                "capacity",
+                "capacityMax",
+                "price",
+                "revenue",
+                "speed"
+            ],
             "properties": {
                 "capacity": {
                     "type": "number"
@@ -2400,6 +2530,14 @@
         },
         "logisticsWithData": {
             "type": "object",
+            "required": [
+                "buildingId",
+                "capacity",
+                "price",
+                "speed",
+                "x",
+                "y"
+            ],
             "properties": {
                 "buildingId": {
                     "type": "string"
@@ -2423,6 +2561,16 @@
         },
         "order": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "priceForUnit",
+                "resourceTypeId",
+                "sell",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2453,6 +2601,18 @@
         },
         "orderWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "nickName",
+                "priceForUnit",
+                "resourceType",
+                "resourceTypeId",
+                "sell",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2489,6 +2649,9 @@
         },
         "production": {
             "type": "object",
+            "required": [
+                "blueprintId"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2508,6 +2671,16 @@
         },
         "resourceAsEquipment": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "equipmentType",
+                "resourceType",
+                "resourceTypeId",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2537,6 +2710,14 @@
         },
         "resourceType": {
             "type": "object",
+            "required": [
+                "demand",
+                "id",
+                "name",
+                "storeGroup",
+                "volume",
+                "weight"
+            ],
             "properties": {
                 "demand": {
                     "type": "number"
@@ -2562,6 +2743,15 @@
         },
         "resourceWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "resourceType",
+                "resourceTypeId",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2588,6 +2778,11 @@
         },
         "startProductionPayload": {
             "type": "object",
+            "required": [
+                "blueprintId",
+                "buildingId",
+                "duration"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2602,6 +2797,14 @@
         },
         "storage": {
             "type": "object",
+            "required": [
+                "_id",
+                "userId",
+                "volumeMax",
+                "volumeOccupied",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2625,6 +2828,11 @@
         },
         "storeGoodsPayload": {
             "type": "object",
+            "required": [
+                "buildingId",
+                "price",
+                "resourceTypeId"
+            ],
             "properties": {
                 "buildingId": {
                     "type": "string"
@@ -2683,6 +2891,12 @@
         },
         "user": {
             "type": "object",
+            "required": [
+                "_id",
+                "email",
+                "nickName",
+                "password"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2706,6 +2920,12 @@
         },
         "userPayload": {
             "type": "object",
+            "required": [
+                "email",
+                "nickName",
+                "password",
+                "ttl"
+            ],
             "properties": {
                 "email": {
                     "type": "string"

@@ -11,29 +11,29 @@ import (
 )
 
 type User struct {
-	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	NickName        string             `json:"nickName" bson:"nickName"`
-	Email           string             `json:"email" bson:"email"`
-	Password        string             `json:"password" bson:"password"`
+	Id              primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	NickName        string             `json:"nickName" bson:"nickName" validate:"required"`
+	Email           string             `json:"email" bson:"email" validate:"required"`
+	Password        string             `json:"password" bson:"password" validate:"required"`
 	Money           float64            `json:"money" bson:"money"`
 	Characteristics Characteristics    `json:"characteristics" bson:"characteristics"`
 } // @name user
 
 type Characteristics struct {
-	Memory       int `json:"memory" bson:"memory"`
-	Intelligence int `json:"intelligence" bson:"intelligence"`
-	Attention    int `json:"attention" bson:"attention"`
-	Wits         int `json:"wits" bson:"wits"`
-	Multitasking int `json:"multitasking" bson:"multitasking"`
-	Management   int `json:"management" bson:"management"`
-	Planning     int `json:"planning" bson:"planning"`
+	Memory       int `json:"memory" bson:"memory" validate:"required"`
+	Intelligence int `json:"intelligence" bson:"intelligence" validate:"required"`
+	Attention    int `json:"attention" bson:"attention" validate:"required"`
+	Wits         int `json:"wits" bson:"wits" validate:"required"`
+	Multitasking int `json:"multitasking" bson:"multitasking" validate:"required"`
+	Management   int `json:"management" bson:"management" validate:"required"`
+	Planning     int `json:"planning" bson:"planning" validate:"required"`
 } // @name characteristics
 
 type UserPayload struct {
-	NickName string `json:"nickName"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	TTL      int    `json:"ttl"`
+	NickName string `json:"nickName" validate:"required" validate:"required"`
+	Email    string `json:"email" validate:"required" validate:"required"`
+	Password string `json:"password" validate:"required" validate:"required"`
+	TTL      int    `json:"ttl" validate:"required"`
 } // @name userPayload
 
 func CreateUser(m *mongo.Database, nickName string, email string, password string) error {

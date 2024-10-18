@@ -13,17 +13,17 @@ import (
 )
 
 type LandLord struct {
-	Id     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty"`
-	Square int                `json:"square"`
-	X      int                `json:"x"`
-	Y      int                `json:"y"`
+	Id     primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	UserId primitive.ObjectID `json:"userId,omitempty" bson:"userId,omitempty" validate:"required"`
+	Square int                `json:"square" validate:"required"`
+	X      int                `json:"x" validate:"required"`
+	Y      int                `json:"y" validate:"required"`
 } // @name landLord
 
 type BuyLandPayload struct {
-	X      int `json:"x"`
-	Y      int `json:"y"`
-	Square int `json:"square"`
+	X      int `json:"x" validate:"required"`
+	Y      int `json:"y" validate:"required"`
+	Square int `json:"square" validate:"required"`
 } // @name buyLandPayload
 
 func BuyLand(m *mongo.Database, userId primitive.ObjectID, payload BuyLandPayload) (float64, error) {

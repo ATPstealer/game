@@ -12,15 +12,15 @@ import (
 )
 
 type Logistic struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	Amount         float64            `json:"amount" bson:"amount"`
-	FromX          int                `json:"fromX" bson:"fromX"`
-	FromY          int                `json:"fromY" bson:"fromY"`
-	ToX            int                `json:"toX" bson:"toX"`
-	ToY            int                `json:"toY" bson:"toY"`
-	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	ResourceTypeId uint               `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	Amount         float64            `json:"amount" bson:"amount" validate:"required"`
+	FromX          int                `json:"fromX" bson:"fromX" validate:"required"`
+	FromY          int                `json:"fromY" bson:"fromY" validate:"required"`
+	ToX            int                `json:"toX" bson:"toX" validate:"required"`
+	ToY            int                `json:"toY" bson:"toY" validate:"required"`
+	WorkEnd        time.Time          `json:"workEnd" bson:"workEnd" validate:"required"`
 } // @name logistic
 
 type LogisticPayload struct {

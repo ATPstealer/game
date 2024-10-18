@@ -11,24 +11,24 @@ import (
 )
 
 type Bank struct {
-	LoansAmount       float64 `json:"loansAmount" bson:"loansAmount"`
-	LoansLimit        float64 `json:"loansLimit" bson:"loansLimit"`
-	BorrowedFromState float64 `json:"borrowedFromState" bson:"borrowedFromState"`
-	BorrowedLimit     float64 `json:"borrowedLimit" bson:"borrowedLimit"`
+	LoansAmount       float64 `json:"loansAmount" bson:"loansAmount" validate:"required"`
+	LoansLimit        float64 `json:"loansLimit" bson:"loansLimit" validate:"required"`
+	BorrowedFromState float64 `json:"borrowedFromState" bson:"borrowedFromState" validate:"required"`
+	BorrowedLimit     float64 `json:"borrowedLimit" bson:"borrowedLimit" validate:"required"`
 } // @name bank
 
 type CreditTerms struct {
-	Limit  float64 `json:"limit" bson:"limit"`
-	Rate   float64 `json:"rate" bson:"rate"`
-	Rating float64 `json:"rating" bson:"rating"`
+	Limit  float64 `json:"limit" bson:"limit" validate:"required"`
+	Rate   float64 `json:"rate" bson:"rate" validate:"required"`
+	Rating float64 `json:"rating" bson:"rating" validate:"required"`
 } // @name creditTerms
 
 type CreditTermsPayload struct {
-	Limit      float64            `json:"limit"`
-	Rate       float64            `json:"rate"`
-	Rating     float64            `json:"rating"`
-	BuildingId primitive.ObjectID `json:"buildingId"`
-	Adding     bool               `json:"adding"`
+	Limit      float64            `json:"limit" validate:"required"`
+	Rate       float64            `json:"rate" validate:"required"`
+	Rating     float64            `json:"rating" validate:"required"`
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+	Adding     bool               `json:"adding" validate:"required"`
 } // @name creditTermsPayload
 
 func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload CreditTermsPayload) error {

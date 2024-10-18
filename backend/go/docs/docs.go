@@ -1819,6 +1819,14 @@ const docTemplate = `{
     "definitions": {
         "blueprint": {
             "type": "object",
+            "required": [
+                "id",
+                "name",
+                "producedInId",
+                "producedResources",
+                "productionTime",
+                "usedResources"
+            ],
             "properties": {
                 "id": {
                     "type": "integer"
@@ -1865,6 +1873,18 @@ const docTemplate = `{
         },
         "buildingType": {
             "type": "object",
+            "required": [
+                "buildTime",
+                "buildingGroup",
+                "buildingSubGroup",
+                "capacity",
+                "cost",
+                "description",
+                "id",
+                "requirements",
+                "title",
+                "workers"
+            ],
             "properties": {
                 "buildTime": {
                     "$ref": "#/definitions/time.Duration"
@@ -1900,6 +1920,23 @@ const docTemplate = `{
         },
         "buildingWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "buildingType",
+                "hiringNeeds",
+                "level",
+                "nickName",
+                "onStrike",
+                "salary",
+                "square",
+                "squareInUse",
+                "status",
+                "typeId",
+                "userId",
+                "workers",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -1980,6 +2017,11 @@ const docTemplate = `{
         },
         "buyLandPayload": {
             "type": "object",
+            "required": [
+                "square",
+                "x",
+                "y"
+            ],
             "properties": {
                 "square": {
                     "type": "integer"
@@ -1994,6 +2036,21 @@ const docTemplate = `{
         },
         "cell": {
             "type": "object",
+            "required": [
+                "SpendRate",
+                "_id",
+                "averageSalary",
+                "cellName",
+                "crime",
+                "education",
+                "medicine",
+                "pollution",
+                "population",
+                "square",
+                "surfaceImagePath",
+                "x",
+                "y"
+            ],
             "properties": {
                 "SpendRate": {
                     "type": "number"
@@ -2041,6 +2098,15 @@ const docTemplate = `{
         },
         "characteristics": {
             "type": "object",
+            "required": [
+                "attention",
+                "intelligence",
+                "management",
+                "memory",
+                "multitasking",
+                "planning",
+                "wits"
+            ],
             "properties": {
                 "attention": {
                     "type": "integer"
@@ -2067,6 +2133,12 @@ const docTemplate = `{
         },
         "constructBuildingPayload": {
             "type": "object",
+            "required": [
+                "square",
+                "typeId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "square": {
                     "type": "integer"
@@ -2084,6 +2156,11 @@ const docTemplate = `{
         },
         "creditTerms": {
             "type": "object",
+            "required": [
+                "limit",
+                "rate",
+                "rating"
+            ],
             "properties": {
                 "limit": {
                     "type": "number"
@@ -2098,6 +2175,13 @@ const docTemplate = `{
         },
         "creditTermsPayload": {
             "type": "object",
+            "required": [
+                "adding",
+                "buildingId",
+                "limit",
+                "rate",
+                "rating"
+            ],
             "properties": {
                 "adding": {
                     "type": "boolean"
@@ -2118,6 +2202,11 @@ const docTemplate = `{
         },
         "equipment": {
             "type": "object",
+            "required": [
+                "amount",
+                "durability",
+                "equipmentTypeId"
+            ],
             "properties": {
                 "amount": {
                     "type": "integer"
@@ -2132,6 +2221,11 @@ const docTemplate = `{
         },
         "equipmentEffect": {
             "type": "object",
+            "required": [
+                "blueprintId",
+                "effectId",
+                "value"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2150,6 +2244,16 @@ const docTemplate = `{
         },
         "equipmentType": {
             "type": "object",
+            "required": [
+                "durability",
+                "effectId",
+                "id",
+                "name",
+                "resourceTypeId",
+                "square",
+                "value",
+                "valueSecond"
+            ],
             "properties": {
                 "blueprintIds": {
                     "type": "array",
@@ -2231,6 +2335,9 @@ const docTemplate = `{
         },
         "goods": {
             "type": "object",
+            "required": [
+                "resourceTypeId"
+            ],
             "properties": {
                 "price": {
                     "type": "number"
@@ -2268,6 +2375,11 @@ const docTemplate = `{
         },
         "installEquipmentPayload": {
             "type": "object",
+            "required": [
+                "amount",
+                "buildingId",
+                "equipmentTypeId"
+            ],
             "properties": {
                 "amount": {
                     "type": "integer"
@@ -2282,9 +2394,13 @@ const docTemplate = `{
         },
         "jsonResult": {
             "type": "object",
+            "required": [
+                "code"
+            ],
             "properties": {
                 "code": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 0
                 },
                 "data": {},
                 "text": {
@@ -2295,6 +2411,13 @@ const docTemplate = `{
         },
         "landLord": {
             "type": "object",
+            "required": [
+                "_id",
+                "square",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2376,6 +2499,13 @@ const docTemplate = `{
         },
         "logistics": {
             "type": "object",
+            "required": [
+                "capacity",
+                "capacityMax",
+                "price",
+                "revenue",
+                "speed"
+            ],
             "properties": {
                 "capacity": {
                     "type": "number"
@@ -2407,6 +2537,14 @@ const docTemplate = `{
         },
         "logisticsWithData": {
             "type": "object",
+            "required": [
+                "buildingId",
+                "capacity",
+                "price",
+                "speed",
+                "x",
+                "y"
+            ],
             "properties": {
                 "buildingId": {
                     "type": "string"
@@ -2430,6 +2568,16 @@ const docTemplate = `{
         },
         "order": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "priceForUnit",
+                "resourceTypeId",
+                "sell",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2460,6 +2608,18 @@ const docTemplate = `{
         },
         "orderWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "nickName",
+                "priceForUnit",
+                "resourceType",
+                "resourceTypeId",
+                "sell",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2496,6 +2656,9 @@ const docTemplate = `{
         },
         "production": {
             "type": "object",
+            "required": [
+                "blueprintId"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2515,6 +2678,16 @@ const docTemplate = `{
         },
         "resourceAsEquipment": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "equipmentType",
+                "resourceType",
+                "resourceTypeId",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2544,6 +2717,14 @@ const docTemplate = `{
         },
         "resourceType": {
             "type": "object",
+            "required": [
+                "demand",
+                "id",
+                "name",
+                "storeGroup",
+                "volume",
+                "weight"
+            ],
             "properties": {
                 "demand": {
                     "type": "number"
@@ -2569,6 +2750,15 @@ const docTemplate = `{
         },
         "resourceWithData": {
             "type": "object",
+            "required": [
+                "_id",
+                "amount",
+                "resourceType",
+                "resourceTypeId",
+                "userId",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2595,6 +2785,11 @@ const docTemplate = `{
         },
         "startProductionPayload": {
             "type": "object",
+            "required": [
+                "blueprintId",
+                "buildingId",
+                "duration"
+            ],
             "properties": {
                 "blueprintId": {
                     "type": "integer"
@@ -2609,6 +2804,14 @@ const docTemplate = `{
         },
         "storage": {
             "type": "object",
+            "required": [
+                "_id",
+                "userId",
+                "volumeMax",
+                "volumeOccupied",
+                "x",
+                "y"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2632,6 +2835,11 @@ const docTemplate = `{
         },
         "storeGoodsPayload": {
             "type": "object",
+            "required": [
+                "buildingId",
+                "price",
+                "resourceTypeId"
+            ],
             "properties": {
                 "buildingId": {
                     "type": "string"
@@ -2690,6 +2898,12 @@ const docTemplate = `{
         },
         "user": {
             "type": "object",
+            "required": [
+                "_id",
+                "email",
+                "nickName",
+                "password"
+            ],
             "properties": {
                 "_id": {
                     "type": "string"
@@ -2713,6 +2927,12 @@ const docTemplate = `{
         },
         "userPayload": {
             "type": "object",
+            "required": [
+                "email",
+                "nickName",
+                "password",
+                "ttl"
+            ],
             "properties": {
                 "email": {
                     "type": "string"
@@ -2734,7 +2954,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "localhost:8000",
+	Host:             "staging.game.kube.atpstealer.com",
 	BasePath:         "/api/v2",
 	Schemes:          []string{},
 	Title:            "Game API",

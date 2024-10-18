@@ -10,12 +10,12 @@ import (
 )
 
 type Storage struct {
-	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	UserId         primitive.ObjectID `json:"userId" bson:"userId"`
-	VolumeOccupied float64            `json:"volumeOccupied" bson:"volumeOccupied"`
-	VolumeMax      float64            `json:"volumeMax" bson:"volumeMax"`
-	X              int                `json:"x" bson:"x"`
-	Y              int                `json:"y" bson:"y"`
+	Id             primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty" validate:"required"`
+	UserId         primitive.ObjectID `json:"userId" bson:"userId" validate:"required"`
+	VolumeOccupied float64            `json:"volumeOccupied" bson:"volumeOccupied" validate:"required"`
+	VolumeMax      float64            `json:"volumeMax" bson:"volumeMax" validate:"required"`
+	X              int                `json:"x" bson:"x" validate:"required"`
+	Y              int                `json:"y" bson:"y" validate:"required"`
 } // @name storage
 
 func GetAllStorages(m *mongo.Database) ([]Storage, error) {
