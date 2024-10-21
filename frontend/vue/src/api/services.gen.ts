@@ -5,6 +5,9 @@ import type {
   PostBankCreditTermsData,
   PostBankCreditTermsError,
   PostBankCreditTermsResponse,
+  GetBankGetCreditTermsData,
+  GetBankGetCreditTermsError,
+  GetBankGetCreditTermsResponse,
   GetBuildingBlueprintsData,
   GetBuildingBlueprintsError,
   GetBuildingBlueprintsResponse,
@@ -110,7 +113,7 @@ export const client = createClient(createConfig({
 
 /**
  * Add / Change / Delete credit terms in bank contracts
- * Limit > 0, Rate > 0
+ * Limit > 0, Rate > 0. For change limit send payload: {"Rate": sameAsExisting, "Rating": sameAsExisting, "Adding": true}
  */
 export const postBankCreditTerms = <ThrowOnError extends boolean = false>(
   options: Options<PostBankCreditTermsData, ThrowOnError>
@@ -122,6 +125,23 @@ export const postBankCreditTerms = <ThrowOnError extends boolean = false>(
   >({
     ...options,
     url: '/bank/credit_terms'
+  })
+}
+
+/**
+ * Return credit terms
+ * If defined return. Credit term where limit >= in param, rate <= in param, rating <= in param.
+ */
+export const getBankGetCreditTerms = <ThrowOnError extends boolean = false>(
+  options?: Options<GetBankGetCreditTermsData, ThrowOnError>
+) => {
+  return (options?.client ?? client).get<
+    GetBankGetCreditTermsResponse,
+    GetBankGetCreditTermsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: '/bank/get_credit_terms'
   })
 }
 
@@ -273,7 +293,7 @@ export const postBuildingStopWork = <ThrowOnError extends boolean = false>(
 export const getBuildingTypes = <ThrowOnError extends boolean = false>(
   options?: Options<unknown, ThrowOnError>
 ) => {
-  return client.get<
+  return (options?.client ?? client).get<
     GetBuildingTypesResponse,
     GetBuildingTypesError,
     ThrowOnError

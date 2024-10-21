@@ -4,18 +4,24 @@
     <p class="font-bold capitalize">
       {{ t(`common.equipment`) }}
     </p>
+    <!--    <Button-->
+    <!--      class="w-max"-->
+    <!--      label="Добавить"-->
+    <!--      size="small"-->
+    <!--      @click="openModal('add')"-->
+    <!--    />-->
+    <!--    <Button-->
+    <!--      class="w-max"-->
+    <!--      label="Удалить"-->
+    <!--      severity="danger"-->
+    <!--      size="small"-->
+    <!--      @click="openModal('delete')"-->
+    <!--    />-->
     <Button
       class="w-max"
-      label="Добавить"
+      :label="t('equipment.title')"
       size="small"
-      @click="openModal('add')"
-    />
-    <Button
-      class="w-max"
-      label="Удалить"
-      severity="danger"
-      size="small"
-      @click="openModal('delete')"
+      @click="router.push({name: 'EquipmentId', params: {id: building._id}})"
     />
     <Dialog
       v-model:visible="showEquipmentModal"
@@ -148,6 +154,7 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
+import router from '@/router'
 import type { BackData } from '@/types'
 import type { Blueprint, Building } from '@/types/Buildings/index.interface'
 import type { Equipment, EquipmentType } from '@/types/Equipment/index.interface'
@@ -187,7 +194,7 @@ const openModal = (event: string) => {
 
         return acc
       }, {})
-
+      console.log(availableEquipment.value)
       loading.value = false
     })
   }

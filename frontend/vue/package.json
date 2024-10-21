@@ -21,6 +21,7 @@
     "@vueuse/core": "10.6.1",
     "autoprefixer": "10",
     "axios": "1.6.2",
+    "chart.js": "^4.4.5",
     "crypto-js": "4.2.0",
     "dayjs": "1.11.11",
     "lodash": "4.17.21",

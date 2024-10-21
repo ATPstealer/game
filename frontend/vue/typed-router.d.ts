@@ -48,6 +48,7 @@ declare module 'vue-router/auto/routes' {
     'BuildingsStoreNameId': RouteRecordInfo<'BuildingsStoreNameId', '/buildings/store/:name-:id', { name: ParamValue<true>, id: ParamValue<true> }, { name: ParamValue<false>, id: ParamValue<false> }>,
     'ConstructBuilding': RouteRecordInfo<'ConstructBuilding', '/construct-building', Record<never, never>, Record<never, never>>,
     'Equipment': RouteRecordInfo<'Equipment', '/equipment', Record<never, never>, Record<never, never>>,
+    'EquipmentId': RouteRecordInfo<'EquipmentId', '/equipment/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'Lands': RouteRecordInfo<'Lands', '/lands', Record<never, never>, Record<never, never>>,
     'Login': RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>,
     'Logistics': RouteRecordInfo<'Logistics', '/logistics', Record<never, never>, Record<never, never>>,
