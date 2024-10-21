@@ -2,6 +2,7 @@
 
 export const blueprintSchema = {
   type: 'object',
+  required: ['id', 'name', 'producedInId', 'producedResources', 'productionTime', 'usedResources'],
   properties: {
     id: {
       type: 'integer'
@@ -44,6 +45,18 @@ export const buildingStatusSchema = {
 
 export const buildingTypeSchema = {
   type: 'object',
+  required: [
+    'buildTime',
+    'buildingGroup',
+    'buildingSubGroup',
+    'capacity',
+    'cost',
+    'description',
+    'id',
+    'requirements',
+    'title',
+    'workers'
+  ],
   properties: {
     buildTime: {
       $ref: '#/definitions/time.Duration'
@@ -80,6 +93,23 @@ export const buildingTypeSchema = {
 
 export const buildingWithDataSchema = {
   type: 'object',
+  required: [
+    '_id',
+    'buildingType',
+    'hiringNeeds',
+    'level',
+    'nickName',
+    'onStrike',
+    'salary',
+    'square',
+    'squareInUse',
+    'status',
+    'typeId',
+    'userId',
+    'workers',
+    'x',
+    'y'
+  ],
   properties: {
     _id: {
       type: 'string'
@@ -161,6 +191,7 @@ export const buildingWithDataSchema = {
 
 export const buyLandPayloadSchema = {
   type: 'object',
+  required: ['square', 'x', 'y'],
   properties: {
     square: {
       type: 'integer'
@@ -176,6 +207,21 @@ export const buyLandPayloadSchema = {
 
 export const cellSchema = {
   type: 'object',
+  required: [
+    'SpendRate',
+    '_id',
+    'averageSalary',
+    'cellName',
+    'crime',
+    'education',
+    'medicine',
+    'pollution',
+    'population',
+    'square',
+    'surfaceImagePath',
+    'x',
+    'y'
+  ],
   properties: {
     SpendRate: {
       type: 'number'
@@ -224,6 +270,15 @@ export const cellSchema = {
 
 export const characteristicsSchema = {
   type: 'object',
+  required: [
+    'attention',
+    'intelligence',
+    'management',
+    'memory',
+    'multitasking',
+    'planning',
+    'wits'
+  ],
   properties: {
     attention: {
       type: 'integer'
@@ -251,6 +306,7 @@ export const characteristicsSchema = {
 
 export const constructBuildingPayloadSchema = {
   type: 'object',
+  required: ['square', 'typeId', 'x', 'y'],
   properties: {
     square: {
       type: 'integer'
@@ -267,8 +323,25 @@ export const constructBuildingPayloadSchema = {
   }
 } as const
 
+export const creditTermsSchema = {
+  type: 'object',
+  required: ['limit', 'rate', 'rating'],
+  properties: {
+    limit: {
+      type: 'number'
+    },
+    rate: {
+      type: 'number'
+    },
+    rating: {
+      type: 'number'
+    }
+  }
+} as const
+
 export const creditTermsPayloadSchema = {
   type: 'object',
+  required: ['adding', 'buildingId', 'limit', 'rate', 'rating'],
   properties: {
     adding: {
       type: 'boolean'
@@ -290,6 +363,7 @@ export const creditTermsPayloadSchema = {
 
 export const equipmentSchema = {
   type: 'object',
+  required: ['amount', 'durability', 'equipmentTypeId'],
   properties: {
     amount: {
       type: 'integer'
@@ -305,6 +379,7 @@ export const equipmentSchema = {
 
 export const equipmentEffectSchema = {
   type: 'object',
+  required: ['blueprintId', 'effectId', 'value'],
   properties: {
     blueprintId: {
       type: 'integer'
@@ -325,6 +400,16 @@ export const equipmentEffectSchema = {
 
 export const equipmentTypeSchema = {
   type: 'object',
+  required: [
+    'durability',
+    'effectId',
+    'id',
+    'name',
+    'resourceTypeId',
+    'square',
+    'value',
+    'valueSecond'
+  ],
   properties: {
     blueprintIds: {
       type: 'array',
@@ -409,6 +494,7 @@ export const findBuildingParamsSchema = {
 
 export const goodsSchema = {
   type: 'object',
+  required: ['resourceTypeId'],
   properties: {
     price: {
       type: 'number'
@@ -448,6 +534,7 @@ export const hiringPayloadSchema = {
 
 export const installEquipmentPayloadSchema = {
   type: 'object',
+  required: ['amount', 'buildingId', 'equipmentTypeId'],
   properties: {
     amount: {
       type: 'integer'
@@ -466,11 +553,10 @@ export const jsonResultSchema = {
   required: ['code'],
   properties: {
     code: {
-      type: 'integer'
+      type: 'integer',
+      example: 0
     },
-    data: {
-      type: 'object'
-    },
+    data: {},
     text: {
       type: 'string'
     },
@@ -480,6 +566,7 @@ export const jsonResultSchema = {
 
 export const landLordSchema = {
   type: 'object',
+  required: ['_id', 'square', 'userId', 'x', 'y'],
   properties: {
     _id: {
       type: 'string'
@@ -564,6 +651,7 @@ export const logisticWithDataSchema = {
 
 export const logisticsSchema = {
   type: 'object',
+  required: ['capacity', 'capacityMax', 'price', 'revenue', 'speed'],
   properties: {
     capacity: {
       type: 'number'
@@ -597,6 +685,7 @@ export const logisticsPriceParamsSchema = {
 
 export const logisticsWithDataSchema = {
   type: 'object',
+  required: ['buildingId', 'capacity', 'price', 'speed', 'x', 'y'],
   properties: {
     buildingId: {
       type: 'string'
@@ -621,6 +710,7 @@ export const logisticsWithDataSchema = {
 
 export const orderSchema = {
   type: 'object',
+  required: ['_id', 'amount', 'priceForUnit', 'resourceTypeId', 'sell', 'userId', 'x', 'y'],
   properties: {
     _id: {
       type: 'string'
@@ -652,6 +742,18 @@ export const orderSchema = {
 
 export const orderWithDataSchema = {
   type: 'object',
+  required: [
+    '_id',
+    'amount',
+    'nickName',
+    'priceForUnit',
+    'resourceType',
+    'resourceTypeId',
+    'sell',
+    'userId',
+    'x',
+    'y'
+  ],
   properties: {
     _id: {
       type: 'string'
@@ -689,6 +791,7 @@ export const orderWithDataSchema = {
 
 export const productionSchema = {
   type: 'object',
+  required: ['blueprintId'],
   properties: {
     blueprintId: {
       type: 'integer'
@@ -710,6 +813,16 @@ export const resourceAmountSchema = {
 
 export const resourceAsEquipmentSchema = {
   type: 'object',
+  required: [
+    '_id',
+    'amount',
+    'equipmentType',
+    'resourceType',
+    'resourceTypeId',
+    'userId',
+    'x',
+    'y'
+  ],
   properties: {
     _id: {
       type: 'string'
@@ -740,6 +853,7 @@ export const resourceAsEquipmentSchema = {
 
 export const resourceTypeSchema = {
   type: 'object',
+  required: ['demand', 'id', 'name', 'storeGroup', 'volume', 'weight'],
   properties: {
     demand: {
       type: 'number'
@@ -766,6 +880,7 @@ export const resourceTypeSchema = {
 
 export const resourceWithDataSchema = {
   type: 'object',
+  required: ['_id', 'amount', 'resourceType', 'resourceTypeId', 'userId', 'x', 'y'],
   properties: {
     _id: {
       type: 'string'
@@ -793,6 +908,7 @@ export const resourceWithDataSchema = {
 
 export const startProductionPayloadSchema = {
   type: 'object',
+  required: ['blueprintId', 'buildingId', 'duration'],
   properties: {
     blueprintId: {
       type: 'integer'
@@ -808,6 +924,7 @@ export const startProductionPayloadSchema = {
 
 export const storageSchema = {
   type: 'object',
+  required: ['_id', 'userId', 'volumeMax', 'volumeOccupied', 'x', 'y'],
   properties: {
     _id: {
       type: 'string'
@@ -832,6 +949,7 @@ export const storageSchema = {
 
 export const storeGoodsPayloadSchema = {
   type: 'object',
+  required: ['buildingId', 'price', 'resourceTypeId'],
   properties: {
     buildingId: {
       type: 'string'
@@ -887,6 +1005,7 @@ export const time_DurationSchema = {
 
 export const userSchema = {
   type: 'object',
+  required: ['_id', 'email', 'nickName', 'password'],
   properties: {
     _id: {
       type: 'string'
@@ -911,6 +1030,7 @@ export const userSchema = {
 
 export const userPayloadSchema = {
   type: 'object',
+  required: ['email', 'nickName', 'password', 'ttl'],
   properties: {
     email: {
       type: 'string'

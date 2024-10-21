@@ -67,6 +67,7 @@
     "type": "Building type",
     "types": {
       "all": "All",
+      "bank": "Bank",
       "energy plant": "Energy plant",
       "factory": "Factory",
       "farm": "Farm",
@@ -81,10 +82,10 @@
       "recycling plant": "Recycling plant",
       "refinery": "Refinery",
       "storage": "Storage",
-      "water pump": "Water Pump",
-      "bank": "Bank"
+      "water pump": "Water Pump"
     },
     "typesDescriptions": {
+      "bank": "Issues loans",
       "energy plant": "Provide energy",
       "farm": "Food production",
       "field": "Grows food",
@@ -94,11 +95,11 @@
       "mine": "Mining resources",
       "refinery": "Oil refining",
       "storage": "Store something",
-      "water pump": "Provide water",
-      "bank": "Issues loans"
+      "water pump": "Provide water"
     }
   },
   "common": {
+    "add": "Add",
     "amount": "Amount",
     "blueprint": "Blueprint",
     "build": "Build",
@@ -112,6 +113,7 @@
     "cost": "Cost",
     "create": "Create",
     "day": "{n} day | {n} days",
+    "delete": "Delete",
     "equipment": "equipment",
     "from": "from",
     "hour": "{n} hour | {n} hours",
@@ -121,6 +123,7 @@
     "move": "Move",
     "no": "No",
     "owner": "Owner",
+    "pieces": "pcs",
     "price": "Price",
     "production": "Production",
     "reset": "Reset",
@@ -129,13 +132,16 @@
     "square": "Square",
     "status": "status",
     "time": "Time",
+    "title": "Title",
     "to": "to",
+    "total": "Total",
     "type": "type",
     "value": "Value",
     "where": "Where",
     "yes": "Yes"
   },
   "equipment": {
+    "available": "Space available",
     "columns": {
       "durability": "Durability",
       "effect": "Effect",
@@ -146,6 +152,7 @@
       "2": "Decrease pollution",
       "3": "Providing logistic capacity"
     },
+    "empty": "No installed equipment",
     "title": "Equipment"
   },
   "lands": {

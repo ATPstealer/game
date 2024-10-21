@@ -10,6 +10,7 @@ import {
 import {
   client,
   postBankCreditTerms,
+  getBankGetCreditTerms,
   getBuildingBlueprints,
   postBuildingConstruct,
   deleteBuildingDestroy,
@@ -46,11 +47,12 @@ import {
   getUserData,
   postUserLogin,
   deleteUserLogin
-} from '@/api'
+} from '../services.gen'
 import type {
   PostBankCreditTermsData,
   PostBankCreditTermsError,
   PostBankCreditTermsResponse,
+  GetBankGetCreditTermsData,
   GetBuildingBlueprintsData,
   PostBuildingConstructData,
   PostBuildingConstructError,
@@ -111,7 +113,7 @@ import type {
   PostUserLoginResponse,
   DeleteUserLoginError,
   DeleteUserLoginResponse
-} from '@/api'
+} from '../types.gen'
 
 type QueryKey<TOptions extends Options> = [
   Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -144,7 +146,7 @@ const createQueryKey = <TOptions extends Options>(
   if (options?.query) {
     params.query = options.query
   }
-
+  
   return params
 }
 
@@ -160,7 +162,7 @@ export const postBankCreditTermsOptions = (options: Options<PostBankCreditTermsD
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBankCreditTermsQueryKey(options)
@@ -178,12 +180,31 @@ export const postBankCreditTermsMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
+}
+
+export const getBankGetCreditTermsQueryKey = (options?: Options<GetBankGetCreditTermsData>) => [
+  createQueryKey('getBankGetCreditTerms', options)
+]
+
+export const getBankGetCreditTermsOptions = (options?: Options<GetBankGetCreditTermsData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey }) => {
+      const { data } = await getBankGetCreditTerms({
+        ...options,
+        ...queryKey[0],
+        throwOnError: true
+      })
+      
+      return data
+    },
+    queryKey: getBankGetCreditTermsQueryKey(options)
+  })
 }
 
 export const getBuildingBlueprintsQueryKey = (options?: Options<GetBuildingBlueprintsData>) => [
@@ -198,7 +219,7 @@ export const getBuildingBlueprintsOptions = (options?: Options<GetBuildingBluepr
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getBuildingBlueprintsQueryKey(options)
@@ -217,7 +238,7 @@ export const postBuildingConstructOptions = (options: Options<PostBuildingConstr
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingConstructQueryKey(options)
@@ -235,11 +256,11 @@ export const postBuildingConstructMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -254,11 +275,11 @@ export const deleteBuildingDestroyMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -274,7 +295,7 @@ export const postBuildingGetOptions = (options?: Options<PostBuildingGetData>) =
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingGetQueryKey(options)
@@ -312,7 +333,7 @@ const createInfiniteParams = <
       ...page.query
     }
   }
-
+  
   return params as unknown as typeof page
 }
 
@@ -349,7 +370,7 @@ export const postBuildingGetInfiniteOptions = (options?: Options<PostBuildingGet
           ...params,
           throwOnError: true
         })
-
+        
         return data
       },
       queryKey: postBuildingGetInfiniteQueryKey(options)
@@ -368,11 +389,11 @@ export const postBuildingGetMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -388,7 +409,7 @@ export const postBuildingHiringOptions = (options: Options<PostBuildingHiringDat
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingHiringQueryKey(options)
@@ -406,11 +427,11 @@ export const postBuildingHiringMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -428,7 +449,7 @@ export const postBuildingInstallEquipmentOptions = (
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingInstallEquipmentQueryKey(options)
@@ -446,11 +467,11 @@ export const postBuildingInstallEquipmentMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -466,7 +487,7 @@ export const getBuildingMyOptions = (options?: Options<GetBuildingMyData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getBuildingMyQueryKey(options)
@@ -485,7 +506,7 @@ export const postBuildingStartWorkOptions = (options: Options<PostBuildingStartW
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingStartWorkQueryKey(options)
@@ -530,7 +551,7 @@ export const postBuildingStartWorkInfiniteOptions = (
           ...params,
           throwOnError: true
         })
-
+        
         return data
       },
       queryKey: postBuildingStartWorkInfiniteQueryKey(options)
@@ -549,11 +570,11 @@ export const postBuildingStartWorkMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -569,7 +590,7 @@ export const postBuildingStopWorkOptions = (options: Options<PostBuildingStopWor
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postBuildingStopWorkQueryKey(options)
@@ -612,7 +633,7 @@ export const postBuildingStopWorkInfiniteOptions = (options: Options<PostBuildin
           ...params,
           throwOnError: true
         })
-
+        
         return data
       },
       queryKey: postBuildingStopWorkInfiniteQueryKey(options)
@@ -631,11 +652,11 @@ export const postBuildingStopWorkMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -651,7 +672,7 @@ export const getBuildingTypesOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getBuildingTypesQueryKey(options)
@@ -670,7 +691,7 @@ export const getUsernamesByPrefixOptions = (options?: Options<GetUsernamesByPref
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getUsernamesByPrefixQueryKey(options)
@@ -689,7 +710,7 @@ export const getEquipmentMyOptions = (options?: Options<GetEquipmentMyData>) => 
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getEquipmentMyQueryKey(options)
@@ -708,7 +729,7 @@ export const getEquipmentTypesOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getEquipmentTypesQueryKey(options)
@@ -727,7 +748,7 @@ export const postLogisticsSetPriceOptions = (options: Options<PostLogisticsSetPr
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postLogisticsSetPriceQueryKey(options)
@@ -745,11 +766,11 @@ export const postLogisticsSetPriceMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -763,7 +784,7 @@ export const getMapOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getMapQueryKey(options)
@@ -782,7 +803,7 @@ export const getMapAllLandLordsOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getMapAllLandLordsQueryKey(options)
@@ -801,7 +822,7 @@ export const postMapBuyLandOptions = (options: Options<PostMapBuyLandData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postMapBuyLandQueryKey(options)
@@ -819,11 +840,11 @@ export const postMapBuyLandMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -839,7 +860,7 @@ export const getMapCellOwnersOptions = (options: Options<GetMapCellOwnersData>) 
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getMapCellOwnersQueryKey(options)
@@ -856,7 +877,7 @@ export const getMapMyOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getMapMyQueryKey(options)
@@ -874,11 +895,11 @@ export const deleteMarketOrderCloseMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -894,7 +915,7 @@ export const postMarketOrderCreateOptions = (options: Options<PostMarketOrderCre
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postMarketOrderCreateQueryKey(options)
@@ -912,11 +933,11 @@ export const postMarketOrderCreateMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -932,7 +953,7 @@ export const postMarketOrderExecuteOptions = (options: Options<PostMarketOrderEx
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postMarketOrderExecuteQueryKey(options)
@@ -950,11 +971,11 @@ export const postMarketOrderExecuteMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -970,7 +991,7 @@ export const getMarketOrderMyOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getMarketOrderMyQueryKey(options)
@@ -989,7 +1010,7 @@ export const getOrdersOptions = (options?: Options<GetOrdersData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getOrdersQueryKey(options)
@@ -1029,7 +1050,7 @@ export const getOrdersInfiniteOptions = (options?: Options<GetOrdersData>) => {
           ...params,
           throwOnError: true
         })
-
+        
         return data
       },
       queryKey: getOrdersInfiniteQueryKey(options)
@@ -1049,7 +1070,7 @@ export const getResourceLogisticsOptions = (options?: Options<GetResourceLogisti
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getResourceLogisticsQueryKey(options)
@@ -1068,7 +1089,7 @@ export const postResourceMoveOptions = (options: Options<PostResourceMoveData>) 
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postResourceMoveQueryKey(options)
@@ -1086,11 +1107,11 @@ export const postResourceMoveMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -1106,7 +1127,7 @@ export const getResourceMyOptions = (options?: Options<GetResourceMyData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getResourceMyQueryKey(options)
@@ -1125,7 +1146,7 @@ export const getResourceMyLogisticsOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getResourceMyLogisticsQueryKey(options)
@@ -1144,7 +1165,7 @@ export const getResourceTypesOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getResourceTypesQueryKey(options)
@@ -1161,7 +1182,7 @@ export const getSettingsOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getSettingsQueryKey(options)
@@ -1178,7 +1199,7 @@ export const getStorageMyOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getStorageMyQueryKey(options)
@@ -1197,7 +1218,7 @@ export const postStoreGoodsSetOptions = (options: Options<PostStoreGoodsSetData>
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postStoreGoodsSetQueryKey(options)
@@ -1215,11 +1236,11 @@ export const postStoreGoodsSetMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -1235,7 +1256,7 @@ export const postUserCreateOptions = (options: Options<PostUserCreateData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postUserCreateQueryKey(options)
@@ -1253,11 +1274,11 @@ export const postUserCreateMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -1271,7 +1292,7 @@ export const getUserDataOptions = (options?: Options) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: getUserDataQueryKey(options)
@@ -1290,7 +1311,7 @@ export const postUserLoginOptions = (options: Options<PostUserLoginData>) => {
         ...queryKey[0],
         throwOnError: true
       })
-
+      
       return data
     },
     queryKey: postUserLoginQueryKey(options)
@@ -1308,11 +1329,11 @@ export const postUserLoginMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }
 
@@ -1327,10 +1348,10 @@ export const deleteUserLoginMutation = () => {
         ...options,
         throwOnError: true
       })
-
+      
       return data
     }
   }
-
+  
   return mutationOptions
 }

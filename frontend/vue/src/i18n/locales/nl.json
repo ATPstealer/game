@@ -67,6 +67,7 @@
     "type": "Gebouw type",
     "types": {
       "all": "Alle",
+      "bank": "Bank",
       "energy plant": "Energiecentrale",
       "factory": "Fabriek",
       "farm": "Boerderij",
@@ -81,10 +82,10 @@
       "recycling plant": "Recyclage installatie",
       "refinery": "Raffinaderij",
       "storage": "Opslag",
-      "water pump": "Waterpomp",
-      "bank": "Bank"
+      "water pump": "Waterpomp"
     },
     "typesDescriptions": {
+      "bank": "Geeft leningen uit",
       "energy plant": "Voorziet energie",
       "farm": "Voedselproductie",
       "field": "Groeit voedsel",
@@ -94,11 +95,11 @@
       "mine": "Mijnbouw middelen",
       "refinery": "Olie raffinage",
       "storage": "Slaat iets op",
-      "water pump": "Voorziet water",
-      "bank": "Geeft leningen uit"
+      "water pump": "Voorziet water"
     }
   },
   "common": {
+    "add": "Toevoegen",
     "amount": "Bedrag",
     "blueprint": "Blauwdruk",
     "build": "Bouw",
@@ -112,6 +113,7 @@
     "cost": "Kosten",
     "create": "Creëer",
     "day": "{n} dag | {n} dagen",
+    "delete": "Verwijder",
     "equipment": "apparatuur",
     "from": "van",
     "hour": "{n} uur | {n} uur",
@@ -120,6 +122,7 @@
     "move": "Verplaatsen",
     "no": "Nee",
     "owner": "Eigenaar",
+    "pieces": "stuks",
     "price": "Prijs",
     "production": "Productie",
     "reset": "Reset",
@@ -128,13 +131,16 @@
     "square": "Vierkant",
     "status": "status",
     "time": "Tijd",
+    "title": "Titel",
     "to": "naar",
+    "total": "Totaal",
     "type": "type",
     "value": "Waarde",
     "where": "Waar",
     "yes": "Ja"
   },
   "equipment": {
+    "available": "Beschikbare ruimte",
     "columns": {
       "durability": "Duurzaamheid",
       "effect": "Effect",
@@ -145,6 +151,7 @@
       "2": "Verminder de vervuiling",
       "3": "Logistieke capaciteit bieden"
     },
+    "empty": "Geen geïnstalleerde apparatuur",
     "title": "Apparatuur"
   },
   "lands": {
