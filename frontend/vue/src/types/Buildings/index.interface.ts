@@ -59,9 +59,9 @@ export interface Blueprint {
 export interface SearchBuildingParams {
   limit: number;
   nickName?: string;
-  x?: string;
-  y?: string;
-  buildingTypeId?: string;
+  x?: number;
+  y?: number;
+  buildingTypeId?: number;
 }
 
 export interface Goods {
