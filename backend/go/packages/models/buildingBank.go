@@ -133,3 +133,18 @@ func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *fl
 	log.Println(creditTerms)
 	return creditTerms, nil
 }
+
+func UpdateBankLimits(m *mongo.Database, buildingId primitive.ObjectID, bank Bank) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": buildingId}, bson.M{
+		"$set": bson.M{
+			"bank": bank,
+		},
+	})
+
+	if err != nil {
+		log.Println("Failed to update building bank: " + err.Error())
+	}
+}
