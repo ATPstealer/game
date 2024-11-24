@@ -96,7 +96,8 @@
       "refinery": "Oil refining",
       "storage": "Store something",
       "water pump": "Provide water"
-    }
+    },
+    "emergency hiring": "Emergency hiring"
   },
   "common": {
     "add": "Add",

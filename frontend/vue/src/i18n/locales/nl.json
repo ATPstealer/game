@@ -96,7 +96,8 @@
       "refinery": "Olie raffinage",
       "storage": "Slaat iets op",
       "water pump": "Voorziet water"
-    }
+    },
+    "emergency hiring": "Spoed inhuren"
   },
   "common": {
     "add": "Toevoegen",

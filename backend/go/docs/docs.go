@@ -70,6 +70,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "bank"
+                ],
                 "summary": "Return credit terms",
                 "parameters": [
                     {
@@ -250,6 +253,51 @@ const docTemplate = `{
                         "name": "_id",
                         "in": "query",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/building/emergency_hiring": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "buildings"
+                ],
+                "summary": "Expensive fast hiring",
+                "parameters": [
+                    {
+                        "description": "Emergency hiring payload",
+                        "name": "emergencyHiringPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/emergencyHiringPayload"
+                        }
                     }
                 ],
                 "responses": {
@@ -2197,6 +2245,17 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "number"
+                }
+            }
+        },
+        "emergencyHiringPayload": {
+            "type": "object",
+            "required": [
+                "buildingId"
+            ],
+            "properties": {
+                "buildingId": {
+                    "type": "string"
                 }
             }
         },
