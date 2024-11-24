@@ -28,4 +28,6 @@ func transform(m *mongo.Database) {
 	evolution.DurabilityRecount(m)
 	log.Println("=== Logistics Reset ===")
 	evolution.LogisticsReset(m)
+	log.Println("=== Bank Count ===")
+	evolution.BankCount(m)
 }

@@ -136,6 +136,7 @@ type BuildingWithData struct {
 	Production      *Production        `json:"production"`
 	Goods           *[]Goods           `json:"goods"`
 	Logistics       *Logistics         `json:"logistics"`
+	Bank            *Bank              `json:"bank"`
 	Equipment       *[]Equipment       `json:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"`
 } // @name buildingWithData
