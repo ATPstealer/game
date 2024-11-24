@@ -20,3 +20,12 @@ front
 ```aiignore
 npx @hey-api/openapi-ts --useOptions -i ../../backend/go/docs/swagger.json -o ./src/api -c @hey-api/client-fetch
 ```
+
+Replace client in services.gen.ts
+
+```aiignore
+export const client = createClient(createConfig({
+  baseUrl: `${import.meta.env.VITE_API}`,
+  credentials: 'include'
+}))
+```

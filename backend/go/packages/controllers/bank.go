@@ -50,6 +50,7 @@ func AddOrDeleteCreditTerm(c *gin.Context) {
 //
 //	@Summary		Return credit terms
 //	@Description	If defined return. Credit term where limit >= in param, rate <= in param, rating <= in param.
+//	@Tags			bank
 //	@Accept			json
 //	@Produce		json
 //	@Param			limit	query		float64	false	"Credit limit minimum threshold"

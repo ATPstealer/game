@@ -357,3 +357,40 @@ func InstallEquipment(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"code": -14})
 }
+
+// EmergencyHiring
+//
+//	@Summary	Expensive fast hiring
+//	@Tags		buildings
+//	@Accept		json
+//	@Produce	json
+//	@Param		emergencyHiringPayload	body		models.EmergencyHiringPayload	true	"Emergency hiring payload"
+//	@Success	200						{object}	JSONResult
+//	@Failure	401						{object}	JSONResult
+//	@Failure	500						{object}	JSONResult
+//	@Router		/building/emergency_hiring [post]
+func EmergencyHiring(c *gin.Context) {
+	var emergencyHiringPayload models.EmergencyHiringPayload
+	if err := include.GetPayload(c, &emergencyHiringPayload); err != nil {
+		return
+	}
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	err = models.EmergencyHiring(db.M, userId, emergencyHiringPayload)
+	if err != nil {
+		if strings.Contains(err.Error(), "this building don't belong you") {
+			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "impossible") {
+			c.JSON(http.StatusOK, gin.H{"code": 39, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": -17})
+}

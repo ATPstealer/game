@@ -90,6 +90,13 @@
     <div v-if="!isMapFetching">
       {{ t(`buildings.hiring.average salary`) }}:
       {{ moneyFormat(getAverageSalary()) }}
+      <Button
+          class="w-max"
+          :label="t(`buildings.emergency hiring`)"
+          severity="secondary"
+          size="small"
+          @click="confirmEmergencyHiring($event, building._id)"
+      />
     </div>
   </div>
 </template>
@@ -105,6 +112,10 @@ import { useMap } from '@/composables/useMap'
 import { BackData } from '@/types'
 import { Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
+import {useConfirm} from "primevue/useconfirm";
+import {useMutation} from "@tanstack/vue-query";
+import {type EmergencyHiringPayload, type JsonResult, postBuildingEmergencyHiring} from "@/api";
+import {postBuildingEmergencyHiringMutation, postUserLoginMutation} from "@/api/@tanstack/vue-query.gen";
 
 interface Props {
   building: Building;
@@ -118,6 +129,7 @@ const editHiringNeeds = ref<boolean>(false)
 const salary = ref<number>(props.building.salary)
 const hiringNeeds = ref<number>(props.building.hiringNeeds)
 const messageData = ref<BackData>()
+const confirm = useConfirm()
 
 const { setHiring } = useBuildings()
 const { t } = useI18n()
@@ -149,6 +161,31 @@ const setHiringData = (value, option: HiringOptions) => {
     editHiringNeeds.value = false
     editSalary.value = false
   })
+}
+
+const confirmEmergencyHiring = (event: any, id: string) => {
+  confirm.require({
+    target: event.currentTarget,
+    message: t('common.confirm'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger p-button-sm',
+    acceptLabel: t('common.yes'),
+    rejectLabel: t('common.no'),
+    accept: () => handleEmergencyHiring(id)
+  })
+}
+
+const emergencyHiringMutate = useMutation({
+  ...postBuildingEmergencyHiringMutation(),
+  onSuccess: (data: JsonResult) => {
+    messageData.value = data
+    console.log(messageData.value)
+  }
+})
+
+const handleEmergencyHiring = (id) => {
+  const payload = {buildingId: id}
+  emergencyHiringMutate.mutate({body: {...payload}})
 }
 
 </script>

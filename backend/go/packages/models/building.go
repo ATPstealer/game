@@ -39,6 +39,7 @@ type Building struct {
 	Production      *Production        `json:"production" bson:"production"`
 	Goods           *[]Goods           `json:"goods" bson:"goods"`
 	Logistics       *Logistics         `json:"logistics" bson:"logistics"`
+	Bank            *Bank              `json:"bank" bson:"bank"`
 	CreditTerms     *[]CreditTerms     `json:"creditTerms" bson:"creditTerms"`
 	Equipment       *[]Equipment       `json:"equipment" bson:"equipment"`
 	EquipmentEffect *[]EquipmentEffect `json:"equipmentEffect"  bson:"equipmentEffect"`
@@ -414,4 +415,44 @@ func CheckBuildingCell(m *mongo.Database, buildingId primitive.ObjectID, x int, 
 		return false
 	}
 	return building.X == x && building.Y == y
+}
+
+type EmergencyHiringPayload struct {
+	BuildingID primitive.ObjectID `json:"buildingId" validate:"required"`
+} // @name emergencyHiringPayload
+
+func EmergencyHiring(m *mongo.Database, userId primitive.ObjectID, payload EmergencyHiringPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, payload.BuildingID)
+	if err != nil {
+		log.Println("can't check buildings", payload.BuildingID, "cell:", err)
+		return err
+	}
+	if userId != building.UserId && building.UserId != primitive.NilObjectID {
+		return errors.New("this building doesn't belong you")
+	}
+	if building.Workers >= building.HiringNeeds {
+		return errors.New("impossible")
+	}
+	cell, err := GetCell(m, building.X, building.Y)
+	if err != nil {
+		log.Println("can't get cell ", building.X, "x", building.Y, ":", err)
+		return err
+	}
+	// FORMULA Emergence hiring
+	price := float64(building.HiringNeeds-building.Workers) * cell.AverageSalary * 10
+	if CheckEnoughMoney(m, building.UserId, price) {
+		err = AddMoney(m, building.UserId, -1*price)
+		if err != nil {
+			return err
+		}
+		_, err := m.Collection("buildings").UpdateOne(ctx,
+			bson.M{"_id": building.Id},
+			bson.M{"$set": bson.M{"workers": building.HiringNeeds}})
+		return err
+	} else {
+		return errors.New("not enough money")
+	}
 }

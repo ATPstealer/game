@@ -274,6 +274,13 @@ definitions:
       - rate
       - rating
     type: object
+  emergencyHiringPayload:
+    properties:
+      buildingId:
+        type: string
+    required:
+      - buildingId
+    type: object
   equipment:
     properties:
       amount:
@@ -876,6 +883,8 @@ paths:
           schema:
             $ref: '#/definitions/jsonResult'
       summary: Return credit terms
+      tags:
+        - bank
   /building/blueprints:
     get:
       consumes:
@@ -968,6 +977,35 @@ paths:
           schema:
             $ref: '#/definitions/jsonResult'
       summary: Destroy an existing building
+      tags:
+        - buildings
+  /building/emergency_hiring:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Emergency hiring payload
+          in: body
+          name: emergencyHiringPayload
+          required: true
+          schema:
+            $ref: '#/definitions/emergencyHiringPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Expensive fast hiring
       tags:
         - buildings
   /building/get:
