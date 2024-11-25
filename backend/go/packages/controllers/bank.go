@@ -38,6 +38,10 @@ func AddOrDeleteCreditTerm(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "parameters must be positive") {
 			c.JSON(http.StatusOK, gin.H{"code": 38, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "limit exceeded") {
+			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}

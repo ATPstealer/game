@@ -114,8 +114,8 @@ import { Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
 import {useConfirm} from "primevue/useconfirm";
 import {useMutation} from "@tanstack/vue-query";
-import {type EmergencyHiringPayload, type JsonResult, postBuildingEmergencyHiring} from "@/api";
-import {postBuildingEmergencyHiringMutation, postUserLoginMutation} from "@/api/@tanstack/vue-query.gen";
+import {type JsonResult} from "@/api";
+import {postBuildingEmergencyHiringMutation} from "@/api/@tanstack/vue-query.gen";
 
 interface Props {
   building: Building;
@@ -139,7 +139,6 @@ const getAverageSalary = () => {
   if (map.value?.length && props?.building) {
     return  map.value.filter(item => item.x === props.building.x && item.y === props.building.y)[0].averageSalary
   }
-
   return 0
 }
 

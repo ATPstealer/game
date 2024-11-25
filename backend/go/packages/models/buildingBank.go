@@ -51,11 +51,17 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 		return err
 	}
 
+	if building.Bank == nil {
+		return errors.New("doesn't have bank limits")
+	}
+
 	creditTerms := CreditTerms{
 		Limit:  payload.Limit,
 		Rate:   payload.Rate,
 		Rating: payload.Rating,
 	}
+
+	oldLimit := 0.0
 
 	if payload.Adding {
 		if building.CreditTerms == nil {
@@ -65,6 +71,7 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 			found := false
 			for i := range *building.CreditTerms {
 				if (*building.CreditTerms)[i].Rating == creditTerms.Rating && (*building.CreditTerms)[i].Rate == creditTerms.Rate {
+					oldLimit = (*building.CreditTerms)[i].Limit
 					(*building.CreditTerms)[i].Limit = creditTerms.Limit
 					found = true
 					break
@@ -79,12 +86,34 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 		building.CreditTerms = &updatedCreditTerms
 	}
 
+	var amount float64
+	if payload.Adding {
+		amount = creditTerms.Limit - oldLimit
+		if amount > 0 && !CheckEnoughMoney(m, userId, amount) {
+			return errors.New("not enough money")
+		}
+	} else {
+		amount = -creditTerms.Limit
+	}
+
+	if amount+building.Bank.LoansAmount > building.Bank.LoansLimit {
+		return errors.New("limit exceeded")
+	}
+	building.Bank.LoansAmount += amount
+
+	err = AddMoney(m, userId, -amount)
+	if err != nil {
+		return err
+	}
+
 	update := bson.M{
 		"$set": bson.M{
 			"creditTerms": building.CreditTerms,
+			"bank":        building.Bank,
 		},
 	}
 	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": payload.BuildingId}, update)
+
 	return err
 }
 
