@@ -132,10 +132,16 @@ func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) {
 	*creditTerms = updatedCreditTerms
 }
 
-func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *float64) ([]CreditTerms, error) {
-	var creditTerms []CreditTerms
+type CreditTermsWithData struct {
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+	Limit      float64            `json:"limit" validate:"required"`
+	Rate       float64            `json:"rate" validate:"required"`
+	Rating     float64            `json:"rating" validate:"required"`
+} // @name creditTermsWithData
+
+func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *float64) ([]CreditTermsWithData, error) {
+	var creditTerms []CreditTermsWithData
 	banks, err := GetAllReadyBuildingByGroup(m, "Bank")
-	log.Println(banks)
 	if err != nil {
 		log.Println(err)
 		return creditTerms, err
@@ -156,11 +162,16 @@ func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *fl
 				if rating != nil && !(ct.Rating <= *rating) {
 					break
 				}
-				creditTerms = append(creditTerms, ct)
+				creditTerms = append(creditTerms, CreditTermsWithData{
+					BuildingId: bank.Id,
+					Limit:      ct.Limit,
+					Rate:       ct.Rate,
+					Rating:     ct.Rating,
+				})
 			}
 		}
 	}
-	log.Println(creditTerms)
+
 	return creditTerms, nil
 }
 
@@ -177,4 +188,74 @@ func UpdateBankLimits(m *mongo.Database, buildingId primitive.ObjectID, bank Ban
 	if err != nil {
 		log.Println("Failed to update building bank: " + err.Error())
 	}
+}
+
+type TakeCreditPayload struct {
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+	Amount     float64            `json:"amount" validate:"required"`
+	Rate       float64            `json:"rate" validate:"required"`
+	Rating     float64            `json:"rating" validate:"required"`
+} // @name takeCreditPayload
+
+func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCreditPayload) error {
+	building, err := GetBuildingById(m, payload.BuildingId)
+	if err != nil {
+		return err
+	}
+
+	if building.CreditTerms == nil {
+		return errors.New("doesn't have that credit terms")
+	}
+
+	user, err := GetUserById(m, userId)
+	if err != nil {
+		return err
+	}
+
+	if user.CreditRating < payload.Rating {
+		return errors.New("you don't have enough credit rating")
+	}
+
+	index := 0
+	found := false
+	for i, ct := range *building.CreditTerms {
+		if ct.Rating == payload.Rating && ct.Rate == payload.Rate {
+			index = i
+			found = true
+		}
+	}
+	if !found {
+		return errors.New("doesn't have that credit terms")
+	}
+
+	if payload.Amount > (*building.CreditTerms)[index].Limit {
+		return errors.New("amount exceeded")
+	}
+
+	err = AddMoney(m, userId, payload.Amount)
+	if err != nil {
+		return err
+	}
+
+	(*building.CreditTerms)[index].Limit -= payload.Amount
+	if (*building.CreditTerms)[index].Limit <= 0 {
+		*building.CreditTerms = append((*building.CreditTerms)[:index], (*building.CreditTerms)[index+1:]...)
+	}
+
+	err = updateCreditTerms(m, building.Id, building.CreditTerms)
+
+	return err
+}
+
+func updateCreditTerms(m *mongo.Database, buildingId primitive.ObjectID, creditTerms *[]CreditTerms) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": buildingId}, bson.M{
+		"$set": bson.M{
+			"creditTerms": creditTerms,
+		},
+	})
+
+	return err
 }

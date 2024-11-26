@@ -1,5 +1,21 @@
 basePath: /api/v2
 definitions:
+  bank:
+    properties:
+      borrowedFromState:
+        type: number
+      borrowedLimit:
+        type: number
+      loansAmount:
+        type: number
+      loansLimit:
+        type: number
+    required:
+      - borrowedFromState
+      - borrowedLimit
+      - loansAmount
+      - loansLimit
+    type: object
   blueprint:
     properties:
       id:
@@ -78,6 +94,8 @@ definitions:
     properties:
       _id:
         type: string
+      bank:
+        $ref: '#/definitions/bank'
       buildingType:
         $ref: '#/definitions/buildingType'
       equipment:
@@ -242,19 +260,6 @@ definitions:
       - x
       - "y"
     type: object
-  creditTerms:
-    properties:
-      limit:
-        type: number
-      rate:
-        type: number
-      rating:
-        type: number
-    required:
-      - limit
-      - rate
-      - rating
-    type: object
   creditTermsPayload:
     properties:
       adding:
@@ -269,6 +274,22 @@ definitions:
         type: number
     required:
       - adding
+      - buildingId
+      - limit
+      - rate
+      - rating
+    type: object
+  creditTermsWithData:
+    properties:
+      buildingId:
+        type: string
+      limit:
+        type: number
+      rate:
+        type: number
+      rating:
+        type: number
+    required:
       - buildingId
       - limit
       - rate
@@ -752,6 +773,22 @@ definitions:
       - SpendingLimitReached
       - CapacityReached
       - OnStrike
+  takeCreditPayload:
+    properties:
+      amount:
+        type: number
+      buildingId:
+        type: string
+      rate:
+        type: number
+      rating:
+        type: number
+    required:
+      - amount
+      - buildingId
+      - rate
+      - rating
+    type: object
   time.Duration:
     enum:
       - -9223372036854775808
@@ -778,6 +815,8 @@ definitions:
         type: string
       characteristics:
         $ref: '#/definitions/characteristics'
+      creditRating:
+        type: number
       email:
         type: string
       money:
@@ -823,7 +862,7 @@ paths:
       parameters:
         - description: Credit terms payload
           in: body
-          name: CreditTermsPayload
+          name: creditTermsPayload
           required: true
           schema:
             $ref: '#/definitions/creditTermsPayload'
@@ -875,7 +914,7 @@ paths:
               - properties:
                   data:
                     items:
-                      $ref: '#/definitions/creditTerms'
+                      $ref: '#/definitions/creditTermsWithData'
                     type: array
                 type: object
         "500":
@@ -883,6 +922,36 @@ paths:
           schema:
             $ref: '#/definitions/jsonResult'
       summary: Return credit terms
+      tags:
+        - bank
+  /bank/take_credit:
+    post:
+      consumes:
+        - application/json
+      description: Get credit in bank. Payload example
+      parameters:
+        - description: Get credit payload
+          in: body
+          name: takeCreditPayload
+          required: true
+          schema:
+            $ref: '#/definitions/takeCreditPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Take credit
       tags:
         - bank
   /building/blueprints:

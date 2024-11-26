@@ -1,5 +1,6 @@
 {
   "codes": {
+    "-18": "U bent goedgekeurd voor een lening",
     "-17": "Emergence Nearing Succession",
     "-16": "Kredietvoorwaarden gewijzigd",
     "-15": "Prijs is vastgesteld",
@@ -54,6 +55,9 @@
     "38": "Parameters moeten positief zijn",
     "39": "Onmogelijk om meer mensen in te huren",
     "40": "Limiet overschreden",
+    "41": "Eindig de krediettermijn",
+    "42": "Uw kredietwaardigheid is onvoldoende",
+    "43": "Bedrag overschreden",
     "100001": "Database fout",
     "100002": "Kan verzoek POST body niet lezen",
     "100003": "Kan POST data niet parsen",

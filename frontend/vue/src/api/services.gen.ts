@@ -8,6 +8,9 @@ import type {
     GetBankGetCreditTermsData,
     GetBankGetCreditTermsError,
     GetBankGetCreditTermsResponse,
+    PostBankTakeCreditData,
+    PostBankTakeCreditError,
+    PostBankTakeCreditResponse,
     GetBuildingBlueprintsData,
     GetBuildingBlueprintsError,
     GetBuildingBlueprintsResponse,
@@ -133,6 +136,17 @@ export const getBankGetCreditTerms = <ThrowOnError extends boolean = false>(opti
     return (options?.client ?? client).get<GetBankGetCreditTermsResponse, GetBankGetCreditTermsError, ThrowOnError>({
     ...options,
     url: '/bank/get_credit_terms'
+    });
+};
+
+/**
+ * Take credit
+ * Get credit in bank. Payload example
+ */
+export const postBankTakeCredit = <ThrowOnError extends boolean = false>(options: Options<PostBankTakeCreditData, ThrowOnError>) => {
+    return (options?.client ?? client).post<PostBankTakeCreditResponse, PostBankTakeCreditError, ThrowOnError>({
+        ...options,
+        url: '/bank/take_credit'
     });
 };
 

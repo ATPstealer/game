@@ -1,5 +1,6 @@
 {
   "codes": {
+    "-18": "You have been approved for a loan",
     "-17": "Emergency hiring success",
     "-16": "Credit terms have been changed",
     "-15": "Price is set",
@@ -54,6 +55,9 @@
     "38": "Parameters must be positive",
     "39": "Impossible to hire more",
     "40": "Limit exceeded",
+    "41": "Doesn't have that credit terms",
+    "42": "You don't have enough credit rating",
+    "43": "Amount exceeded",
     "100001": "Database error",
     "100002": "Can't read request POST body",
     "100003": "Can't parse POST data",

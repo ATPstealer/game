@@ -31,7 +31,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Credit terms payload",
-                        "name": "CreditTermsPayload",
+                        "name": "creditTermsPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -108,12 +108,58 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/creditTerms"
+                                                "$ref": "#/definitions/creditTermsWithData"
                                             }
                                         }
                                     }
                                 }
                             ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank/take_credit": {
+            "post": {
+                "description": "Get credit in bank. Payload example",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Take credit",
+                "parameters": [
+                    {
+                        "description": "Get credit payload",
+                        "name": "takeCreditPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/takeCreditPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
                         }
                     },
                     "500": {
@@ -1865,6 +1911,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "bank": {
+            "type": "object",
+            "required": [
+                "borrowedFromState",
+                "borrowedLimit",
+                "loansAmount",
+                "loansLimit"
+            ],
+            "properties": {
+                "borrowedFromState": {
+                    "type": "number"
+                },
+                "borrowedLimit": {
+                    "type": "number"
+                },
+                "loansAmount": {
+                    "type": "number"
+                },
+                "loansLimit": {
+                    "type": "number"
+                }
+            }
+        },
         "blueprint": {
             "type": "object",
             "required": [
@@ -1988,6 +2057,9 @@ const docTemplate = `{
             "properties": {
                 "_id": {
                     "type": "string"
+                },
+                "bank": {
+                    "$ref": "#/definitions/bank"
                 },
                 "buildingType": {
                     "$ref": "#/definitions/buildingType"
@@ -2202,25 +2274,6 @@ const docTemplate = `{
                 }
             }
         },
-        "creditTerms": {
-            "type": "object",
-            "required": [
-                "limit",
-                "rate",
-                "rating"
-            ],
-            "properties": {
-                "limit": {
-                    "type": "number"
-                },
-                "rate": {
-                    "type": "number"
-                },
-                "rating": {
-                    "type": "number"
-                }
-            }
-        },
         "creditTermsPayload": {
             "type": "object",
             "required": [
@@ -2234,6 +2287,29 @@ const docTemplate = `{
                 "adding": {
                     "type": "boolean"
                 },
+                "buildingId": {
+                    "type": "string"
+                },
+                "limit": {
+                    "type": "number"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
+        "creditTermsWithData": {
+            "type": "object",
+            "required": [
+                "buildingId",
+                "limit",
+                "rate",
+                "rating"
+            ],
+            "properties": {
                 "buildingId": {
                     "type": "string"
                 },
@@ -2932,6 +3008,29 @@ const docTemplate = `{
                 "OnStrike"
             ]
         },
+        "takeCreditPayload": {
+            "type": "object",
+            "required": [
+                "amount",
+                "buildingId",
+                "rate",
+                "rating"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "buildingId": {
+                    "type": "string"
+                },
+                "rate": {
+                    "type": "number"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
         "time.Duration": {
             "type": "integer",
             "enum": [
@@ -2969,6 +3068,9 @@ const docTemplate = `{
                 },
                 "characteristics": {
                     "$ref": "#/definitions/characteristics"
+                },
+                "creditRating": {
+                    "type": "number"
                 },
                 "email": {
                     "type": "string"

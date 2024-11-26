@@ -24,7 +24,7 @@
                 "parameters": [
                     {
                         "description": "Credit terms payload",
-                        "name": "CreditTermsPayload",
+                      "name": "creditTermsPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -101,7 +101,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/creditTerms"
+                                              "$ref": "#/definitions/creditTermsWithData"
                                             }
                                         }
                                     }
@@ -118,6 +118,52 @@
                 }
             }
         },
+      "/bank/take_credit": {
+        "post": {
+          "description": "Get credit in bank. Payload example",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "bank"
+          ],
+          "summary": "Take credit",
+          "parameters": [
+            {
+              "description": "Get credit payload",
+              "name": "takeCreditPayload",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/takeCreditPayload"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "401": {
+              "description": "Unauthorized",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            },
+            "500": {
+              "description": "Internal Server Error",
+              "schema": {
+                "$ref": "#/definitions/jsonResult"
+              }
+            }
+          }
+        }
+      },
         "/building/blueprints": {
             "get": {
                 "description": "Fetches a list of blueprints. If an 'id' query parameter is provided, fetches the blueprint with the specified ID.",
@@ -1858,6 +1904,29 @@
         }
     },
     "definitions": {
+      "bank": {
+        "type": "object",
+        "required": [
+          "borrowedFromState",
+          "borrowedLimit",
+          "loansAmount",
+          "loansLimit"
+        ],
+        "properties": {
+          "borrowedFromState": {
+            "type": "number"
+          },
+          "borrowedLimit": {
+            "type": "number"
+          },
+          "loansAmount": {
+            "type": "number"
+          },
+          "loansLimit": {
+            "type": "number"
+          }
+        }
+      },
         "blueprint": {
             "type": "object",
             "required": [
@@ -1982,6 +2051,9 @@
                 "_id": {
                     "type": "string"
                 },
+              "bank": {
+                "$ref": "#/definitions/bank"
+              },
                 "buildingType": {
                     "$ref": "#/definitions/buildingType"
                 },
@@ -2195,14 +2267,22 @@
                 }
             }
         },
-        "creditTerms": {
+      "creditTermsPayload": {
             "type": "object",
             "required": [
+              "adding",
+              "buildingId",
                 "limit",
                 "rate",
                 "rating"
             ],
             "properties": {
+              "adding": {
+                "type": "boolean"
+              },
+              "buildingId": {
+                "type": "string"
+              },
                 "limit": {
                     "type": "number"
                 },
@@ -2214,19 +2294,15 @@
                 }
             }
         },
-        "creditTermsPayload": {
+      "creditTermsWithData": {
             "type": "object",
             "required": [
-                "adding",
                 "buildingId",
                 "limit",
                 "rate",
                 "rating"
             ],
             "properties": {
-                "adding": {
-                    "type": "boolean"
-                },
                 "buildingId": {
                     "type": "string"
                 },
@@ -2925,6 +3001,29 @@
                 "OnStrike"
             ]
         },
+      "takeCreditPayload": {
+        "type": "object",
+        "required": [
+          "amount",
+          "buildingId",
+          "rate",
+          "rating"
+        ],
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "buildingId": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "number"
+          },
+          "rating": {
+            "type": "number"
+          }
+        }
+      },
         "time.Duration": {
             "type": "integer",
             "enum": [
@@ -2963,6 +3062,9 @@
                 "characteristics": {
                     "$ref": "#/definitions/characteristics"
                 },
+              "creditRating": {
+                "type": "number"
+              },
                 "email": {
                     "type": "string"
                 },

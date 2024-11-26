@@ -7,6 +7,9 @@ import type {
     PostBankCreditTermsError,
     PostBankCreditTermsResponse,
     GetBankGetCreditTermsData,
+    PostBankTakeCreditData,
+    PostBankTakeCreditError,
+    PostBankTakeCreditResponse,
     GetBuildingBlueprintsData,
     PostBuildingConstructData,
     PostBuildingConstructError,
@@ -75,6 +78,7 @@ import {
     client,
     postBankCreditTerms,
     getBankGetCreditTerms,
+    postBankTakeCredit,
     getBuildingBlueprints,
     postBuildingConstruct,
     deleteBuildingDestroy,
@@ -191,6 +195,37 @@ export const getBankGetCreditTermsOptions = (options?: Options<GetBankGetCreditT
     },
     queryKey: getBankGetCreditTermsQueryKey(options)
     });
+};
+
+export const postBankTakeCreditQueryKey = (options: Options<PostBankTakeCreditData>) => [
+    createQueryKey("postBankTakeCredit", options)
+];
+
+export const postBankTakeCreditOptions = (options: Options<PostBankTakeCreditData>) => {
+    return queryOptions({
+        queryFn: async ({queryKey}) => {
+            const {data} = await postBankTakeCredit({
+                ...options,
+                ...queryKey[0],
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: postBankTakeCreditQueryKey(options)
+    });
+};
+
+export const postBankTakeCreditMutation = () => {
+    const mutationOptions: UseMutationOptions<PostBankTakeCreditResponse, PostBankTakeCreditError, Options<PostBankTakeCreditData>> = {
+        mutationFn: async (options) => {
+            const {data} = await postBankTakeCredit({
+                ...options,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const getBuildingBlueprintsQueryKey = (options?: Options<GetBuildingBlueprintsData>) => [

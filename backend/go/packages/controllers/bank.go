@@ -16,7 +16,7 @@ import (
 //	@Tags			bank
 //	@Accept			json
 //	@Produce		json
-//	@Param			CreditTermsPayload	body		models.CreditTermsPayload	true	"Credit terms payload"
+//	@Param			creditTermsPayload	body		models.CreditTermsPayload	true	"Credit terms payload"
 //	@Success		200					{object}	JSONResult
 //	@Failure		401					{object}	JSONResult
 //	@Failure		500					{object}	JSONResult
@@ -60,7 +60,7 @@ func AddOrDeleteCreditTerm(c *gin.Context) {
 //	@Param			limit	query		float64	false	"Credit limit minimum threshold"
 //	@Param			rate	query		float64	false	"Credit rate maximum threshold"
 //	@Param			rating	query		float64	false	"Credit rating maximum threshold"
-//	@Success		200		{object}	JSONResult{data=[]models.CreditTerms}
+//	@Success		200		{object}	JSONResult{data=[]models.CreditTermsWithData}
 //	@Failure		500		{object}	JSONResult
 //	@Router			/bank/get_credit_terms [get]
 func GetCreditTerms(c *gin.Context) {
@@ -92,4 +92,44 @@ func GetCreditTerms(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"code": 0, "data": creditTerms})
+}
+
+// TakeCredit
+//
+//	@Summary		Take credit
+//	@Description	Get credit in bank. Payload example
+//	@Tags			bank
+//	@Accept			json
+//	@Produce		json
+//	@Param			takeCreditPayload	body		models.TakeCreditPayload	true	"Get credit payload"
+//	@Success		200					{object}	JSONResult
+//	@Failure		401					{object}	JSONResult
+//	@Failure		500					{object}	JSONResult
+//	@Router			/bank/take_credit [post]
+func TakeCredit(c *gin.Context) {
+	var takeCreditPayload models.TakeCreditPayload
+	if err := include.GetPayload(c, &takeCreditPayload); err != nil {
+		return
+	}
+
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	err = models.TakeCredit(db.M, userId, takeCreditPayload)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "doesn't have that credit terms") {
+			c.JSON(http.StatusOK, gin.H{"code": 41, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "you don't have enough credit rating") {
+			c.JSON(http.StatusOK, gin.H{"code": 42, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "amount exceeded") {
+			c.JSON(http.StatusOK, gin.H{"code": 43, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": -18})
 }

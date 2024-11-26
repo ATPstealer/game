@@ -16,6 +16,7 @@ type User struct {
 	Email           string             `json:"email" bson:"email" validate:"required"`
 	Password        string             `json:"password" bson:"password" validate:"required"`
 	Money           float64            `json:"money" bson:"money"`
+	CreditRating    float64            `json:"creditRating" bson:"creditRating"`
 	Characteristics Characteristics    `json:"characteristics" bson:"characteristics"`
 } // @name user
 
@@ -41,10 +42,11 @@ func CreateUser(m *mongo.Database, nickName string, email string, password strin
 	defer cancel()
 
 	user := User{
-		NickName: nickName,
-		Email:    email,
-		Password: password,
-		Money:    1000000,
+		NickName:     nickName,
+		Email:        email,
+		Password:     password,
+		Money:        1000000,
+		CreditRating: 0,
 		Characteristics: Characteristics{
 			Memory:       3,
 			Intelligence: 3,
