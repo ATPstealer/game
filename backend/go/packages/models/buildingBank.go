@@ -62,28 +62,14 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 	}
 
 	oldLimit := 0.0
-
 	if payload.Adding {
 		if building.CreditTerms == nil {
 			building.CreditTerms = &[]CreditTerms{creditTerms}
 		} else {
-			// TODO: make separate func
-			found := false
-			for i := range *building.CreditTerms {
-				if (*building.CreditTerms)[i].Rating == creditTerms.Rating && (*building.CreditTerms)[i].Rate == creditTerms.Rate {
-					oldLimit = (*building.CreditTerms)[i].Limit
-					(*building.CreditTerms)[i].Limit = creditTerms.Limit
-					found = true
-					break
-				}
-			}
-			if !found {
-				*building.CreditTerms = append(*building.CreditTerms, creditTerms)
-			}
+			addCreditTerm(building.CreditTerms, creditTerms, &oldLimit)
 		}
 	} else {
-		updatedCreditTerms := removeCreditTerm(building.CreditTerms, creditTerms)
-		building.CreditTerms = &updatedCreditTerms
+		removeCreditTerm(building.CreditTerms, creditTerms)
 	}
 
 	var amount float64
@@ -117,9 +103,24 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 	return err
 }
 
-func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) []CreditTerms {
+func addCreditTerm(creditTerms *[]CreditTerms, termToAdd CreditTerms, oldLimit *float64) {
+	found := false
+	for i := range *creditTerms {
+		if (*creditTerms)[i].Rating == termToAdd.Rating && (*creditTerms)[i].Rate == termToAdd.Rate {
+			*oldLimit = (*creditTerms)[i].Limit
+			(*creditTerms)[i].Limit = termToAdd.Limit
+			found = true
+			break
+		}
+	}
+	if !found {
+		*creditTerms = append(*creditTerms, termToAdd)
+	}
+}
+
+func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) {
 	if creditTerms == nil {
-		return nil
+		return
 	}
 
 	var updatedCreditTerms []CreditTerms
@@ -128,7 +129,7 @@ func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) []Cr
 			updatedCreditTerms = append(updatedCreditTerms, ct)
 		}
 	}
-	return updatedCreditTerms
+	*creditTerms = updatedCreditTerms
 }
 
 func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *float64) ([]CreditTerms, error) {

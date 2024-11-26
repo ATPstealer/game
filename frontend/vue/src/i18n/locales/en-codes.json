@@ -52,7 +52,7 @@
     "36": "Price can't be negative",
     "37": "Resource in different cell",
     "38": "Parameters must be positive",
-    "39": "Impossible",
+    "39": "Impossible to hire more",
     "40": "Limit exceeded",
     "100001": "Database error",
     "100002": "Can't read request POST body",
