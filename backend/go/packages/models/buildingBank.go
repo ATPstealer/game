@@ -289,7 +289,7 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		return err
 	}
 
-	err = CreateLoan(m, user.Id, building.UserId, payload.Amount, payload.Rate, paying, (*building.CreditTerms)[index].NewUser, false)
+	err = createLoan(m, user.Id, building.UserId, payload.Amount, payload.Rate, paying, (*building.CreditTerms)[index].NewUser, false)
 	return err
 }
 
@@ -345,7 +345,7 @@ func TakeStateCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeS
 		return err
 	}
 
-	if err = CreateLoan(m, userId, primitive.NilObjectID, payload.Amount, settings["interestRate"], paying, false, true); err != nil {
+	if err = createLoan(m, userId, primitive.NilObjectID, payload.Amount, settings["interestRate"], paying, false, true); err != nil {
 		return err
 	}
 
@@ -366,7 +366,7 @@ type RepayLoanPayload struct {
 } // @name repayLoanPayload
 
 func RepayLoan(m *mongo.Database, userId primitive.ObjectID, payload RepayLoanPayload) error {
-	loan, err := GetLoanById(m, payload.LoanId)
+	loan, err := getLoanById(m, payload.LoanId)
 	if err != nil {
 		return err
 	}
@@ -396,7 +396,7 @@ func RepayLoan(m *mongo.Database, userId primitive.ObjectID, payload RepayLoanPa
 		}
 	}
 
-	err = UpdateLoanAmount(m, payload.LoanId, loan.Amount-amount)
+	err = updateLoanAmount(m, payload.LoanId, loan.Amount-amount)
 
 	return err
 }
