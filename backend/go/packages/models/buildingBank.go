@@ -288,8 +288,11 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		*building.CreditTerms = append((*building.CreditTerms)[:index], (*building.CreditTerms)[index+1:]...)
 	}
 
-	err = updateCreditTerms(m, building.Id, building.CreditTerms)
+	if err = updateCreditTerms(m, building.Id, building.CreditTerms); err != nil {
+		return err
+	}
 
+	err = CreateLoan(m, user.Id, building.UserId, payload.Amount, payload.Rate, paying, (*building.CreditTerms)[index].NewUser, false)
 	return err
 }
 
