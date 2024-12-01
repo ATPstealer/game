@@ -289,7 +289,7 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		return err
 	}
 
-	err = createLoan(m, user.Id, building.UserId, payload.Amount, payload.Rate, paying, (*building.CreditTerms)[index].NewUser, false)
+	err = createLoan(m, user.Id, building.UserId, payload.Amount, payload.Rate, Paying, (*building.CreditTerms)[index].NewUser, false)
 	return err
 }
 
@@ -345,7 +345,7 @@ func TakeStateCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeS
 		return err
 	}
 
-	if err = createLoan(m, userId, primitive.NilObjectID, payload.Amount, settings["interestRate"], paying, false, true); err != nil {
+	if err = createLoan(m, userId, primitive.NilObjectID, payload.Amount, settings["interestRate"], Paying, false, true); err != nil {
 		return err
 	}
 

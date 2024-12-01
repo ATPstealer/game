@@ -11,8 +11,8 @@ import (
 type LoanStatus string // @name loanStatus
 
 const (
-	paying      LoanStatus = "Paying"
-	loanDefault LoanStatus = "LoanDefault"
+	Paying      LoanStatus = "Paying"
+	LoanDefault LoanStatus = "LoanDefault"
 )
 
 type Loan struct {
@@ -76,4 +76,11 @@ func GetAllLoans(m *mongo.Database) ([]Loan, error) {
 	}
 	err = cursor.All(ctx, &loans)
 	return loans, err
+}
+
+func UpdateLoanStatus(m *mongo.Database, id primitive.ObjectID, status LoanStatus) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+	_, err := m.Collection("loans").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"status": status}})
+	return err
 }
