@@ -141,7 +141,7 @@ func TakeCredit(c *gin.Context) {
 // TakeStateCredit
 //
 //	@Summary		Take state credit
-//	@Description	Get credit from state. Payload example
+//	@Description	Get credit from state. Payload example {"buildingId":"670fd64c211de59e1bb8a314", "Amount": 5000}
 //	@Tags			bank
 //	@Accept			json
 //	@Produce		json
@@ -172,6 +172,44 @@ func TakeStateCredit(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "doesn't have bank limits") {
 			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": -18})
+}
+
+// RepayLoan
+//
+//	@Summary		Repay loan
+//	@Description	Pay off the loan partially or in full. Payload example {"loanId":"674ca2524dfa3a351adbf424", "Amount":122}
+//	@Tags			bank
+//	@Accept			json
+//	@Produce		json
+//	@Param			repayLoanPayload       	body		models.RepayLoanPayload	true	"Repay loan payload"
+//	@Success		200				    	{object}	JSONResult
+//	@Failure		401				    	{object}	JSONResult
+//	@Failure		500			   			{object}	JSONResult
+//	@Router			/bank/repay_loan [post]
+func RepayLoan(c *gin.Context) {
+	var repayLoanPayload models.RepayLoanPayload
+	if err := include.GetPayload(c, &repayLoanPayload); err != nil {
+		return
+	}
+
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	err = models.RepayLoan(db.M, userId, repayLoanPayload)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "you can't pay off someone else's loan") {
+			c.JSON(http.StatusOK, gin.H{"code": 46, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough money") {
+			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}

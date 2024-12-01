@@ -359,3 +359,44 @@ func TakeStateCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeS
 
 	return err
 }
+
+type RepayLoanPayload struct {
+	LoanId primitive.ObjectID `json:"loanId" validate:"required"`
+	Amount float64            `json:"amount" validate:"required"`
+} // @name repayLoanPayload
+
+func RepayLoan(m *mongo.Database, userId primitive.ObjectID, payload RepayLoanPayload) error {
+	loan, err := GetLoanById(m, payload.LoanId)
+	if err != nil {
+		return err
+	}
+
+	if loan.BorrowerUserId != userId {
+		return errors.New("you can't pay off someone else's loan")
+	}
+
+	amount := payload.Amount
+	if amount > loan.Amount {
+		amount = loan.Amount
+	}
+
+	if !CheckEnoughMoney(m, userId, amount) {
+		return errors.New("not enough money")
+	}
+
+	if err = AddMoney(m, loan.BorrowerUserId, -amount); err != nil {
+		return err
+	}
+	if err = IncreaseCreditRating(m, userId, amount); err != nil {
+		return err
+	}
+	if !loan.StateLoan {
+		if err = AddMoney(m, loan.LenderUserId, amount); err != nil {
+			return err
+		}
+	}
+
+	err = UpdateLoanAmount(m, payload.LoanId, loan.Amount-amount)
+
+	return err
+}

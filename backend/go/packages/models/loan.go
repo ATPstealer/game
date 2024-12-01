@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
@@ -41,5 +42,26 @@ func CreateLoan(m *mongo.Database, borrowerUserId primitive.ObjectID, lenderUser
 	}
 
 	_, err := m.Collection("loans").InsertOne(ctx, loan)
+	return err
+}
+
+func GetLoanById(m *mongo.Database, id primitive.ObjectID) (Loan, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+	var loan Loan
+	err := m.Collection("loans").FindOne(ctx, bson.M{"_id": id}).Decode(&loan)
+	return loan, err
+}
+
+func UpdateLoanAmount(m *mongo.Database, id primitive.ObjectID, amount float64) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var err error
+	if amount == 0 {
+		_, err = m.Collection("loans").DeleteOne(ctx, bson.M{"_id": id})
+	} else {
+		_, err = m.Collection("loans").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"amount": amount}})
+	}
 	return err
 }

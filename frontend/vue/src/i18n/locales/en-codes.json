@@ -60,6 +60,7 @@
     "43": "Amount exceeded",
     "44": "You are not a new user",
     "45": "The bank has no banking limits. Wait for recalculation",
+    "46": "You can't pay off someone else's loan",
     "100001": "Database error",
     "100002": "Can't read request POST body",
     "100003": "Can't parse POST data",
