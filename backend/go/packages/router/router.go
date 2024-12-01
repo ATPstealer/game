@@ -79,6 +79,7 @@ func MakeRouter() *gin.Engine {
 	bank.Use(AuthMiddleware())
 	bank.POST("/credit_terms", controllers.AddOrDeleteCreditTerm)
 	bank.POST("/take_credit", controllers.TakeCredit)
+	bank.POST("/take_state_credit", controllers.TakeStateCredit)
 
 	market := router.Group("/api/v2/market")
 	market.GET("/order/get", controllers.GetOrders)

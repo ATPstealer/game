@@ -39,22 +39,19 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 
 	building, err := GetBuildingById(m, payload.BuildingId)
 	if err != nil {
-		log.Println("Can't get building by Id: " + err.Error())
 		return err
 	}
 
 	if building.UserId != userId {
-		err := errors.New("this building don't belong you")
-		return err
+		return errors.New("this building don't belong you")
 	}
 
 	if payload.Limit < 0 || payload.Rate < 0 {
-		err := errors.New("parameters must be positive")
-		return err
+		return errors.New("parameters must be positive")
 	}
 
 	if building.Bank == nil {
-		return errors.New("doesn't have bank limits")
+		return errors.New("bank has no banking limits")
 	}
 
 	creditTerm := CreditTerms{
@@ -305,6 +302,60 @@ func updateCreditTerms(m *mongo.Database, buildingId primitive.ObjectID, creditT
 			"creditTerms": creditTerms,
 		},
 	})
+
+	return err
+}
+
+type TakeStateCreditPayload struct {
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+	Amount     float64            `json:"amount" validate:"required"`
+} // @name takeStateCreditPayload
+
+func TakeStateCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeStateCreditPayload) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	building, err := GetBuildingById(m, payload.BuildingId)
+	if err != nil {
+		return err
+	}
+
+	if building.UserId != userId {
+		return errors.New("this building don't belong you")
+	}
+
+	if payload.Amount < 0 {
+		return errors.New("parameters must be positive")
+	}
+
+	if building.Bank == nil {
+		return errors.New("bank has no banking limits")
+	}
+
+	if payload.Amount+building.Bank.BorrowedFromState > building.Bank.BorrowedLimit {
+		return errors.New("limit exceeded")
+	}
+
+	settings, err := GetSettings(m)
+	if err != nil {
+		return err
+	}
+
+	if err = AddMoney(m, userId, payload.Amount); err != nil {
+		return err
+	}
+
+	if err = CreateLoan(m, userId, primitive.NilObjectID, payload.Amount, settings["interestRate"], paying, false, true); err != nil {
+		return err
+	}
+
+	building.Bank.BorrowedFromState += payload.Amount
+	update := bson.M{
+		"$set": bson.M{
+			"bank": building.Bank,
+		},
+	}
+	_, err = m.Collection("buildings").UpdateOne(ctx, bson.M{"_id": payload.BuildingId}, update)
 
 	return err
 }

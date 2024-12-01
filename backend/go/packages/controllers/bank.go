@@ -99,7 +99,7 @@ func GetCreditTerms(c *gin.Context) {
 // TakeCredit
 //
 //	@Summary		Take credit
-//	@Description	Get credit in bank. Payload example
+//	@Description	Get credit in bank. Payload example {"buildingId":"670fd64c211de59e1bb8a314", "Amount":50, "Rate": 0.5, "Rating": -1000000}
 //	@Tags			bank
 //	@Accept			json
 //	@Produce		json
@@ -130,6 +130,48 @@ func TakeCredit(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 43, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "you are not a new user") {
 			c.JSON(http.StatusOK, gin.H{"code": 44, "text": err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"code": -18})
+}
+
+// TakeStateCredit
+//
+//	@Summary		Take state credit
+//	@Description	Get credit from state. Payload example
+//	@Tags			bank
+//	@Accept			json
+//	@Produce		json
+//	@Param			takeStateCreditPayload	body		models.TakeStateCreditPayload	true	"Get state credit payload"
+//	@Success		200				    	{object}	JSONResult
+//	@Failure		401				    	{object}	JSONResult
+//	@Failure		500			   			{object}	JSONResult
+//	@Router			/bank/take_state_credit [post]
+func TakeStateCredit(c *gin.Context) {
+	var takeStateCreditPayload models.TakeStateCreditPayload
+	if err := include.GetPayload(c, &takeStateCreditPayload); err != nil {
+		return
+	}
+
+	userId, err := include.GetUserIdFromContext(c)
+	if err != nil {
+		return
+	}
+
+	err = models.TakeStateCredit(db.M, userId, takeStateCreditPayload)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "this building don't belong you") {
+			c.JSON(http.StatusOK, gin.H{"code": 29, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "parameters must be positive") {
+			c.JSON(http.StatusOK, gin.H{"code": 38, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "limit exceeded") {
+			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "doesn't have bank limits") {
+			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
