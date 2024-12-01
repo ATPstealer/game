@@ -58,6 +58,7 @@
     "41": "Doesn't have that credit terms",
     "42": "You don't have enough credit rating",
     "43": "Amount exceeded",
+    "44": "You are not a new user",
     "100001": "Database error",
     "100002": "Can't read request POST body",
     "100003": "Can't parse POST data",

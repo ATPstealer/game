@@ -89,7 +89,7 @@ func loadSettings(m *mongo.Database) {
 		{Key: "mapMaxY", Value: 2},
 		{Key: "interestRate", Value: 0.5},
 		{Key: "loansForNewUsers", Value: 0.5},
-		{Key: "newUserMonth", Value: 6},
+		{Key: "newUserDays", Value: 90},
 		{Key: "newUserRating", Value: -1000000},
 	}
 	collection := m.Collection("settings")

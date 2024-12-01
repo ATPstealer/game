@@ -261,6 +261,17 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		return errors.New("doesn't have that credit terms")
 	}
 
+	if (*building.CreditTerms)[index].NewUser {
+		settings, err := GetSettings(m)
+		if err != nil {
+			return err
+		}
+
+		if time.Now().Sub(user.Created) > time.Hour*24*time.Duration(settings["newUserDays"]) {
+			return errors.New("you are not a new user")
+		}
+	}
+
 	if payload.Amount > (*building.CreditTerms)[index].Limit {
 		return errors.New("amount exceeded")
 	}

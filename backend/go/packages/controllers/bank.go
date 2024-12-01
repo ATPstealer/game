@@ -128,6 +128,8 @@ func TakeCredit(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 42, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "amount exceeded") {
 			c.JSON(http.StatusOK, gin.H{"code": 43, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "you are not a new user") {
+			c.JSON(http.StatusOK, gin.H{"code": 44, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
