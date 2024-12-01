@@ -11,16 +11,18 @@ import (
 )
 
 type Bank struct {
-	LoansAmount       float64 `json:"loansAmount" bson:"loansAmount" validate:"required"`
-	LoansLimit        float64 `json:"loansLimit" bson:"loansLimit" validate:"required"`
-	BorrowedFromState float64 `json:"borrowedFromState" bson:"borrowedFromState" validate:"required"`
-	BorrowedLimit     float64 `json:"borrowedLimit" bson:"borrowedLimit" validate:"required"`
+	LoansAmount         float64 `json:"loansAmount" bson:"loansAmount" validate:"required"`
+	LoansLimit          float64 `json:"loansLimit" bson:"loansLimit" validate:"required"`
+	LoansAmountNewUsers float64 `json:"loansAmountNewUsers" bson:"loansAmountNewUsers" validate:"required"`
+	BorrowedFromState   float64 `json:"borrowedFromState" bson:"borrowedFromState" validate:"required"`
+	BorrowedLimit       float64 `json:"borrowedLimit" bson:"borrowedLimit" validate:"required"`
 } // @name bank
 
 type CreditTerms struct {
-	Limit  float64 `json:"limit" bson:"limit" validate:"required"`
-	Rate   float64 `json:"rate" bson:"rate" validate:"required"`
-	Rating float64 `json:"rating" bson:"rating" validate:"required"`
+	Limit   float64 `json:"limit" bson:"limit" validate:"required"`
+	Rate    float64 `json:"rate" bson:"rate" validate:"required"`
+	Rating  float64 `json:"rating" bson:"rating" validate:"required"`
+	NewUser bool    `json:"newUser" bson:"newUser" validate:"required"`
 } // @name creditTerms
 
 type CreditTermsPayload struct {
@@ -55,42 +57,63 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 		return errors.New("doesn't have bank limits")
 	}
 
-	creditTerms := CreditTerms{
-		Limit:  payload.Limit,
-		Rate:   payload.Rate,
-		Rating: payload.Rating,
+	creditTerm := CreditTerms{
+		Limit:   payload.Limit,
+		Rate:    payload.Rate,
+		Rating:  payload.Rating,
+		NewUser: false,
+	}
+
+	settings, err := GetSettings(m)
+	if err != nil {
+		return err
 	}
 
 	oldLimit := 0.0
 	if payload.Adding {
 		if building.CreditTerms == nil {
-			building.CreditTerms = &[]CreditTerms{creditTerms}
+			building.CreditTerms = &[]CreditTerms{creditTerm}
 		} else {
-			addCreditTerm(building.CreditTerms, creditTerms, &oldLimit)
+			addCreditTerm(building.CreditTerms, creditTerm, &oldLimit)
 		}
 	} else {
-		removeCreditTerm(building.CreditTerms, creditTerms)
+		if !removeCreditTerm(building.CreditTerms, creditTerm) {
+			return errors.New("doesn't have that credit terms")
+		}
 	}
 
 	var amount float64
+	var newUserAmount float64
 	if payload.Adding {
-		amount = creditTerms.Limit - oldLimit
-		if amount > 0 && !CheckEnoughMoney(m, userId, amount) {
+		amount = creditTerm.Limit - oldLimit
+		newUserAmount = (amount+building.Bank.LoansAmount)*settings["loansForNewUsers"] - building.Bank.LoansAmountNewUsers
+		if amount > 0 && !CheckEnoughMoney(m, userId, amount+newUserAmount) {
 			return errors.New("not enough money")
 		}
 	} else {
-		amount = -creditTerms.Limit
+		amount = -creditTerm.Limit
+		newUserAmount = (amount+building.Bank.LoansAmount)*settings["loansForNewUsers"] - building.Bank.LoansAmountNewUsers
 	}
 
 	if amount+building.Bank.LoansAmount > building.Bank.LoansLimit {
 		return errors.New("limit exceeded")
 	}
 	building.Bank.LoansAmount += amount
+	building.Bank.LoansAmountNewUsers += newUserAmount
 
-	err = AddMoney(m, userId, -amount)
+	err = AddMoney(m, userId, -amount-newUserAmount)
 	if err != nil {
 		return err
 	}
+
+	newUserCreditTerm := getNewUserCreditTerms(building.CreditTerms)
+	newUserCreditTerm.Limit += newUserAmount
+	setNewUserCreditTerms(building.CreditTerms, CreditTerms{
+		Limit:   newUserCreditTerm.Limit,
+		Rate:    settings["interestRate"],
+		Rating:  settings["newUserRating"],
+		NewUser: true,
+	})
 
 	update := bson.M{
 		"$set": bson.M{
@@ -104,32 +127,54 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 }
 
 func addCreditTerm(creditTerms *[]CreditTerms, termToAdd CreditTerms, oldLimit *float64) {
-	found := false
 	for i := range *creditTerms {
 		if (*creditTerms)[i].Rating == termToAdd.Rating && (*creditTerms)[i].Rate == termToAdd.Rate {
 			*oldLimit = (*creditTerms)[i].Limit
 			(*creditTerms)[i].Limit = termToAdd.Limit
-			found = true
-			break
+			return
 		}
 	}
-	if !found {
-		*creditTerms = append(*creditTerms, termToAdd)
-	}
+	*creditTerms = append(*creditTerms, termToAdd)
 }
 
-func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) {
+func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) bool {
 	if creditTerms == nil {
-		return
+		return false
 	}
 
+	var found bool
 	var updatedCreditTerms []CreditTerms
 	for _, ct := range *creditTerms {
 		if ct.Limit != termToRemove.Limit || ct.Rate != termToRemove.Rate || ct.Rating != termToRemove.Rating {
 			updatedCreditTerms = append(updatedCreditTerms, ct)
+		} else {
+			found = true
 		}
 	}
+	if !found {
+		return false
+	}
 	*creditTerms = updatedCreditTerms
+	return true
+}
+
+func setNewUserCreditTerms(creditTerms *[]CreditTerms, newUserCreditTerm CreditTerms) {
+	for i := range *creditTerms {
+		if (*creditTerms)[i].NewUser {
+			(*creditTerms)[i] = newUserCreditTerm
+			return
+		}
+	}
+	*creditTerms = append(*creditTerms, newUserCreditTerm)
+}
+
+func getNewUserCreditTerms(creditTerms *[]CreditTerms) CreditTerms {
+	for _, ct := range *creditTerms {
+		if ct.NewUser {
+			return ct
+		}
+	}
+	return CreditTerms{}
 }
 
 type CreditTermsWithData struct {
@@ -151,11 +196,9 @@ func GetCreditTerms(m *mongo.Database, limit *float64, rate *float64, rating *fl
 		if bank.CreditTerms != nil {
 			log.Println(bank.CreditTerms)
 			for _, ct := range *bank.CreditTerms {
-				log.Println(ct)
 				if limit != nil && !(ct.Limit >= *limit) {
 					break
 				}
-				log.Println(ct.Limit)
 				if rate != nil && !(ct.Rate <= *rate) {
 					break
 				}

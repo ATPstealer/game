@@ -42,9 +42,11 @@ func buildingLimitCont(m *mongo.Database, building models.Building, buildingType
 	if building.Bank != nil {
 		bank.LoansAmount = building.Bank.LoansAmount
 		bank.BorrowedFromState = building.Bank.BorrowedFromState
+		bank.LoansAmountNewUsers = building.Bank.LoansAmountNewUsers
 	} else {
 		bank.LoansAmount = 0
 		bank.BorrowedFromState = 0
+		bank.LoansAmountNewUsers = 0
 	}
 	models.UpdateBankLimits(m, building.Id, bank)
 }

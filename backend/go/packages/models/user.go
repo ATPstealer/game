@@ -18,6 +18,7 @@ type User struct {
 	Money           float64            `json:"money" bson:"money"`
 	CreditRating    float64            `json:"creditRating" bson:"creditRating"`
 	Characteristics Characteristics    `json:"characteristics" bson:"characteristics"`
+	Created         time.Time          `json:"created" bson:"created"`
 } // @name user
 
 type Characteristics struct {
@@ -56,6 +57,7 @@ func CreateUser(m *mongo.Database, nickName string, email string, password strin
 			Management:   3,
 			Planning:     3,
 		},
+		Created: time.Now(),
 	}
 	_, err := m.Collection("users").InsertOne(ctx, user)
 	return err
@@ -126,4 +128,12 @@ func CheckEnoughMoney(m *mongo.Database, userID primitive.ObjectID, money float6
 		return false
 	}
 	return user.Money >= money
+}
+
+func IncreaseCreditRating(m *mongo.Database, userId primitive.ObjectID, addRating float64) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	_, err := m.Collection("users").UpdateOne(ctx, bson.M{"_id": userId}, bson.M{"$inc": bson.M{"creditRating": addRating}})
+	return err
 }

@@ -65,15 +65,9 @@ func Init(m *mongo.Database, config cfg.Vars) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(60*time.Second))
 	defer cancel()
 
+	loadSettings(m)
 	if config.Init {
-		count, err := m.Collection("settings").CountDocuments(ctx, bson.M{})
-		if err != nil {
-			log.Fatal(err)
-		}
-		if count == 0 {
-			loadSettings(m)
-		}
-		count, err = m.Collection("cells").CountDocuments(ctx, bson.M{})
+		count, err := m.Collection("cells").CountDocuments(ctx, bson.M{})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -94,6 +88,9 @@ func loadSettings(m *mongo.Database) {
 		{Key: "mapMinY", Value: -2},
 		{Key: "mapMaxY", Value: 2},
 		{Key: "interestRate", Value: 0.5},
+		{Key: "loansForNewUsers", Value: 0.5},
+		{Key: "newUserMonth", Value: 6},
+		{Key: "newUserRating", Value: -1000000},
 	}
 	collection := m.Collection("settings")
 	for _, setting := range settings {
