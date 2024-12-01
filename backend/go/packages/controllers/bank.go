@@ -42,6 +42,8 @@ func AddOrDeleteCreditTerm(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "limit exceeded") {
 			c.JSON(http.StatusOK, gin.H{"code": 40, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "doesn't have that credit terms") {
+			c.JSON(http.StatusOK, gin.H{"code": 41, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
