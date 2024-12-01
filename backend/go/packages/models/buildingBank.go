@@ -245,7 +245,7 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		return err
 	}
 
-	if user.CreditRating < payload.Rating {
+	if user.CreditRating < payload.Rating+payload.Amount {
 		return errors.New("you don't have enough credit rating")
 	}
 
@@ -276,13 +276,15 @@ func TakeCredit(m *mongo.Database, userId primitive.ObjectID, payload TakeCredit
 		return errors.New("amount exceeded")
 	}
 
-	err = AddMoney(m, userId, payload.Amount)
-	if err != nil {
+	if err = AddMoney(m, userId, payload.Amount); err != nil {
+		return err
+	}
+	if err = IncreaseCreditRating(m, userId, -payload.Amount); err != nil {
 		return err
 	}
 
 	(*building.CreditTerms)[index].Limit -= payload.Amount
-	if (*building.CreditTerms)[index].Limit <= 0 {
+	if (*building.CreditTerms)[index].Limit <= 0 && !(*building.CreditTerms)[index].NewUser {
 		*building.CreditTerms = append((*building.CreditTerms)[:index], (*building.CreditTerms)[index+1:]...)
 	}
 
