@@ -70,27 +70,23 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 	}
 
 	oldLimit := 0.0
+	var amount float64
+	var newUserAmount float64
 	if payload.Adding {
 		if building.CreditTerms == nil {
 			building.CreditTerms = &[]CreditTerms{creditTerm}
 		} else {
 			addCreditTerm(building.CreditTerms, creditTerm, &oldLimit)
 		}
+		amount = creditTerm.Limit - oldLimit
+		newUserAmount = (amount+building.Bank.LoansAmount)*settings["loansForNewUsers"] - building.Bank.LoansAmountNewUsers
+		if amount+newUserAmount > 0 && !CheckEnoughMoney(m, userId, amount+newUserAmount) {
+			return errors.New("not enough money")
+		}
 	} else {
 		if !removeCreditTerm(building.CreditTerms, creditTerm) {
 			return errors.New("doesn't have that credit terms")
 		}
-	}
-
-	var amount float64
-	var newUserAmount float64
-	if payload.Adding {
-		amount = creditTerm.Limit - oldLimit
-		newUserAmount = (amount+building.Bank.LoansAmount)*settings["loansForNewUsers"] - building.Bank.LoansAmountNewUsers
-		if amount > 0 && !CheckEnoughMoney(m, userId, amount+newUserAmount) {
-			return errors.New("not enough money")
-		}
-	} else {
 		amount = -creditTerm.Limit
 		newUserAmount = (amount+building.Bank.LoansAmount)*settings["loansForNewUsers"] - building.Bank.LoansAmountNewUsers
 	}
@@ -101,19 +97,11 @@ func AddOrDeleteCreditTerm(m *mongo.Database, userId primitive.ObjectID, payload
 	building.Bank.LoansAmount += amount
 	building.Bank.LoansAmountNewUsers += newUserAmount
 
-	err = AddMoney(m, userId, -amount-newUserAmount)
-	if err != nil {
+	if err = AddMoney(m, userId, -amount-newUserAmount); err != nil {
 		return err
 	}
 
-	newUserCreditTerm := getNewUserCreditTerms(building.CreditTerms)
-	newUserCreditTerm.Limit += newUserAmount
-	setNewUserCreditTerms(building.CreditTerms, CreditTerms{
-		Limit:   newUserCreditTerm.Limit,
-		Rate:    settings["interestRate"],
-		Rating:  settings["newUserRating"],
-		NewUser: true,
-	})
+	updateNewUserCreditTermLimit(building.CreditTerms, newUserAmount, settings)
 
 	update := bson.M{
 		"$set": bson.M{
@@ -158,23 +146,25 @@ func removeCreditTerm(creditTerms *[]CreditTerms, termToRemove CreditTerms) bool
 	return true
 }
 
-func setNewUserCreditTerms(creditTerms *[]CreditTerms, newUserCreditTerm CreditTerms) {
-	for i := range *creditTerms {
-		if (*creditTerms)[i].NewUser {
-			(*creditTerms)[i] = newUserCreditTerm
-			return
-		}
-	}
-	*creditTerms = append(*creditTerms, newUserCreditTerm)
-}
-
-func getNewUserCreditTerms(creditTerms *[]CreditTerms) CreditTerms {
-	for _, ct := range *creditTerms {
+func updateNewUserCreditTermLimit(creditTerms *[]CreditTerms, amount float64, settings map[string]float64) {
+	index := -1
+	for i, ct := range *creditTerms {
 		if ct.NewUser {
-			return ct
+			index = i
 		}
 	}
-	return CreditTerms{}
+	if index != -1 {
+		(*creditTerms)[index].Limit += amount
+		(*creditTerms)[index].Rate = settings["interestRate"]
+		(*creditTerms)[index].Rating = settings["newUserRating"]
+	} else {
+		*creditTerms = append(*creditTerms, CreditTerms{
+			Limit:   amount,
+			Rate:    settings["interestRate"],
+			Rating:  settings["newUserRating"],
+			NewUser: true,
+		})
+	}
 }
 
 type CreditTermsWithData struct {
