@@ -1,5 +1,6 @@
 {
   "codes": {
+    "-19": "Krediet verwijderd",
     "-18": "U bent goedgekeurd voor een lening",
     "-17": "Emergence Nearing Succession",
     "-16": "Kredietvoorwaarden gewijzigd",
@@ -61,6 +62,8 @@
     "44": "Je bent geen nieuw gebruik",
     "45": "De bank heeft geen banklimieten. Wacht op herberekening",
     "46": "Je kunt de lening van iemand anders niet afbetalen",
+    "47": "U kunt het tegoed van iemand anders niet verwijderen",
+    "48": "Ben je gek? Deze lening is niet te laat,",
     "100001": "Database fout",
     "100002": "Kan verzoek POST body niet lezen",
     "100003": "Kan POST data niet parsen",

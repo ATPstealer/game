@@ -81,6 +81,8 @@ func MakeRouter() *gin.Engine {
 	bank.POST("/take_credit", controllers.TakeCredit)
 	bank.POST("/take_state_credit", controllers.TakeStateCredit)
 	bank.POST("/repay_loan", controllers.RepayLoan)
+	bank.GET("/get_loans", controllers.GetMyLoans)
+	bank.DELETE("/delete_loan", controllers.DeleteDefaultLoans)
 
 	market := router.Group("/api/v2/market")
 	market.GET("/order/get", controllers.GetOrders)

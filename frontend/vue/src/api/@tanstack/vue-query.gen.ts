@@ -6,10 +6,19 @@ import type {
     PostBankCreditTermsData,
     PostBankCreditTermsError,
     PostBankCreditTermsResponse,
+    DeleteBankDeleteLoanData,
+    DeleteBankDeleteLoanError,
+    DeleteBankDeleteLoanResponse,
     GetBankGetCreditTermsData,
+    PostBankRepayLoanData,
+    PostBankRepayLoanError,
+    PostBankRepayLoanResponse,
     PostBankTakeCreditData,
     PostBankTakeCreditError,
     PostBankTakeCreditResponse,
+    PostBankTakeStateCreditData,
+    PostBankTakeStateCreditError,
+    PostBankTakeStateCreditResponse,
     GetBuildingBlueprintsData,
     PostBuildingConstructData,
     PostBuildingConstructError,
@@ -77,8 +86,12 @@ import type {
 import {
     client,
     postBankCreditTerms,
+    deleteBankDeleteLoan,
     getBankGetCreditTerms,
+    getBankGetLoans,
+    postBankRepayLoan,
     postBankTakeCredit,
+    postBankTakeStateCredit,
     getBuildingBlueprints,
     postBuildingConstruct,
     deleteBuildingDestroy,
@@ -179,6 +192,19 @@ export const postBankCreditTermsMutation = () => {
     return mutationOptions;
 };
 
+export const deleteBankDeleteLoanMutation = () => {
+    const mutationOptions: UseMutationOptions<DeleteBankDeleteLoanResponse, DeleteBankDeleteLoanError, Options<DeleteBankDeleteLoanData>> = {
+        mutationFn: async (options) => {
+            const {data} = await deleteBankDeleteLoan({
+                ...options,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
 export const getBankGetCreditTermsQueryKey = (options?: Options<GetBankGetCreditTermsData>) => [
     createQueryKey("getBankGetCreditTerms", options)
 ];
@@ -195,6 +221,55 @@ export const getBankGetCreditTermsOptions = (options?: Options<GetBankGetCreditT
     },
     queryKey: getBankGetCreditTermsQueryKey(options)
     });
+};
+
+export const getBankGetLoansQueryKey = (options?: Options) => [
+    createQueryKey("getBankGetLoans", options)
+];
+
+export const getBankGetLoansOptions = (options?: Options) => {
+    return queryOptions({
+        queryFn: async ({queryKey}) => {
+            const {data} = await getBankGetLoans({
+                ...options,
+                ...queryKey[0],
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getBankGetLoansQueryKey(options)
+    });
+};
+
+export const postBankRepayLoanQueryKey = (options: Options<PostBankRepayLoanData>) => [
+    createQueryKey("postBankRepayLoan", options)
+];
+
+export const postBankRepayLoanOptions = (options: Options<PostBankRepayLoanData>) => {
+    return queryOptions({
+        queryFn: async ({queryKey}) => {
+            const {data} = await postBankRepayLoan({
+                ...options,
+                ...queryKey[0],
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: postBankRepayLoanQueryKey(options)
+    });
+};
+
+export const postBankRepayLoanMutation = () => {
+    const mutationOptions: UseMutationOptions<PostBankRepayLoanResponse, PostBankRepayLoanError, Options<PostBankRepayLoanData>> = {
+        mutationFn: async (options) => {
+            const {data} = await postBankRepayLoan({
+                ...options,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
 };
 
 export const postBankTakeCreditQueryKey = (options: Options<PostBankTakeCreditData>) => [
@@ -219,6 +294,37 @@ export const postBankTakeCreditMutation = () => {
     const mutationOptions: UseMutationOptions<PostBankTakeCreditResponse, PostBankTakeCreditError, Options<PostBankTakeCreditData>> = {
         mutationFn: async (options) => {
             const {data} = await postBankTakeCredit({
+                ...options,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const postBankTakeStateCreditQueryKey = (options: Options<PostBankTakeStateCreditData>) => [
+    createQueryKey("postBankTakeStateCredit", options)
+];
+
+export const postBankTakeStateCreditOptions = (options: Options<PostBankTakeStateCreditData>) => {
+    return queryOptions({
+        queryFn: async ({queryKey}) => {
+            const {data} = await postBankTakeStateCredit({
+                ...options,
+                ...queryKey[0],
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: postBankTakeStateCreditQueryKey(options)
+    });
+};
+
+export const postBankTakeStateCreditMutation = () => {
+    const mutationOptions: UseMutationOptions<PostBankTakeStateCreditResponse, PostBankTakeStateCreditError, Options<PostBankTakeStateCreditData>> = {
+        mutationFn: async (options) => {
+            const {data} = await postBankTakeStateCredit({
                 ...options,
                 throwOnError: true
             });

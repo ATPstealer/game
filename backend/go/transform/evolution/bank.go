@@ -29,7 +29,6 @@ func LimitsCount(m *mongo.Database) {
 
 func buildingLimitCont(m *mongo.Database, building models.Building, buildingTypes *[]models.BuildingType) {
 	buildingType := getType(building.TypeId, buildingTypes)
-	log.Println(building.Workers, buildingType.Workers)
 	efficiency := float64(building.Workers) / float64(buildingType.Workers)
 	additionalLoanLimit := findEffect(building.EquipmentEffect, 4) // 4 - Increase loans limit
 	loanLimit := 1000000 * efficiency * (1 + additionalLoanLimit/10)

@@ -61,6 +61,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/bank/delete_loan": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Delete Default Loans",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Loan ID",
+                        "name": "_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
         "/bank/get_credit_terms": {
             "get": {
                 "description": "If defined return. Credit term where limit \u003e= in param, rate \u003c= in param, rating \u003c= in param.",
@@ -125,9 +168,90 @@ const docTemplate = `{
                 }
             }
         },
+        "/bank/get_loans": {
+            "get": {
+                "description": "Return all loans connected with userId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Get Users Loans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank/repay_loan": {
+            "post": {
+                "description": "Pay off the loan partially or in full. Payload example {\"loanId\":\"674ca2524dfa3a351adbf424\", \"Amount\":122}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Repay loan",
+                "parameters": [
+                    {
+                        "description": "Repay loan payload",
+                        "name": "repayLoanPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repayLoanPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
         "/bank/take_credit": {
             "post": {
-                "description": "Get credit in bank. Payload example",
+                "description": "Get credit in bank. Payload example {\"buildingId\":\"670fd64c211de59e1bb8a314\", \"Amount\":50, \"Rate\": 0.5, \"Rating\": -1000000}",
                 "consumes": [
                     "application/json"
                 ],
@@ -146,6 +270,52 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/takeCreditPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/jsonResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/bank/take_state_credit": {
+            "post": {
+                "description": "Get credit from state. Payload example {\"buildingId\":\"670fd64c211de59e1bb8a314\", \"Amount\": 5000}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bank"
+                ],
+                "summary": "Take state credit",
+                "parameters": [
+                    {
+                        "description": "Get state credit payload",
+                        "name": "takeStateCreditPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/takeStateCreditPayload"
                         }
                     }
                 ],
@@ -1917,6 +2087,7 @@ const docTemplate = `{
                 "borrowedFromState",
                 "borrowedLimit",
                 "loansAmount",
+                "loansAmountNewUsers",
                 "loansLimit"
             ],
             "properties": {
@@ -1927,6 +2098,9 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "loansAmount": {
+                    "type": "number"
+                },
+                "loansAmountNewUsers": {
                     "type": "number"
                 },
                 "loansLimit": {
@@ -2800,6 +2974,21 @@ const docTemplate = `{
                 }
             }
         },
+        "repayLoanPayload": {
+            "type": "object",
+            "required": [
+                "amount",
+                "loanId"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "loanId": {
+                    "type": "string"
+                }
+            }
+        },
         "resourceAmount": {
             "type": "object",
             "properties": {
@@ -3031,6 +3220,21 @@ const docTemplate = `{
                 }
             }
         },
+        "takeStateCreditPayload": {
+            "type": "object",
+            "required": [
+                "amount",
+                "buildingId"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "buildingId": {
+                    "type": "string"
+                }
+            }
+        },
         "time.Duration": {
             "type": "integer",
             "enum": [
@@ -3068,6 +3272,9 @@ const docTemplate = `{
                 },
                 "characteristics": {
                     "$ref": "#/definitions/characteristics"
+                },
+                "created": {
+                    "type": "string"
                 },
                 "creditRating": {
                     "type": "number"

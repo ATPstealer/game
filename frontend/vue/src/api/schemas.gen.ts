@@ -2,7 +2,7 @@
 
 export const bankSchema = {
     type: 'object',
-    required: ['borrowedFromState', 'borrowedLimit', 'loansAmount', 'loansLimit'],
+    required: ['borrowedFromState', 'borrowedLimit', 'loansAmount', 'loansAmountNewUsers', 'loansLimit'],
     properties: {
         borrowedFromState: {
             type: 'number'
@@ -11,6 +11,9 @@ export const bankSchema = {
             type: 'number'
         },
         loansAmount: {
+            type: 'number'
+        },
+        loansAmountNewUsers: {
             type: 'number'
         },
         loansLimit: {
@@ -758,6 +761,19 @@ export const productionSchema = {
     }
 } as const;
 
+export const repayLoanPayloadSchema = {
+    type: 'object',
+    required: ['amount', 'loanId'],
+    properties: {
+        amount: {
+            type: 'number'
+        },
+        loanId: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const resourceAmountSchema = {
     type: 'object',
     properties: {
@@ -938,6 +954,19 @@ export const takeCreditPayloadSchema = {
     }
 } as const;
 
+export const takeStateCreditPayloadSchema = {
+    type: 'object',
+    required: ['amount', 'buildingId'],
+    properties: {
+        amount: {
+            type: 'number'
+        },
+        buildingId: {
+            type: 'string'
+        }
+    }
+} as const;
+
 export const time_DurationSchema = {
     type: 'integer',
     enum: [-9223372036854776000, 9223372036854776000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000],
@@ -953,6 +982,9 @@ export const userSchema = {
         },
         characteristics: {
             '$ref': '#/definitions/characteristics'
+        },
+        created: {
+            type: 'string'
         },
         creditRating: {
             type: 'number'

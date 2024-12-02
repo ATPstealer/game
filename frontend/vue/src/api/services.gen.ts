@@ -5,12 +5,23 @@ import type {
     PostBankCreditTermsData,
     PostBankCreditTermsError,
     PostBankCreditTermsResponse,
+    DeleteBankDeleteLoanData,
+    DeleteBankDeleteLoanError,
+    DeleteBankDeleteLoanResponse,
     GetBankGetCreditTermsData,
     GetBankGetCreditTermsError,
     GetBankGetCreditTermsResponse,
+    GetBankGetLoansError,
+    GetBankGetLoansResponse,
+    PostBankRepayLoanData,
+    PostBankRepayLoanError,
+    PostBankRepayLoanResponse,
     PostBankTakeCreditData,
     PostBankTakeCreditError,
     PostBankTakeCreditResponse,
+    PostBankTakeStateCreditData,
+    PostBankTakeStateCreditError,
+    PostBankTakeStateCreditResponse,
     GetBuildingBlueprintsData,
     GetBuildingBlueprintsError,
     GetBuildingBlueprintsResponse,
@@ -116,7 +127,6 @@ export const client = createClient(createConfig({
     baseUrl: `${import.meta.env.VITE_API}`,
     credentials: 'include'
 }))
-
 /**
  * Add / Change / Delete credit terms in bank contracts
  * Limit > 0, Rate > 0. For change limit send payload: {"Rate": sameAsExisting, "Rating": sameAsExisting, "Adding": true}
@@ -125,6 +135,16 @@ export const postBankCreditTerms = <ThrowOnError extends boolean = false>(option
     return (options?.client ?? client).post<PostBankCreditTermsResponse, PostBankCreditTermsError, ThrowOnError>({
     ...options,
     url: '/bank/credit_terms'
+    });
+};
+
+/**
+ * Delete Default Loans
+ */
+export const deleteBankDeleteLoan = <ThrowOnError extends boolean = false>(options: Options<DeleteBankDeleteLoanData, ThrowOnError>) => {
+    return (options?.client ?? client).delete<DeleteBankDeleteLoanResponse, DeleteBankDeleteLoanError, ThrowOnError>({
+        ...options,
+        url: '/bank/delete_loan'
     });
 };
 
@@ -140,13 +160,46 @@ export const getBankGetCreditTerms = <ThrowOnError extends boolean = false>(opti
 };
 
 /**
+ * Get Users Loans
+ * Return all loans connected with userId
+ */
+export const getBankGetLoans = <ThrowOnError extends boolean = false>(options?: Options<unknown, ThrowOnError>) => {
+    return (options?.client ?? client).get<GetBankGetLoansResponse, GetBankGetLoansError, ThrowOnError>({
+        ...options,
+        url: '/bank/get_loans'
+    });
+};
+
+/**
+ * Repay loan
+ * Pay off the loan partially or in full. Payload example {"loanId":"674ca2524dfa3a351adbf424", "Amount":122}
+ */
+export const postBankRepayLoan = <ThrowOnError extends boolean = false>(options: Options<PostBankRepayLoanData, ThrowOnError>) => {
+    return (options?.client ?? client).post<PostBankRepayLoanResponse, PostBankRepayLoanError, ThrowOnError>({
+        ...options,
+        url: '/bank/repay_loan'
+    });
+};
+
+/**
  * Take credit
- * Get credit in bank. Payload example
+ * Get credit in bank. Payload example {"buildingId":"670fd64c211de59e1bb8a314", "Amount":50, "Rate": 0.5, "Rating": -1000000}
  */
 export const postBankTakeCredit = <ThrowOnError extends boolean = false>(options: Options<PostBankTakeCreditData, ThrowOnError>) => {
     return (options?.client ?? client).post<PostBankTakeCreditResponse, PostBankTakeCreditError, ThrowOnError>({
         ...options,
         url: '/bank/take_credit'
+    });
+};
+
+/**
+ * Take state credit
+ * Get credit from state. Payload example {"buildingId":"670fd64c211de59e1bb8a314", "Amount": 5000}
+ */
+export const postBankTakeStateCredit = <ThrowOnError extends boolean = false>(options: Options<PostBankTakeStateCreditData, ThrowOnError>) => {
+    return (options?.client ?? client).post<PostBankTakeStateCreditResponse, PostBankTakeStateCreditError, ThrowOnError>({
+        ...options,
+        url: '/bank/take_state_credit'
     });
 };
 

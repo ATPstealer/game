@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -82,5 +83,42 @@ func UpdateLoanStatus(m *mongo.Database, id primitive.ObjectID, status LoanStatu
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 	_, err := m.Collection("loans").UpdateOne(ctx, bson.M{"_id": id}, bson.M{"$set": bson.M{"status": status}})
+	return err
+}
+
+func GetMyLoans(m *mongo.Database, userId primitive.ObjectID) ([]Loan, error) {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	var loans []Loan
+	cursor, err := m.Collection("loans").Find(ctx, bson.M{"$or": []bson.M{
+		{"borrowerUserId": userId},
+		{"lenderUserId": userId},
+	}})
+	if err != nil {
+		return nil, err
+	}
+	err = cursor.All(ctx, &loans)
+	return loans, err
+}
+
+func DeleteDefaultLoans(m *mongo.Database, userId primitive.ObjectID, loanId primitive.ObjectID) error {
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
+	defer cancel()
+
+	loan, err := getLoanById(m, loanId)
+	if err != nil {
+		return err
+	}
+
+	if userId != loan.LenderUserId {
+		return errors.New("you can't delete someone else's loan")
+	}
+
+	if loan.Status != LoanDefault {
+		return errors.New("are you crazy? this loan is not default")
+	}
+
+	_, err = m.Collection("loans").DeleteOne(ctx, bson.M{"_id": loanId})
 	return err
 }

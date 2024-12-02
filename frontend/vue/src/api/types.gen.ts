@@ -4,6 +4,7 @@ export type Bank = {
     borrowedFromState: number;
     borrowedLimit: number;
     loansAmount: number;
+    loansAmountNewUsers: number;
     loansLimit: number;
 };
 
@@ -283,6 +284,11 @@ export type Production = {
     blueprintId: number;
 };
 
+export type RepayLoanPayload = {
+    amount: number;
+    loanId: string;
+};
+
 export type ResourceAmount = {
     amount?: number;
     resourceId?: number;
@@ -362,6 +368,11 @@ export type TakeCreditPayload = {
     rating: number;
 };
 
+export type TakeStateCreditPayload = {
+    amount: number;
+    buildingId: string;
+};
+
 export enum TimeDuration {
     minDuration = -9223372036854776000,
     maxDuration = 9223372036854776000,
@@ -376,6 +387,7 @@ export enum TimeDuration {
 export type User = {
     _id: string;
     characteristics?: Characteristics;
+    created?: string;
     creditRating?: number;
     email: string;
     money?: number;
@@ -401,6 +413,19 @@ export type PostBankCreditTermsResponse = (JsonResult);
 
 export type PostBankCreditTermsError = (JsonResult);
 
+export type DeleteBankDeleteLoanData = {
+    query: {
+        /**
+         * Loan ID
+         */
+        _id: string;
+    };
+};
+
+export type DeleteBankDeleteLoanResponse = (JsonResult);
+
+export type DeleteBankDeleteLoanError = (JsonResult);
+
 export type GetBankGetCreditTermsData = {
     query?: {
         /**
@@ -424,6 +449,21 @@ export type GetBankGetCreditTermsResponse = ((JsonResult & {
 
 export type GetBankGetCreditTermsError = (JsonResult);
 
+export type GetBankGetLoansResponse = (JsonResult);
+
+export type GetBankGetLoansError = (JsonResult);
+
+export type PostBankRepayLoanData = {
+    /**
+     * Repay loan payload
+     */
+    body: RepayLoanPayload;
+};
+
+export type PostBankRepayLoanResponse = (JsonResult);
+
+export type PostBankRepayLoanError = (JsonResult);
+
 export type PostBankTakeCreditData = {
     /**
      * Get credit payload
@@ -434,6 +474,17 @@ export type PostBankTakeCreditData = {
 export type PostBankTakeCreditResponse = (JsonResult);
 
 export type PostBankTakeCreditError = (JsonResult);
+
+export type PostBankTakeStateCreditData = {
+    /**
+     * Get state credit payload
+     */
+    body: TakeStateCreditPayload;
+};
+
+export type PostBankTakeStateCreditResponse = (JsonResult);
+
+export type PostBankTakeStateCreditError = (JsonResult);
 
 export type GetBuildingBlueprintsData = {
     query?: {

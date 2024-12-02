@@ -8,12 +8,15 @@ definitions:
         type: number
       loansAmount:
         type: number
+      loansAmountNewUsers:
+        type: number
       loansLimit:
         type: number
     required:
       - borrowedFromState
       - borrowedLimit
       - loansAmount
+      - loansAmountNewUsers
       - loansLimit
     type: object
   blueprint:
@@ -623,6 +626,16 @@ definitions:
     required:
       - blueprintId
     type: object
+  repayLoanPayload:
+    properties:
+      amount:
+        type: number
+      loanId:
+        type: string
+    required:
+      - amount
+      - loanId
+    type: object
   resourceAmount:
     properties:
       amount:
@@ -789,6 +802,16 @@ definitions:
       - rate
       - rating
     type: object
+  takeStateCreditPayload:
+    properties:
+      amount:
+        type: number
+      buildingId:
+        type: string
+    required:
+      - amount
+      - buildingId
+    type: object
   time.Duration:
     enum:
       - -9223372036854775808
@@ -815,6 +838,8 @@ definitions:
         type: string
       characteristics:
         $ref: '#/definitions/characteristics'
+      created:
+        type: string
       creditRating:
         type: number
       email:
@@ -884,6 +909,34 @@ paths:
       summary: Add / Change / Delete credit terms in bank contracts
       tags:
         - bank
+  /bank/delete_loan:
+    delete:
+      consumes:
+        - application/json
+      parameters:
+        - description: Loan ID
+          in: query
+          name: _id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Delete Default Loans
+      tags:
+        - bank
   /bank/get_credit_terms:
     get:
       consumes:
@@ -924,11 +977,66 @@ paths:
       summary: Return credit terms
       tags:
         - bank
+  /bank/get_loans:
+    get:
+      consumes:
+        - application/json
+      description: Return all loans connected with userId
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get Users Loans
+      tags:
+        - bank
+  /bank/repay_loan:
+    post:
+      consumes:
+        - application/json
+      description: Pay off the loan partially or in full. Payload example {"loanId":"674ca2524dfa3a351adbf424",
+        "Amount":122}
+      parameters:
+        - description: Repay loan payload
+          in: body
+          name: repayLoanPayload
+          required: true
+          schema:
+            $ref: '#/definitions/repayLoanPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Repay loan
+      tags:
+        - bank
   /bank/take_credit:
     post:
       consumes:
         - application/json
-      description: Get credit in bank. Payload example
+      description: 'Get credit in bank. Payload example {"buildingId":"670fd64c211de59e1bb8a314",
+        "Amount":50, "Rate": 0.5, "Rating": -1000000}'
       parameters:
         - description: Get credit payload
           in: body
@@ -952,6 +1060,37 @@ paths:
           schema:
             $ref: '#/definitions/jsonResult'
       summary: Take credit
+      tags:
+        - bank
+  /bank/take_state_credit:
+    post:
+      consumes:
+        - application/json
+      description: 'Get credit from state. Payload example {"buildingId":"670fd64c211de59e1bb8a314",
+        "Amount": 5000}'
+      parameters:
+        - description: Get state credit payload
+          in: body
+          name: takeStateCreditPayload
+          required: true
+          schema:
+            $ref: '#/definitions/takeStateCreditPayload'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Take state credit
       tags:
         - bank
   /building/blueprints:
