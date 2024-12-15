@@ -6,11 +6,7 @@
    of [master node](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/):
     ```aiignore
     kubeadm init --control-plane-endpoint "k8s.atpstealer.com:6443" --upload-certs --pod-network-cidr=10.244.0.0/16
-
-    Калико кал, 
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/tigera-operator.yaml
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/custom-resources.yaml
-    надо попробовать    kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+    kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
     ```
 4) Connect other nodes
 5) [Metallb](https://metallb.universe.tf/configuration/_advanced_ipaddresspool_configuration/)
