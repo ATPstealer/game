@@ -8,8 +8,8 @@ externalAccess:
   service:
     type: LoadBalancer
     loadBalancerIPs:
-      - 104.199.89.66
-      - 34.76.96.158
+      - 138.201.244.149
+      - 49.13.217.89
 resources:
   limits:
     cpu: "500m"

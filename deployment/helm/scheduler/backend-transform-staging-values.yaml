@@ -2,7 +2,7 @@ cronjob:
   name: transform-staging
   period: "0 0 * * *"
   image:
-    name: registry.gl.kube.atpstealer.com/mav/game/backend-transform/staging
+    name: registry.gl.k8s.atpstealer.com/mav/game/backend-transform/staging
     version: 1
   imagePullSecrets: image-pull-secrets
 

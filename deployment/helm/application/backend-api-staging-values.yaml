@@ -3,7 +3,7 @@ replicaCount: 1
 application:
   name: backend-api-staging
   image:
-    name: registry.gl.kube.atpstealer.com/mav/game/backend-api/staging
+    name: registry.gl.k8s.atpstealer.com/mav/game/backend-api/staging
     version: 1
   imagePullSecrets: image-pull-secrets
   replicas: 2
@@ -17,7 +17,7 @@ ingress:
   enabled: true
   path: /api
   name: backend-api-staging
-  host: staging.game.kube.atpstealer.com
+  host: staging.game.k8s.atpstealer.com
   tls: false
 
 env:

@@ -12,7 +12,7 @@ ingress:
   enabled: true
   tls: true
   name: minio-ing
-  host: minio.game.kube.atpstealer.com
+  host: minio.game.k8s.atpstealer.com
 
 env:
   - name: MINIO_ACCESS_KEY
