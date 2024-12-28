@@ -1,12 +1,11 @@
 stages:
-  - build-staging-1
-  - build-staging-2
+  - build-staging
   - deploy-staging
   - infra
 
 ### build-staging
 build-backend-api-staging:
-  stage: build-staging-1
+  stage: build-staging
   image:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [ "" ]
@@ -20,7 +19,7 @@ build-backend-api-staging:
     - /^ci-.*$/
 
 build-backend-scheduler-staging:
-  stage: build-staging-2
+  stage: build-staging
   image:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [ "" ]
@@ -34,7 +33,7 @@ build-backend-scheduler-staging:
     - /^ci-.*$/
 
 build-backend-transform-staging:
-  stage: build-staging-2
+  stage: build-staging
   image:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [ "" ]
@@ -48,7 +47,7 @@ build-backend-transform-staging:
     - /^ci-.*$/
 
 build-frontend-vue-staging:
-  stage: build-staging-1
+  stage: build-staging
   image:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [""]
