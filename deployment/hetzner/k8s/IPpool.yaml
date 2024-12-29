@@ -5,10 +5,10 @@ metadata:
   namespace: metallb-system
 spec:
   addresses:
-    - 142.132.173.68/32 # gitlab
-    - 37.27.216.117/32 # ingress
-    - 138.201.244.149/32 # mongo 1
-    - 49.13.217.89/32 # mongo 2
+    - 128.140.8.77/32 # gitlab
+    - 188.245.158.57/32 # ingress
+    - 142.132.173.68/32 # mongo 1
+    - 88.99.190.155/32 # mongo 2
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement

@@ -9,8 +9,8 @@ externalAccess:
     type: LoadBalancer
     externalTrafficPolicy: Cluster
     loadBalancerIPs:
-      - 138.201.244.149
-      - 49.13.217.89
+      - 142.132.173.68
+      - 88.99.190.155
 resources:
   limits:
     cpu: "500m"

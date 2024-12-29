@@ -16,15 +16,15 @@ locals {
     }
     node2 = {
       name       = "2"
-      datacenter = "hel1-dc2"
+      datacenter = "nbg1-dc3"
     }
     node3 = {
       name       = "3"
-      datacenter = "fsn1-dc14"
+      datacenter = "nbg1-dc3"
     }
     node4 = {
       name       = "4"
-      datacenter = "fsn1-dc14"
+      datacenter = "nbg1-dc3"
     }
 
   }

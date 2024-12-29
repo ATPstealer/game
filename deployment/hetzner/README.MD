@@ -30,13 +30,13 @@
 Setup DNS record for gitlab wildcard domain zone.
 
 ```aiignore
-helm upgrade -n gitlab --create-namespace --install gitlab gitlab/gitlab --timeout 600s --set global.hosts.domain=gl.k8s.atpstealer.com --set global.hosts.externalIP=142.132.173.68 --set certmanager-issuer.email=forpubmail@gmail.com --set global.edition=ce
+helm upgrade -n gitlab --create-namespace --install gitlab gitlab/gitlab --timeout 600s --set global.hosts.domain=gl.k8s.atpstealer.com --set global.hosts.externalIP=128.140.8.77 --set certmanager-issuer.email=forpubmail@gmail.com --set global.edition=ce
 ```
 
 ## Ingress
 
 ```agsl
-helm install ingress ingress-nginx/ingress-nginx --namespace ingress-nginx  --create-namespace  --set controller.service.loadBalancerIP=37.27.216.117
+helm install ingress ingress-nginx/ingress-nginx --namespace ingress-nginx  --create-namespace  --set controller.service.loadBalancerIP=188.245.158.57
 ```
 
 ## Cluster issuer
