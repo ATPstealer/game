@@ -1,16 +1,16 @@
 <template>
   <DataTable
     v-if="tableData?.length"
-    :value="tableData"
-    size="small"
-    striped-rows
     edit-mode="cell"
-    @cell-edit-complete="onCellEditComplete"
     :pt="{
       bodyRow: {
         class: 'h-14'
       }
     }"
+    size="small"
+    striped-rows
+    :value="tableData"
+    @cell-edit-complete="onCellEditComplete"
   >
     <Column
       field="name"
@@ -21,9 +21,9 @@
       </template>
     </Column>
     <Column
+      class="min-w-[150px] max-w-[150px]"
       field="price"
       :header="t(`buildings.store.columns.price`)"
-      class="min-w-[150px] max-w-[150px]"
     >
       <template #body="{ data, field }">
         <span class="col-span-1 font-bold text-blue-500 hover:text-blue-700 block">
@@ -34,10 +34,10 @@
         <InputNumber
           v-model="data[field]"
           autofocus
-          minFractionDigits="2"
-          maxFractionDigits="2"
-          input-class="!p-2 !w-1/2"
           class="!w-1/2"
+          input-class="!p-2 !w-1/2"
+          max-fraction-digits="2"
+          min-fraction-digits="2"
         />
       </template>
     </Column>

@@ -1,0 +1,1 @@
+{"enum":["Construction","Ready","Production","ResourcesNeeded","StorageNeeded"],"type":"string","x-enum-varnames":["ConstructionStatus","ReadyStatus","ProductionStatus","ResourcesNeededStatus","StorageNeededStatus"],"x-readme-ref-name":"buildingStatus"}

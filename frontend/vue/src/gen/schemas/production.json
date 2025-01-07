@@ -1,0 +1,1 @@
+{"properties":{"blueprintId":{"type":"integer"}},"required":["blueprintId"],"type":"object","x-readme-ref-name":"production"}

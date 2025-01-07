@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"number"},"buildingId":{"type":"string"}},"required":["amount","buildingId"],"type":"object","x-readme-ref-name":"takeStateCreditPayload"}

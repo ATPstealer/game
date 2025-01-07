@@ -94,12 +94,13 @@
 </template>
 
 <script setup lang="ts">
+import type { ResponseConfig } from '@kubb/plugin-client/clients/axios'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
-import { computed, ref } from 'vue'
+import { computed, ComputedRef, Ref, ref, toValue, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import {
@@ -113,6 +114,7 @@ import {
 } from '@/api/@tanstack/vue-query.gen'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
+import { GetBuildingTypes200, useGetBuildingTypes } from '@/gen'
 import type { BackData } from '@/types'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTranslation } from '@/utils/getTranslation'
@@ -130,10 +132,10 @@ const cost = computed(() => {
   return (buildingType.value.cost ?? 0) * square.value
 })
 
-const { data: buildingTypes, suspense } = useQuery({
-  ...getBuildingTypesOptions(),
-  select: (data) => data.data as BuildingType[]
-})
+// const { data: buildingTypes, suspense } = useQuery({
+//   ...getBuildingTypesOptions(),
+//   select: (data) => data.data as BuildingType[]
+// })
 
 const constructBuilding = useMutation({
   ...postBuildingConstructMutation(),
@@ -142,7 +144,16 @@ const constructBuilding = useMutation({
   }
 })
 
-await suspense()
+const buildingTypesQuery = useGetBuildingTypes()
+
+await buildingTypesQuery.suspense()
+
+const buildingTypes = computed(() => {
+  const x = buildingTypesQuery.data
+  console.log(x)
+
+  return x
+})
 
 const buildingType = ref<BuildingType>(buildingTypes.value ? buildingTypes.value[0] : {} as BuildingType)
 

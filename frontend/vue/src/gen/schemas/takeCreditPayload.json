@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"number"},"buildingId":{"type":"string"},"rate":{"type":"number"},"rating":{"type":"number"}},"required":["amount","buildingId","rate","rating"],"type":"object","x-readme-ref-name":"takeCreditPayload"}

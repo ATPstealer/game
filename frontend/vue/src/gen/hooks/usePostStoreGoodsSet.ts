@@ -1,0 +1,57 @@
+import client from '@kubb/plugin-client/clients/fetch'
+import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
+import type { MutationObserverOptions } from '@tanstack/vue-query'
+import { useMutation } from '@tanstack/vue-query'
+import type { MaybeRef } from 'vue'
+import type {
+  PostStoreGoodsSetMutationRequest,
+  PostStoreGoodsSetMutationResponse,
+  PostStoreGoodsSet401,
+  PostStoreGoodsSet500
+} from '../types/PostStoreGoodsSet.ts'
+
+export const postStoreGoodsSetMutationKey = () => [{ url: '/store/goods/set' }] as const
+
+export type PostStoreGoodsSetMutationKey = ReturnType<typeof postStoreGoodsSetMutationKey>
+
+/**
+ * @summary Set prices for goods in the store
+ * {@link /store/goods/set}
+ */
+async function postStoreGoodsSet(data: PostStoreGoodsSetMutationRequest, config: Partial<RequestConfig<PostStoreGoodsSetMutationRequest>> = {}) {
+  const res = await client<PostStoreGoodsSetMutationResponse, PostStoreGoodsSet401 | PostStoreGoodsSet500, PostStoreGoodsSetMutationRequest>({
+    method: 'POST',
+    url: '/store/goods/set',
+    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
+    data,
+    ...config
+  })
+  
+  return res.data
+}
+
+/**
+ * @summary Set prices for goods in the store
+ * {@link /store/goods/set}
+ */
+export function usePostStoreGoodsSet(
+  options: {
+    mutation?: MutationObserverOptions<
+      PostStoreGoodsSetMutationResponse,
+      PostStoreGoodsSet401 | PostStoreGoodsSet500,
+      { data: MaybeRef<PostStoreGoodsSetMutationRequest> }
+    >;
+    client?: Partial<RequestConfig<PostStoreGoodsSetMutationRequest>>;
+  } = {}
+) {
+  const { mutation: mutationOptions, client: config = {} } = options ?? {}
+  const mutationKey = mutationOptions?.mutationKey ?? postStoreGoodsSetMutationKey()
+
+  return useMutation<PostStoreGoodsSetMutationResponse, PostStoreGoodsSet401 | PostStoreGoodsSet500, { data: PostStoreGoodsSetMutationRequest }>({
+    mutationFn: async ({ data }) => {
+      return postStoreGoodsSet(data, config)
+    },
+    mutationKey,
+    ...mutationOptions
+  })
+}

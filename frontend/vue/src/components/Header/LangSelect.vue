@@ -1,11 +1,10 @@
 <template>
   <Dropdown
     v-model="lang"
-    :options="languages"
+    class="lang"
     option-label="label"
     option-value="key"
-    @change="changeLang"
-    class="lang"
+    :options="languages"
     :pt="{
       input: {
         class: 'text-white py-1'
@@ -20,6 +19,7 @@
         class: 'rounded-none'
       }
     }"
+    @change="changeLang"
   />
 </template>
 

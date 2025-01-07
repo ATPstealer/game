@@ -1,0 +1,1 @@
+{"properties":{"_id":{"type":"string"},"square":{"type":"integer"},"userId":{"type":"string"},"x":{"type":"integer"},"y":{"type":"integer"}},"required":["_id","square","userId","x","y"],"type":"object","x-readme-ref-name":"landLord"}

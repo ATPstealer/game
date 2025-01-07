@@ -1,15 +1,15 @@
 <template>
   <DataTable
     v-if="orders?.filter(item => item.sell).length"
-    :value="orders?.filter(item => item.sell)"
-    @row-click="showOrder"
+    :row-class="sellRowClass"
     size="small"
     striped-rows
-    :row-class="sellRowClass"
+    :value="orders?.filter(item => item.sell)"
+    @row-click="showOrder"
   >
     <Column
-      :header="t(`orders.columns.resource`)"
       class="w-1/3"
+      :header="t(`orders.columns.resource`)"
     >
       <template #body="{data}: {data: Order}">
         {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
@@ -17,18 +17,18 @@
     </Column>
 
     <Column
+      class="w-1/6"
       field="amount"
       :header="t('orders.columns.amount')"
-      class="w-1/6"
     />
     <Column
+      class="w-1/6"
       field="priceForUnit"
       :header="t('orders.columns.price')"
-      class="w-1/6"
     />
     <Column
-      :header="t(`map.cell`)"
       class="w-1/6"
+      :header="t(`map.cell`)"
     >
       <template #body="{data}: {data: Order}">
         {{ data.x }}x{{ data.y }}
@@ -37,16 +37,16 @@
   </DataTable>
   <DataTable
     v-if="orders?.filter(item => !item.sell).length"
-    :value="orders?.filter(item => !item.sell)"
-    @row-click="showOrder"
-    size="small"
-    striped-rows
-    :row-class="buyRowClass"
     :pt="{
       headerRow: {
         class: 'bg-white'
       },
     }"
+    :row-class="buyRowClass"
+    size="small"
+    striped-rows
+    :value="orders?.filter(item => !item.sell)"
+    @row-click="showOrder"
   >
     <Column
       class="w-1/3"
@@ -60,16 +60,16 @@
     </Column>
 
     <Column
-      field="amount"
       class="w-1/6"
+      field="amount"
     >
       <template #header>
         <span class="invisible">{{ t('orders.columns.amount') }}</span>
       </template>
     </Column>
     <Column
-      field="priceForUnit"
       class="w-1/6"
+      field="priceForUnit"
     >
       <template #header>
         <span class="invisible">{{ t('orders.columns.price') }}</span>
@@ -91,9 +91,9 @@
   </div>
   <Dialog
     v-model:visible="showModal"
-    :style="{ width: '25rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     :header="!order.sell ? 'You\'ll sell' : 'You\'ll buy'"
+    :style="{ width: '25rem' }"
     @hide="messageData = {} as BackData; amount = 0"
   >
     <div class="flex flex-col gap-4">
@@ -105,17 +105,17 @@
       <p>
         Amount:
         <InputNumber
-          input-class="w-28"
-          class="h-8"
-          show-buttons
           v-model="amount"
+          class="h-8"
+          input-class="w-28"
+          show-buttons
         />
       </p>
       <p>Price: <span class="font-bold">{{ order.priceForUnit * amount }}</span></p>
       <Button
-        @click="execOrder"
         :label="!order.sell ? 'Sell' : 'Buy'"
         :severity="!order.sell ? 'danger' : 'primary'"
+        @click="execOrder"
       />
     </div>
   </Dialog>

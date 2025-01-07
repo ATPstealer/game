@@ -239,21 +239,21 @@ module.exports = {
     'newline-before-return': 'error',
 
     // сортировка пропсов компонентов и блоков
-    "vue/attributes-order": ["warn", {
-      "order": [
-        "DEFINITION",
-        "LIST_RENDERING",
-        "CONDITIONALS",
-        "RENDER_MODIFIERS",
-        "GLOBAL",
-        ["UNIQUE", "SLOT"],
-        "TWO_WAY_BINDING",
-        "OTHER_DIRECTIVES",
-        "OTHER_ATTR",
-        "CONTENT",
-        "EVENTS",
+    'vue/attributes-order': ['warn', {
+      'order': [
+        'DEFINITION',
+        'LIST_RENDERING',
+        'CONDITIONALS',
+        'RENDER_MODIFIERS',
+        'GLOBAL',
+        ['UNIQUE', 'SLOT'],
+        'TWO_WAY_BINDING',
+        'OTHER_DIRECTIVES',
+        'OTHER_ATTR',
+        'CONTENT',
+        'EVENTS'
       ],
-      "alphabetical": true
-    }],
+      'alphabetical': true
+    }]
   }
 }

@@ -1,0 +1,1 @@
+{"properties":{"buildingTypeId":{"type":"integer"},"id":{"type":"string"},"limit":{"type":"integer"},"nickName":{"type":"string"},"order":{"type":"string"},"orderField":{"type":"string"},"page":{"type":"integer"},"userId":{"type":"string"},"x":{"type":"integer"},"y":{"type":"integer"}},"type":"object","x-readme-ref-name":"findBuildingParams"}

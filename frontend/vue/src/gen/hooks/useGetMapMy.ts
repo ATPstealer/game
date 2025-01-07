@@ -1,0 +1,62 @@
+import client from '@kubb/plugin-client/clients/fetch'
+import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
+import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
+import { queryOptions, useQuery } from '@tanstack/vue-query'
+import { unref } from 'vue'
+import type { GetMapMyQueryResponse, GetMapMy500 } from '../types/GetMapMy.ts'
+
+export const getMapMyQueryKey = () => [{ url: '/map/my' }] as const
+
+export type GetMapMyQueryKey = ReturnType<typeof getMapMyQueryKey>
+
+/**
+ * @summary Return user's lands
+ * {@link /map/my}
+ */
+async function getMapMy(config: Partial<RequestConfig> = {}) {
+  const res = await client<GetMapMyQueryResponse, GetMapMy500, unknown>({
+    method: 'GET',
+    url: '/map/my',
+    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
+    ...config
+  })
+  
+  return res.data
+}
+
+export function getMapMyQueryOptions(config: Partial<RequestConfig> = {}) {
+  const queryKey = getMapMyQueryKey()
+  
+  return queryOptions<GetMapMyQueryResponse, GetMapMy500, GetMapMyQueryResponse, typeof queryKey>({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      config.signal = signal
+      
+      return getMapMy(unref(config))
+    }
+  })
+}
+
+/**
+ * @summary Return user's lands
+ * {@link /map/my}
+ */
+export function useGetMapMy<TData = GetMapMyQueryResponse, TQueryData = GetMapMyQueryResponse, TQueryKey extends QueryKey = GetMapMyQueryKey>(
+  options: {
+    query?: Partial<QueryObserverOptions<GetMapMyQueryResponse, GetMapMy500, TData, TQueryData, TQueryKey>>;
+    client?: Partial<RequestConfig>;
+  } = {}
+) {
+  const { query: queryOptions, client: config = {} } = options ?? {}
+  const queryKey = queryOptions?.queryKey ?? getMapMyQueryKey()
+
+  const query = useQuery({
+    ...(getMapMyQueryOptions(config) as unknown as QueryObserverOptions),
+    queryKey: queryKey as QueryKey,
+    ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
+  }) as UseQueryReturnType<TData, GetMapMy500> & { queryKey: TQueryKey }
+
+  query.queryKey = queryKey as TQueryKey
+
+  return query
+}

@@ -4,9 +4,9 @@
   </h2>
   <DataTable
     v-if="!isFetching"
-    :value="lands"
     size="small"
     striped-rows
+    :value="lands"
   >
     <Column
       :header="t(`map.cell`)"

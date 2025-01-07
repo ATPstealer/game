@@ -1,0 +1,1 @@
+{"properties":{"buildingId":{"type":"string"},"price":{"type":"number"},"resourceTypeId":{"type":"integer"}},"required":["buildingId","price","resourceTypeId"],"type":"object","x-readme-ref-name":"storeGoodsPayload"}

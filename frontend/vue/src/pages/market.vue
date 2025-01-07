@@ -7,10 +7,10 @@
           <span class="text-sm">{{ settings?.mapMinX }}</span>
           <Slider
             v-model="x"
+            class="w-[150px]"
             :max="settings?.mapMaxX"
             :min="settings?.mapMinX"
             @change="value => x = value"
-            class="w-[150px]"
             @slideend="event => setParams({key: 'x', value: event.value})"
           />
           <span class="text-sm">{{ settings?.mapMaxX }}</span>
@@ -22,10 +22,10 @@
           <span class="text-sm">{{ settings?.mapMinY }}</span>
           <Slider
             v-model="y"
+            class="w-[150px]"
             :max="settings?.mapMaxY"
             :min="settings?.mapMinY"
             @change="value => y = value"
-            class="w-[150px]"
             @slideend="event => setParams({key: 'y', value: event.value})"
           />
           <span class="text-sm">{{ settings?.mapMaxY }}</span>
@@ -33,26 +33,26 @@
       </div>
       <Dropdown
         v-if="resourcesTypes?.length"
-        :options="resourcesTypes"
+        v-model="currentResource"
         :option-label="event => t(`resources.types.${event.name.toLowerCase()}`)"
         option-value="id"
-        v-model="currentResource"
+        :options="resourcesTypes"
         @change="event => setParams({key: 'resourceTypeId', value: event.value})"
       />
       <Button :label="t('common.reset')" @click="reset" />
       <Button
-        severity="info"
-        :label="t('orders.create.header')"
-        @click="sellResourcesModal= true"
         class="mb-8"
+        :label="t('orders.create.header')"
+        severity="info"
+        @click="sellResourcesModal= true"
       />
       <Dialog
         v-model:visible="sellResourcesModal"
-        modal
-        :header="t('orders.create.header')"
-        :style="{ width: '25rem' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         :dismissable-mask="true"
+        :header="t('orders.create.header')"
+        modal
+        :style="{ width: '25rem' }"
       >
         <CreateOrderModal
           @close="sellResourcesModal = false; setParams({key: 'trigger', value: 0})"

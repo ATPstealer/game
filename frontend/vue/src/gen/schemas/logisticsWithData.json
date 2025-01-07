@@ -1,0 +1,1 @@
+{"properties":{"buildingId":{"type":"string"},"capacity":{"type":"number"},"price":{"type":"number"},"speed":{"type":"number"},"x":{"type":"integer"},"y":{"type":"integer"}},"required":["buildingId","capacity","price","speed","x","y"],"type":"object","x-readme-ref-name":"logisticsWithData"}

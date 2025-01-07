@@ -1,0 +1,1 @@
+{"properties":{"adding":{"type":"boolean"},"buildingId":{"type":"string"},"limit":{"type":"number"},"rate":{"type":"number"},"rating":{"type":"number"}},"required":["adding","buildingId","limit","rate","rating"],"type":"object","x-readme-ref-name":"creditTermsPayload"}

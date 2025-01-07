@@ -4,44 +4,44 @@
   </h2>
   <DataTable
     v-if="!isFetching"
-    :value="orders"
     size="small"
     striped-rows
+    :value="orders"
   >
     <Column
-      :header="t(`map.cell`)"
       class="w-1/5"
+      :header="t(`map.cell`)"
     >
       <template #body="{data}: {data: Order}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
     <Column
+      class="w-1/5"
       field="Resource"
       :header="t(`orders.columns.resource`)"
-      class="w-1/5"
     >
       <template #body="{data}: {data: Order}">
         {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
       </template>
     </Column>
     <Column
+      class="w-1/5"
       field="amount"
       :header="t(`orders.columns.amount`)"
-      class="w-1/5"
     />
     <Column
+      class="w-1/5"
       field="priceForUnit"
       :header="t(`orders.columns.price`)"
-      class="w-1/5"
     >
       <template #body="{data}: {data: Order}">
         {{ moneyFormat(data.priceForUnit) }}
       </template>
     </Column>
     <Column
-      :header="t(`orders.columns.type`)"
       class="w-1/5"
+      :header="t(`orders.columns.type`)"
     >
       <template #body="{data}: {data: Order}">
         <p class="font-bold text-red-500 hover:text-red-700 block" @click="closeOrder(data._id)">

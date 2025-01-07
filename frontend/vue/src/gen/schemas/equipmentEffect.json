@@ -1,0 +1,1 @@
+{"properties":{"blueprintId":{"type":"integer"},"effectId":{"type":"integer"},"value":{"type":"number"},"valueSecond":{"description":"Second value is considered as an average for all equipment, taking into account the first value.","type":"number"}},"required":["blueprintId","effectId","value"],"type":"object","x-readme-ref-name":"equipmentEffect"}

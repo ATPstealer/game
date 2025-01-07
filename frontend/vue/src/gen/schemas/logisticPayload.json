@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"number"},"buildingId":{"type":"string"},"fromX":{"type":"integer"},"fromY":{"type":"integer"},"resourceTypeId":{"type":"integer"},"toX":{"type":"integer"},"toY":{"type":"integer"}},"type":"object","x-readme-ref-name":"logisticPayload"}

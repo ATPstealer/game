@@ -1,0 +1,1 @@
+{"properties":{"capacity":{"type":"number"},"capacityMax":{"type":"number"},"price":{"type":"number"},"revenue":{"type":"number"},"speed":{"type":"number"}},"required":["capacity","capacityMax","price","revenue","speed"],"type":"object","x-readme-ref-name":"logistics"}

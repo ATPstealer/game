@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"number"},"loanId":{"type":"string"}},"required":["amount","loanId"],"type":"object","x-readme-ref-name":"repayLoanPayload"}

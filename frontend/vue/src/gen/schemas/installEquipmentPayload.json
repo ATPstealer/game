@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"integer"},"buildingId":{"type":"string"},"equipmentTypeId":{"type":"integer"}},"required":["amount","buildingId","equipmentTypeId"],"type":"object","x-readme-ref-name":"installEquipmentPayload"}

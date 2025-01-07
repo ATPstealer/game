@@ -1,0 +1,1 @@
+{"properties":{"attention":{"type":"integer"},"intelligence":{"type":"integer"},"management":{"type":"integer"},"memory":{"type":"integer"},"multitasking":{"type":"integer"},"planning":{"type":"integer"},"wits":{"type":"integer"}},"required":["attention","intelligence","management","memory","multitasking","planning","wits"],"type":"object","x-readme-ref-name":"characteristics"}

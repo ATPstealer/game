@@ -1,0 +1,1 @@
+{"properties":{"buildingId":{"type":"string"},"price":{"type":"number"}},"type":"object","x-readme-ref-name":"logisticsPriceParams"}
