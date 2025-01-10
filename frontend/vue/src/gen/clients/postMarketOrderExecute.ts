@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   PostMarketOrderExecuteMutationRequest,
   PostMarketOrderExecuteMutationResponse,
@@ -20,6 +20,6 @@ export async function postMarketOrderExecute(
     PostMarketOrderExecute401 | PostMarketOrderExecute500,
     PostMarketOrderExecuteMutationRequest
   >({ method: 'POST', url: '/market/order/execute', data, ...config })
-
-  return res.data
+  
+  return res
 }

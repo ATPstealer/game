@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   PostBuildingStopWorkMutationRequest,
   PostBuildingStopWorkMutationResponse,
@@ -22,5 +22,5 @@ export async function postBuildingStopWork(
     ...config
   })
   
-  return res.data
+  return res
 }

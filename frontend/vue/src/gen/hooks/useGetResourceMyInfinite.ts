@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQueryReturnType } from '@tanstack/vue-query'
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetResourceMyQueryResponse, GetResourceMyQueryParams, GetResourceMy401, GetResourceMy500 } from '../types/GetResourceMy.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const getResourceMyInfiniteQueryKey = (params?: MaybeRef<GetResourceMyQueryParams>) => [{ url: '/resource/my' }, ...(params ? [params] : [])] as const
 

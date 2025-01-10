@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetMarketOrderMyQueryResponse, GetMarketOrderMy401, GetMarketOrderMy500 } from '../types/GetMarketOrderMy.ts'
 
 /**
@@ -12,6 +12,6 @@ export async function getMarketOrderMy(config: Partial<RequestConfig> = {}) {
     url: '/market/order/my',
     ...config
   })
-
-  return res.data
+  
+  return res
 }

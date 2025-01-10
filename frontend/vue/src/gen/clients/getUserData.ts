@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetUserDataQueryResponse, GetUserData401 } from '../types/GetUserData.ts'
 
 /**
@@ -8,6 +8,6 @@ import type { GetUserDataQueryResponse, GetUserData401 } from '../types/GetUserD
  */
 export async function getUserData(config: Partial<RequestConfig> = {}) {
   const res = await client<GetUserDataQueryResponse, GetUserData401, unknown>({ method: 'GET', url: '/user/data', ...config })
-
-  return res.data
+  
+  return res
 }

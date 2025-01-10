@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   PostBankRepayLoanMutationRequest,
   PostBankRepayLoanMutationResponse,
@@ -19,6 +19,6 @@ export async function postBankRepayLoan(data: PostBankRepayLoanMutationRequest, 
     data,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

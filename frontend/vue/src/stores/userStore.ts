@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { User } from '@/api'
+import type { User } from '@/gen'
 
 export const useUserStore = defineStore('userStore', () => {
   const userData = ref<User>()

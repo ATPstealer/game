@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetResourceTypesQueryResponse, GetResourceTypes500 } from '../types/GetResourceTypes.ts'
+import type { RequestConfig } from '@/api/customClientAxios'
+import client from '@/api/customClientAxios'
 
 export const getResourceTypesQueryKey = () => [{ url: '/resource/types' }] as const
 

@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { PostResourceMoveMutationRequest, PostResourceMoveMutationResponse, PostResourceMove401, PostResourceMove500 } from '../types/PostResourceMove.ts'
 
 /**
@@ -13,6 +13,6 @@ export async function postResourceMove(data?: PostResourceMoveMutationRequest, c
     data,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

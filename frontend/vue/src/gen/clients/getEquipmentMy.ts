@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetEquipmentMyQueryResponse, GetEquipmentMyQueryParams, GetEquipmentMy401, GetEquipmentMy500 } from '../types/GetEquipmentMy.ts'
 
 /**
@@ -13,6 +13,6 @@ export async function getEquipmentMy(params?: GetEquipmentMyQueryParams, config:
     params,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

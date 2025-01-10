@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   DeleteMarketOrderCloseMutationResponse,
   DeleteMarketOrderCloseQueryParams,
@@ -19,5 +19,5 @@ export async function deleteMarketOrderClose(params: DeleteMarketOrderCloseQuery
     ...config
   })
   
-  return res.data
+  return res
 }

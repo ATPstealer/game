@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   PostBankCreditTermsMutationRequest,
   PostBankCreditTermsMutationResponse,
@@ -19,6 +19,6 @@ export async function postBankCreditTerms(data: PostBankCreditTermsMutationReque
     data,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

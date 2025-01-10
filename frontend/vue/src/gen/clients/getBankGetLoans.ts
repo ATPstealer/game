@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetBankGetLoansQueryResponse, GetBankGetLoans401, GetBankGetLoans500 } from '../types/GetBankGetLoans.ts'
 
 /**
@@ -9,6 +9,6 @@ import type { GetBankGetLoansQueryResponse, GetBankGetLoans401, GetBankGetLoans5
  */
 export async function getBankGetLoans(config: Partial<RequestConfig> = {}) {
   const res = await client<GetBankGetLoansQueryResponse, GetBankGetLoans401 | GetBankGetLoans500, unknown>({ method: 'GET', url: '/bank/get_loans', ...config })
-
-  return res.data
+  
+  return res
 }

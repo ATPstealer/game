@@ -28,7 +28,7 @@ const isLogin = ref<boolean>(true)
 
 const redirect = async () => {
   const prev = localStorage.getItem('prev')
-  await router.push(prev)
+  await router.push(prev || '/')
   router.go(0)
 }
 </script>

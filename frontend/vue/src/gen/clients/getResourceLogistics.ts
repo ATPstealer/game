@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetResourceLogisticsQueryResponse, GetResourceLogisticsQueryParams, GetResourceLogistics500 } from '../types/GetResourceLogistics.ts'
 
 /**
@@ -13,6 +13,6 @@ export async function getResourceLogistics(params?: GetResourceLogisticsQueryPar
     params,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

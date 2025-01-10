@@ -6,15 +6,14 @@
     "build": "vite build",
     "test:unit": "vitest",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint-gen": "eslint src/gen --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "dev": "vite",
     "format": "prettier --write src/",
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "openapi-ts": "openapi-ts",
-    "generate": "kubb generate --config kubb.config.ts && npm run lint"
+    "generate": "kubb generate --config kubb.config.ts && npm run lint-gen"
   },
   "dependencies": {
-    "@hey-api/client-fetch": "^0.4.0",
     "@intlify/unplugin-vue-i18n": "1.5.0",
     "@tanstack/vue-query": "5.62.16",
     "@types/crypto-js": "4.2.1",
@@ -36,7 +35,6 @@
     "vue-router": "4.2.5"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.53.8",
     "@kubb/cli": "^3.3.5",
     "@kubb/core": "^3.3.5",
     "@kubb/plugin-client": "^3.3.5",

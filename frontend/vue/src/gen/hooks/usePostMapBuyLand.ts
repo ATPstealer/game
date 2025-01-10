@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { MutationObserverOptions } from '@tanstack/vue-query'
 import { useMutation } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { PostMapBuyLandMutationRequest, PostMapBuyLandMutationResponse, PostMapBuyLand500 } from '../types/PostMapBuyLand.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const postMapBuyLandMutationKey = () => [{ url: '/map/buy_land' }] as const
 

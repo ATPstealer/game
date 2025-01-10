@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { PostBuildingGetMutationRequest, PostBuildingGetMutationResponse, PostBuildingGet500 } from '../types/PostBuildingGet.ts'
 
 /**
@@ -13,6 +13,6 @@ export async function postBuildingGet(data?: PostBuildingGetMutationRequest, con
     data,
     ...config
   })
-
-  return res.data
+  
+  return res
 }

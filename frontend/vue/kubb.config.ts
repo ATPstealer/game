@@ -3,6 +3,8 @@ import { pluginOas } from '@kubb/plugin-oas'
 import { pluginTs } from '@kubb/plugin-ts'
 import { pluginVueQuery } from '@kubb/plugin-vue-query'
 
+const baseURL = 'http://staging.game.k8s.atpstealer.com/api/v2'
+
 export default defineConfig(() => {
   return [
     {
@@ -24,8 +26,8 @@ export default defineConfig(() => {
             path: './hooks'
           },
           client: {
-            baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-            importPath: '@kubb/plugin-client/clients/fetch'
+            baseURL,
+            importPath: '@/api/customClientAxios'
           },
           query: {
             importPath: '@tanstack/vue-query'

@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetMapAllLandLordsQueryResponse, GetMapAllLandLords500 } from '../types/GetMapAllLandLords.ts'
 
 /**
@@ -8,6 +8,6 @@ import type { GetMapAllLandLordsQueryResponse, GetMapAllLandLords500 } from '../
  */
 export async function getMapAllLandLords(config: Partial<RequestConfig> = {}) {
   const res = await client<GetMapAllLandLordsQueryResponse, GetMapAllLandLords500, unknown>({ method: 'GET', url: '/map/all_land_lords', ...config })
-
-  return res.data
+  
+  return res
 }

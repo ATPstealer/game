@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQueryReturnType } from '@tanstack/vue-query'
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetMapCellOwnersQueryResponse, GetMapCellOwnersQueryParams, GetMapCellOwners500 } from '../types/GetMapCellOwners.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const getMapCellOwnersInfiniteQueryKey = (params: MaybeRef<GetMapCellOwnersQueryParams>) =>
   [{ url: '/map/cell_owners' }, ...(params ? [params] : [])] as const

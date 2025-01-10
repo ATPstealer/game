@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { PostUserLoginMutationRequest, PostUserLoginMutationResponse } from '../types/PostUserLogin.ts'
 
 /**
@@ -10,5 +10,5 @@ import type { PostUserLoginMutationRequest, PostUserLoginMutationResponse } from
 export async function postUserLogin(data: PostUserLoginMutationRequest, config: Partial<RequestConfig<PostUserLoginMutationRequest>> = {}) {
   const res = await client<PostUserLoginMutationResponse, Error, PostUserLoginMutationRequest>({ method: 'POST', url: '/user/login', data, ...config })
   
-  return res.data
+  return res
 }

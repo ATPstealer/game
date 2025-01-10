@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQueryReturnType } from '@tanstack/vue-query'
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetBankGetCreditTermsQueryResponse, GetBankGetCreditTermsQueryParams, GetBankGetCreditTerms500 } from '../types/GetBankGetCreditTerms.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const getBankGetCreditTermsInfiniteQueryKey = (params?: MaybeRef<GetBankGetCreditTermsQueryParams>) =>
   [{ url: '/bank/get_credit_terms' }, ...(params ? [params] : [])] as const

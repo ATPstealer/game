@@ -1,8 +1,8 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { MutationObserverOptions } from '@tanstack/vue-query'
 import { useMutation } from '@tanstack/vue-query'
 import type { DeleteUserLoginMutationResponse, DeleteUserLogin500 } from '../types/DeleteUserLogin.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const deleteUserLoginMutationKey = () => [{ url: '/user/login' }] as const
 

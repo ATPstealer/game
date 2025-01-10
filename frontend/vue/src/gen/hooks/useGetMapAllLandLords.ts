@@ -1,9 +1,9 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetMapAllLandLordsQueryResponse, GetMapAllLandLords500 } from '../types/GetMapAllLandLords.ts'
+import type { RequestConfig } from '@/api/customClientAxios'
+import client from '@/api/customClientAxios'
 
 export const getMapAllLandLordsQueryKey = () => [{ url: '/map/all_land_lords' }] as const
 

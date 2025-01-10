@@ -1,10 +1,10 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetBuildingBlueprintsQueryResponse, GetBuildingBlueprintsQueryParams, GetBuildingBlueprints500 } from '../types/GetBuildingBlueprints.ts'
+import type { RequestConfig } from '@/api/customClientAxios'
+import client from '@/api/customClientAxios'
 
 export const getBuildingBlueprintsQueryKey = (params?: MaybeRef<GetBuildingBlueprintsQueryParams>) =>
   [{ url: '/building/blueprints' }, ...(params ? [params] : [])] as const

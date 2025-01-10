@@ -17,9 +17,6 @@ const vueQueryPluginOptions: VueQueryPluginOptions  = {
   queryClientConfig: {
     defaultOptions: {
       queries: {
-        select: (data: any) => {
-          return data.data
-        },
         refetchOnReconnect: false,
         refetchOnWindowFocus: false,
         staleTime: Number.POSITIVE_INFINITY,

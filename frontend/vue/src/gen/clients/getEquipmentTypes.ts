@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetEquipmentTypesQueryResponse, GetEquipmentTypes500 } from '../types/GetEquipmentTypes.ts'
 
 /**
@@ -9,5 +9,5 @@ import type { GetEquipmentTypesQueryResponse, GetEquipmentTypes500 } from '../ty
 export async function getEquipmentTypes(config: Partial<RequestConfig> = {}) {
   const res = await client<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, unknown>({ method: 'GET', url: '/equipment/types', ...config })
   
-  return res.data
+  return res
 }

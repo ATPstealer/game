@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type {
   PostBuildingInstallEquipmentMutationRequest,
   PostBuildingInstallEquipmentMutationResponse,
@@ -21,5 +21,5 @@ export async function postBuildingInstallEquipment(
     PostBuildingInstallEquipmentMutationRequest
   >({ method: 'POST', url: '/building/install_equipment', data, ...config })
   
-  return res.data
+  return res
 }

@@ -1,10 +1,10 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetResourceLogisticsQueryResponse, GetResourceLogisticsQueryParams, GetResourceLogistics500 } from '../types/GetResourceLogistics.ts'
+import type { RequestConfig } from '@/api/customClientAxios'
+import client from '@/api/customClientAxios'
 
 export const getResourceLogisticsQueryKey = (params?: MaybeRef<GetResourceLogisticsQueryParams>) =>
   [{ url: '/resource/logistics' }, ...(params ? [params] : [])] as const

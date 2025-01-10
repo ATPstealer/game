@@ -1,5 +1,3 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { MutationObserverOptions } from '@tanstack/vue-query'
 import { useMutation } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
@@ -9,6 +7,8 @@ import type {
   PostBuildingEmergencyHiring401,
   PostBuildingEmergencyHiring500
 } from '../types/PostBuildingEmergencyHiring.ts'
+import client from '@/api/customClientAxios'
+import type { RequestConfig } from '@/api/customClientAxios'
 
 export const postBuildingEmergencyHiringMutationKey = () => [{ url: '/building/emergency_hiring' }] as const
 

@@ -69,21 +69,25 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery, useMutation } from '@tanstack/vue-query'
 import Accordion from 'primevue/accordion'
 import AccordionTab from 'primevue/accordiontab'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import InputNumber from 'primevue/inputnumber'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { EquipmentType, ResourceAsEquipment, BuildingWithData, JsonResult } from '@/api'
-import { getEquipmentMyOptions, postBuildingInstallEquipmentMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
+import {
+  type BuildingWithData,
+  type EquipmentType,
+  type JsonResult,
+  useGetEquipmentMy,
+  usePostBuildingInstallEquipment
+} from '@/gen'
 
 interface Props {
-  building: BuildingWithData;
+  building: BuildingWithData | undefined;
 }
 
 type Equipment = EquipmentType & {amount: number}
@@ -92,25 +96,21 @@ const props = defineProps<Props>()
 
 const emits = defineEmits<{(e: 'update-equipment'): void}>()
 
-const myEquipment = ref<ResourceAsEquipment[]>([])
 const amounts = ref<Record<number, number>>({})
 const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
 
-const { suspense, refetch } = useQuery({
-  ...getEquipmentMyOptions({ query: { x: props.building.x, y: props.building.y } }),
-  select: (data: any) => {
-    myEquipment.value = data.data
-  }
-})
+const { data: equipmentQuery, suspense, refetch } = useGetEquipmentMy({ x: props.building?.x, y: props.building?.y })
+const myEquipment = computed(() => unref(equipmentQuery)?.data || [])
 
-const addEquipment = useMutation({
-  ...postBuildingInstallEquipmentMutation(),
-  onSuccess: (data: JsonResult) => {
-    messageData.value = data
-    refetch()
-    emits('update-equipment')
+const addEquipment = usePostBuildingInstallEquipment({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+      refetch()
+      emits('update-equipment')
+    }
   }
 })
 
@@ -127,12 +127,12 @@ const add = (data: Equipment) => {
   const amount = amounts.value[data.id]
 
   const payload = {
-    buildingId: props.building._id,
+    buildingId: props.building!._id,
     equipmentTypeId: data.id,
     amount
   }
 
-  addEquipment.mutate({ body: { ...payload } })
+  addEquipment.mutate({ data: { ...payload } })
 }
 
 const setAmounts = () => {

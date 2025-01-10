@@ -6,7 +6,7 @@
       v-bind="messageData"
     />
     <DataTable
-      v-if="availableEquipment.length"
+      v-if="availableEquipment?.length"
       :value="availableEquipment"
     >
       <Column field="name" :header="t('common.title')" />
@@ -41,20 +41,18 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import InputNumber from 'primevue/inputnumber'
 import { onMounted, ref, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { BuildingWithData, EquipmentType, JsonResult } from '@/api'
-import { postBuildingInstallEquipmentMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
+import { type BuildingWithData, type EquipmentType, type JsonResult, usePostBuildingInstallEquipment } from '@/gen'
 
 interface Props {
-  building: BuildingWithData;
-  equipmentTypes: EquipmentType[];
+  building: BuildingWithData | undefined;
+  equipmentTypes: EquipmentType[] | undefined;
 }
 
 const props = defineProps<Props>()
@@ -65,13 +63,13 @@ const amounts = ref<Record<number, number>>({})
 const messageData = ref<JsonResult>()
 
 const availableEquipment = computed(() => {
-  const allEquipment = props.building.equipment
+  const allEquipment = props.building?.equipment
 
   if (!allEquipment?.length) {
     return []
   }
 
-  return props.equipmentTypes.filter(eq => {
+  return props.equipmentTypes?.filter(eq => {
     if (allEquipment.find(item => item.equipmentTypeId === eq.id) !== undefined) {
       return eq
     }
@@ -85,11 +83,12 @@ const availableEquipment = computed(() => {
 
 const { t } = useI18n()
 
-const updateEquipment = useMutation({
-  ...postBuildingInstallEquipmentMutation(),
-  onSuccess: (data: JsonResult) => {
-    messageData.value = data
-    emits('update-equipment')
+const updateEquipment = usePostBuildingInstallEquipment({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+      emits('update-equipment')
+    }
   }
 })
 
@@ -97,16 +96,16 @@ const changeEquipment = (data: EquipmentType) => {
   const amount = amounts.value[data.id]
 
   const payload = {
-    buildingId: props.building._id,
+    buildingId: props.building!._id,
     equipmentTypeId: data.id,
     amount: -amount
   }
 
-  updateEquipment.mutate({ body: { ...payload } })
+  updateEquipment.mutate({ data: { ...payload } })
 }
 
 const setAmounts = () => {
-  amounts.value = availableEquipment.value.reduce((acc: Record<number, number>, cur: EquipmentType) => {
+  amounts.value = availableEquipment.value!.reduce((acc: Record<number, number>, cur: EquipmentType) => {
     acc[cur.id] = 1
 
     return acc
@@ -114,7 +113,7 @@ const setAmounts = () => {
 }
 
 watch(availableEquipment, () => {
-  if (availableEquipment.value.length) {
+  if (availableEquipment.value?.length) {
     setAmounts()
   }
 })

@@ -1,10 +1,10 @@
-import client from '@kubb/plugin-client/clients/fetch'
-import type { RequestConfig } from '@kubb/plugin-client/clients/fetch'
 import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tanstack/vue-query'
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetOrdersQueryResponse, GetOrdersQueryParams, GetOrders500 } from '../types/GetOrders.ts'
+import type { RequestConfig } from '@/api/customClientAxios'
+import client from '@/api/customClientAxios'
 
 export const getOrdersQueryKey = (params?: MaybeRef<GetOrdersQueryParams>) => [{ url: '/orders' }, ...(params ? [params] : [])] as const
 

@@ -102,19 +102,17 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import { useConfirm } from 'primevue/useconfirm'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { type JsonResult } from '@/api'
-import { postBuildingEmergencyHiringMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useMap } from '@/composables/useMap'
-import { BackData } from '@/types'
-import { Building } from '@/types/Buildings/index.interface'
+import { usePostBuildingEmergencyHiring } from '@/gen'
+import { type BackData } from '@/types'
+import { type Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
@@ -143,7 +141,7 @@ const getAverageSalary = () => {
   return 0
 }
 
-const setHiringData = (value, option: HiringOptions) => {
+const setHiringData = (value: number, option: HiringOptions) => {
   messageData.value = {} as BackData
   const isSalary = option === 'salary'
 
@@ -175,17 +173,17 @@ const confirmEmergencyHiring = (event: any, id: string) => {
   })
 }
 
-const emergencyHiringMutate = useMutation({
-  ...postBuildingEmergencyHiringMutation(),
-  onSuccess: (data: JsonResult) => {
-    messageData.value = data
-    console.log(messageData.value)
+const emergencyHiringMutate = usePostBuildingEmergencyHiring({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
   }
 })
 
-const handleEmergencyHiring = (id) => {
+const handleEmergencyHiring = (id: string) => {
   const payload = { buildingId: id }
-  emergencyHiringMutate.mutate({ body: { ...payload } })
+  emergencyHiringMutate.mutate({ data: { ...payload } })
 }
 
 </script>

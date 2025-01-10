@@ -117,16 +117,14 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
 import sha256 from 'crypto-js/sha256'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { JsonResult } from '@/api'
-import { postUserCreateMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
+import { type JsonResult, usePostUserCreate, type UserPayload } from '@/gen'
 import type { BackData } from '@/types'
 
 const emits = defineEmits<{
@@ -186,27 +184,29 @@ const validForm = computed(() => {
       pass2.value && matchPasswords.value
 })
 
-const signUp = useMutation({
-  ...postUserCreateMutation(),
-  onSuccess: (data: JsonResult) => {
-    messageData.value = data
+const signUp = usePostUserCreate({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
 
-    if (data && data.code === -1) {
-      setTimeout(() => {
-        emits('log-in')
-      }, 1000)
+      if (data && data.code === -1) {
+        setTimeout(() => {
+          emits('log-in')
+        }, 1000)
+      }
     }
   }
 })
+
 const submit = () => {
   messageData.value = {} as BackData
   const userData = {
     nickName: nickName.value,
     email: email.value,
     password: sha256(pass1.value).toString()
-  }
+  } as UserPayload
 
-  signUp.mutate({ body: { ...userData } })
+  signUp.mutate({ data: { ...userData } })
 }
 </script>
 

@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetSettingsQueryResponse, GetSettings500 } from '../types/GetSettings.ts'
 
 /**
@@ -9,6 +9,6 @@ import type { GetSettingsQueryResponse, GetSettings500 } from '../types/GetSetti
  */
 export async function getSettings(config: Partial<RequestConfig> = {}) {
   const res = await client<GetSettingsQueryResponse, GetSettings500, unknown>({ method: 'GET', url: '/settings', ...config })
-
-  return res.data
+  
+  return res
 }

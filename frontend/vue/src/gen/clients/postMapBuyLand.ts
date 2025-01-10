@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { PostMapBuyLandMutationRequest, PostMapBuyLandMutationResponse, PostMapBuyLand500 } from '../types/PostMapBuyLand.ts'
 
 /**
@@ -14,5 +14,5 @@ export async function postMapBuyLand(data: PostMapBuyLandMutationRequest, config
     ...config
   })
   
-  return res.data
+  return res
 }

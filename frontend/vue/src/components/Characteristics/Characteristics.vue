@@ -19,7 +19,7 @@ import { storeToRefs } from 'pinia'
 import Card from 'primevue/card'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { Characteristics } from '@/api'
+import type { Characteristics } from '@/gen'
 import { useUserStore } from '@/stores/userStore'
 
 const { t } = useI18n()

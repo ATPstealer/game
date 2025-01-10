@@ -52,17 +52,15 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
 import sha256 from 'crypto-js/sha256'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { JsonResult } from '@/api'
-import { postUserLoginMutation } from '@/api/@tanstack/vue-query.gen'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useUser } from '@/composables/useUser'
+import { usePostUserLogin, type UserPayload, type JsonResult } from '@/gen'
 
 const emits = defineEmits<{
   (e: 'close'): void;
@@ -76,26 +74,28 @@ const messageData = ref<JsonResult>()
 const { t } = useI18n()
 const { setToken } = useUser()
 
-const logIn = useMutation({
-  ...postUserLoginMutation(),
-  onSuccess: (data: JsonResult) => {
-    messageData.value = data
+const login = usePostUserLogin({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
 
-    if (data && data?.code <= 0) {
-      setToken(data)
-      setTimeout(() => {
-        emits('close')
-      }, 1000)
+      if (data && data?.code <= 0) {
+        setToken(data as JsonResult & {data: {ttl: string; token: string}})
+        setTimeout(() => {
+          emits('close')
+        }, 1000)
+      }
     }
   }
 })
+
 const submit = () => {
   const userData = {
     nickName: nickName.value,
     password: sha256(pass.value).toString()
-  }
+  } as UserPayload
 
-  logIn.mutate({ body: { ...userData } })
+  login.mutate({ data: { ...userData } })
 }
 </script>
 

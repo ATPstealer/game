@@ -1,5 +1,5 @@
-import client from '@kubb/plugin-client/dist/clients/axios'
-import type { RequestConfig } from '@kubb/plugin-client/dist/clients/axios'
+import client from '@kubb/plugin-client/clients/axios'
+import type { RequestConfig } from '@kubb/plugin-client/clients/axios'
 import type { GetUsernamesByPrefixQueryResponse, GetUsernamesByPrefixQueryParams } from '../types/GetUsernamesByPrefix.ts'
 
 /**
@@ -10,5 +10,5 @@ import type { GetUsernamesByPrefixQueryResponse, GetUsernamesByPrefixQueryParams
 export async function getUsernamesByPrefix(params?: GetUsernamesByPrefixQueryParams, config: Partial<RequestConfig> = {}) {
   const res = await client<GetUsernamesByPrefixQueryResponse, Error, unknown>({ method: 'GET', url: '/data/users_by_prefix', params, ...config })
   
-  return res.data
+  return res
 }
