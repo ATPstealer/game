@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"number"},"resourceId":{"type":"integer"}},"type":"object","x-readme-ref-name":"resourceAmount"}

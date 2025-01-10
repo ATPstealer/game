@@ -64,44 +64,39 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
 import AutoComplete from 'primevue/autocomplete'
 import Button from 'primevue/button'
 import Dropdown, { type DropdownChangeEvent } from 'primevue/dropdown'
 import FloatLabel from 'primevue/floatlabel'
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { BuildingType, FindBuildingParams } from '@/api'
-import { getBuildingTypesOptions, getSettingsOptions } from '@/api/@tanstack/vue-query.gen'
 import BuildingSearch from '@/components/Buildings/SearchBuilding/BuildingSearch.vue'
 import Layout from '@/components/Common/Layout.vue'
 import { useGetData } from '@/composables/useGetData'
-import type { Coords } from '@/types'
+import { type BuildingType, type FindBuildingParams, useGetBuildingTypes, useGetSettings } from '@/gen'
 import type { SearchBuildingParams } from '@/types/Buildings/index.interface'
 import { getTranslation } from '@/utils/getTranslation'
 
 const buildingType = ref<BuildingType>({ id: 0, title: 'All' } as BuildingType)
-const buildingTypes = ref<BuildingType[]>([{ id: 0, title: 'All' } as BuildingType])
 const x = ref<number>()
 const y = ref<number>()
 const userSearch = ref<string>('')
 const users = ref<string[]>([])
-const coords = ref<Record<Coords, number>>()
 
 const { t } = useI18n()
 
-const { suspense: gotBuildingTypes } = useQuery({
-  ...getBuildingTypesOptions(),
-  select: (data: any) => {
-    buildingTypes.value = [...buildingTypes.value, ...data.data]
-  }
+const { data: buildingTypesQuery, suspense: gotBuildingTypes } = useGetBuildingTypes()
+
+const buildingTypes = computed(() => {
+  const types = unref(buildingTypesQuery)?.data || []
+
+  return [{ id: 0, title: 'All' }, ...types]
 })
 
-const { suspense: gotCoords } = useQuery({
-  ...getSettingsOptions(),
-  select: (data: any) => {
-    coords.value = data.data
-  }
+const { data: coordsQuery, suspense: gotCoords } = useGetSettings()
+
+const coords = computed(() => {
+  return unref(coordsQuery)?.data
 })
 
 const searchUsers = () => {

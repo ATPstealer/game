@@ -1,0 +1,1 @@
+{"properties":{"borrowedFromState":{"type":"number"},"borrowedLimit":{"type":"number"},"loansAmount":{"type":"number"},"loansAmountNewUsers":{"type":"number"},"loansLimit":{"type":"number"}},"required":["borrowedFromState","borrowedLimit","loansAmount","loansAmountNewUsers","loansLimit"],"type":"object","x-readme-ref-name":"bank"}

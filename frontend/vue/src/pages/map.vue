@@ -8,10 +8,10 @@
         >
           <RadioButton
             v-model="filter"
-            :value="option"
             :input-id="`${option}-name`"
+            :value="option"
           />
-          <label :for="`${option}-name`" class="ml-2 capitalize">{{ option }}</label>
+          <label class="ml-2 capitalize" :for="`${option}-name`">{{ option }}</label>
         </div>
       </div>
     </template>
@@ -30,23 +30,23 @@
             @click="setCell(row, column)"
           >
             <img
-              :src="getSrc(row, column)"
               alt="Surface"
               class="relative z-[-1]"
+              :src="getSrc(row, column)"
             />
           </div>
         </div>
       </div>
       <div class="legend flex items-center relative">
         <span class="absolute -bottom-6">{{ computedFilter?.min }}</span>
-        <span class="absolute -bottom-6 left-1/2 -translate-x-1/2" v-if="computedFilter?.max-computedFilter?.min">
+        <span v-if="computedFilter?.max-computedFilter?.min" class="absolute -bottom-6 left-1/2 -translate-x-1/2">
           {{ Math.floor((computedFilter?.max-computedFilter?.min)/2) }}
         </span>
         <span class="absolute -bottom-6 left-full -translate-x-full">{{ Math.floor(computedFilter?.max) }}</span>
         <div
-          class="h-10 w-10"
           v-for="item in 10"
           :key="`legend-${item}`"
+          class="h-10 w-10"
           :style="{'background-color': `rgba(${color}, ${item * 0.1 * 0.7})`}"
         />
       </div>
@@ -54,10 +54,10 @@
     <Loading v-else />
     <Dialog
       v-model:visible="showModal"
-      modal
       :header="`Cell ${cell?.x} x ${cell?.y}`"
+      modal
     >
-      <MapCell :square="cell?.square" :cell="cell" />
+      <MapCell :cell="cell" :square="cell?.square" />
     </Dialog>
   </Layout>
 </template>

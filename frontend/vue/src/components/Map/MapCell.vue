@@ -22,7 +22,7 @@
       </p>
       <Button label="Buy" @click="buy" />
     </div>
-    <RouterLink :to="`/construct-building?x=${cell.x}&y=${cell.y}`" class="font-bold text-blue-500 hover:text-blue-700">
+    <RouterLink class="font-bold text-blue-500 hover:text-blue-700" :to="`/construct-building?x=${cell.x}&y=${cell.y}`">
       Construct building
     </RouterLink>
 

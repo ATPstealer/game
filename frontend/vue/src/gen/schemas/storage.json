@@ -1,0 +1,1 @@
+{"properties":{"_id":{"type":"string"},"userId":{"type":"string"},"volumeMax":{"type":"number"},"volumeOccupied":{"type":"number"},"x":{"type":"integer"},"y":{"type":"integer"}},"required":["_id","userId","volumeMax","volumeOccupied","x","y"],"type":"object","x-readme-ref-name":"storage"}

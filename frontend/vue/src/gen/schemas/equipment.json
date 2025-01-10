@@ -1,0 +1,1 @@
+{"properties":{"amount":{"type":"integer"},"durability":{"type":"integer"},"equipmentTypeId":{"type":"integer"}},"required":["amount","durability","equipmentTypeId"],"type":"object","x-readme-ref-name":"equipment"}

@@ -2,8 +2,8 @@
   <Layout :show-options-prop="false">
     <div v-if="!isFetching && data?.length">
       <Resources
-        :resources="data.filter(resource => resource?.resourceType?.name)"
         :execute="execute"
+        :resources="data.filter(resource => resource?.resourceType?.name)"
       />
     </div>
     <Loading v-else />

@@ -19,12 +19,12 @@
     <div class="flex flex-col">
       <label class="font-bold text-xl" for="resource-type">{{ t('resources.resourceType') }}</label>
       <Dropdown
-        :options="resourceTypes"
-        :option-label="event => t(`resources.types.${event.name.toLowerCase()}`)"
-        option-value="id"
-        :placeholder="t('resources.choose')"
         v-model="resourceTypeId"
         input-id="resource-type"
+        :option-label="event => t(`resources.types.${event.name.toLowerCase()}`)"
+        option-value="id"
+        :options="resourceTypes"
+        :placeholder="t('resources.choose')"
       />
     </div>
     <div class="flex gap-4 mt-4">
@@ -32,20 +32,20 @@
         <label class="font-bold text-xl">X:</label>
         <InputNumber
           v-model="x"
-          show-buttons
-          :min="-2"
-          :max="2"
           input-class="w-12"
+          :max="2"
+          :min="-2"
+          show-buttons
         />
       </div>
       <div class="flex flex-col">
         <label class="font-bold text-xl">Y:</label>
         <InputNumber
           v-model="y"
-          show-buttons
-          :min="-2"
-          :max="2"
           input-class="w-12"
+          :max="2"
+          :min="-2"
+          show-buttons
         />
       </div>
     </div>
@@ -66,13 +66,13 @@
         show-buttons
       />
     </div>
-    <div class="flex gap-4 items-center" v-if="!resource">
+    <div v-if="!resource" class="flex gap-4 items-center">
       <label class="font-bold text-xl">{{ t('orders.create.type') }}</label>
       <SelectButton
-        :options="orderTypes"
+        v-model="sell"
         option-label="name"
         option-value="value"
-        v-model="sell"
+        :options="orderTypes"
         :pt="{
           button: ({ context }) => ({
             class: context.active ? 'bg-blue-400 border-blue-400' : undefined
@@ -81,10 +81,10 @@
       />
     </div>
     <Button
-      :label="resource? t('common.sell') : t('common.create')"
-      @click="create"
       class="self-center w-1/2 mt-4"
       :disabled="!amount || !priceForUnit || (!resource && !resourceTypeId)"
+      :label="resource? t('common.sell') : t('common.create')"
+      @click="create"
     />
   </div>
 </template>

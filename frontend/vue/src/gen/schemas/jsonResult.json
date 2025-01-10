@@ -1,0 +1,1 @@
+{"properties":{"code":{"example":0,"type":"integer"},"data":{},"text":{"type":"string"},"values":{}},"required":["code"],"type":"object","x-readme-ref-name":"jsonResult"}

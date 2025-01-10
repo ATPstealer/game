@@ -20,20 +20,20 @@
         <label class="font-bold text-xl">X:</label>
         <InputNumber
           v-model="x"
-          show-buttons
-          :min="-2"
-          :max="2"
           input-class="w-12"
+          :max="2"
+          :min="-2"
+          show-buttons
         />
       </div>
       <div class="flex flex-col">
         <label class="font-bold text-xl">Y:</label>
         <InputNumber
           v-model="y"
-          show-buttons
-          :min="-2"
-          :max="2"
           input-class="w-12"
+          :max="2"
+          :min="-2"
+          show-buttons
         />
       </div>
     </div>
@@ -41,9 +41,9 @@
       <label class="font-bold text-xl">{{ t('common.amount') }}:</label>
       <InputNumber
         v-model="amount"
+        class="w-1/2"
         show-buttons
         :step="10"
-        class="w-1/2"
       />
     </div>
     <p class="font-bold">
@@ -53,9 +53,9 @@
       {{ t('resources.move.time') }}: {{ distance }}
     </p>
     <Button
+      class="w-1/2 self-center mt-4"
       :label="t('common.move')"
       @click="move"
-      class="w-1/2 self-center mt-4"
     />
   </div>
 </template>

@@ -94,25 +94,16 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation, useQuery } from '@tanstack/vue-query'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import {
-  type BuildingType,
-  type ConstructBuildingPayload,
-  type PostBuildingConstructResponse
-} from '@/api'
-import {
-  getBuildingTypesOptions,
-  postBuildingConstructMutation
-} from '@/api/@tanstack/vue-query.gen'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
+import { type BuildingType, type ConstructBuildingPayload, useGetBuildingTypes, usePostBuildingConstruct } from '@/gen'
 import type { BackData } from '@/types'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTranslation } from '@/utils/getTranslation'
@@ -122,7 +113,7 @@ const { query } = useRoute()
 const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
 const square = ref<number>(10)
-const messageData = ref<PostBuildingConstructResponse>()
+const messageData = ref<BackData>()
 
 const { t } = useI18n()
 
@@ -130,19 +121,21 @@ const cost = computed(() => {
   return (buildingType.value.cost ?? 0) * square.value
 })
 
-const { data: buildingTypes, suspense } = useQuery({
-  ...getBuildingTypesOptions(),
-  select: (data) => data.data as BuildingType[]
-})
-
-const constructBuilding = useMutation({
-  ...postBuildingConstructMutation(),
-  onSuccess: (data) => {
-    messageData.value = data
+const constructBuilding = usePostBuildingConstruct({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
   }
 })
 
-await suspense()
+const { data: buildingTypesQuery, suspense } = useGetBuildingTypes()
+
+suspense()
+
+const buildingTypes = computed(() => {
+  return unref(buildingTypesQuery)?.data
+})
 
 const buildingType = ref<BuildingType>(buildingTypes.value ? buildingTypes.value[0] : {} as BuildingType)
 
@@ -156,7 +149,7 @@ const construct = () => {
     square: square.value
   }
 
-  constructBuilding.mutate({ body: { ...payload } })
+  constructBuilding.mutate({ data: { ...payload } })
 }
 
 </script>

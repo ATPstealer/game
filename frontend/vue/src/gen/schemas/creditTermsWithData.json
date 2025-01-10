@@ -1,0 +1,1 @@
+{"properties":{"buildingId":{"type":"string"},"limit":{"type":"number"},"rate":{"type":"number"},"rating":{"type":"number"}},"required":["buildingId","limit","rate","rating"],"type":"object","x-readme-ref-name":"creditTermsWithData"}

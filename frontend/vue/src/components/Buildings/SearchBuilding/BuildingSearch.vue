@@ -53,13 +53,11 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import { onMounted, ref, toRefs, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { BuildingWithData, FindBuildingParams } from '@/api'
-import { postBuildingGetMutation } from '@/api/@tanstack/vue-query.gen'
+import { type BuildingWithData, type FindBuildingParams, usePostBuildingGet } from '@/gen'
 
 interface Props {
   searchParams: FindBuildingParams;
@@ -72,19 +70,20 @@ const buildings = ref<BuildingWithData[]>([])
 
 const { t } = useI18n()
 
-const { isPending, mutate } = useMutation({
-  ...postBuildingGetMutation(),
-  onSuccess: (data: any) => {
-    buildings.value = data.data
+const { mutate, isPending } = usePostBuildingGet({
+  mutation: {
+    onSuccess: data => {
+      buildings.value = data.data || []
+    }
   }
 })
 
 watch(searchParams.value, () => {
-  mutate({ body: { ...searchParams.value } })
+  mutate({ data: { ...searchParams.value } })
 })
 
 onMounted(() => {
-  mutate({ body: { ...searchParams.value } })
+  mutate({ data: { ...searchParams.value } })
 })
 
 </script>
