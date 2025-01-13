@@ -36,8 +36,8 @@
           autofocus
           class="!w-1/2"
           input-class="!p-2 !w-1/2"
-          max-fraction-digits="2"
-          min-fraction-digits="2"
+          :max-fraction-digits="2"
+          :min-fraction-digits="2"
         />
       </template>
     </Column>
@@ -53,45 +53,38 @@
       :header="t(`buildings.store.columns.status`)"
     >
       <template #body="{data}: {data: Goods}">
-        {{ t(`buildings.store.status.${data.status.toLowerCase()}`) }}
+        {{ t(`buildings.store.status.${data?.status?.toLowerCase()}`) }}
       </template>
     </Column>
   </DataTable>
 </template>
 <script setup lang="ts">
 import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
+import DataTable, { type DataTableCellEditCompleteEvent } from 'primevue/datatable'
 import InputNumber from 'primevue/inputnumber'
-import { computed, ref } from 'vue'
+import { computed, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useBuildings } from '@/composables/useBuildings'
-import { useGetData } from '@/composables/useGetData'
-import { Building, Goods } from '@/types/Buildings/index.interface'
-import { ResourceType } from '@/types/Resources/index.interface'
+import { type Goods, type ResourceType, type BuildingWithData, useGetBuildingMy, useGetResourceTypes, usePostStoreGoodsSet } from '@/gen'
 import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData;
 }
 
 const props = defineProps<Props>()
-const resourcesTypes = ref<ResourceType[]>([])
-const updatedBuilding = ref<Building>(props.building)
 
-const { data, onFetchResponse, isFetching: isFetchingResourcesTypes } = useGetData<ResourceType[]>('/resource/types')
-onFetchResponse(() => {
-  resourcesTypes.value = data.value.filter(item => item.storeGroup === props.building.buildingType.buildingSubGroup)
+const { data: resourceTypesQuery, suspense: awaitResourceTypes } = useGetResourceTypes()
+await awaitResourceTypes()
+
+const resourceTypes = computed(() => {
+  return unref(resourceTypesQuery)?.data || []
 })
 
-const executeBuildingUpdate = () => {
-  const { data: building, onFetchResponse } = useGetData<Building[]>(`/building/my?_id=${  props.building._id}`)
-  onFetchResponse(() => {
-    updatedBuilding.value = building.value[0]
-  })
-}
+const { data: buildingQuery, refetch: refetchBuilding } = useGetBuildingMy()
+const updatedBuilding = computed(() => unref(buildingQuery)?.data?.find(item => item._id === props.building._id))
 
 const tableData = computed(() => {
-  return resourcesTypes.value.map(item => {
+  return resourceTypes.value.map(item => {
     return {
       name: item.name,
       price: getGoodsData(item.id)?.price || 0,
@@ -104,25 +97,29 @@ const tableData = computed(() => {
 })
 
 const getGoodsData = (id: number) => {
-  if (updatedBuilding.value.goods) {
+  if (updatedBuilding.value?.goods) {
     return updatedBuilding.value.goods.find(item => item.resourceTypeId === id)
   }
 
   return null
 }
 
-const { setPrice } = useBuildings()
-const onCellEditComplete = (event) => {
+const mutateSetPrice = usePostStoreGoodsSet({
+  mutation: {
+    onSuccess: () => {
+      refetchBuilding()
+    }
+  }
+})
+
+const onCellEditComplete = (event: DataTableCellEditCompleteEvent) => {
   const payload = {
     buildingId: props.building._id,
     resourceTypeId: event.data.resourceTypeId,
     price: event.newValue
   }
-  const { onFetchResponse } = setPrice(payload)
 
-  onFetchResponse(() => {
-    executeBuildingUpdate()
-  })
+  mutateSetPrice.mutate({ data: { ...payload } })
 }
 
 const { t } = useI18n()

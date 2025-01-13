@@ -7,11 +7,11 @@
     <p class="text-xl">
       {{ t('common.move') }}
       <span class="font-bold">
-        {{ t(`resources.types.${resource.resourceType.name.toLowerCase()}`) }}
+        {{ t(`resources.types.${resource?.resourceType.name.toLowerCase()}`) }}
       </span>
       {{ t('common.from') }}
       <span class="font-bold">
-        {{ resource.x }}:{{ resource.y }}
+        {{ resource?.x }}:{{ resource?.y }}
       </span>
       {{ t('common.to') }}
     </p>
@@ -67,11 +67,11 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useResources } from '@/composables/useResources'
+import { type JsonResult, type ResourceWithData, usePostResourceMove } from '@/gen'
 import type { BackData } from '@/types'
-import type { Resource, ResourceMovePayload } from '@/types/Resources/index.interface'
 
 interface Props {
-  resource: Resource;
+  resource: ResourceWithData | undefined;
 }
 const props = defineProps<Props>()
 const emits = defineEmits<{(e: 'close'): void}>()
@@ -79,39 +79,46 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 const amount = ref<number>(0)
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { moveResource } = useResources()
 const { t } = useI18n()
 
 const distance = computed(() => {
-  return ((props.resource.x-x.value)**2 + (props.resource.y-y.value)**2)**(0.5)
+  return ((props.resource!.x-x.value)**2 + (props.resource!.y-y.value)**2)**(0.5)
 })
 const price = computed(() => {
-  return (props.resource.resourceType.weight + props.resource.resourceType.volume) * distance.value * amount.value / 1000
+  return (props.resource!.resourceType.weight + props.resource!.resourceType.volume) * distance.value * amount.value / 1000
+})
+
+const moveResourceMutation = usePostResourceMove({
+  mutation: {
+    onSuccess: data => {
+      console.log(data)
+      messageData.value = data
+
+      setTimeout(() => {
+        if (data?.status === 'success') {
+          emits('close')
+        }
+      }, 2000)
+    }
+  }
 })
 
 const move = () => {
   messageData.value = {} as BackData
 
-  const payload: ResourceMovePayload = {
+  const payload = {
     toX: x.value,
     toY: y.value,
     amount: amount.value,
-    resourceTypeId: props.resource.resourceTypeId,
-    fromX: props.resource.x,
-    fromY: props.resource.y
+    resourceTypeId: props.resource!.resourceTypeId,
+    fromX: props.resource!.x,
+    fromY: props.resource!.y
   }
-  const { data, onFetchResponse } = moveResource(payload)
-  onFetchResponse(() => {
-    messageData.value = data.value
 
-    setTimeout(() => {
-      if (data.value?.status === 'success') {
-        emits('close')
-      }
-    }, 2000)
-  })
+  moveResourceMutation.mutate({ data: { ...payload } })
 }
 </script>
 

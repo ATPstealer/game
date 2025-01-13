@@ -10,26 +10,20 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from 'vue'
+import { computed, provide, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import BuildingTemplate from '@/components/Buildings/BuildingTemplate.vue'
 import ProductionBuilding from '@/components/Buildings/ProductionBuilding/ProductionBuilding.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Building } from '@/types/Buildings/index.interface'
+import { useGetBuildingMy } from '@/gen'
 
 const route = useRoute()
 const { t } = useI18n()
 
-const building = ref<Building>({} as Building)
-
-const { data, onFetchResponse, isFetching, execute } = useGetData<Building[]>(`/building/my?_id=${route.params.id}`)
-
-onFetchResponse(() => {
-  building.value = data.value[0]
-})
-
-provide('execute', execute)
+const { data: storageBuildingQuery, suspense, isFetching, refetch } = useGetBuildingMy({ _id: route.params.id })
+await suspense()
+const building = computed(() => unref(storageBuildingQuery)?.data?.find(item => item._id === route.params.id))
+provide('execute', refetch())
 
 </script>
 

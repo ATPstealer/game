@@ -18,7 +18,7 @@
             :key="resource.resourceId"
             class="ml-4"
           >
-            {{ t(`resources.types.${findResourceName(resourceTypes, +resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
+            {{ t(`resources.types.${findResourceName(resourceTypes, resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
           </p>
         </div>
         <p class="font-bold">
@@ -30,7 +30,7 @@
             :key="resource.resourceId"
             class="ml-4"
           >
-            {{ t(`resources.types.${findResourceName(resourceTypes, +resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
+            {{ t(`resources.types.${findResourceName(resourceTypes, resource.resourceId)?.toLowerCase()}`) }} {{ resource.amount }}
           </p>
         </div>
         <p><span class="font-bold">{{ t('buildings.production.cycle') }}</span>: {{ getCycling() }}s</p>
@@ -47,8 +47,7 @@
 <script setup lang="ts">
 import Card from 'primevue/card'
 import { useI18n } from 'vue-i18n'
-import type { Blueprint, Building, EquipmentEffect } from '@/types/Buildings/index.interface'
-import type { ResourceType } from '@/types/Resources/index.interface'
+import type { Blueprint, BuildingWithData, EquipmentEffect, ResourceType } from '@/gen'
 import { findResourceName } from '@/utils/findResourceName'
 import { getMinioURL } from '@/utils/getMinioURL'
 
@@ -56,15 +55,15 @@ interface Props {
   blueprint: Blueprint;
   resourceTypes: ResourceType[];
   selectedBlueprint: number | undefined;
-  building: Building;
+  building: BuildingWithData;
 }
 
 const { t } = useI18n()
 const props = defineProps<Props>()
 
-const emits = defineEmits<{(e: 'select', value: number)}>()
+const emits = defineEmits<{(e: 'select', value: number): void}>()
 
-const buildingIcon = findResourceName(props.resourceTypes, +props.blueprint.producedResources[0].resourceId )
+const buildingIcon = findResourceName(props.resourceTypes, props.blueprint.producedResources[0].resourceId || 0)
 
 const getCycling = () => {
   if (!props.building.equipmentEffect) {

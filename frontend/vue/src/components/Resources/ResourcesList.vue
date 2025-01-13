@@ -7,7 +7,7 @@
     <Column
       :header="t(`resources.columns.name`)"
     >
-      <template #body="{data}: {data: Resource}">
+      <template #body="{data}: {data: ResourceWithData}">
         <span class="clickable-item" @click="openMoveResource(data)">
           {{ t(`resources.types.${data?.resourceType?.name?.toLowerCase()}`) }}
         </span>
@@ -16,7 +16,7 @@
     <Column
       :header="t(`resources.columns.amount`)"
     >
-      <template #body="{data}: {data: Resource}">
+      <template #body="{data}: {data: ResourceWithData}">
         <span class="clickable-item" @click="openSellResource(data)">
           {{ data.amount }}
         </span>
@@ -25,7 +25,7 @@
     <Column
       :header="t(`map.cell`)"
     >
-      <template #body="{data}: {data: Resource}">
+      <template #body="{data}: {data: ResourceWithData}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
@@ -67,10 +67,10 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CreateOrderModal from '@/components/Market/CreateOrderModal.vue'
 import MoveResource from '@/components/Resources/MoveResource.vue'
-import { Resource } from '@/types/Resources/index.interface'
+import type { ResourceWithData } from '@/gen'
 
 interface Props {
-  resources: Resource[];
+  resources: ResourceWithData[] | undefined;
   execute: () => void;
 }
 
@@ -80,14 +80,14 @@ const { t } = useI18n()
 
 const moveResourcesModal = ref<boolean>(false)
 const sellResourcesModal = ref<boolean>(false)
-const currentResource = ref<Resource>({} as Resource)
+const currentResource = ref<ResourceWithData>({} as ResourceWithData)
 
-const openMoveResource = (resource: Resource) => {
+const openMoveResource = (resource: ResourceWithData) => {
   currentResource.value = resource
   moveResourcesModal.value = true
 }
 
-const openSellResource = (resource: Resource) => {
+const openSellResource = (resource: ResourceWithData) => {
   currentResource.value = resource
   sellResourcesModal.value = true
 }

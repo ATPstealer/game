@@ -110,13 +110,12 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useMap } from '@/composables/useMap'
-import { usePostBuildingEmergencyHiring } from '@/gen'
+import { type BuildingWithData, usePostBuildingEmergencyHiring } from '@/gen'
 import { type BackData } from '@/types'
-import { type Building } from '@/types/Buildings/index.interface'
 import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData | undefined;
 }
 
 type HiringOptions = 'salary' | 'needs'

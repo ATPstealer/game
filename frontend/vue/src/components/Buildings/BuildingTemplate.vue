@@ -11,14 +11,14 @@
             :label="t(`buildings.destroy`)"
             severity="danger"
             size="small"
-            @click="confirmDelete($event, building._id)"
+            @click="confirmDelete($event, building!._id)"
           />
           <Button
             class="w-max"
             :label="t(`buildings.stop work`)"
             severity="danger"
             size="small"
-            @click="confirmStopWork($event, building._id)"
+            @click="confirmStopWork($event, building!._id)"
           />
         </div>
       </div>
@@ -44,11 +44,15 @@ import Equipment from '@/components/Buildings/Equipment.vue'
 import Hiring from '@/components/Buildings/Hiring.vue'
 import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
-import { useBuildings } from '@/composables/useBuildings'
-import type { Building } from '@/types/Buildings/index.interface'
+import {
+  type BuildingWithData,
+  type PostBuildingStopWorkMutationRequest,
+  useDeleteBuildingDestroy,
+  usePostBuildingStopWork
+} from '@/gen'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData | undefined;
   loading: boolean;
 }
 
@@ -56,7 +60,6 @@ defineProps<Props>()
 
 const router = useRouter()
 const { t } = useI18n()
-const { destroyBuilding, stopWork } = useBuildings()
 const confirm = useConfirm()
 
 const confirmDelete = (event: any, id: string) => {
@@ -71,12 +74,19 @@ const confirmDelete = (event: any, id: string) => {
   })
 }
 
+const destroyMutation = useDeleteBuildingDestroy({
+  mutation: {
+    onSuccess: () => {
+      router.push({ name: 'Buildings' })
+    }
+  }
+})
+
 const destroy = (id: string) => {
-  const { onFetchResponse } = destroyBuilding(id)
-  onFetchResponse(() => {
-    router.push({ name: 'Buildings' })
-  })
+  destroyMutation.mutate({ params: { _id: id } })
 }
+
+const stopMutation = usePostBuildingStopWork()
 
 const confirmStopWork = (event: any, id: string) => {
   confirm.require({
@@ -94,8 +104,8 @@ const stop = (id: string) => {
   const payload = {
     buildingId: id
   }
-  const { onFetchResponse } = stopWork(payload)
-  onFetchResponse(() => {})
+  // TODO: неверная типизация payload в сваггере
+  stopMutation.mutate({ data: { ...payload } as PostBuildingStopWorkMutationRequest })
 }
 
 </script>

@@ -22,7 +22,8 @@ export interface ResponseConfig<TData = unknown> {
 }
 
 export const fetchClient = async <TData, TError = unknown, TVariables = unknown>(config: RequestConfig<TVariables>): Promise<ResponseConfig<TData>> => {
-  const response = await fetch([config.baseURL, config.url].filter(Boolean).join(''), {
+  const searchParams = new URLSearchParams(config.params as string).toString()
+  const response = await fetch([config.baseURL, config.url].filter(Boolean).join('') + (searchParams ? `?${searchParams}` : ''), {
     method: config.method.toUpperCase(),
     body: JSON.stringify(config.data),
     signal: config.signal,

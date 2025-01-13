@@ -1,7 +1,7 @@
 <template>
   <ResourcesList
     v-if="resources?.length"
-    :execute="execute"
+    :execute="refetch"
     :resources="resources"
   />
   <div v-else>
@@ -10,34 +10,27 @@
 </template>
 
 <script setup lang="ts">
-import isEmpty from 'lodash/isEmpty'
-import { ref, watch } from 'vue'
+import { computed, unref } from 'vue'
 import ResourcesList from '@/components/Resources/ResourcesList.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Building } from '@/types/Buildings/index.interface'
-import type { Resource } from '@/types/Resources/index.interface'
+import { type BuildingWithData, useGetResourceMy } from '@/gen'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData | undefined;
 }
 
 const props = defineProps<Props>()
 
-const resources = ref<Resource[]>([])
+const { data: resourcesQuery, refetch, suspense } = useGetResourceMy( { x: props.building?.x, y: props.building?.y } )
+await suspense()
+const resources = computed(() => unref(resourcesQuery)?.data || [])
 
-const { data, onFetchResponse, execute } = useGetData<Resource[]>(`/resource/my?x=${props.building.x}&y=${props.building.y}`, false)
-
-onFetchResponse(() => {
-  resources.value = data.value
-})
-
-watch(() => props.building, () => {
-  if (!isEmpty(props.building)) {
-    execute()
-  }
-}, {
-  immediate: true
-})
+// watch(() => props.building, () => {
+//   if (!isEmpty(props.building)) {
+//     refetch()
+//   }
+// }, {
+//   immediate: true
+// })
 </script>
 
 <style scoped>

@@ -21,7 +21,7 @@
       class="w-max"
       :label="t('equipment.title')"
       size="small"
-      @click="router.push({name: 'EquipmentId', params: {id: building._id}})"
+      @click="router.push({name: 'EquipmentId', params: {id: building?._id}})"
     />
     <Dialog
       v-model:visible="showEquipmentModal"
@@ -154,13 +154,14 @@ import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useBuildings } from '@/composables/useBuildings'
 import { useGetData } from '@/composables/useGetData'
+import type { BuildingWithData } from '@/gen'
 import router from '@/router'
 import type { BackData } from '@/types'
-import type { Blueprint, Building } from '@/types/Buildings/index.interface'
+import type { Blueprint } from '@/types/Buildings/index.interface'
 import type { Equipment, EquipmentType } from '@/types/Equipment/index.interface'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData | undefined;
 }
 
 const props = defineProps<Props>()
@@ -177,7 +178,7 @@ const { t } = useI18n()
 const { installEquipment } = useBuildings()
 const { data: equipmentTypes, onFetchResponse } = useGetData<EquipmentType[]>('/equipment/types')
 const { data: blueprints } = useGetData<Blueprint[]>('/building/blueprints')
-const { data: currentEquipment, onFetchResponse: onCurrentEquipmentResponse, execute: getCurrentEquipment } = useGetData<Equipment[]>(`/equipment/my?x=${props.building.x}&y=${props.building.y}`, false)
+const { data: currentEquipment, onFetchResponse: onCurrentEquipmentResponse, execute: getCurrentEquipment } = useGetData<Equipment[]>(`/equipment/my?x=${props.building?.x}&y=${props.building?.y}`, false)
 
 const openModal = (event: string) => {
   process.value = event
@@ -211,7 +212,7 @@ const openModal = (event: string) => {
     availableEquipment.value = [...equipmentTypes.value.filter(eq => localEquipment.includes(eq.id))].map(eq => {
       return {
         ...eq,
-        amount: props.building.equipment.find(item => item.equipmentTypeId === eq.id)?.amount
+        amount: props.building?.equipment?.find(item => item.equipmentTypeId === eq.id)?.amount
       }
     })
 
@@ -233,7 +234,7 @@ const changeEquipment = (equipment: any, add: boolean) => {
   }
 
   const payload: Payload = {
-    buildingId: props.building._id
+    buildingId: props.building!._id
   }
 
   if (add) {

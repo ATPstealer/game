@@ -93,16 +93,19 @@ import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import InputNumber from 'primevue/inputnumber'
 import SelectButton from 'primevue/selectbutton'
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useGetData } from '@/composables/useGetData'
-import { useOrders } from '@/composables/useOrders'
-import { BackData } from '@/types'
-import { Resource, ResourceType } from '@/types/Resources/index.interface'
+import {
+  type JsonResult,
+  type PostMarketOrderCreateMutationRequest,
+  type ResourceWithData,
+  useGetResourceTypes,
+  usePostMarketOrderCreate
+} from '@/gen'
 
 interface Props {
-  resource?: Resource;
+  resource?: ResourceWithData | undefined;
 }
 const props = defineProps<Props>()
 const emits = defineEmits<{(e: 'close'): void}>()
@@ -110,14 +113,12 @@ const emits = defineEmits<{(e: 'close'): void}>()
 const amount = ref<number>(0)
 const priceForUnit = ref<number>(0)
 const sell = ref<boolean>(true)
-const messageData = ref<BackData>()
-const resourceTypes = ref<ResourceType[]>([])
+const messageData = ref<JsonResult>()
 const resourceTypeId = ref<number>()
 const x = ref<number>(0)
 const y = ref<number>(0)
 
 const { t } = useI18n()
-const { createOrder } = useOrders()
 
 const orderTypes = computed(() => [
   {
@@ -130,36 +131,43 @@ const orderTypes = computed(() => [
   }
 ])
 
-if (!props.resource) {
-  const { data, onFetchResponse } = useGetData<ResourceType[]>('/resource/types')
+const { data: resourceTypesQuery, refetch } = useGetResourceTypes()
 
-  onFetchResponse(() => {
-    resourceTypes.value = data.value
-  })
+const resourceTypes = computed(() => {
+  return unref(resourceTypesQuery)?.data || []
+})
+
+if (!props.resource) {
+  refetch()
 }
 
+const createOrderMutate = usePostMarketOrderCreate({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+
+      setTimeout(() => {
+        if (!data?.text) {
+          emits('close')
+        }
+      }, 2000)
+    }
+  }
+})
+
 const create = () => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
 
   const payload = {
     x: props.resource?.x || x.value,
     y: props.resource?.y || y.value,
     amount: amount.value,
     priceForUnit: priceForUnit.value,
-    resourceTypeID: props.resource?.resourceTypeId || resourceTypeId.value,
+    resourceTypeId: props.resource?.resourceTypeId || resourceTypeId.value,
     sell: sell.value
   }
-
-  const { data, onFetchResponse } = createOrder(payload)
-  onFetchResponse(() => {
-    messageData.value = data.value
-
-    setTimeout(() => {
-      if (!data.value.text) {
-        emits('close')
-      }
-    }, 2000)
-  })
+  // TODO: неверная типизация payload в сваггере
+  createOrderMutate.mutate({ data: { ...payload } as PostMarketOrderCreateMutationRequest })
 }
 
 </script>

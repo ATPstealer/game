@@ -61,42 +61,58 @@
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dropdown from 'primevue/dropdown'
-import { ref } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { timeValues } from '@/components/Buildings/ProductionBuilding/constants'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import ResourceCard from '@/components/Resources/ResourceCard.vue'
-import { useBuildings } from '@/composables/useBuildings'
-import { useGetData } from '@/composables/useGetData'
-import type { BackData } from '@/types'
-import type { Blueprint, Building } from '@/types/Buildings/index.interface'
-import type { ResourceType } from '@/types/Resources/index.interface'
+import {
+  type BuildingWithData,
+  type JsonResult, type TimeDuration,
+  useGetBuildingBlueprints,
+  useGetResourceTypes,
+  usePostBuildingStartWork
+} from '@/gen'
 import { getTranslation } from '@/utils/getTranslation'
+
 // TODO: при изменении кол-ва работников/зп, при нажатии на крестик сейчас показываются значения из props.building,
 // добавить перезапрос данных о building при изменении кол-ва работников/зп
+
 interface Props {
-  building: Building;
+  building: BuildingWithData;
 }
 
 const props = defineProps<Props>()
 
-const blueprints = ref<Blueprint[]>([])
-const duration = ref<number>(3600 * 1000000000)
+const duration = ref<TimeDuration>(3600 * 1000000000 as TimeDuration)
 const selectedBlueprint = ref<number>(0)
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
-const { startProduction } = useBuildings()
 
-const { data, onFetchResponse } = useGetData('/building/blueprints')
-onFetchResponse(() => {
-  blueprints.value = data.value.filter(item => item.producedInId === props.building.typeId)
+const { data: blueprintsQuery, suspense: awaitBlueprints  } = useGetBuildingBlueprints()
+await awaitBlueprints()
+const blueprints = computed(() => unref(blueprintsQuery)?.data?.filter(item => item.producedInId === props.building.typeId) || [])
+
+watch(blueprints, () => {
   if (blueprints.value.length === 1) {
     selectedBlueprint.value = blueprints.value[0].id
   }
 })
 
-const { data: resourceTypes } = useGetData<ResourceType[]>('/resource/types')
+const { data: resourceTypesQuery, suspense: awaitResourceTypes } = useGetResourceTypes()
+await awaitResourceTypes()
+const resourceTypes = computed(() => {
+  return unref(resourceTypesQuery)?.data || []
+})
+
+const mutateStartProduction = usePostBuildingStartWork({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
+  }
+})
 
 const selectBlueprint = (event: number) => {
   if (selectedBlueprint.value === event) {
@@ -108,7 +124,7 @@ const selectBlueprint = (event: number) => {
 }
 
 const start = () => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
 
   const payload = {
     buildingId: props.building._id,
@@ -116,11 +132,7 @@ const start = () => {
     duration: duration.value
   }
 
-  const { data, onFetchResponse } = startProduction(payload)
-
-  onFetchResponse(() => {
-    messageData.value = data.value
-  })
+  mutateStartProduction.mutate({ data: { ...payload } })
 }
 
 </script>

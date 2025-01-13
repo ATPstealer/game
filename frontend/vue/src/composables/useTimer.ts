@@ -13,7 +13,11 @@ const formatTime = (time: number): string => {
 }
 
 export const useTimer = () => {
-  const getTime = (time: Date, finish: string) => {
+  const getTime = (time: string | undefined, finish: string) => {
+    if (!time) {
+      return ''
+    }
+
     const start = dayjs()
     const end = dayjs(time)
 

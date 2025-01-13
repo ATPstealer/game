@@ -131,7 +131,7 @@ const constructBuilding = usePostBuildingConstruct({
 
 const { data: buildingTypesQuery, suspense } = useGetBuildingTypes()
 
-suspense()
+await suspense()
 
 const buildingTypes = computed(() => {
   return unref(buildingTypesQuery)?.data
