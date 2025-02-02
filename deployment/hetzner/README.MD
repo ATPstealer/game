@@ -36,7 +36,7 @@ helm upgrade -n gitlab --create-namespace --install gitlab gitlab/gitlab --timeo
 ## Ingress
 
 ```agsl
-helm install ingress ingress-nginx/ingress-nginx --namespace ingress-nginx  --create-namespace  --set controller.service.loadBalancerIP=188.245.158.57
+helm install ingress ingress-nginx/ingress-nginx --namespace ingress-nginx  --create-namespace  --set controller.service.loadBalancerIP=188.245.158.57 --set controller.config.proxy-body-size="50m"
 ```
 
 ## Cluster issuer
