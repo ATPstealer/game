@@ -66,9 +66,7 @@ import InputNumber from 'primevue/inputnumber'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useResources } from '@/composables/useResources'
 import { type JsonResult, type ResourceWithData, usePostResourceMove } from '@/gen'
-import type { BackData } from '@/types'
 
 interface Props {
   resource: ResourceWithData | undefined;
@@ -81,7 +79,6 @@ const y = ref<number>(0)
 const amount = ref<number>(0)
 const messageData = ref<JsonResult>()
 
-const { moveResource } = useResources()
 const { t } = useI18n()
 
 const distance = computed(() => {
@@ -94,20 +91,17 @@ const price = computed(() => {
 const moveResourceMutation = usePostResourceMove({
   mutation: {
     onSuccess: data => {
-      console.log(data)
       messageData.value = data
 
       setTimeout(() => {
-        if (data?.status === 'success') {
-          emits('close')
-        }
+        emits('close')
       }, 2000)
     }
   }
 })
 
 const move = () => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
 
   const payload = {
     toX: x.value,

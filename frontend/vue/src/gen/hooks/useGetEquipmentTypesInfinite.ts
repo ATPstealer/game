@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetEquipmentTypesQueryResponse, GetEquipmentTypes500 } from '../types/GetEquipmentTypes.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getEquipmentTypesInfiniteQueryKey = () => [{ url: '/equipment/types' }] as const
 
@@ -13,10 +13,9 @@ export type GetEquipmentTypesInfiniteQueryKey = ReturnType<typeof getEquipmentTy
  * {@link /equipment/types}
  */
 async function getEquipmentTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, unknown>({
+  const res = await client<GetEquipmentTypesQueryResponse, ResponseErrorConfig<GetEquipmentTypes500>, unknown>({
     method: 'GET',
     url: '/equipment/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,7 +25,13 @@ async function getEquipmentTypes(config: Partial<RequestConfig> = {}) {
 export function getEquipmentTypesInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getEquipmentTypesInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, GetEquipmentTypesQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetEquipmentTypesQueryResponse,
+    ResponseErrorConfig<GetEquipmentTypes500>,
+    GetEquipmentTypesQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +54,7 @@ export function useGetEquipmentTypesInfinite<
   TQueryKey extends QueryKey = GetEquipmentTypesInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetEquipmentTypesQueryResponse, ResponseErrorConfig<GetEquipmentTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +65,7 @@ export function useGetEquipmentTypesInfinite<
     ...(getEquipmentTypesInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetEquipmentTypes500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetEquipmentTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

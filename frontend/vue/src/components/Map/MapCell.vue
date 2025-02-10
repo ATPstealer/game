@@ -50,8 +50,8 @@
       <p>
         Landlords:
       </p>
-      <p v-for="owner in cellOwners" :key="owner.nickName">
-        {{ owner.nickName }}: {{ owner.square }} Are
+      <p v-for="owner in cellOwners" :key="owner.userId">
+        {{ owner.userId }}: {{ owner.square }} Are
       </p>
     </div>
   </div>
@@ -61,12 +61,10 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
-import { computed, ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import Loading from '@/components/Common/Loading.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useMap } from '@/composables/useMap'
-import type { BackData } from '@/types'
-import type { Cell } from '@/types/Map/index.interface'
+import { useGetMapCellOwners, type Cell, type JsonResult, usePostMapBuyLand } from '@/gen'
 
 interface Props {
   cell: Cell;
@@ -76,10 +74,11 @@ interface Props {
 const props = defineProps<Props>()
 
 const buySquare = ref<number>(0)
+const messageData = ref<JsonResult>()
 
-const { getCellOwners, buyCellSquare } = useMap()
-const { data: cellOwners, onFetchResponse, isFetching } = getCellOwners({ x: props.cell.x, y: props.cell.y })
-const messageData = ref<BackData>()
+const { data: cellOwnersQuery, isFetching, suspense } = useGetMapCellOwners({ x: props.cell.x, y: props.cell.y })
+await suspense()
+const cellOwners = computed(() => unref(cellOwnersQuery)?.data)
 
 const freeSquare = computed(() => {
   let value = props.square
@@ -107,16 +106,27 @@ const price = computed(() => {
   return 10 * (landOccupied.value * 2 + 1 + buySquare.value ) * buySquare.value / 2
 })
 
+const mutateBuyCellSquare = usePostMapBuyLand({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
+  }
+})
+
 const buy = () => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
   if (!buySquare.value) {
     return
   }
 
-  const { data, onFetchResponse } = buyCellSquare({ x: props.cell.x, y: props.cell.y, square: buySquare.value })
-  onFetchResponse(() => {
-    messageData.value = data.value
-  })
+  const payload = {
+    x: props.cell.x,
+    y: props.cell.y,
+    square: buySquare.value
+  }
+
+  mutateBuyCellSquare.mutate({ data: { ...payload } })
 }
 </script>
 

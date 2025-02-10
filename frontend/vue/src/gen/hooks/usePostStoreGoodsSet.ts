@@ -8,7 +8,7 @@ import type {
   PostStoreGoodsSet500
 } from '../types/PostStoreGoodsSet.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postStoreGoodsSetMutationKey = () => [{ url: '/store/goods/set' }] as const
 
@@ -19,13 +19,11 @@ export type PostStoreGoodsSetMutationKey = ReturnType<typeof postStoreGoodsSetMu
  * {@link /store/goods/set}
  */
 async function postStoreGoodsSet(data: PostStoreGoodsSetMutationRequest, config: Partial<RequestConfig<PostStoreGoodsSetMutationRequest>> = {}) {
-  const res = await client<PostStoreGoodsSetMutationResponse, PostStoreGoodsSet401 | PostStoreGoodsSet500, PostStoreGoodsSetMutationRequest>({
-    method: 'POST',
-    url: '/store/goods/set',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostStoreGoodsSetMutationResponse,
+    ResponseErrorConfig<PostStoreGoodsSet401 | PostStoreGoodsSet500>,
+    PostStoreGoodsSetMutationRequest
+  >({ method: 'POST', url: '/store/goods/set', data, ...config })
   
   return res.data
 }
@@ -38,7 +36,7 @@ export function usePostStoreGoodsSet(
   options: {
     mutation?: MutationObserverOptions<
       PostStoreGoodsSetMutationResponse,
-      PostStoreGoodsSet401 | PostStoreGoodsSet500,
+      ResponseErrorConfig<PostStoreGoodsSet401 | PostStoreGoodsSet500>,
       { data: MaybeRef<PostStoreGoodsSetMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostStoreGoodsSetMutationRequest>>;
@@ -47,7 +45,11 @@ export function usePostStoreGoodsSet(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postStoreGoodsSetMutationKey()
 
-  return useMutation<PostStoreGoodsSetMutationResponse, PostStoreGoodsSet401 | PostStoreGoodsSet500, { data: PostStoreGoodsSetMutationRequest }>({
+  return useMutation<
+    PostStoreGoodsSetMutationResponse,
+    ResponseErrorConfig<PostStoreGoodsSet401 | PostStoreGoodsSet500>,
+    { data: PostStoreGoodsSetMutationRequest }
+  >({
     mutationFn: async ({ data }) => {
       return postStoreGoodsSet(data, config)
     },

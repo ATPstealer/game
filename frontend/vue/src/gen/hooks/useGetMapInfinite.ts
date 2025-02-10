@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetMapQueryResponse, GetMap500 } from '../types/GetMap.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getMapInfiniteQueryKey = () => [{ url: '/map' }] as const
 
@@ -14,12 +14,7 @@ export type GetMapInfiniteQueryKey = ReturnType<typeof getMapInfiniteQueryKey>
  * {@link /map}
  */
 async function getMap(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetMapQueryResponse, GetMap500, unknown>({
-    method: 'GET',
-    url: '/map',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    ...config
-  })
+  const res = await client<GetMapQueryResponse, ResponseErrorConfig<GetMap500>, unknown>({ method: 'GET', url: '/map', ...config })
   
   return res.data
 }
@@ -27,7 +22,7 @@ async function getMap(config: Partial<RequestConfig> = {}) {
 export function getMapInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getMapInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetMapQueryResponse, GetMap500, GetMapQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetMapQueryResponse, ResponseErrorConfig<GetMap500>, GetMapQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -51,7 +46,7 @@ export function useGetMapInfinite<
   TQueryKey extends QueryKey = GetMapInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetMapQueryResponse, GetMap500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetMapQueryResponse, ResponseErrorConfig<GetMap500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -62,7 +57,7 @@ export function useGetMapInfinite<
     ...(getMapInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetMap500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetMap500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

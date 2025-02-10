@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetResourceTypesQueryResponse, GetResourceTypes500 } from '../types/GetResourceTypes.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getResourceTypesQueryKey = () => [{ url: '/resource/types' }] as const
@@ -14,10 +14,9 @@ export type GetResourceTypesQueryKey = ReturnType<typeof getResourceTypesQueryKe
  * {@link /resource/types}
  */
 async function getResourceTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceTypesQueryResponse, GetResourceTypes500, unknown>({
+  const res = await client<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, unknown>({
     method: 'GET',
     url: '/resource/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -27,7 +26,7 @@ async function getResourceTypes(config: Partial<RequestConfig> = {}) {
 export function getResourceTypesQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getResourceTypesQueryKey()
   
-  return queryOptions<GetResourceTypesQueryResponse, GetResourceTypes500, GetResourceTypesQueryResponse, typeof queryKey>({
+  return queryOptions<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, GetResourceTypesQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -47,7 +46,7 @@ export function useGetResourceTypes<
   TQueryKey extends QueryKey = GetResourceTypesQueryKey,
 >(
   options: {
-    query?: Partial<QueryObserverOptions<GetResourceTypesQueryResponse, GetResourceTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -58,7 +57,7 @@ export function useGetResourceTypes<
     ...(getResourceTypesQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetResourceTypes500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetResourceTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401, GetResourceMyLogistics500 } from '../types/GetResourceMyLogistics.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getResourceMyLogisticsQueryKey = () => [{ url: '/resource/my_logistics' }] as const
@@ -14,10 +14,9 @@ export type GetResourceMyLogisticsQueryKey = ReturnType<typeof getResourceMyLogi
  * {@link /resource/my_logistics}
  */
 async function getResourceMyLogistics(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401 | GetResourceMyLogistics500, unknown>({
+  const res = await client<GetResourceMyLogisticsQueryResponse, ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>, unknown>({
     method: 'GET',
     url: '/resource/my_logistics',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -29,7 +28,7 @@ export function getResourceMyLogisticsQueryOptions(config: Partial<RequestConfig
   
   return queryOptions<
     GetResourceMyLogisticsQueryResponse,
-    GetResourceMyLogistics401 | GetResourceMyLogistics500,
+    ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>,
     GetResourceMyLogisticsQueryResponse,
     typeof queryKey
   >({
@@ -53,7 +52,13 @@ export function useGetResourceMyLogistics<
 >(
   options: {
     query?: Partial<
-      QueryObserverOptions<GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401 | GetResourceMyLogistics500, TData, TQueryData, TQueryKey>
+      QueryObserverOptions<
+        GetResourceMyLogisticsQueryResponse,
+        ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>,
+        TData,
+        TQueryData,
+        TQueryKey
+      >
     >;
     client?: Partial<RequestConfig>;
   } = {}
@@ -65,7 +70,7 @@ export function useGetResourceMyLogistics<
     ...(getResourceMyLogisticsQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetResourceMyLogistics401 | GetResourceMyLogistics500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

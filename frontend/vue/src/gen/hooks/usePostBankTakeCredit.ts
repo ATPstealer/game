@@ -8,7 +8,7 @@ import type {
   PostBankTakeCredit500
 } from '../types/PostBankTakeCredit.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBankTakeCreditMutationKey = () => [{ url: '/bank/take_credit' }] as const
 
@@ -20,13 +20,11 @@ export type PostBankTakeCreditMutationKey = ReturnType<typeof postBankTakeCredit
  * {@link /bank/take_credit}
  */
 async function postBankTakeCredit(data: PostBankTakeCreditMutationRequest, config: Partial<RequestConfig<PostBankTakeCreditMutationRequest>> = {}) {
-  const res = await client<PostBankTakeCreditMutationResponse, PostBankTakeCredit401 | PostBankTakeCredit500, PostBankTakeCreditMutationRequest>({
-    method: 'POST',
-    url: '/bank/take_credit',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostBankTakeCreditMutationResponse,
+    ResponseErrorConfig<PostBankTakeCredit401 | PostBankTakeCredit500>,
+    PostBankTakeCreditMutationRequest
+  >({ method: 'POST', url: '/bank/take_credit', data, ...config })
   
   return res.data
 }
@@ -40,7 +38,7 @@ export function usePostBankTakeCredit(
   options: {
     mutation?: MutationObserverOptions<
       PostBankTakeCreditMutationResponse,
-      PostBankTakeCredit401 | PostBankTakeCredit500,
+      ResponseErrorConfig<PostBankTakeCredit401 | PostBankTakeCredit500>,
       { data: MaybeRef<PostBankTakeCreditMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBankTakeCreditMutationRequest>>;
@@ -49,7 +47,11 @@ export function usePostBankTakeCredit(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postBankTakeCreditMutationKey()
 
-  return useMutation<PostBankTakeCreditMutationResponse, PostBankTakeCredit401 | PostBankTakeCredit500, { data: PostBankTakeCreditMutationRequest }>({
+  return useMutation<
+    PostBankTakeCreditMutationResponse,
+    ResponseErrorConfig<PostBankTakeCredit401 | PostBankTakeCredit500>,
+    { data: PostBankTakeCreditMutationRequest }
+  >({
     mutationFn: async ({ data }) => {
       return postBankTakeCredit(data, config)
     },

@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetResourceLogisticsQueryResponse, GetResourceLogisticsQueryParams, GetResourceLogistics500 } from '../types/GetResourceLogistics.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getResourceLogisticsInfiniteQueryKey = (params?: MaybeRef<GetResourceLogisticsQueryParams>) =>
   [{ url: '/resource/logistics' }, ...(params ? [params] : [])] as const
@@ -15,10 +15,9 @@ export type GetResourceLogisticsInfiniteQueryKey = ReturnType<typeof getResource
  * {@link /resource/logistics}
  */
 async function getResourceLogistics(params?: GetResourceLogisticsQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceLogisticsQueryResponse, GetResourceLogistics500, unknown>({
+  const res = await client<GetResourceLogisticsQueryResponse, ResponseErrorConfig<GetResourceLogistics500>, unknown>({
     method: 'GET',
     url: '/resource/logistics',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -29,7 +28,13 @@ async function getResourceLogistics(params?: GetResourceLogisticsQueryParams, co
 export function getResourceLogisticsInfiniteQueryOptions(params?: MaybeRef<GetResourceLogisticsQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getResourceLogisticsInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetResourceLogisticsQueryResponse, GetResourceLogistics500, GetResourceLogisticsQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetResourceLogisticsQueryResponse,
+    ResponseErrorConfig<GetResourceLogistics500>,
+    GetResourceLogisticsQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -57,7 +62,7 @@ export function useGetResourceLogisticsInfinite<
 >(
   params?: MaybeRef<GetResourceLogisticsQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetResourceLogisticsQueryResponse, GetResourceLogistics500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetResourceLogisticsQueryResponse, ResponseErrorConfig<GetResourceLogistics500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -68,7 +73,7 @@ export function useGetResourceLogisticsInfinite<
     ...(getResourceLogisticsInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetResourceLogistics500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetResourceLogistics500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

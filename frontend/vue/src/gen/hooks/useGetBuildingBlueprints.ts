@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetBuildingBlueprintsQueryResponse, GetBuildingBlueprintsQueryParams, GetBuildingBlueprints500 } from '../types/GetBuildingBlueprints.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getBuildingBlueprintsQueryKey = (params?: MaybeRef<GetBuildingBlueprintsQueryParams>) =>
@@ -17,10 +17,9 @@ export type GetBuildingBlueprintsQueryKey = ReturnType<typeof getBuildingBluepri
  * {@link /building/blueprints}
  */
 async function getBuildingBlueprints(params?: GetBuildingBlueprintsQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, unknown>({
+  const res = await client<GetBuildingBlueprintsQueryResponse, ResponseErrorConfig<GetBuildingBlueprints500>, unknown>({
     method: 'GET',
     url: '/building/blueprints',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -31,7 +30,7 @@ async function getBuildingBlueprints(params?: GetBuildingBlueprintsQueryParams, 
 export function getBuildingBlueprintsQueryOptions(params?: MaybeRef<GetBuildingBlueprintsQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getBuildingBlueprintsQueryKey(params)
   
-  return queryOptions<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, GetBuildingBlueprintsQueryResponse, typeof queryKey>({
+  return queryOptions<GetBuildingBlueprintsQueryResponse, ResponseErrorConfig<GetBuildingBlueprints500>, GetBuildingBlueprintsQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -53,7 +52,7 @@ export function useGetBuildingBlueprints<
 >(
   params?: MaybeRef<GetBuildingBlueprintsQueryParams>,
   options: {
-    query?: Partial<QueryObserverOptions<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetBuildingBlueprintsQueryResponse, ResponseErrorConfig<GetBuildingBlueprints500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -64,7 +63,7 @@ export function useGetBuildingBlueprints<
     ...(getBuildingBlueprintsQueryOptions(params, config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetBuildingBlueprints500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetBuildingBlueprints500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

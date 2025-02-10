@@ -72,8 +72,13 @@ import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BuildingSearch from '@/components/Buildings/SearchBuilding/BuildingSearch.vue'
 import Layout from '@/components/Common/Layout.vue'
-import { useGetData } from '@/composables/useGetData'
-import { type BuildingType, type FindBuildingParams, useGetBuildingTypes, useGetSettings } from '@/gen'
+import {
+  type BuildingType,
+  type FindBuildingParams,
+  useGetBuildingTypes,
+  useGetSettings,
+  useGetUsernamesByPrefix
+} from '@/gen'
 import type { SearchBuildingParams } from '@/types/Buildings/index.interface'
 import { getTranslation } from '@/utils/getTranslation'
 
@@ -99,11 +104,17 @@ const coords = computed(() => {
   return unref(coordsQuery)?.data
 })
 
-const searchUsers = () => {
-  const { data, onFetchResponse } = useGetData<string[]>(`/data/users_by_prefix?prefix=${userSearch.value}`)
-  onFetchResponse(() => {
-    users.value = data.value
-  })
+const userSearchParams = computed(() => {
+  return {
+    prefix: userSearch.value
+  }
+})
+
+const { data: usersQuery, refetch } = useGetUsernamesByPrefix(userSearchParams, { query: { enabled: false } })
+
+const searchUsers = async () => {
+  await refetch()
+  users.value = unref(usersQuery)?.data as string[]
 }
 
 const params = ref<FindBuildingParams>({

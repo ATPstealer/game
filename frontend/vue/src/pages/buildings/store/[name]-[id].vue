@@ -1,7 +1,11 @@
 <template>
-  <BuildingTemplate :building="building" :loading="isFetching">
+  <BuildingTemplate
+    v-if="building"
+    :building="building"
+    :loading="isFetching"
+  >
     <template #building>
-      <StoreBuilding :building="building" />
+      <StoreBuilding v-if="building" :building="building" />
     </template>
     <template #buildingHelp>
       <p>{{ t(`buildings.store.help`) }}</p>
@@ -22,7 +26,7 @@ import { useGetBuildingMy } from '@/gen'
 const route = useRoute()
 const { t } = useI18n()
 
-const { data: storageBuildingQuery, suspense, isFetching, refetch } = useGetBuildingMy({ _id: route.params.id })
+const { data: storageBuildingQuery, suspense, isFetching } = useGetBuildingMy({ _id: route.params.id })
 await suspense()
 const building = computed(() => unref(storageBuildingQuery)?.data?.find(item => item._id === route.params.id))
 

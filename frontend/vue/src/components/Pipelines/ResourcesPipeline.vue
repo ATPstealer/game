@@ -62,7 +62,7 @@
     <template #third-column>
       <div
         v-if="computedData?.producedResources?.length"
-        class="flex flex-col gap-2 m-auto"
+        class="flex flex-col gap-2 m-auto items"
         :class="{'!grid !grid-cols-2': computedData?.producedResources?.length > 10}"
       >
         <span
@@ -85,27 +85,26 @@ import Divider from 'primevue/divider'
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PipelinesTemplate from '@/components/Pipelines/PipelinesTemplate.vue'
-import type { Blueprint, Building } from '@/types/Buildings/index.interface'
-import type { Resource } from '@/types/Resources/index.interface'
+import type { BuildingType, Blueprint, ResourceType } from '@/gen'
 
 interface Props {
-  resourceTypes: Resource[];
+  resourceTypes: ResourceType[];
   blueprints: Blueprint[];
-  buildingsTypes: Building[];
+  buildingTypes: BuildingType[];
 }
 interface Pipeline {
-  usedResources: Resource[];
-  producedResources: Resource[];
+  usedResources: ResourceType[];
+  producedResources: ResourceType[];
   blueprints: Blueprint[];
-  buildings: Building[];
+  buildings: BuildingType[];
 }
 
 const props = defineProps<Props>()
 const resourceTypes = toRef(props, 'resourceTypes')
 const blueprints = toRef(props, 'blueprints')
-const buildingsTypes = toRef(props, 'buildingsTypes')
+const buildingTypes = toRef(props, 'buildingTypes')
 
-const chosen = ref<Resource>(resourceTypes?.value?.[0] || {} as Resource)
+const chosen = ref<ResourceType>(resourceTypes?.value?.[0] || {} as ResourceType)
 const bpHovered = ref<Blueprint>({} as Blueprint)
 
 const { t } = useI18n()
@@ -136,12 +135,12 @@ const computedData = computed<Pipeline>(() => {
   return {
     usedResources: resourceTypes.value.filter(item => prod.includes(item.id)),
     producedResources: resourceTypes.value.filter(item => used.includes(item.id)),
-    buildings: buildingsTypes.value.filter(item => buildings.includes(item.id)),
+    buildings: buildingTypes.value.filter(item => buildings.includes(item.id)),
     blueprints: bpProd
   }
 })
 
-const getAmount = (resource: Resource) => {
+const getAmount = (resource: ResourceType) => {
   if (isEmpty(bpHovered.value)) {
     return
   }

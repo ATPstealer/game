@@ -1,9 +1,9 @@
 <template>
   <PipelinesTemplate :headers="headers">
     <template #items>
-      <div v-if="buildingsTypes?.length" class="flex gap-2 flex-wrap">
+      <div v-if="buildingTypes?.length" class="flex gap-2 flex-wrap">
         <span
-          v-for="building in buildingsTypes.filter(item => item.buildingGroup === 'Production')"
+          v-for="building in buildingTypes.filter(item => item.buildingGroup === 'Production')"
           :key="building.id"
           class="pipeline-item pipeline-item-hover"
           :class="{'bg-amber-100' : building.id === chosen?.id }"
@@ -26,7 +26,7 @@
       </div>
     </template>
     <template #third-column>
-      <div v-if="computedData?.prodBuildings?.length" class="flex flex-col gap-2">
+      <div v-if="computedData?.prodBuildings?.length" class="flex flex-col gap-2 items">
         <div v-for="item in computedData.prodBuildings" :key="item.id">
           <span class="pipeline-item pipeline-item-hover" @click="chosen = item">{{ t(`buildings.types.${item.title.toLowerCase()}`) }}</span>
         </div>
@@ -40,28 +40,27 @@ import uniq from 'lodash/uniq'
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PipelinesTemplate from '@/components/Pipelines/PipelinesTemplate.vue'
-import type { Blueprint, Building } from '@/types/Buildings/index.interface'
-import type { Resource } from '@/types/Resources/index.interface'
+import type { BuildingType, Blueprint, ResourceType } from '@/gen'
 
 interface Props {
   blueprints: Blueprint[];
-  buildingsTypes: Building[];
-  resourceTypes: Resource[];
+  buildingTypes: BuildingType[];
+  resourceTypes: ResourceType[];
 }
 
 interface Pipeline {
-  usedBuildings: Building[];
-  prodBuildings: Building[];
+  usedBuildings: BuildingType[];
+  prodBuildings: BuildingType[];
 }
 
 const props = defineProps<Props>()
 const resourceTypes = toRef(props, 'resourceTypes')
 const blueprints = toRef(props, 'blueprints')
-const buildingsTypes = toRef(props, 'buildingsTypes')
+const buildingTypes = toRef(props, 'buildingTypes')
 
 const { t } = useI18n()
 
-const chosen = ref<Building>(buildingsTypes?.value?.filter(item => item.buildingGroup === 'Production')[0] || {} as Building)
+const chosen = ref<BuildingType>(buildingTypes?.value?.filter(item => item.buildingGroup === 'Production')[0] || {} as BuildingType)
 // TODO: добавить переводы
 const headers = ['Потребляет ресурсы из', t('common.building'), 'Производит ресурсы для']
 
@@ -81,8 +80,8 @@ const computedData = computed<Pipeline>(() => {
   const buildingsProd = uniq(bpProd.flatMap(bp => bp.producedInId))
 
   return {
-    usedBuildings: buildingsTypes.value.filter(item => buildingsUsed.includes(item.id) && item.id !== chosen.value?.id).filter(item => item.buildingGroup === 'Production'),
-    prodBuildings: buildingsTypes.value.filter(item => buildingsProd.includes(item.id) && item.id !== chosen.value?.id).filter(item => item.buildingGroup === 'Production')
+    usedBuildings: buildingTypes.value.filter(item => buildingsUsed.includes(item.id) && item.id !== chosen.value?.id).filter(item => item.buildingGroup === 'Production'),
+    prodBuildings: buildingTypes.value.filter(item => buildingsProd.includes(item.id) && item.id !== chosen.value?.id).filter(item => item.buildingGroup === 'Production')
   }
 })
 </script>

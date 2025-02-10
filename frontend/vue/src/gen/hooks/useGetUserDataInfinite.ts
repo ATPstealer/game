@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetUserDataQueryResponse, GetUserData401 } from '../types/GetUserData.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getUserDataInfiniteQueryKey = () => [{ url: '/user/data' }] as const
 
@@ -13,12 +13,7 @@ export type GetUserDataInfiniteQueryKey = ReturnType<typeof getUserDataInfiniteQ
  * {@link /user/data}
  */
 async function getUserData(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetUserDataQueryResponse, GetUserData401, unknown>({
-    method: 'GET',
-    url: '/user/data',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    ...config
-  })
+  const res = await client<GetUserDataQueryResponse, ResponseErrorConfig<GetUserData401>, unknown>({ method: 'GET', url: '/user/data', ...config })
   
   return res.data
 }
@@ -26,7 +21,7 @@ async function getUserData(config: Partial<RequestConfig> = {}) {
 export function getUserDataInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getUserDataInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetUserDataQueryResponse, GetUserData401, GetUserDataQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetUserDataQueryResponse, ResponseErrorConfig<GetUserData401>, GetUserDataQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +44,7 @@ export function useGetUserDataInfinite<
   TQueryKey extends QueryKey = GetUserDataInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetUserDataQueryResponse, GetUserData401, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetUserDataQueryResponse, ResponseErrorConfig<GetUserData401>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +55,7 @@ export function useGetUserDataInfinite<
     ...(getUserDataInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetUserData401> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetUserData401>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

@@ -8,7 +8,7 @@ import type {
   PostBuildingInstallEquipment500
 } from '../types/PostBuildingInstallEquipment.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBuildingInstallEquipmentMutationKey = () => [{ url: '/building/install_equipment' }] as const
 
@@ -24,9 +24,9 @@ async function postBuildingInstallEquipment(
 ) {
   const res = await client<
     PostBuildingInstallEquipmentMutationResponse,
-    PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500,
+    ResponseErrorConfig<PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500>,
     PostBuildingInstallEquipmentMutationRequest
-  >({ method: 'POST', url: '/building/install_equipment', baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2', data, ...config })
+  >({ method: 'POST', url: '/building/install_equipment', data, ...config })
   
   return res.data
 }
@@ -39,7 +39,7 @@ export function usePostBuildingInstallEquipment(
   options: {
     mutation?: MutationObserverOptions<
       PostBuildingInstallEquipmentMutationResponse,
-      PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500,
+      ResponseErrorConfig<PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500>,
       { data: MaybeRef<PostBuildingInstallEquipmentMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBuildingInstallEquipmentMutationRequest>>;
@@ -50,7 +50,7 @@ export function usePostBuildingInstallEquipment(
 
   return useMutation<
     PostBuildingInstallEquipmentMutationResponse,
-    PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500,
+    ResponseErrorConfig<PostBuildingInstallEquipment401 | PostBuildingInstallEquipment500>,
     { data: PostBuildingInstallEquipmentMutationRequest }
   >({
     mutationFn: async ({ data }) => {

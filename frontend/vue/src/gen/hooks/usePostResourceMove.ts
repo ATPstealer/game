@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { PostResourceMoveMutationRequest, PostResourceMoveMutationResponse, PostResourceMove401, PostResourceMove500 } from '../types/PostResourceMove.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postResourceMoveMutationKey = () => [{ url: '/resource/move' }] as const
 
@@ -14,10 +14,9 @@ export type PostResourceMoveMutationKey = ReturnType<typeof postResourceMoveMuta
  * {@link /resource/move}
  */
 async function postResourceMove(data?: PostResourceMoveMutationRequest, config: Partial<RequestConfig<PostResourceMoveMutationRequest>> = {}) {
-  const res = await client<PostResourceMoveMutationResponse, PostResourceMove401 | PostResourceMove500, PostResourceMoveMutationRequest>({
+  const res = await client<PostResourceMoveMutationResponse, ResponseErrorConfig<PostResourceMove401 | PostResourceMove500>, PostResourceMoveMutationRequest>({
     method: 'POST',
     url: '/resource/move',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     data,
     ...config
   })
@@ -33,7 +32,7 @@ export function usePostResourceMove(
   options: {
     mutation?: MutationObserverOptions<
       PostResourceMoveMutationResponse,
-      PostResourceMove401 | PostResourceMove500,
+      ResponseErrorConfig<PostResourceMove401 | PostResourceMove500>,
       { data?: MaybeRef<PostResourceMoveMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostResourceMoveMutationRequest>>;
@@ -42,7 +41,11 @@ export function usePostResourceMove(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postResourceMoveMutationKey()
 
-  return useMutation<PostResourceMoveMutationResponse, PostResourceMove401 | PostResourceMove500, { data?: PostResourceMoveMutationRequest }>({
+  return useMutation<
+    PostResourceMoveMutationResponse,
+    ResponseErrorConfig<PostResourceMove401 | PostResourceMove500>,
+    { data?: PostResourceMoveMutationRequest }
+  >({
     mutationFn: async ({ data }) => {
       return postResourceMove(data, config)
     },

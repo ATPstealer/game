@@ -103,8 +103,13 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import Layout from '@/components/Common/Layout.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { type BuildingType, type ConstructBuildingPayload, useGetBuildingTypes, usePostBuildingConstruct } from '@/gen'
-import type { BackData } from '@/types'
+import {
+  type BuildingType,
+  type ConstructBuildingPayload,
+  type JsonResult,
+  useGetBuildingTypes,
+  usePostBuildingConstruct
+} from '@/gen'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTranslation } from '@/utils/getTranslation'
 
@@ -113,7 +118,7 @@ const { query } = useRoute()
 const x = ref<number>(Number(query.x))
 const y = ref<number>(Number(query.y))
 const square = ref<number>(10)
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
 
@@ -140,7 +145,7 @@ const buildingTypes = computed(() => {
 const buildingType = ref<BuildingType>(buildingTypes.value ? buildingTypes.value[0] : {} as BuildingType)
 
 const construct = () => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
 
   const payload: ConstructBuildingPayload = {
     x: x.value,

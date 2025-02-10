@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetSettingsQueryResponse, GetSettings500 } from '../types/GetSettings.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getSettingsQueryKey = () => [{ url: '/settings' }] as const
@@ -15,12 +15,7 @@ export type GetSettingsQueryKey = ReturnType<typeof getSettingsQueryKey>
  * {@link /settings}
  */
 async function getSettings(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetSettingsQueryResponse, GetSettings500, unknown>({
-    method: 'GET',
-    url: '/settings',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    ...config
-  })
+  const res = await client<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, unknown>({ method: 'GET', url: '/settings', ...config })
   
   return res.data
 }
@@ -28,7 +23,7 @@ async function getSettings(config: Partial<RequestConfig> = {}) {
 export function getSettingsQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getSettingsQueryKey()
   
-  return queryOptions<GetSettingsQueryResponse, GetSettings500, GetSettingsQueryResponse, typeof queryKey>({
+  return queryOptions<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, GetSettingsQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -45,7 +40,7 @@ export function getSettingsQueryOptions(config: Partial<RequestConfig> = {}) {
  */
 export function useGetSettings<TData = GetSettingsQueryResponse, TQueryData = GetSettingsQueryResponse, TQueryKey extends QueryKey = GetSettingsQueryKey>(
   options: {
-    query?: Partial<QueryObserverOptions<GetSettingsQueryResponse, GetSettings500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -56,7 +51,7 @@ export function useGetSettings<TData = GetSettingsQueryResponse, TQueryData = Ge
     ...(getSettingsQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetSettings500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetSettings500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

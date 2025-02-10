@@ -8,7 +8,7 @@ import type {
   DeleteBuildingDestroy500
 } from '../types/DeleteBuildingDestroy.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const deleteBuildingDestroyMutationKey = () => [{ url: '/building/destroy' }] as const
 
@@ -19,10 +19,9 @@ export type DeleteBuildingDestroyMutationKey = ReturnType<typeof deleteBuildingD
  * {@link /building/destroy}
  */
 async function deleteBuildingDestroy(params: DeleteBuildingDestroyQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<DeleteBuildingDestroyMutationResponse, DeleteBuildingDestroy401 | DeleteBuildingDestroy500, unknown>({
+  const res = await client<DeleteBuildingDestroyMutationResponse, ResponseErrorConfig<DeleteBuildingDestroy401 | DeleteBuildingDestroy500>, unknown>({
     method: 'DELETE',
     url: '/building/destroy',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -38,7 +37,7 @@ export function useDeleteBuildingDestroy(
   options: {
     mutation?: MutationObserverOptions<
       DeleteBuildingDestroyMutationResponse,
-      DeleteBuildingDestroy401 | DeleteBuildingDestroy500,
+      ResponseErrorConfig<DeleteBuildingDestroy401 | DeleteBuildingDestroy500>,
       { params: MaybeRef<DeleteBuildingDestroyQueryParams> }
     >;
     client?: Partial<RequestConfig>;
@@ -47,7 +46,11 @@ export function useDeleteBuildingDestroy(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? deleteBuildingDestroyMutationKey()
 
-  return useMutation<DeleteBuildingDestroyMutationResponse, DeleteBuildingDestroy401 | DeleteBuildingDestroy500, { params: DeleteBuildingDestroyQueryParams }>({
+  return useMutation<
+    DeleteBuildingDestroyMutationResponse,
+    ResponseErrorConfig<DeleteBuildingDestroy401 | DeleteBuildingDestroy500>,
+    { params: DeleteBuildingDestroyQueryParams }
+  >({
     mutationFn: async ({ params }) => {
       return deleteBuildingDestroy(params, config)
     },

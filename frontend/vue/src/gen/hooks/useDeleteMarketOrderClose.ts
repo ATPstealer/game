@@ -8,7 +8,7 @@ import type {
   DeleteMarketOrderClose500
 } from '../types/DeleteMarketOrderClose.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const deleteMarketOrderCloseMutationKey = () => [{ url: '/market/order/close' }] as const
 
@@ -19,10 +19,9 @@ export type DeleteMarketOrderCloseMutationKey = ReturnType<typeof deleteMarketOr
  * {@link /market/order/close}
  */
 async function deleteMarketOrderClose(params: DeleteMarketOrderCloseQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<DeleteMarketOrderCloseMutationResponse, DeleteMarketOrderClose401 | DeleteMarketOrderClose500, unknown>({
+  const res = await client<DeleteMarketOrderCloseMutationResponse, ResponseErrorConfig<DeleteMarketOrderClose401 | DeleteMarketOrderClose500>, unknown>({
     method: 'DELETE',
     url: '/market/order/close',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -38,7 +37,7 @@ export function useDeleteMarketOrderClose(
   options: {
     mutation?: MutationObserverOptions<
       DeleteMarketOrderCloseMutationResponse,
-      DeleteMarketOrderClose401 | DeleteMarketOrderClose500,
+      ResponseErrorConfig<DeleteMarketOrderClose401 | DeleteMarketOrderClose500>,
       { params: MaybeRef<DeleteMarketOrderCloseQueryParams> }
     >;
     client?: Partial<RequestConfig>;
@@ -49,7 +48,7 @@ export function useDeleteMarketOrderClose(
 
   return useMutation<
     DeleteMarketOrderCloseMutationResponse,
-    DeleteMarketOrderClose401 | DeleteMarketOrderClose500,
+    ResponseErrorConfig<DeleteMarketOrderClose401 | DeleteMarketOrderClose500>,
     { params: DeleteMarketOrderCloseQueryParams }
   >({
     mutationFn: async ({ params }) => {

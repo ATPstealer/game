@@ -2,7 +2,7 @@
   <Layout :show-options-prop="false">
     <div v-if="!isFetching && data?.length">
       <Resources
-        :execute="execute"
+        :execute="refetch"
         :resources="data.filter(resource => resource?.resourceType?.name)"
       />
     </div>
@@ -14,15 +14,17 @@
 </template>
 
 <script setup lang="ts">
+import { computed, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
 import Resources from '@/components/Resources/ResourcesList.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Resource } from '@/types/Resources/index.interface'
+import { useGetResourceMy } from '@/gen'
 
 const { t } = useI18n()
 
-const { data, isFetching, execute } = useGetData<Resource[]>('/resource/my')
+const { data: resourcesQuery, isFetching, suspense, refetch } = useGetResourceMy()
+await suspense()
+const data = computed(() => unref(resourcesQuery)?.data)
 
 </script>

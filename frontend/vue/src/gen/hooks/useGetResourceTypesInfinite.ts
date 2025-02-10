@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetResourceTypesQueryResponse, GetResourceTypes500 } from '../types/GetResourceTypes.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getResourceTypesInfiniteQueryKey = () => [{ url: '/resource/types' }] as const
 
@@ -13,10 +13,9 @@ export type GetResourceTypesInfiniteQueryKey = ReturnType<typeof getResourceType
  * {@link /resource/types}
  */
 async function getResourceTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceTypesQueryResponse, GetResourceTypes500, unknown>({
+  const res = await client<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, unknown>({
     method: 'GET',
     url: '/resource/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,7 +25,7 @@ async function getResourceTypes(config: Partial<RequestConfig> = {}) {
 export function getResourceTypesInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getResourceTypesInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetResourceTypesQueryResponse, GetResourceTypes500, GetResourceTypesQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, GetResourceTypesQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +48,7 @@ export function useGetResourceTypesInfinite<
   TQueryKey extends QueryKey = GetResourceTypesInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetResourceTypesQueryResponse, GetResourceTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetResourceTypesQueryResponse, ResponseErrorConfig<GetResourceTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +59,7 @@ export function useGetResourceTypesInfinite<
     ...(getResourceTypesInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetResourceTypes500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetResourceTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

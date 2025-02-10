@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetUsernamesByPrefixQueryResponse, GetUsernamesByPrefixQueryParams } from '../types/GetUsernamesByPrefix.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getUsernamesByPrefixInfiniteQueryKey = (params?: MaybeRef<GetUsernamesByPrefixQueryParams>) =>
   [{ url: '/data/users_by_prefix' }, ...(params ? [params] : [])] as const
@@ -16,10 +16,9 @@ export type GetUsernamesByPrefixInfiniteQueryKey = ReturnType<typeof getUsername
  * {@link /data/users_by_prefix}
  */
 async function getUsernamesByPrefix(params?: GetUsernamesByPrefixQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetUsernamesByPrefixQueryResponse, Error, unknown>({
+  const res = await client<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, unknown>({
     method: 'GET',
     url: '/data/users_by_prefix',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -30,7 +29,7 @@ async function getUsernamesByPrefix(params?: GetUsernamesByPrefixQueryParams, co
 export function getUsernamesByPrefixInfiniteQueryOptions(params?: MaybeRef<GetUsernamesByPrefixQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getUsernamesByPrefixInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetUsernamesByPrefixQueryResponse, Error, GetUsernamesByPrefixQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, GetUsernamesByPrefixQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -59,7 +58,7 @@ export function useGetUsernamesByPrefixInfinite<
 >(
   params?: MaybeRef<GetUsernamesByPrefixQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetUsernamesByPrefixQueryResponse, Error, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -70,7 +69,7 @@ export function useGetUsernamesByPrefixInfinite<
     ...(getUsernamesByPrefixInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, Error> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

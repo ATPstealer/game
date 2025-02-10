@@ -8,7 +8,7 @@ import type {
   PostBuildingEmergencyHiring500
 } from '../types/PostBuildingEmergencyHiring.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBuildingEmergencyHiringMutationKey = () => [{ url: '/building/emergency_hiring' }] as const
 
@@ -24,9 +24,9 @@ async function postBuildingEmergencyHiring(
 ) {
   const res = await client<
     PostBuildingEmergencyHiringMutationResponse,
-    PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500,
+    ResponseErrorConfig<PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500>,
     PostBuildingEmergencyHiringMutationRequest
-  >({ method: 'POST', url: '/building/emergency_hiring', baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2', data, ...config })
+  >({ method: 'POST', url: '/building/emergency_hiring', data, ...config })
   
   return res.data
 }
@@ -39,7 +39,7 @@ export function usePostBuildingEmergencyHiring(
   options: {
     mutation?: MutationObserverOptions<
       PostBuildingEmergencyHiringMutationResponse,
-      PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500,
+      ResponseErrorConfig<PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500>,
       { data: MaybeRef<PostBuildingEmergencyHiringMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBuildingEmergencyHiringMutationRequest>>;
@@ -50,7 +50,7 @@ export function usePostBuildingEmergencyHiring(
 
   return useMutation<
     PostBuildingEmergencyHiringMutationResponse,
-    PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500,
+    ResponseErrorConfig<PostBuildingEmergencyHiring401 | PostBuildingEmergencyHiring500>,
     { data: PostBuildingEmergencyHiringMutationRequest }
   >({
     mutationFn: async ({ data }) => {

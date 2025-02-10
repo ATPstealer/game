@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetEquipmentTypesQueryResponse, GetEquipmentTypes500 } from '../types/GetEquipmentTypes.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getEquipmentTypesQueryKey = () => [{ url: '/equipment/types' }] as const
@@ -14,10 +14,9 @@ export type GetEquipmentTypesQueryKey = ReturnType<typeof getEquipmentTypesQuery
  * {@link /equipment/types}
  */
 async function getEquipmentTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, unknown>({
+  const res = await client<GetEquipmentTypesQueryResponse, ResponseErrorConfig<GetEquipmentTypes500>, unknown>({
     method: 'GET',
     url: '/equipment/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -27,7 +26,7 @@ async function getEquipmentTypes(config: Partial<RequestConfig> = {}) {
 export function getEquipmentTypesQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getEquipmentTypesQueryKey()
   
-  return queryOptions<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, GetEquipmentTypesQueryResponse, typeof queryKey>({
+  return queryOptions<GetEquipmentTypesQueryResponse, ResponseErrorConfig<GetEquipmentTypes500>, GetEquipmentTypesQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -47,7 +46,7 @@ export function useGetEquipmentTypes<
   TQueryKey extends QueryKey = GetEquipmentTypesQueryKey,
 >(
   options: {
-    query?: Partial<QueryObserverOptions<GetEquipmentTypesQueryResponse, GetEquipmentTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetEquipmentTypesQueryResponse, ResponseErrorConfig<GetEquipmentTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -58,7 +57,7 @@ export function useGetEquipmentTypes<
     ...(getEquipmentTypesQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetEquipmentTypes500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetEquipmentTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

@@ -7,22 +7,22 @@
     <Column
       :header="t(`equipment.columns.name`)"
     >
-      <template #body="{data}: {data: Equipment}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
       </template>
     </Column>
     <Column
       :header="t(`equipment.columns.effect`)"
     >
-      <template #body="{data}: {data: Equipment}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ t(`equipment.effect.${data.equipmentType.effectId.toString()}`) }}
       </template>
     </Column>
     <Column
       :header="t(`common.blueprint`)"
     >
-      <template #body="{data}: {data: Equipment}">
-        <span v-if="!data.equipmentType.blueprintIds.length">Все</span>
+      <template #body="{data}: {data: ResourceAsEquipment}">
+        <span v-if="!data?.equipmentType?.blueprintIds?.length">Все</span>
         <span
           v-else
           class="text-indigo-500 cursor-pointer"
@@ -56,21 +56,21 @@
     <Column
       :header="t(`common.value`)"
     >
-      <template #body="{data}: {data: Equipment}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ data.equipmentType.value }}
       </template>
     </Column>
     <Column
       :header="t(`map.square`)"
     >
-      <template #body="{data}: {data: Equipment}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ data.equipmentType.square }}
       </template>
     </Column>
     <Column
       :header="t(`equipment.columns.durability`)"
     >
-      <template #body="{data}: {data: Equipment}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ data.equipmentType.durability }}
       </template>
     </Column>
@@ -81,7 +81,7 @@
     <Column
       :header="t(`map.cell`)"
     >
-      <template #body="{data}: {data: Resource}">
+      <template #body="{data}: {data: ResourceAsEquipment}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
@@ -92,28 +92,27 @@
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import OverlayPanel from 'primevue/overlaypanel'
-import { ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useGetData } from '@/composables/useGetData'
-import type { Blueprint } from '@/types/Buildings/index.interface'
-import type { Equipment } from '@/types/Equipment/index.interface'
-import type { Resource } from '@/types/Resources/index.interface'
+import { type Blueprint, type ResourceAsEquipment, useGetBuildingBlueprints } from '@/gen'
 
 interface Props {
-  equipments: Equipment[];
+  equipments: ResourceAsEquipment[];
 }
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const { t } = useI18n()
 
 const popover = ref()
-const bps = ref<Blueprint[]>([])
+const bps = ref<Blueprint[] | undefined>([])
 
-const { data: blueprints } = useGetData<Blueprint[]>('/building/blueprints')
+const { data: blueprintsQuery, suspense: awaitBlueprints } = useGetBuildingBlueprints()
+await awaitBlueprints()
+const blueprints = computed(() => unref(blueprintsQuery)?.data)
 
 const toggleOP = (event: any, blueprintsIds: number[]) => {
   popover.value.toggle(event)
-  bps.value = blueprints.value.filter(item => blueprintsIds.includes(item.id))
+  bps.value = blueprints.value?.filter(item => blueprintsIds.includes(item.id))
 }
 
 </script>

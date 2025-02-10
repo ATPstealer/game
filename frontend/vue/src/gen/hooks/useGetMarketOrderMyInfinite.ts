@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetMarketOrderMyQueryResponse, GetMarketOrderMy401, GetMarketOrderMy500 } from '../types/GetMarketOrderMy.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getMarketOrderMyInfiniteQueryKey = () => [{ url: '/market/order/my' }] as const
 
@@ -13,10 +13,9 @@ export type GetMarketOrderMyInfiniteQueryKey = ReturnType<typeof getMarketOrderM
  * {@link /market/order/my}
  */
 async function getMarketOrderMy(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, unknown>({
+  const res = await client<GetMarketOrderMyQueryResponse, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>, unknown>({
     method: 'GET',
     url: '/market/order/my',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,19 +25,23 @@ async function getMarketOrderMy(config: Partial<RequestConfig> = {}) {
 export function getMarketOrderMyInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getMarketOrderMyInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, GetMarketOrderMyQueryResponse, typeof queryKey, number>(
-    {
-      queryKey,
-      queryFn: async ({ signal, pageParam }) => {
-        config.signal = signal
+  return infiniteQueryOptions<
+    GetMarketOrderMyQueryResponse,
+    ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>,
+    GetMarketOrderMyQueryResponse,
+    typeof queryKey,
+    number
+  >({
+    queryKey,
+    queryFn: async ({ signal, pageParam }) => {
+      config.signal = signal
 
-        return getMarketOrderMy(config)
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => lastPage['nextCursor'],
-      getPreviousPageParam: (firstPage) => firstPage['nextCursor']
-    }
-  )
+      return getMarketOrderMy(config)
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage['nextCursor'],
+    getPreviousPageParam: (firstPage) => firstPage['nextCursor']
+  })
 }
 
 /**
@@ -51,7 +54,9 @@ export function useGetMarketOrderMyInfinite<
   TQueryKey extends QueryKey = GetMarketOrderMyInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      InfiniteQueryObserverOptions<GetMarketOrderMyQueryResponse, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -62,7 +67,7 @@ export function useGetMarketOrderMyInfinite<
     ...(getMarketOrderMyInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetMarketOrderMy401 | GetMarketOrderMy500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

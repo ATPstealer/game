@@ -12,13 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
+import { computed, unref } from 'vue'
 import Layout from '@/components/Common/Layout.vue'
 import EquipmentList from '@/components/Equipment/EquipmentList.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Equipment } from '@/types/Equipment/index.interface'
+import { useGetEquipmentMy } from '@/gen'
 
-const { t } = useI18n()
-const { data: equipments, isFetching } = useGetData<Equipment[]>('/equipment/my')
+const { data, suspense, isFetching } = useGetEquipmentMy()
+await suspense()
+const equipments = computed(() => unref(data)?.data)
 
 </script>

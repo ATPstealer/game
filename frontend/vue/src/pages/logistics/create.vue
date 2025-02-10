@@ -99,7 +99,6 @@
             <Column field="speed" :header="t('logistics.speed')" />
             <Column field="price" :header="t('common.price')" />
           </DataTable>
-          <!--          </Teleport>-->
         </div>
         <Loading v-else />
       </template>
@@ -116,22 +115,25 @@ import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
 import Dropdown from 'primevue/dropdown'
 import FloatLabel from 'primevue/floatlabel'
 import InputNumber  from 'primevue/inputnumber'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useGetData } from '@/composables/useGetData'
-import { useLogistics } from '@/composables/useLogistics'
-import { useMap } from '@/composables/useMap'
-import { useResources } from '@/composables/useResources'
-import { type BackData } from '@/types'
-import type { LogisticHub, Resource, ResourceMovePayload } from '@/types/Resources/index.interface'
+import {
+  type LogisticsWithData,
+  type ResourceWithData,
+  type JsonResult,
+  useGetMap,
+  useGetResourceLogistics,
+  useGetResourceMy,
+  usePostResourceMove
+} from '@/gen'
 
 interface LogisticResource {
   id: number;
   name: string;
-  items: Resource[];
+  items: ResourceWithData[];
 }
 
 const resource = ref<number>()
@@ -139,27 +141,39 @@ const from = ref<string>()
 const to = ref<string>()
 const amount = ref<number>()
 const hub = ref<string>('')
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 const price = ref<number>(0)
 
 // const breakpoints = useBreakpoints(breakpointsTailwind)
 // const isDesktop = breakpoints.greater('md')
 
 const { t } = useI18n()
-const { getMap } = useMap()
-const { getHubs } = useLogistics()
-const { moveResource } = useResources()
+const { data: resourcesQuery, suspense: awaitResources, isFetching } = useGetResourceMy()
+await awaitResources()
+const resources = computed(() => unref(resourcesQuery)?.data)
 
-const { data: resourcesData, onFetchResponse, isFetching } = useGetData<Resource[]>('/resource/my')
-const { data: mapData } = getMap()
-const { data: hubsData } = getHubs()
+const { data: mapQuery, suspense: awaitMap } = useGetMap()
+await awaitMap()
+const mapData = computed(() => unref(mapQuery)?.data)
 
-const groupedResources = computed<LogisticResource[]>(() => {
-  if (!resourcesData.value) {
-    return
+const { data: hubsQuery, suspense: awaitHubs } = useGetResourceLogistics()
+await awaitHubs()
+const hubsData = computed(() => unref(hubsQuery)?.data)
+
+const mutateResources = usePostResourceMove({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
+  }
+})
+
+const groupedResources = computed<LogisticResource[] | []>(() => {
+  if (!resources.value) {
+    return []
   }
 
-  return resourcesData.value.reduce((acc: LogisticResource[], item) => {
+  return resources.value.reduce((acc: LogisticResource[], item) => {
     const { resourceTypeId } = item
 
     const index = acc.findIndex(i => i?.id === resourceTypeId)
@@ -244,7 +258,7 @@ const onRowClick = (event: DataTableRowClickEvent) => {
   price.value = event.data.price
 }
 
-const rowClass = (data: LogisticHub) => {
+const rowClass = (data: LogisticsWithData) => {
   if (data.buildingId === hub.value) {
     return 'bg-green-100'
   }
@@ -260,7 +274,7 @@ const create = () => {
   const toX = Number(to.value?.split('x')[0])
   const toY = Number(to.value?.split('x')[1])
 
-  const payload: ResourceMovePayload = {
+  const payload = {
     fromX,
     fromY,
     toX,
@@ -270,10 +284,7 @@ const create = () => {
     buildingId: hub.value
   }
 
-  const { onFetchResponse: onMoveResponse, data } = moveResource(payload)
-  onMoveResponse(() => {
-    messageData.value = data.value
-  })
+  mutateResources.mutate({ data: { ...payload } })
 }
 
 watch(computedFrom, () => {

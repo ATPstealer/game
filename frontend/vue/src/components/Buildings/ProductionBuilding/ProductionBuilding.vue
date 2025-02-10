@@ -79,7 +79,7 @@ import { getTranslation } from '@/utils/getTranslation'
 // добавить перезапрос данных о building при изменении кол-ва работников/зп
 
 interface Props {
-  building: BuildingWithData;
+  building: BuildingWithData | undefined;
 }
 
 const props = defineProps<Props>()
@@ -92,7 +92,7 @@ const { t } = useI18n()
 
 const { data: blueprintsQuery, suspense: awaitBlueprints  } = useGetBuildingBlueprints()
 await awaitBlueprints()
-const blueprints = computed(() => unref(blueprintsQuery)?.data?.filter(item => item.producedInId === props.building.typeId) || [])
+const blueprints = computed(() => unref(blueprintsQuery)?.data?.filter(item => item.producedInId === props.building!.typeId) || [])
 
 watch(blueprints, () => {
   if (blueprints.value.length === 1) {
@@ -127,7 +127,7 @@ const start = () => {
   messageData.value = {} as JsonResult
 
   const payload = {
-    buildingId: props.building._id,
+    buildingId: props.building!._id,
     blueprintId: selectedBlueprint.value,
     duration: duration.value
   }

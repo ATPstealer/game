@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetOrdersQueryResponse, GetOrdersQueryParams, GetOrders500 } from '../types/GetOrders.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getOrdersInfiniteQueryKey = (params?: MaybeRef<GetOrdersQueryParams>) => [{ url: '/orders' }, ...(params ? [params] : [])] as const
 
@@ -14,13 +14,7 @@ export type GetOrdersInfiniteQueryKey = ReturnType<typeof getOrdersInfiniteQuery
  * {@link /orders}
  */
 async function getOrders(params?: GetOrdersQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetOrdersQueryResponse, GetOrders500, unknown>({
-    method: 'GET',
-    url: '/orders',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    params,
-    ...config
-  })
+  const res = await client<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, unknown>({ method: 'GET', url: '/orders', params, ...config })
   
   return res.data
 }
@@ -28,7 +22,7 @@ async function getOrders(params?: GetOrdersQueryParams, config: Partial<RequestC
 export function getOrdersInfiniteQueryOptions(params?: MaybeRef<GetOrdersQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getOrdersInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetOrdersQueryResponse, GetOrders500, GetOrdersQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, GetOrdersQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -56,7 +50,7 @@ export function useGetOrdersInfinite<
 >(
   params?: MaybeRef<GetOrdersQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetOrdersQueryResponse, GetOrders500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -67,7 +61,7 @@ export function useGetOrdersInfinite<
     ...(getOrdersInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetOrders500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetOrders500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

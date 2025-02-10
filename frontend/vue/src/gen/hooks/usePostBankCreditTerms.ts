@@ -8,7 +8,7 @@ import type {
   PostBankCreditTerms500
 } from '../types/PostBankCreditTerms.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBankCreditTermsMutationKey = () => [{ url: '/bank/credit_terms' }] as const
 
@@ -20,13 +20,11 @@ export type PostBankCreditTermsMutationKey = ReturnType<typeof postBankCreditTer
  * {@link /bank/credit_terms}
  */
 async function postBankCreditTerms(data: PostBankCreditTermsMutationRequest, config: Partial<RequestConfig<PostBankCreditTermsMutationRequest>> = {}) {
-  const res = await client<PostBankCreditTermsMutationResponse, PostBankCreditTerms401 | PostBankCreditTerms500, PostBankCreditTermsMutationRequest>({
-    method: 'POST',
-    url: '/bank/credit_terms',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostBankCreditTermsMutationResponse,
+    ResponseErrorConfig<PostBankCreditTerms401 | PostBankCreditTerms500>,
+    PostBankCreditTermsMutationRequest
+  >({ method: 'POST', url: '/bank/credit_terms', data, ...config })
   
   return res.data
 }
@@ -40,7 +38,7 @@ export function usePostBankCreditTerms(
   options: {
     mutation?: MutationObserverOptions<
       PostBankCreditTermsMutationResponse,
-      PostBankCreditTerms401 | PostBankCreditTerms500,
+      ResponseErrorConfig<PostBankCreditTerms401 | PostBankCreditTerms500>,
       { data: MaybeRef<PostBankCreditTermsMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBankCreditTermsMutationRequest>>;
@@ -49,7 +47,11 @@ export function usePostBankCreditTerms(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postBankCreditTermsMutationKey()
 
-  return useMutation<PostBankCreditTermsMutationResponse, PostBankCreditTerms401 | PostBankCreditTerms500, { data: PostBankCreditTermsMutationRequest }>({
+  return useMutation<
+    PostBankCreditTermsMutationResponse,
+    ResponseErrorConfig<PostBankCreditTerms401 | PostBankCreditTerms500>,
+    { data: PostBankCreditTermsMutationRequest }
+  >({
     mutationFn: async ({ data }) => {
       return postBankCreditTerms(data, config)
     },

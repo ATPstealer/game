@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetBuildingTypesQueryResponse, GetBuildingTypes500 } from '../types/GetBuildingTypes.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getBuildingTypesInfiniteQueryKey = () => [{ url: '/building/types' }] as const
 
@@ -13,10 +13,9 @@ export type GetBuildingTypesInfiniteQueryKey = ReturnType<typeof getBuildingType
  * {@link /building/types}
  */
 async function getBuildingTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBuildingTypesQueryResponse, GetBuildingTypes500, unknown>({
+  const res = await client<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, unknown>({
     method: 'GET',
     url: '/building/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,7 +25,7 @@ async function getBuildingTypes(config: Partial<RequestConfig> = {}) {
 export function getBuildingTypesInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getBuildingTypesInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetBuildingTypesQueryResponse, GetBuildingTypes500, GetBuildingTypesQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, GetBuildingTypesQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +48,7 @@ export function useGetBuildingTypesInfinite<
   TQueryKey extends QueryKey = GetBuildingTypesInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetBuildingTypesQueryResponse, GetBuildingTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +59,7 @@ export function useGetBuildingTypesInfinite<
     ...(getBuildingTypesInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetBuildingTypes500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetBuildingTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

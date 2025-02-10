@@ -32,11 +32,15 @@
 <script setup lang="ts">
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import { computed, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
-import { useGetData } from '@/composables/useGetData'
-import { Storage } from '@/types'
+import { useGetStorageMy, type Storage } from '@/gen'
 
-const { data: storages, isFetching } = useGetData<Storage[]>('/storage/my')
 const { t } = useI18n()
+
+const { data: storagesQuery, isFetching, suspense } = useGetStorageMy()
+await suspense()
+const storages = computed(() => unref(storagesQuery)?.data)
+
 </script>

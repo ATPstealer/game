@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetSettingsQueryResponse, GetSettings500 } from '../types/GetSettings.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getSettingsInfiniteQueryKey = () => [{ url: '/settings' }] as const
 
@@ -14,12 +14,7 @@ export type GetSettingsInfiniteQueryKey = ReturnType<typeof getSettingsInfiniteQ
  * {@link /settings}
  */
 async function getSettings(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetSettingsQueryResponse, GetSettings500, unknown>({
-    method: 'GET',
-    url: '/settings',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    ...config
-  })
+  const res = await client<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, unknown>({ method: 'GET', url: '/settings', ...config })
   
   return res.data
 }
@@ -27,7 +22,7 @@ async function getSettings(config: Partial<RequestConfig> = {}) {
 export function getSettingsInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getSettingsInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetSettingsQueryResponse, GetSettings500, GetSettingsQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, GetSettingsQueryResponse, typeof queryKey, number>({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -51,7 +46,7 @@ export function useGetSettingsInfinite<
   TQueryKey extends QueryKey = GetSettingsInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetSettingsQueryResponse, GetSettings500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetSettingsQueryResponse, ResponseErrorConfig<GetSettings500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -62,7 +57,7 @@ export function useGetSettingsInfinite<
     ...(getSettingsInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetSettings500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetSettings500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

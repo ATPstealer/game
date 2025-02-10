@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetBankGetCreditTermsQueryResponse, GetBankGetCreditTermsQueryParams, GetBankGetCreditTerms500 } from '../types/GetBankGetCreditTerms.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getBankGetCreditTermsInfiniteQueryKey = (params?: MaybeRef<GetBankGetCreditTermsQueryParams>) =>
   [{ url: '/bank/get_credit_terms' }, ...(params ? [params] : [])] as const
@@ -16,10 +16,9 @@ export type GetBankGetCreditTermsInfiniteQueryKey = ReturnType<typeof getBankGet
  * {@link /bank/get_credit_terms}
  */
 async function getBankGetCreditTerms(params?: GetBankGetCreditTermsQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, unknown>({
+  const res = await client<GetBankGetCreditTermsQueryResponse, ResponseErrorConfig<GetBankGetCreditTerms500>, unknown>({
     method: 'GET',
     url: '/bank/get_credit_terms',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -30,7 +29,13 @@ async function getBankGetCreditTerms(params?: GetBankGetCreditTermsQueryParams, 
 export function getBankGetCreditTermsInfiniteQueryOptions(params?: MaybeRef<GetBankGetCreditTermsQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getBankGetCreditTermsInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, GetBankGetCreditTermsQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetBankGetCreditTermsQueryResponse,
+    ResponseErrorConfig<GetBankGetCreditTerms500>,
+    GetBankGetCreditTermsQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -59,7 +64,9 @@ export function useGetBankGetCreditTermsInfinite<
 >(
   params?: MaybeRef<GetBankGetCreditTermsQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      InfiniteQueryObserverOptions<GetBankGetCreditTermsQueryResponse, ResponseErrorConfig<GetBankGetCreditTerms500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -70,7 +77,7 @@ export function useGetBankGetCreditTermsInfinite<
     ...(getBankGetCreditTermsInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetBankGetCreditTerms500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetBankGetCreditTerms500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

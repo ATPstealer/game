@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetStorageMyQueryResponse, GetStorageMy401, GetStorageMy500 } from '../types/GetStorageMy.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getStorageMyInfiniteQueryKey = () => [{ url: '/storage/my' }] as const
 
@@ -13,10 +13,9 @@ export type GetStorageMyInfiniteQueryKey = ReturnType<typeof getStorageMyInfinit
  * {@link /storage/my}
  */
 async function getStorageMy(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, unknown>({
+  const res = await client<GetStorageMyQueryResponse, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>, unknown>({
     method: 'GET',
     url: '/storage/my',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,7 +25,13 @@ async function getStorageMy(config: Partial<RequestConfig> = {}) {
 export function getStorageMyInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getStorageMyInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, GetStorageMyQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetStorageMyQueryResponse,
+    ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>,
+    GetStorageMyQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +54,9 @@ export function useGetStorageMyInfinite<
   TQueryKey extends QueryKey = GetStorageMyInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      InfiniteQueryObserverOptions<GetStorageMyQueryResponse, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +67,7 @@ export function useGetStorageMyInfinite<
     ...(getStorageMyInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetStorageMy401 | GetStorageMy500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

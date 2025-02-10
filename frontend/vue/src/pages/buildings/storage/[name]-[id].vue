@@ -1,7 +1,11 @@
 <template>
-  <BuildingTemplate :building="building" :loading="isFetching">
+  <BuildingTemplate
+    v-if="building"
+    :building="building"
+    :loading="isFetching"
+  >
     <template #building>
-      <StorageBuilding :building="building" />
+      <StorageBuilding v-if="building" :building="building" />
     </template>
     <template #buildingHelp>
       <p>{{ t(`buildings.hiring.help`) }}</p>

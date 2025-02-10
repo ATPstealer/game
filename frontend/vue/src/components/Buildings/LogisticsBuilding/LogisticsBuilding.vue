@@ -4,13 +4,13 @@
     <template #content>
       <MessageBlock v-if="messageData" v-bind="messageData" />
       <p class="mb-2">
-        <span class="font-bold">{{ t('logistics.capacity') }}</span>: {{ data.capacity }}
+        <span class="font-bold">{{ t('logistics.capacity') }}</span>: {{ data?.capacity }}
       </p>
       <p class="mb-2">
-        <span class="font-bold">Max.</span> <span class="font-bold lowercase">{{ t('logistics.capacity') }}</span>: {{ data.capacityMax }}
+        <span class="font-bold">Max.</span> <span class="font-bold lowercase">{{ t('logistics.capacity') }}</span>: {{ data?.capacityMax }}
       </p>
       <p class="mb-2">
-        <span class="font-bold">{{ t('logistics.speed') }}</span>: {{ data.speed }}
+        <span class="font-bold">{{ t('logistics.speed') }}</span>: {{ data?.speed }}
       </p>
       <div class="flex flex-col gap-2">
         <span class="font-bold">{{ t('common.price') }}</span>
@@ -38,34 +38,42 @@ import InputNumber from 'primevue/inputnumber'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useLogistics } from '@/composables/useLogistics'
-import type { BackData } from '@/types'
-import type { Building, LogisticsData } from '@/types/Buildings/index.interface'
+import { type BuildingWithData, type JsonResult, type Logistics, usePostLogisticsSetPrice } from '@/gen'
 
 interface Props {
-  building: Building;
+  building: BuildingWithData;
 }
 
 const props = defineProps<Props>()
 
-const data = ref<LogisticsData>(props.building.logistics || {} as LogisticsData)
+const mutationLogisticSetPrice = usePostLogisticsSetPrice({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+    }
+  }
+})
+
+const data = ref<Logistics>(props.building.logistics || {} as Logistics)
 
 const price = ref<number>(data.value.price || 0)
 const oldPrice = ref<number>(data.value.price || 0)
-const messageData = ref<BackData>()
+const messageData = ref<JsonResult>()
 
 const { t } = useI18n()
-const { setHubPrice } = useLogistics()
 
 const setPrice = () => {
   if (price.value === oldPrice.value) {
     return
   }
   oldPrice.value = price.value
-  const { data, onFetchResponse } = setHubPrice({ buildingId: props.building._id, price: price.value })
-  onFetchResponse(() => {
-    messageData.value = data.value
-  })
+
+  const payload = {
+    buildingId: props.building._id,
+    price: price.value
+  }
+
+  mutationLogisticSetPrice.mutate({ data: { ...payload } })
 }
 
 </script>

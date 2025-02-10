@@ -1,5 +1,8 @@
 <template>
-  <BuildingTemplate :building="building" :loading="isFetching">
+  <BuildingTemplate
+    :building="building"
+    :loading="isFetching"
+  >
     <template #building>
       <ProductionBuilding :building="building" />
     </template>

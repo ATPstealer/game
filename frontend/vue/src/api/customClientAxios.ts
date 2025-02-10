@@ -10,6 +10,8 @@ export interface RequestConfig<TData = unknown> {
   responseType?: 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream';
   signal?: AbortSignal;
   headers?: [string, string][] | Record<string, string>;
+  mode?: 'cors' | 'no-cors' | 'same-origin';
+  credentials?: 'omit' | 'same-origin' | 'include' | undefined;
 }
 /**
  * Subset of FetchResponse
@@ -21,13 +23,15 @@ export interface ResponseConfig<TData = unknown> {
   headers?: [string, string][] | Record<string, string>;
 }
 
+const baseUrl = import.meta.env.VITE_API
+
 export const fetchClient = async <TData, TError = unknown, TVariables = unknown>(config: RequestConfig<TVariables>): Promise<ResponseConfig<TData>> => {
   const searchParams = new URLSearchParams(config.params as string).toString()
-  const response = await fetch([config.baseURL, config.url].filter(Boolean).join('') + (searchParams ? `?${searchParams}` : ''), {
+  const response = await fetch([baseUrl, config.url].filter(Boolean).join('') + (searchParams ? `?${searchParams}` : ''), {
     method: config.method.toUpperCase(),
     body: JSON.stringify(config.data),
     signal: config.signal,
-    headers: config.headers,
+    headers: { ...config.headers, 'Accept': 'application/json' },
     credentials: 'include'
   })
 

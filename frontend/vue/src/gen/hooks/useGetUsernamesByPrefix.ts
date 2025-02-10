@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetUsernamesByPrefixQueryResponse, GetUsernamesByPrefixQueryParams } from '../types/GetUsernamesByPrefix.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getUsernamesByPrefixQueryKey = (params?: MaybeRef<GetUsernamesByPrefixQueryParams>) =>
@@ -17,10 +17,9 @@ export type GetUsernamesByPrefixQueryKey = ReturnType<typeof getUsernamesByPrefi
  * {@link /data/users_by_prefix}
  */
 async function getUsernamesByPrefix(params?: GetUsernamesByPrefixQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetUsernamesByPrefixQueryResponse, Error, unknown>({
+  const res = await client<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, unknown>({
     method: 'GET',
     url: '/data/users_by_prefix',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -31,7 +30,7 @@ async function getUsernamesByPrefix(params?: GetUsernamesByPrefixQueryParams, co
 export function getUsernamesByPrefixQueryOptions(params?: MaybeRef<GetUsernamesByPrefixQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getUsernamesByPrefixQueryKey(params)
   
-  return queryOptions<GetUsernamesByPrefixQueryResponse, Error, GetUsernamesByPrefixQueryResponse, typeof queryKey>({
+  return queryOptions<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, GetUsernamesByPrefixQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -53,7 +52,7 @@ export function useGetUsernamesByPrefix<
 >(
   params?: MaybeRef<GetUsernamesByPrefixQueryParams>,
   options: {
-    query?: Partial<QueryObserverOptions<GetUsernamesByPrefixQueryResponse, Error, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetUsernamesByPrefixQueryResponse, ResponseErrorConfig<Error>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -64,7 +63,7 @@ export function useGetUsernamesByPrefix<
     ...(getUsernamesByPrefixQueryOptions(params, config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, Error> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<Error>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 
