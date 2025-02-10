@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetBuildingTypesQueryResponse, GetBuildingTypes500 } from '../types/GetBuildingTypes.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getBuildingTypesQueryKey = () => [{ url: '/building/types' }] as const
@@ -14,10 +14,9 @@ export type GetBuildingTypesQueryKey = ReturnType<typeof getBuildingTypesQueryKe
  * {@link /building/types}
  */
 async function getBuildingTypes(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBuildingTypesQueryResponse, GetBuildingTypes500, unknown>({
+  const res = await client<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, unknown>({
     method: 'GET',
     url: '/building/types',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -27,7 +26,7 @@ async function getBuildingTypes(config: Partial<RequestConfig> = {}) {
 export function getBuildingTypesQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getBuildingTypesQueryKey()
   
-  return queryOptions<GetBuildingTypesQueryResponse, GetBuildingTypes500, GetBuildingTypesQueryResponse, typeof queryKey>({
+  return queryOptions<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, GetBuildingTypesQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -47,7 +46,7 @@ export function useGetBuildingTypes<
   TQueryKey extends QueryKey = GetBuildingTypesQueryKey,
 >(
   options: {
-    query?: Partial<QueryObserverOptions<GetBuildingTypesQueryResponse, GetBuildingTypes500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetBuildingTypesQueryResponse, ResponseErrorConfig<GetBuildingTypes500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -58,7 +57,7 @@ export function useGetBuildingTypes<
     ...(getBuildingTypesQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetBuildingTypes500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetBuildingTypes500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

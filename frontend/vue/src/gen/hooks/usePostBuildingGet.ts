@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { PostBuildingGetMutationRequest, PostBuildingGetMutationResponse, PostBuildingGet500 } from '../types/PostBuildingGet.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBuildingGetMutationKey = () => [{ url: '/building/get' }] as const
 
@@ -14,10 +14,9 @@ export type PostBuildingGetMutationKey = ReturnType<typeof postBuildingGetMutati
  * {@link /building/get}
  */
 async function postBuildingGet(data?: PostBuildingGetMutationRequest, config: Partial<RequestConfig<PostBuildingGetMutationRequest>> = {}) {
-  const res = await client<PostBuildingGetMutationResponse, PostBuildingGet500, PostBuildingGetMutationRequest>({
+  const res = await client<PostBuildingGetMutationResponse, ResponseErrorConfig<PostBuildingGet500>, PostBuildingGetMutationRequest>({
     method: 'POST',
     url: '/building/get',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     data,
     ...config
   })
@@ -31,14 +30,18 @@ async function postBuildingGet(data?: PostBuildingGetMutationRequest, config: Pa
  */
 export function usePostBuildingGet(
   options: {
-    mutation?: MutationObserverOptions<PostBuildingGetMutationResponse, PostBuildingGet500, { data?: MaybeRef<PostBuildingGetMutationRequest> }>;
+    mutation?: MutationObserverOptions<
+      PostBuildingGetMutationResponse,
+      ResponseErrorConfig<PostBuildingGet500>,
+      { data?: MaybeRef<PostBuildingGetMutationRequest> }
+    >;
     client?: Partial<RequestConfig<PostBuildingGetMutationRequest>>;
   } = {}
 ) {
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postBuildingGetMutationKey()
 
-  return useMutation<PostBuildingGetMutationResponse, PostBuildingGet500, { data?: PostBuildingGetMutationRequest }>({
+  return useMutation<PostBuildingGetMutationResponse, ResponseErrorConfig<PostBuildingGet500>, { data?: PostBuildingGetMutationRequest }>({
     mutationFn: async ({ data }) => {
       return postBuildingGet(data, config)
     },

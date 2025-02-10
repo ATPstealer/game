@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetStorageMyQueryResponse, GetStorageMy401, GetStorageMy500 } from '../types/GetStorageMy.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getStorageMyQueryKey = () => [{ url: '/storage/my' }] as const
@@ -14,10 +14,9 @@ export type GetStorageMyQueryKey = ReturnType<typeof getStorageMyQueryKey>
  * {@link /storage/my}
  */
 async function getStorageMy(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, unknown>({
+  const res = await client<GetStorageMyQueryResponse, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>, unknown>({
     method: 'GET',
     url: '/storage/my',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -27,7 +26,7 @@ async function getStorageMy(config: Partial<RequestConfig> = {}) {
 export function getStorageMyQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getStorageMyQueryKey()
   
-  return queryOptions<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, GetStorageMyQueryResponse, typeof queryKey>({
+  return queryOptions<GetStorageMyQueryResponse, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>, GetStorageMyQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -43,7 +42,7 @@ export function getStorageMyQueryOptions(config: Partial<RequestConfig> = {}) {
  */
 export function useGetStorageMy<TData = GetStorageMyQueryResponse, TQueryData = GetStorageMyQueryResponse, TQueryKey extends QueryKey = GetStorageMyQueryKey>(
   options: {
-    query?: Partial<QueryObserverOptions<GetStorageMyQueryResponse, GetStorageMy401 | GetStorageMy500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetStorageMyQueryResponse, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -54,7 +53,7 @@ export function useGetStorageMy<TData = GetStorageMyQueryResponse, TQueryData = 
     ...(getStorageMyQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetStorageMy401 | GetStorageMy500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetStorageMy401 | GetStorageMy500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

@@ -8,7 +8,7 @@ import type {
   PostBuildingConstruct500
 } from '../types/PostBuildingConstruct.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBuildingConstructMutationKey = () => [{ url: '/building/construct' }] as const
 
@@ -19,13 +19,11 @@ export type PostBuildingConstructMutationKey = ReturnType<typeof postBuildingCon
  * {@link /building/construct}
  */
 async function postBuildingConstruct(data: PostBuildingConstructMutationRequest, config: Partial<RequestConfig<PostBuildingConstructMutationRequest>> = {}) {
-  const res = await client<PostBuildingConstructMutationResponse, PostBuildingConstruct401 | PostBuildingConstruct500, PostBuildingConstructMutationRequest>({
-    method: 'POST',
-    url: '/building/construct',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostBuildingConstructMutationResponse,
+    ResponseErrorConfig<PostBuildingConstruct401 | PostBuildingConstruct500>,
+    PostBuildingConstructMutationRequest
+  >({ method: 'POST', url: '/building/construct', data, ...config })
   
   return res.data
 }
@@ -38,7 +36,7 @@ export function usePostBuildingConstruct(
   options: {
     mutation?: MutationObserverOptions<
       PostBuildingConstructMutationResponse,
-      PostBuildingConstruct401 | PostBuildingConstruct500,
+      ResponseErrorConfig<PostBuildingConstruct401 | PostBuildingConstruct500>,
       { data: MaybeRef<PostBuildingConstructMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBuildingConstructMutationRequest>>;
@@ -49,7 +47,7 @@ export function usePostBuildingConstruct(
 
   return useMutation<
     PostBuildingConstructMutationResponse,
-    PostBuildingConstruct401 | PostBuildingConstruct500,
+    ResponseErrorConfig<PostBuildingConstruct401 | PostBuildingConstruct500>,
     { data: PostBuildingConstructMutationRequest }
   >({
     mutationFn: async ({ data }) => {

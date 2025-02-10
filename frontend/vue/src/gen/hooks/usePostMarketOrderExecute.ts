@@ -8,7 +8,7 @@ import type {
   PostMarketOrderExecute500
 } from '../types/PostMarketOrderExecute.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postMarketOrderExecuteMutationKey = () => [{ url: '/market/order/execute' }] as const
 
@@ -24,9 +24,9 @@ async function postMarketOrderExecute(
 ) {
   const res = await client<
     PostMarketOrderExecuteMutationResponse,
-    PostMarketOrderExecute401 | PostMarketOrderExecute500,
+    ResponseErrorConfig<PostMarketOrderExecute401 | PostMarketOrderExecute500>,
     PostMarketOrderExecuteMutationRequest
-  >({ method: 'POST', url: '/market/order/execute', baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2', data, ...config })
+  >({ method: 'POST', url: '/market/order/execute', data, ...config })
   
   return res.data
 }
@@ -39,7 +39,7 @@ export function usePostMarketOrderExecute(
   options: {
     mutation?: MutationObserverOptions<
       PostMarketOrderExecuteMutationResponse,
-      PostMarketOrderExecute401 | PostMarketOrderExecute500,
+      ResponseErrorConfig<PostMarketOrderExecute401 | PostMarketOrderExecute500>,
       { data?: MaybeRef<PostMarketOrderExecuteMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostMarketOrderExecuteMutationRequest>>;
@@ -50,7 +50,7 @@ export function usePostMarketOrderExecute(
 
   return useMutation<
     PostMarketOrderExecuteMutationResponse,
-    PostMarketOrderExecute401 | PostMarketOrderExecute500,
+    ResponseErrorConfig<PostMarketOrderExecute401 | PostMarketOrderExecute500>,
     { data?: PostMarketOrderExecuteMutationRequest }
   >({
     mutationFn: async ({ data }) => {

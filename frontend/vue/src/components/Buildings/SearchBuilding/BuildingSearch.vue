@@ -73,7 +73,7 @@ const { t } = useI18n()
 const { mutate, isPending } = usePostBuildingGet({
   mutation: {
     onSuccess: data => {
-      buildings.value = data.data || []
+      buildings.value = data.data as BuildingWithData[] || []
     }
   }
 })

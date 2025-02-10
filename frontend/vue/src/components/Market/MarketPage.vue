@@ -124,13 +124,14 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import Column from 'primevue/column'
-import DataTable, { DataTableRowClickEvent } from 'primevue/datatable'
+import DataTable, { type DataTableRowClickEvent } from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
 import InputNumber from 'primevue/inputnumber'
 import { ref, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
 import { useOrders } from '@/composables/useOrders'
+import { useGetOrders } from '@/gen'
 import type { BackData, Order } from '@/types'
 import type { MarketParams } from '@/types/Resources/index.interface'
 
@@ -150,6 +151,9 @@ const amount = ref<number>(0)
 
 const { getOrders, executeOrder } = useOrders()
 const { data: orders, execute } = getOrders(searchParams.value)
+
+const { data: orders2, refetch: execute2, suspense } = useGetOrders(searchParams.value)
+await suspense()
 
 const showOrder = (event: DataTableRowClickEvent) => {
   order.value = event.data

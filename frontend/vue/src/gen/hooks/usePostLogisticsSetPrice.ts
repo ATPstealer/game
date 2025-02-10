@@ -8,7 +8,7 @@ import type {
   PostLogisticsSetPrice500
 } from '../types/PostLogisticsSetPrice.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postLogisticsSetPriceMutationKey = () => [{ url: '/logistics/set_price' }] as const
 
@@ -19,13 +19,11 @@ export type PostLogisticsSetPriceMutationKey = ReturnType<typeof postLogisticsSe
  * {@link /logistics/set_price}
  */
 async function postLogisticsSetPrice(data?: PostLogisticsSetPriceMutationRequest, config: Partial<RequestConfig<PostLogisticsSetPriceMutationRequest>> = {}) {
-  const res = await client<PostLogisticsSetPriceMutationResponse, PostLogisticsSetPrice401 | PostLogisticsSetPrice500, PostLogisticsSetPriceMutationRequest>({
-    method: 'POST',
-    url: '/logistics/set_price',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostLogisticsSetPriceMutationResponse,
+    ResponseErrorConfig<PostLogisticsSetPrice401 | PostLogisticsSetPrice500>,
+    PostLogisticsSetPriceMutationRequest
+  >({ method: 'POST', url: '/logistics/set_price', data, ...config })
   
   return res.data
 }
@@ -38,7 +36,7 @@ export function usePostLogisticsSetPrice(
   options: {
     mutation?: MutationObserverOptions<
       PostLogisticsSetPriceMutationResponse,
-      PostLogisticsSetPrice401 | PostLogisticsSetPrice500,
+      ResponseErrorConfig<PostLogisticsSetPrice401 | PostLogisticsSetPrice500>,
       { data?: MaybeRef<PostLogisticsSetPriceMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostLogisticsSetPriceMutationRequest>>;
@@ -49,7 +47,7 @@ export function usePostLogisticsSetPrice(
 
   return useMutation<
     PostLogisticsSetPriceMutationResponse,
-    PostLogisticsSetPrice401 | PostLogisticsSetPrice500,
+    ResponseErrorConfig<PostLogisticsSetPrice401 | PostLogisticsSetPrice500>,
     { data?: PostLogisticsSetPriceMutationRequest }
   >({
     mutationFn: async ({ data }) => {

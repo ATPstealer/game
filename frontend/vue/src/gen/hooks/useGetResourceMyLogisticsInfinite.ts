@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401, GetResourceMyLogistics500 } from '../types/GetResourceMyLogistics.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getResourceMyLogisticsInfiniteQueryKey = () => [{ url: '/resource/my_logistics' }] as const
 
@@ -13,10 +13,9 @@ export type GetResourceMyLogisticsInfiniteQueryKey = ReturnType<typeof getResour
  * {@link /resource/my_logistics}
  */
 async function getResourceMyLogistics(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401 | GetResourceMyLogistics500, unknown>({
+  const res = await client<GetResourceMyLogisticsQueryResponse, ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>, unknown>({
     method: 'GET',
     url: '/resource/my_logistics',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -28,7 +27,7 @@ export function getResourceMyLogisticsInfiniteQueryOptions(config: Partial<Reque
   
   return infiniteQueryOptions<
     GetResourceMyLogisticsQueryResponse,
-    GetResourceMyLogistics401 | GetResourceMyLogistics500,
+    ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>,
     GetResourceMyLogisticsQueryResponse,
     typeof queryKey,
     number
@@ -56,7 +55,13 @@ export function useGetResourceMyLogisticsInfinite<
 >(
   options: {
     query?: Partial<
-      InfiniteQueryObserverOptions<GetResourceMyLogisticsQueryResponse, GetResourceMyLogistics401 | GetResourceMyLogistics500, TData, TQueryData, TQueryKey>
+      InfiniteQueryObserverOptions<
+        GetResourceMyLogisticsQueryResponse,
+        ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>,
+        TData,
+        TQueryData,
+        TQueryKey
+      >
     >;
     client?: Partial<RequestConfig>;
   } = {}
@@ -68,7 +73,7 @@ export function useGetResourceMyLogisticsInfinite<
     ...(getResourceMyLogisticsInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetResourceMyLogistics401 | GetResourceMyLogistics500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetResourceMyLogistics401 | GetResourceMyLogistics500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

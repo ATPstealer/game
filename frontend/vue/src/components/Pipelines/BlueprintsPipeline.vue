@@ -28,7 +28,7 @@
     <template #third-column>
       <div
         v-if="computedData?.prodBlueprints?.length"
-        class="flex flex-col gap-2"
+        class="flex flex-col gap-2 items"
         :class="{'!grid !grid-cols-2': computedData?.prodBlueprints?.length > 10}"
       >
         <div v-for="item in computedData.prodBlueprints" :key="item.id">
@@ -43,7 +43,7 @@
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import PipelinesTemplate from '@/components/Pipelines/PipelinesTemplate.vue'
-import type { Blueprint } from '@/types/Buildings/index.interface'
+import type { Blueprint } from '@/gen'
 
 interface Props {
   blueprints: Blueprint[];
@@ -81,6 +81,8 @@ const computedData = computed<Pipeline>(() => {
 })
 </script>
 
-<style scoped>
-
+<style>
+.items {
+  height: calc(100% - 120px)
+}
 </style>

@@ -11,7 +11,7 @@
     <Column
       :header="t(`map.cell`)"
     >
-      <template #body="{data}: {data: Land}">
+      <template #body="{data}: {data: LandLord}">
         {{ data.x }}x{{ data.y }}
       </template>
     </Column>
@@ -26,11 +26,15 @@
 <script setup lang="ts">
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import { computed, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
-import { useGetData } from '@/composables/useGetData'
-import { Land } from '@/types'
+import { type LandLord, useGetMapMy } from '@/gen'
 
-const { data: lands, isFetching } = useGetData<Land[]>('/map/my')
 const { t } = useI18n()
+
+const { data: landsQuery, isFetching, suspense } = useGetMapMy()
+await suspense()
+const lands = computed(() => unref(landsQuery)?.data)
+
 </script>

@@ -2,7 +2,7 @@ import type { QueryKey, QueryObserverOptions, UseQueryReturnType } from '@tansta
 import { queryOptions, useQuery } from '@tanstack/vue-query'
 import { unref } from 'vue'
 import type { GetMarketOrderMyQueryResponse, GetMarketOrderMy401, GetMarketOrderMy500 } from '../types/GetMarketOrderMy.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getMarketOrderMyQueryKey = () => [{ url: '/market/order/my' }] as const
@@ -14,10 +14,9 @@ export type GetMarketOrderMyQueryKey = ReturnType<typeof getMarketOrderMyQueryKe
  * {@link /market/order/my}
  */
 async function getMarketOrderMy(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, unknown>({
+  const res = await client<GetMarketOrderMyQueryResponse, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>, unknown>({
     method: 'GET',
     url: '/market/order/my',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -27,7 +26,12 @@ async function getMarketOrderMy(config: Partial<RequestConfig> = {}) {
 export function getMarketOrderMyQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getMarketOrderMyQueryKey()
   
-  return queryOptions<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, GetMarketOrderMyQueryResponse, typeof queryKey>({
+  return queryOptions<
+    GetMarketOrderMyQueryResponse,
+    ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>,
+    GetMarketOrderMyQueryResponse,
+    typeof queryKey
+  >({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -47,7 +51,9 @@ export function useGetMarketOrderMy<
   TQueryKey extends QueryKey = GetMarketOrderMyQueryKey,
 >(
   options: {
-    query?: Partial<QueryObserverOptions<GetMarketOrderMyQueryResponse, GetMarketOrderMy401 | GetMarketOrderMy500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      QueryObserverOptions<GetMarketOrderMyQueryResponse, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -58,7 +64,7 @@ export function useGetMarketOrderMy<
     ...(getMarketOrderMyQueryOptions(config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetMarketOrderMy401 | GetMarketOrderMy500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetMarketOrderMy401 | GetMarketOrderMy500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetBankGetCreditTermsQueryResponse, GetBankGetCreditTermsQueryParams, GetBankGetCreditTerms500 } from '../types/GetBankGetCreditTerms.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getBankGetCreditTermsQueryKey = (params?: MaybeRef<GetBankGetCreditTermsQueryParams>) =>
@@ -17,10 +17,9 @@ export type GetBankGetCreditTermsQueryKey = ReturnType<typeof getBankGetCreditTe
  * {@link /bank/get_credit_terms}
  */
 async function getBankGetCreditTerms(params?: GetBankGetCreditTermsQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, unknown>({
+  const res = await client<GetBankGetCreditTermsQueryResponse, ResponseErrorConfig<GetBankGetCreditTerms500>, unknown>({
     method: 'GET',
     url: '/bank/get_credit_terms',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -31,7 +30,7 @@ async function getBankGetCreditTerms(params?: GetBankGetCreditTermsQueryParams, 
 export function getBankGetCreditTermsQueryOptions(params?: MaybeRef<GetBankGetCreditTermsQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getBankGetCreditTermsQueryKey(params)
   
-  return queryOptions<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, GetBankGetCreditTermsQueryResponse, typeof queryKey>({
+  return queryOptions<GetBankGetCreditTermsQueryResponse, ResponseErrorConfig<GetBankGetCreditTerms500>, GetBankGetCreditTermsQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -53,7 +52,7 @@ export function useGetBankGetCreditTerms<
 >(
   params?: MaybeRef<GetBankGetCreditTermsQueryParams>,
   options: {
-    query?: Partial<QueryObserverOptions<GetBankGetCreditTermsQueryResponse, GetBankGetCreditTerms500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetBankGetCreditTermsQueryResponse, ResponseErrorConfig<GetBankGetCreditTerms500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -64,7 +63,7 @@ export function useGetBankGetCreditTerms<
     ...(getBankGetCreditTermsQueryOptions(params, config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetBankGetCreditTerms500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetBankGetCreditTerms500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

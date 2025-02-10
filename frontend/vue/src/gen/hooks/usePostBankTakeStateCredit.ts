@@ -8,7 +8,7 @@ import type {
   PostBankTakeStateCredit500
 } from '../types/PostBankTakeStateCredit.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBankTakeStateCreditMutationKey = () => [{ url: '/bank/take_state_credit' }] as const
 
@@ -25,9 +25,9 @@ async function postBankTakeStateCredit(
 ) {
   const res = await client<
     PostBankTakeStateCreditMutationResponse,
-    PostBankTakeStateCredit401 | PostBankTakeStateCredit500,
+    ResponseErrorConfig<PostBankTakeStateCredit401 | PostBankTakeStateCredit500>,
     PostBankTakeStateCreditMutationRequest
-  >({ method: 'POST', url: '/bank/take_state_credit', baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2', data, ...config })
+  >({ method: 'POST', url: '/bank/take_state_credit', data, ...config })
   
   return res.data
 }
@@ -41,7 +41,7 @@ export function usePostBankTakeStateCredit(
   options: {
     mutation?: MutationObserverOptions<
       PostBankTakeStateCreditMutationResponse,
-      PostBankTakeStateCredit401 | PostBankTakeStateCredit500,
+      ResponseErrorConfig<PostBankTakeStateCredit401 | PostBankTakeStateCredit500>,
       { data: MaybeRef<PostBankTakeStateCreditMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBankTakeStateCreditMutationRequest>>;
@@ -52,7 +52,7 @@ export function usePostBankTakeStateCredit(
 
   return useMutation<
     PostBankTakeStateCreditMutationResponse,
-    PostBankTakeStateCredit401 | PostBankTakeStateCredit500,
+    ResponseErrorConfig<PostBankTakeStateCredit401 | PostBankTakeStateCredit500>,
     { data: PostBankTakeStateCreditMutationRequest }
   >({
     mutationFn: async ({ data }) => {

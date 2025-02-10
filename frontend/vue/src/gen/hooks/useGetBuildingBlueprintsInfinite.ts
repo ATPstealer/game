@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetBuildingBlueprintsQueryResponse, GetBuildingBlueprintsQueryParams, GetBuildingBlueprints500 } from '../types/GetBuildingBlueprints.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getBuildingBlueprintsInfiniteQueryKey = (params?: MaybeRef<GetBuildingBlueprintsQueryParams>) =>
   [{ url: '/building/blueprints' }, ...(params ? [params] : [])] as const
@@ -16,10 +16,9 @@ export type GetBuildingBlueprintsInfiniteQueryKey = ReturnType<typeof getBuildin
  * {@link /building/blueprints}
  */
 async function getBuildingBlueprints(params?: GetBuildingBlueprintsQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, unknown>({
+  const res = await client<GetBuildingBlueprintsQueryResponse, ResponseErrorConfig<GetBuildingBlueprints500>, unknown>({
     method: 'GET',
     url: '/building/blueprints',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -30,7 +29,13 @@ async function getBuildingBlueprints(params?: GetBuildingBlueprintsQueryParams, 
 export function getBuildingBlueprintsInfiniteQueryOptions(params?: MaybeRef<GetBuildingBlueprintsQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getBuildingBlueprintsInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, GetBuildingBlueprintsQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetBuildingBlueprintsQueryResponse,
+    ResponseErrorConfig<GetBuildingBlueprints500>,
+    GetBuildingBlueprintsQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -59,7 +64,9 @@ export function useGetBuildingBlueprintsInfinite<
 >(
   params?: MaybeRef<GetBuildingBlueprintsQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetBuildingBlueprintsQueryResponse, GetBuildingBlueprints500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      InfiniteQueryObserverOptions<GetBuildingBlueprintsQueryResponse, ResponseErrorConfig<GetBuildingBlueprints500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -70,7 +77,7 @@ export function useGetBuildingBlueprintsInfinite<
     ...(getBuildingBlueprintsInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetBuildingBlueprints500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetBuildingBlueprints500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

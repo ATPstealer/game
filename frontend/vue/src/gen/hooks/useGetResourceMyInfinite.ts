@@ -3,7 +3,7 @@ import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { GetResourceMyQueryResponse, GetResourceMyQueryParams, GetResourceMy401, GetResourceMy500 } from '../types/GetResourceMy.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getResourceMyInfiniteQueryKey = (params?: MaybeRef<GetResourceMyQueryParams>) => [{ url: '/resource/my' }, ...(params ? [params] : [])] as const
 
@@ -14,10 +14,9 @@ export type GetResourceMyInfiniteQueryKey = ReturnType<typeof getResourceMyInfin
  * {@link /resource/my}
  */
 async function getResourceMy(params?: GetResourceMyQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetResourceMyQueryResponse, GetResourceMy401 | GetResourceMy500, unknown>({
+  const res = await client<GetResourceMyQueryResponse, ResponseErrorConfig<GetResourceMy401 | GetResourceMy500>, unknown>({
     method: 'GET',
     url: '/resource/my',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     params,
     ...config
   })
@@ -28,7 +27,13 @@ async function getResourceMy(params?: GetResourceMyQueryParams, config: Partial<
 export function getResourceMyInfiniteQueryOptions(params?: MaybeRef<GetResourceMyQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getResourceMyInfiniteQueryKey(params)
   
-  return infiniteQueryOptions<GetResourceMyQueryResponse, GetResourceMy401 | GetResourceMy500, GetResourceMyQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetResourceMyQueryResponse,
+    ResponseErrorConfig<GetResourceMy401 | GetResourceMy500>,
+    GetResourceMyQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -56,7 +61,9 @@ export function useGetResourceMyInfinite<
 >(
   params?: MaybeRef<GetResourceMyQueryParams>,
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetResourceMyQueryResponse, GetResourceMy401 | GetResourceMy500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<
+      InfiniteQueryObserverOptions<GetResourceMyQueryResponse, ResponseErrorConfig<GetResourceMy401 | GetResourceMy500>, TData, TQueryData, TQueryKey>
+    >;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -67,7 +74,7 @@ export function useGetResourceMyInfinite<
     ...(getResourceMyInfiniteQueryOptions(params, config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetResourceMy401 | GetResourceMy500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetResourceMy401 | GetResourceMy500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

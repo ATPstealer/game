@@ -38,11 +38,11 @@
         </div>
       </div>
       <div class="legend flex items-center relative">
-        <span class="absolute -bottom-6">{{ computedFilter?.min }}</span>
+        <span class="absolute -bottom-6">{{ Math.ceil(computedFilter?.min) }}</span>
         <span v-if="computedFilter?.max-computedFilter?.min" class="absolute -bottom-6 left-1/2 -translate-x-1/2">
-          {{ Math.floor((computedFilter?.max-computedFilter?.min)/2) }}
+          {{ Math.ceil((computedFilter?.max-computedFilter?.min)/2) }}
         </span>
-        <span class="absolute -bottom-6 left-full -translate-x-full">{{ Math.floor(computedFilter?.max) }}</span>
+        <span class="absolute -bottom-6 left-full -translate-x-full">{{ Math.ceil(computedFilter?.max) }}</span>
         <div
           v-for="item in 10"
           :key="`legend-${item}`"
@@ -65,52 +65,60 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import RadioButton from 'primevue/radiobutton'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import Layout from '@/components/Common/Layout.vue'
 import Loading from '@/components/Common/Loading.vue'
 import MapCell from '@/components/Map/MapCell.vue'
-import { useGetData } from '@/composables/useGetData'
-import { useMap } from '@/composables/useMap'
-import type { Coords } from '@/types'
+import { useGetSettings, useGetMap, type Cell } from '@/gen'
 
 const cell = ref<any>()
 const showModal = ref<boolean>(false)
 const xArray = ref<number[]>([])
 const yArray = ref<number[]>([])
-const filter = ref<string>('pollution')
+const filter = ref<keyof Pick<Cell, 'pollution' | 'population' | 'education' | 'crime' | 'medicine' | 'averageSalary'>>('pollution')
 const recalculate = ref<boolean>(false)
 const color = ref<string>('175, 27, 27')
 
 const filters = ['pollution', 'population', 'education', 'crime', 'medicine', 'averageSalary']
 
-const { getMap } = useMap()
+const { data: settingsQuery, suspense: awaitSettings, isFetching: isSettingsFetching, isSuccess: isSettingsSuccess } = useGetSettings()
+await awaitSettings()
+const settings = computed(() => unref(settingsQuery)?.data)
 
-const { data: settings, onFetchResponse, isFetching: isSettingsFetching } = useGetData<Record<Coords, number>>('/settings')
-const { data: map, isFetching: isMapFetching } = getMap()
+const { data: mapQuery, suspense: awaitMap, isFetching: isMapFetching } = useGetMap()
+await awaitMap()
+const map = computed(() => unref(mapQuery)?.data)
 
-onFetchResponse(() => {
-  for (let i = settings.value.mapMinX; i <= settings.value.mapMaxX; i++) {
-    xArray.value.push(i)
+watch(isSettingsSuccess, () => {
+  if (isSettingsSuccess.value) {
+    for (let i = settings.value.mapMinX; i <= settings.value.mapMaxX; i++) {
+      xArray.value.push(i)
+    }
+    for (let i = settings.value.mapMinY; i <= settings.value.mapMaxY; i++) {
+      yArray.value.push(i)
+    }
   }
-  for (let i = settings.value.mapMinY; i <= settings.value.mapMaxY; i++) {
-    yArray.value.push(i)
-  }
+}, {
+  immediate: true
 })
 
-const getSrc = (row, column) => {
-  const oneCell = map.value.filter(item => item.x === row && item.y === column)[0]
+const getSrc = (row: number, column: number) => {
+  const oneCell = map.value?.filter(item => item.x === row && item.y === column)[0]
 
-  return import.meta.env.VITE_MINIO_URL + oneCell.surfaceImagePath
+  return import.meta.env.VITE_MINIO_URL + oneCell?.surfaceImagePath
 }
 
-const setCell = (row, column) => {
-  cell.value = map.value.filter(item => item.x === row && item.y === column)[0]
+const setCell = (row: number, column: number) => {
+  cell.value = map.value?.filter(item => item.x === row && item.y === column)[0]
   showModal.value = true
 }
 
 const computedFilter = computed(() => {
   if (!map.value?.length) {
-    return
+    return {
+      min: 0,
+      max: 0
+    }
   }
   const propertyArray = map.value.map(item => item[filter.value])
 
@@ -120,12 +128,12 @@ const computedFilter = computed(() => {
   }
 })
 
-const getMapFilter = (row, column) => {
-  const cell = map.value.filter(item => item.y === column && item.x === row)[0]
+const getMapFilter = (row: number, column: number) => {
+  const cell = map.value?.filter(item => item.y === column && item.x === row)[0]
   const { min, max } = computedFilter.value
   const range = max - min
 
-  return ((cell[filter.value] - min) / range) * 0.6
+  return ((cell![filter.value] - min) / range) * 0.6
 }
 
 watch(filter, () => {

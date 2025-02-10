@@ -11,21 +11,21 @@
     <Column
       :header="t(`logistics.columns.resource`)"
     >
-      <template #body="{data}: {data: Logistic}">
-        {{ t(`resources.types.${data.resourceType.name.toLowerCase()}`) }}
+      <template #body="{data}: {data: LogisticWithData}">
+        {{ t(`resources.types.${data?.resourceType?.name?.toLowerCase()}`) }}
       </template>
     </Column>
     <Column
       :header="t(`logistics.columns.from`)"
     >
-      <template #body="{data}: {data: Logistic}">
+      <template #body="{data}: {data: LogisticWithData}">
         {{ data.fromX }}x{{ data.fromY }}
       </template>
     </Column>
     <Column
       :header="t(`logistics.columns.to`)"
     >
-      <template #body="{data}: {data: Logistic}">
+      <template #body="{data}: {data: LogisticWithData}">
         {{ data.toX }}x{{ data.toY }}
       </template>
     </Column>
@@ -36,8 +36,8 @@
     <Column
       :header="t(`logistics.columns.finish`)"
     >
-      <template #body="{data}: {data: Logistic}">
-        {{ getTimeDiff(data.workEnd) > 0 ? formatDuration(getTimeDiff(data.workEnd)) : '' }}
+      <template #body="{data}: {data: LogisticWithData}">
+        {{ getTimeDiff(data?.workEnd) > 0 ? formatDuration(getTimeDiff(data?.workEnd)) : '' }}
       </template>
     </Column>
   </DataTable>
@@ -47,13 +47,16 @@
 <script setup lang="ts">
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
+import { computed, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Loading from '@/components/Common/Loading.vue'
-import { useGetData } from '@/composables/useGetData'
-import type { Logistic } from '@/types'
+import { type LogisticWithData, useGetResourceMyLogistics } from '@/gen'
 import { formatDuration } from '@/utils/formatDuration'
 import { getTimeDiff } from '@/utils/getTimeDiff'
 
-const { data: logistics, isFetching } = useGetData<Logistic[]>('/resource/my_logistics')
+const { data: logisticsQuery, suspense, isFetching } = useGetResourceMyLogistics()
+await suspense()
+const logistics = computed(() => unref(logisticsQuery)?.data)
+
 const { t } = useI18n()
 </script>

@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import type { PostUserCreateMutationRequest, PostUserCreateMutationResponse, PostUserCreate500 } from '../types/PostUserCreate.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postUserCreateMutationKey = () => [{ url: '/user/create' }] as const
 
@@ -14,10 +14,9 @@ export type PostUserCreateMutationKey = ReturnType<typeof postUserCreateMutation
  * {@link /user/create}
  */
 async function postUserCreate(data: PostUserCreateMutationRequest, config: Partial<RequestConfig<PostUserCreateMutationRequest>> = {}) {
-  const res = await client<PostUserCreateMutationResponse, PostUserCreate500, PostUserCreateMutationRequest>({
+  const res = await client<PostUserCreateMutationResponse, ResponseErrorConfig<PostUserCreate500>, PostUserCreateMutationRequest>({
     method: 'POST',
     url: '/user/create',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     data,
     ...config
   })
@@ -31,14 +30,18 @@ async function postUserCreate(data: PostUserCreateMutationRequest, config: Parti
  */
 export function usePostUserCreate(
   options: {
-    mutation?: MutationObserverOptions<PostUserCreateMutationResponse, PostUserCreate500, { data: MaybeRef<PostUserCreateMutationRequest> }>;
+    mutation?: MutationObserverOptions<
+      PostUserCreateMutationResponse,
+      ResponseErrorConfig<PostUserCreate500>,
+      { data: MaybeRef<PostUserCreateMutationRequest> }
+    >;
     client?: Partial<RequestConfig<PostUserCreateMutationRequest>>;
   } = {}
 ) {
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postUserCreateMutationKey()
 
-  return useMutation<PostUserCreateMutationResponse, PostUserCreate500, { data: PostUserCreateMutationRequest }>({
+  return useMutation<PostUserCreateMutationResponse, ResponseErrorConfig<PostUserCreate500>, { data: PostUserCreateMutationRequest }>({
     mutationFn: async ({ data }) => {
       return postUserCreate(data, config)
     },

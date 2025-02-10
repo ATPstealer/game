@@ -2,7 +2,7 @@ import type { InfiniteData, QueryKey, InfiniteQueryObserverOptions, UseInfiniteQ
 import { infiniteQueryOptions, useInfiniteQuery } from '@tanstack/vue-query'
 import type { GetMapAllLandLordsQueryResponse, GetMapAllLandLords500 } from '../types/GetMapAllLandLords.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const getMapAllLandLordsInfiniteQueryKey = () => [{ url: '/map/all_land_lords' }] as const
 
@@ -13,10 +13,9 @@ export type GetMapAllLandLordsInfiniteQueryKey = ReturnType<typeof getMapAllLand
  * {@link /map/all_land_lords}
  */
 async function getMapAllLandLords(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetMapAllLandLordsQueryResponse, GetMapAllLandLords500, unknown>({
+  const res = await client<GetMapAllLandLordsQueryResponse, ResponseErrorConfig<GetMapAllLandLords500>, unknown>({
     method: 'GET',
     url: '/map/all_land_lords',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
     ...config
   })
   
@@ -26,7 +25,13 @@ async function getMapAllLandLords(config: Partial<RequestConfig> = {}) {
 export function getMapAllLandLordsInfiniteQueryOptions(config: Partial<RequestConfig> = {}) {
   const queryKey = getMapAllLandLordsInfiniteQueryKey()
   
-  return infiniteQueryOptions<GetMapAllLandLordsQueryResponse, GetMapAllLandLords500, GetMapAllLandLordsQueryResponse, typeof queryKey, number>({
+  return infiniteQueryOptions<
+    GetMapAllLandLordsQueryResponse,
+    ResponseErrorConfig<GetMapAllLandLords500>,
+    GetMapAllLandLordsQueryResponse,
+    typeof queryKey,
+    number
+  >({
     queryKey,
     queryFn: async ({ signal, pageParam }) => {
       config.signal = signal
@@ -49,7 +54,7 @@ export function useGetMapAllLandLordsInfinite<
   TQueryKey extends QueryKey = GetMapAllLandLordsInfiniteQueryKey,
 >(
   options: {
-    query?: Partial<InfiniteQueryObserverOptions<GetMapAllLandLordsQueryResponse, GetMapAllLandLords500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<InfiniteQueryObserverOptions<GetMapAllLandLordsQueryResponse, ResponseErrorConfig<GetMapAllLandLords500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -60,7 +65,7 @@ export function useGetMapAllLandLordsInfinite<
     ...(getMapAllLandLordsInfiniteQueryOptions(config) as unknown as InfiniteQueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<InfiniteQueryObserverOptions, 'queryKey'>)
-  }) as UseInfiniteQueryReturnType<TData, GetMapAllLandLords500> & { queryKey: TQueryKey }
+  }) as UseInfiniteQueryReturnType<TData, ResponseErrorConfig<GetMapAllLandLords500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

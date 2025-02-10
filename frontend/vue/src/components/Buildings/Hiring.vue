@@ -24,7 +24,7 @@
       <span
         v-if="!editHiringNeeds"
         class="font-bold text-blue-500 hover:text-blue-700 cursor-pointer"
-        @click="editHiringNeeds = true; editSalary = false; messageData = {} as BackData"
+        @click="editHiringNeeds = true; editSalary = false; messageData = {} as JsonResult"
       >
         {{ hiringNeeds ? hiringNeeds : t(`buildings.hiring.set`) }}
       </span>
@@ -56,7 +56,7 @@
       <span
         v-if="!editSalary"
         class="font-bold text-blue-500 hover:text-blue-700 cursor-pointer"
-        @click="editSalary = true; editHiringNeeds = false; messageData = {} as BackData"
+        @click="editSalary = true; editHiringNeeds = false; messageData = {} as JsonResult"
       >
         {{ salary ? moneyFormat(salary) : t(`buildings.hiring.set`) }}
       </span>
@@ -105,13 +105,16 @@
 import Button from 'primevue/button'
 import InputNumber from 'primevue/inputnumber'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import MessageBlock from '@/components/Common/MessageBlock.vue'
-import { useBuildings } from '@/composables/useBuildings'
-import { useMap } from '@/composables/useMap'
-import { type BuildingWithData, usePostBuildingEmergencyHiring } from '@/gen'
-import { type BackData } from '@/types'
+import {
+  type BuildingWithData,
+  type JsonResult,
+  useGetMap,
+  usePostBuildingEmergencyHiring,
+  usePostBuildingHiring
+} from '@/gen'
 import { moneyFormat } from '@/utils/moneyFormat'
 
 interface Props {
@@ -119,45 +122,51 @@ interface Props {
 }
 
 type HiringOptions = 'salary' | 'needs'
+
 const props = defineProps<Props>()
 
 const editSalary = ref<boolean>(false)
 const editHiringNeeds = ref<boolean>(false)
-const salary = ref<number>(props.building.salary)
-const hiringNeeds = ref<number>(props.building.hiringNeeds)
-const messageData = ref<BackData>()
+const salary = ref<number>(props.building?.salary || 0)
+const hiringNeeds = ref<number>(props.building?.hiringNeeds || 0)
+const messageData = ref<JsonResult>()
 const confirm = useConfirm()
 
-const { setHiring } = useBuildings()
 const { t } = useI18n()
-const { getMap } = useMap()
-const { data: map, isFetching: isMapFetching } = getMap()
+
+const { data: mapQuery, suspense: awaitMap, isFetching: isMapFetching } = useGetMap()
+await awaitMap()
+const map = computed(() => unref(mapQuery)?.data || [])
+
 const getAverageSalary = () => {
   if (map.value?.length && props?.building) {
-    return  map.value.filter(item => item.x === props.building.x && item.y === props.building.y)[0].averageSalary
+    return  map.value.filter(item => item.x === props.building!.x && item.y === props.building!.y)[0].averageSalary
   }
   
   return 0
 }
 
+const mutateSetHiring = usePostBuildingHiring({
+  mutation: {
+    onSuccess: data => {
+      messageData.value = data
+      editHiringNeeds.value = false
+      editSalary.value = false
+    }
+  }
+})
+
 const setHiringData = (value: number, option: HiringOptions) => {
-  messageData.value = {} as BackData
+  messageData.value = {} as JsonResult
   const isSalary = option === 'salary'
 
   const payload = {
-    buildingId: props.building._id,
+    buildingId: props.building!._id,
     salary: isSalary ? value : salary.value,
     hiringNeeds: !isSalary ? value : hiringNeeds.value
   }
 
-  const { data: dataSalary, onFetchResponse: onFetchResponseSalary } = setHiring(payload)
-
-  onFetchResponseSalary(() => {
-    messageData.value = dataSalary.value
-
-    editHiringNeeds.value = false
-    editSalary.value = false
-  })
+  mutateSetHiring.mutate({ data: { ...payload } })
 }
 
 const confirmEmergencyHiring = (event: any, id: string) => {

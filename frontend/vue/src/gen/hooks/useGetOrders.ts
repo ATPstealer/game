@@ -3,7 +3,7 @@ import { queryOptions, useQuery } from '@tanstack/vue-query'
 import type { MaybeRef } from 'vue'
 import { unref } from 'vue'
 import type { GetOrdersQueryResponse, GetOrdersQueryParams, GetOrders500 } from '../types/GetOrders.ts'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
 export const getOrdersQueryKey = (params?: MaybeRef<GetOrdersQueryParams>) => [{ url: '/orders' }, ...(params ? [params] : [])] as const
@@ -15,13 +15,7 @@ export type GetOrdersQueryKey = ReturnType<typeof getOrdersQueryKey>
  * {@link /orders}
  */
 async function getOrders(params?: GetOrdersQueryParams, config: Partial<RequestConfig> = {}) {
-  const res = await client<GetOrdersQueryResponse, GetOrders500, unknown>({
-    method: 'GET',
-    url: '/orders',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    params,
-    ...config
-  })
+  const res = await client<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, unknown>({ method: 'GET', url: '/orders', params, ...config })
   
   return res.data
 }
@@ -29,7 +23,7 @@ async function getOrders(params?: GetOrdersQueryParams, config: Partial<RequestC
 export function getOrdersQueryOptions(params?: MaybeRef<GetOrdersQueryParams>, config: Partial<RequestConfig> = {}) {
   const queryKey = getOrdersQueryKey(params)
   
-  return queryOptions<GetOrdersQueryResponse, GetOrders500, GetOrdersQueryResponse, typeof queryKey>({
+  return queryOptions<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, GetOrdersQueryResponse, typeof queryKey>({
     queryKey,
     queryFn: async ({ signal }) => {
       config.signal = signal
@@ -46,7 +40,7 @@ export function getOrdersQueryOptions(params?: MaybeRef<GetOrdersQueryParams>, c
 export function useGetOrders<TData = GetOrdersQueryResponse, TQueryData = GetOrdersQueryResponse, TQueryKey extends QueryKey = GetOrdersQueryKey>(
   params?: MaybeRef<GetOrdersQueryParams>,
   options: {
-    query?: Partial<QueryObserverOptions<GetOrdersQueryResponse, GetOrders500, TData, TQueryData, TQueryKey>>;
+    query?: Partial<QueryObserverOptions<GetOrdersQueryResponse, ResponseErrorConfig<GetOrders500>, TData, TQueryData, TQueryKey>>;
     client?: Partial<RequestConfig>;
   } = {}
 ) {
@@ -57,7 +51,7 @@ export function useGetOrders<TData = GetOrdersQueryResponse, TQueryData = GetOrd
     ...(getOrdersQueryOptions(params, config) as unknown as QueryObserverOptions),
     queryKey: queryKey as QueryKey,
     ...(queryOptions as unknown as Omit<QueryObserverOptions, 'queryKey'>)
-  }) as UseQueryReturnType<TData, GetOrders500> & { queryKey: TQueryKey }
+  }) as UseQueryReturnType<TData, ResponseErrorConfig<GetOrders500>> & { queryKey: TQueryKey }
 
   query.queryKey = queryKey as TQueryKey
 

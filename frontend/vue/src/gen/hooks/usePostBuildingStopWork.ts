@@ -8,7 +8,7 @@ import type {
   PostBuildingStopWork500
 } from '../types/PostBuildingStopWork.ts'
 import client from '@/api/customClientAxios'
-import type { RequestConfig } from '@/api/customClientAxios'
+import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 
 export const postBuildingStopWorkMutationKey = () => [{ url: '/building/stop_work' }] as const
 
@@ -19,13 +19,11 @@ export type PostBuildingStopWorkMutationKey = ReturnType<typeof postBuildingStop
  * {@link /building/stop_work}
  */
 async function postBuildingStopWork(data: PostBuildingStopWorkMutationRequest, config: Partial<RequestConfig<PostBuildingStopWorkMutationRequest>> = {}) {
-  const res = await client<PostBuildingStopWorkMutationResponse, PostBuildingStopWork401 | PostBuildingStopWork500, PostBuildingStopWorkMutationRequest>({
-    method: 'POST',
-    url: '/building/stop_work',
-    baseURL: 'http://staging.game.k8s.atpstealer.com/api/v2',
-    data,
-    ...config
-  })
+  const res = await client<
+    PostBuildingStopWorkMutationResponse,
+    ResponseErrorConfig<PostBuildingStopWork401 | PostBuildingStopWork500>,
+    PostBuildingStopWorkMutationRequest
+  >({ method: 'POST', url: '/building/stop_work', data, ...config })
   
   return res.data
 }
@@ -38,7 +36,7 @@ export function usePostBuildingStopWork(
   options: {
     mutation?: MutationObserverOptions<
       PostBuildingStopWorkMutationResponse,
-      PostBuildingStopWork401 | PostBuildingStopWork500,
+      ResponseErrorConfig<PostBuildingStopWork401 | PostBuildingStopWork500>,
       { data: MaybeRef<PostBuildingStopWorkMutationRequest> }
     >;
     client?: Partial<RequestConfig<PostBuildingStopWorkMutationRequest>>;
@@ -47,7 +45,11 @@ export function usePostBuildingStopWork(
   const { mutation: mutationOptions, client: config = {} } = options ?? {}
   const mutationKey = mutationOptions?.mutationKey ?? postBuildingStopWorkMutationKey()
 
-  return useMutation<PostBuildingStopWorkMutationResponse, PostBuildingStopWork401 | PostBuildingStopWork500, { data: PostBuildingStopWorkMutationRequest }>({
+  return useMutation<
+    PostBuildingStopWorkMutationResponse,
+    ResponseErrorConfig<PostBuildingStopWork401 | PostBuildingStopWork500>,
+    { data: PostBuildingStopWorkMutationRequest }
+  >({
     mutationFn: async ({ data }) => {
       return postBuildingStopWork(data, config)
     },
