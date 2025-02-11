@@ -2010,7 +2010,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/jsonResult'
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    additionalProperties:
+                      type: number
+                    type: object
+                type: object
         "500":
           description: Internal Server Error
           schema:

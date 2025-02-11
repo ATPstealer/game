@@ -7,14 +7,14 @@ import (
 	"net/http"
 )
 
-// GetSettings godoc
+// GetSettings
 //
 //	@Summary		Get General Game Settings
 //	@Tags			settings
 //	@Description	X Y dimension, Interest rate, etc
 //	@ID				get-settings
 //	@Produce		json
-//	@Success		200	{object}	JSONResult
+//	@Success		200	{object}	JSONResult{data=map[string]float64}
 //	@Failure		500	{object}	JSONResult
 //	@Router			/settings [get]
 func GetSettings(c *gin.Context) {
