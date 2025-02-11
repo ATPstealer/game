@@ -135,7 +135,7 @@ func Logout(c *gin.Context) {
 //	@ID				get-usernames-by-prefix
 //	@Produce		json
 //	@Param			prefix	query		string	false	"Prefix to filter usernames"
-//	@Success		200		{object}	JSONResult
+//	@Success		200		{object}	JSONResultStringArray
 //	@Failure		200		{object}	JSONResult
 //	@Router			/data/users_by_prefix [get]
 func GetUserNamesByPrefix(c *gin.Context) {

@@ -2733,6 +2733,24 @@ const docTemplate = `{
                 "values": {}
             }
         },
+        "jsonResultStringArray": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "text": {
+                    "type": "string"
+                },
+                "values": {}
+            }
+        },
         "landLord": {
             "type": "object",
             "required": [

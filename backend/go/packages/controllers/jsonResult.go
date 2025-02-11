@@ -6,3 +6,10 @@ type JSONResult struct {
 	Data   interface{} `json:"data"`
 	Values interface{} `json:"values"`
 } //@name jsonResult
+
+type JSONResultStringArray struct {
+	Code   int         `json:"code"`
+	Data   []string    `json:"data"`
+	Text   string      `json:"text,omitempty"`
+	Values interface{} `json:"values"`
+} //@name jsonResultStringArray

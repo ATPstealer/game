@@ -448,6 +448,18 @@ definitions:
     required:
       - code
     type: object
+  jsonResultStringArray:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+      values: { }
+    type: object
   landLord:
     properties:
       _id:
