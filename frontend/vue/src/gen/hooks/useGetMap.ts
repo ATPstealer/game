@@ -5,7 +5,7 @@ import type { GetMapQueryResponse, GetMap500 } from '../types/GetMap.ts'
 import type { RequestConfig, ResponseErrorConfig } from '@/api/customClientAxios'
 import client from '@/api/customClientAxios'
 
-export const getMapQueryKey = () => [{ url: '/map/' }] as const
+export const getMapQueryKey = () => [{url: '/map'}] as const
 
 export type GetMapQueryKey = ReturnType<typeof getMapQueryKey>
 
@@ -15,7 +15,10 @@ export type GetMapQueryKey = ReturnType<typeof getMapQueryKey>
  * {@link /map}
  */
 async function getMap(config: Partial<RequestConfig> = {}) {
-  const res = await client<GetMapQueryResponse, ResponseErrorConfig<GetMap500>, unknown>({ method: 'GET', url: '/map/', ...config })
+  const res = await client<GetMapQueryResponse, ResponseErrorConfig<GetMap500>, unknown>({
+    method: 'GET',
+    url: '/map', ...config
+  })
   
   return res.data
 }

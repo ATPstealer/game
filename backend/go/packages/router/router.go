@@ -47,7 +47,7 @@ func MakeRouter() *gin.Engine {
 
 	mapCell := router.Group("/api/v2/map")
 	mapCell.GET("/cell_owners", controllers.GetCellOwners)
-	mapCell.GET("/", controllers.GetMap)
+	mapCell.GET("", controllers.GetMap)
 	mapCell.GET("/all_land_lords", controllers.GetAllLandLords)
 	mapCell.Use(AuthMiddleware())
 	mapCell.POST("/buy_land", controllers.BuyLand)
