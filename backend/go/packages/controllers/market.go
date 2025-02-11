@@ -88,7 +88,7 @@ func GetMyOrders(c *gin.Context) {
 //	@Param		page			query		int		false	"Page number"
 //	@Success	200				{object}	JSONResult{data=[]models.OrderWithData}
 //	@Failure	500				{object}	JSONResult
-//	@Router		/orders [get]
+//	@Router		/market/order/get [get]
 func GetOrders(c *gin.Context) {
 	var findOrdersParams models.FindOrderParams
 	if c.Query("id") != "" {

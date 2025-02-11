@@ -1755,34 +1755,7 @@ paths:
       summary: Partially execute an  order
       tags:
         - market
-  /market/order/my:
-    get:
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-              - $ref: '#/definitions/jsonResult'
-              - properties:
-                  data:
-                    items:
-                      $ref: '#/definitions/orderWithData'
-                    type: array
-                type: object
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/jsonResult'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/jsonResult'
-      summary: Get my orders
-      tags:
-        - market
-  /orders:
+  /market/order/get:
     get:
       parameters:
         - description: Order ID
@@ -1844,6 +1817,33 @@ paths:
           schema:
             $ref: '#/definitions/jsonResult'
       summary: Fetches orders based on various query parameters
+      tags:
+        - market
+  /market/order/my:
+    get:
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/jsonResult'
+              - properties:
+                  data:
+                    items:
+                      $ref: '#/definitions/orderWithData'
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/jsonResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/jsonResult'
+      summary: Get my orders
       tags:
         - market
   /resource/logistics:
