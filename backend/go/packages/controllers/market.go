@@ -15,16 +15,16 @@ import (
 //	@Tags		market
 //	@Accept		json
 //	@Produce	json
-//	@Param		orderPayload	body		models.Order	true	"Order payload"
-//	@Success	200				{object}	JSONResult
-//	@Failure	401				{object}	JSONResult
-//	@Failure	500				{object}	JSONResult
+//	@Param		createOrderPayload	body		models.CreateOrderPayload	true	"Order payload"
+//	@Success	200					{object}	JSONResult
+//	@Failure	401					{object}	JSONResult
+//	@Failure	500					{object}	JSONResult
 //	@Router		/market/order/create [post]
 func CreateOrder(c *gin.Context) {
-	var orderPayload models.Order
+	var createOrderPayload models.CreateOrderPayload
 	var err error
 
-	if err = include.GetPayload(c, &orderPayload); err != nil {
+	if err = include.GetPayload(c, &createOrderPayload); err != nil {
 		return
 	}
 
@@ -33,7 +33,7 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 
-	err = models.CreateOrder(db.M, userId, orderPayload)
+	err = models.CreateOrder(db.M, userId, createOrderPayload)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "not enough resources in this cell") {

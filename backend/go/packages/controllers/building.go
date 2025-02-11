@@ -215,15 +215,15 @@ func StartWork(c *gin.Context) {
 //	@Tags		buildings
 //	@Accept		json
 //	@Produce	json
-//	@Param		startWorkPayload	body		models.StartProductionPayload	true	"Production stop payload"
+//	@Param		stopWorkPayload  	body		models.StopProductionPayload	true	"Production stop payload"
 //	@Success	200					{object}	JSONResult
 //	@Failure	401					{object}	JSONResult
 //	@Failure	500					{object}	JSONResult
 //	@Router		/building/stop_work [post]
 func StopWork(c *gin.Context) {
-	var startWorkPayload models.StartProductionPayload
+	var stopWorkPayload models.StopProductionPayload
 	var err error
-	if err = include.GetPayload(c, &startWorkPayload); err != nil {
+	if err = include.GetPayload(c, &stopWorkPayload); err != nil {
 		return
 	}
 
@@ -232,7 +232,7 @@ func StopWork(c *gin.Context) {
 		return
 	}
 
-	err = models.StopProduction(db.M, userId, startWorkPayload)
+	err = models.StopProduction(db.M, userId, stopWorkPayload)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "this building don't belong you") {

@@ -10,7 +10,7 @@ import (
 
 //	@title		Game API
 //	@version	2.0
-//	@host		staging.game.kube.atpstealer.com
+//	@host		staging.game.k8s.atpstealer.com
 //	@BasePath	/api/v2
 
 func main() {

@@ -5,7 +5,7 @@
         "contact": {},
         "version": "2.0"
     },
-    "host": "staging.game.kube.atpstealer.com",
+    "host": "staging.game.k8s.atpstealer.com",
     "basePath": "/api/v2",
     "paths": {
         "/bank/credit_terms": {
@@ -792,11 +792,11 @@
                 "parameters": [
                     {
                         "description": "Production stop payload",
-                        "name": "startWorkPayload",
+                        "name": "stopWorkPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/startProductionPayload"
+                            "$ref": "#/definitions/stopProductionPayload"
                         }
                     }
                 ],
@@ -1331,7 +1331,7 @@
                 "parameters": [
                     {
                         "description": "Order payload",
-                        "name": "orderPayload",
+                        "name": "createOrderPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2871,19 +2871,14 @@
         "order": {
             "type": "object",
             "required": [
-                "_id",
                 "amount",
                 "priceForUnit",
                 "resourceTypeId",
                 "sell",
-                "userId",
                 "x",
                 "y"
             ],
             "properties": {
-                "_id": {
-                    "type": "string"
-                },
                 "amount": {
                     "type": "number"
                 },
@@ -2896,9 +2891,6 @@
                 "sell": {
                     "description": "true - sell; false - buy",
                     "type": "boolean"
-                },
-                "userId": {
-                    "type": "string"
                 },
                 "x": {
                     "type": "integer"
@@ -3116,6 +3108,17 @@
                 },
                 "duration": {
                     "$ref": "#/definitions/time.Duration"
+                }
+            }
+        },
+        "stopProductionPayload": {
+            "type": "object",
+            "required": [
+                "buildingId"
+            ],
+            "properties": {
+                "buildingId": {
+                    "type": "string"
                 }
             }
         },

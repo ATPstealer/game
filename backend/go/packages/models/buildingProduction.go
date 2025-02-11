@@ -105,7 +105,11 @@ func StartProduction(m *mongo.Database, userId primitive.ObjectID, payload Start
 	return nil
 }
 
-func StopProduction(m *mongo.Database, userId primitive.ObjectID, payload StartProductionPayload) error {
+type StopProductionPayload struct {
+	BuildingId primitive.ObjectID `json:"buildingId" validate:"required"`
+} // @name stopProductionPayload
+
+func StopProduction(m *mongo.Database, userId primitive.ObjectID, payload StopProductionPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 

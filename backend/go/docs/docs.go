@@ -799,11 +799,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Production stop payload",
-                        "name": "startWorkPayload",
+                        "name": "stopWorkPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/startProductionPayload"
+                            "$ref": "#/definitions/stopProductionPayload"
                         }
                     }
                 ],
@@ -1338,7 +1338,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Order payload",
-                        "name": "orderPayload",
+                        "name": "createOrderPayload",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -2878,19 +2878,14 @@ const docTemplate = `{
         "order": {
             "type": "object",
             "required": [
-                "_id",
                 "amount",
                 "priceForUnit",
                 "resourceTypeId",
                 "sell",
-                "userId",
                 "x",
                 "y"
             ],
             "properties": {
-                "_id": {
-                    "type": "string"
-                },
                 "amount": {
                     "type": "number"
                 },
@@ -2903,9 +2898,6 @@ const docTemplate = `{
                 "sell": {
                     "description": "true - sell; false - buy",
                     "type": "boolean"
-                },
-                "userId": {
-                    "type": "string"
                 },
                 "x": {
                     "type": "integer"
@@ -3126,6 +3118,17 @@ const docTemplate = `{
                 }
             }
         },
+        "stopProductionPayload": {
+            "type": "object",
+            "required": [
+                "buildingId"
+            ],
+            "properties": {
+                "buildingId": {
+                    "type": "string"
+                }
+            }
+        },
         "storage": {
             "type": "object",
             "required": [
@@ -3322,7 +3325,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "staging.game.kube.atpstealer.com",
+	Host:             "staging.game.k8s.atpstealer.com",
 	BasePath:         "/api/v2",
 	Schemes:          []string{},
 	Title:            "Game API",

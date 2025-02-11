@@ -21,7 +21,16 @@ type Order struct {
 	Sell           bool               `json:"sell" bson:"sell" validate:"required"` // true - sell; false - buy
 } // @name order
 
-func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload Order) error {
+type CreateOrderPayload struct {
+	X              int     `json:"x" bson:"x" validate:"required"`
+	Y              int     `json:"y" bson:"y" validate:"required"`
+	ResourceTypeId uint    `json:"resourceTypeId" bson:"resourceTypeId" validate:"required"`
+	Amount         float64 `json:"amount" bson:"amount" validate:"required"`
+	PriceForUnit   float64 `json:"priceForUnit" bson:"priceForUnit" validate:"required"`
+	Sell           bool    `json:"sell" bson:"sell" validate:"required"` // true - sell; false - buy
+} // @name order
+
+func CreateOrder(m *mongo.Database, userId primitive.ObjectID, payload CreateOrderPayload) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 

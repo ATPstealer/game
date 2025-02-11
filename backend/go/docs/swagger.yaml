@@ -557,8 +557,6 @@ definitions:
     type: object
   order:
     properties:
-      _id:
-        type: string
       amount:
         type: number
       priceForUnit:
@@ -568,19 +566,15 @@ definitions:
       sell:
         description: true - sell; false - buy
         type: boolean
-      userId:
-        type: string
       x:
         type: integer
       "y":
         type: integer
     required:
-      - _id
       - amount
       - priceForUnit
       - resourceTypeId
       - sell
-      - userId
       - x
       - "y"
     type: object
@@ -733,6 +727,13 @@ definitions:
       - buildingId
       - duration
     type: object
+  stopProductionPayload:
+    properties:
+      buildingId:
+        type: string
+    required:
+      - buildingId
+    type: object
   storage:
     properties:
       _id:
@@ -872,7 +873,7 @@ definitions:
       - password
       - ttl
     type: object
-host: staging.game.kube.atpstealer.com
+host: staging.game.k8s.atpstealer.com
 info:
   contact: { }
   title: Game API
@@ -1376,10 +1377,10 @@ paths:
       parameters:
         - description: Production stop payload
           in: body
-          name: startWorkPayload
+          name: stopWorkPayload
           required: true
           schema:
-            $ref: '#/definitions/startProductionPayload'
+            $ref: '#/definitions/stopProductionPayload'
       produces:
         - application/json
       responses:
@@ -1704,7 +1705,7 @@ paths:
       parameters:
         - description: Order payload
           in: body
-          name: orderPayload
+          name: createOrderPayload
           required: true
           schema:
             $ref: '#/definitions/order'
