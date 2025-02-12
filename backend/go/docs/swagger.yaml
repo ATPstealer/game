@@ -76,7 +76,9 @@ definitions:
       id:
         type: integer
       requirements:
-        type: string
+        items:
+          $ref: '#/definitions/resourceAmount'
+        type: array
       title:
         type: string
       workers:

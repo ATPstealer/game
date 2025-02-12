@@ -2214,7 +2214,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "requirements": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/resourceAmount"
+                    }
                 },
                 "title": {
                     "type": "string"
