@@ -72,6 +72,15 @@ func GetAllResources(m *mongo.Database) ([]ResourceWithData, error) {
 	return resourcesAndTypes, nil
 }
 
+func AddResourceArray(m *mongo.Database, userId primitive.ObjectID, x int, y int, resourceAmount []ResourceAmount) error {
+	for _, ra := range resourceAmount {
+		if err := AddResource(m, ra.ResourceId, userId, x, y, ra.Amount); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func AddResource(m *mongo.Database, resourceTypeId uint, userId primitive.ObjectID, x int, y int, amount float64) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
@@ -135,6 +144,15 @@ func GetMyResources(m *mongo.Database, userId primitive.ObjectID, x *int, y *int
 		log.Println(err)
 	}
 	return resources, nil
+}
+
+func CheckEnoughResourcesAmount(m *mongo.Database, userId primitive.ObjectID, x int, y int, resourceAmount []ResourceAmount) bool {
+	for _, ra := range resourceAmount {
+		if !CheckEnoughResources(m, ra.ResourceId, userId, x, y, ra.Amount) {
+			return false
+		}
+	}
+	return true
 }
 
 func CheckEnoughResources(m *mongo.Database, resourceTypeId uint, userId primitive.ObjectID, x int, y int, amount float64) bool {

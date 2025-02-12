@@ -68,14 +68,39 @@ func ConstructBuilding(m *mongo.Database, userId primitive.ObjectID, payload Con
 	if !CheckEnoughMoney(m, userId, buildingType.Cost*float64(payload.Square)) {
 		return errors.New("not enough money")
 	}
-	return CreateBuilding(m, userId, payload, buildingType)
+
+	var requirements []ResourceAmount
+	for _, resource := range buildingType.Requirements {
+		requirements = append(requirements, ResourceAmount{
+			ResourceId: resource.ResourceId,
+			Amount:     resource.Amount * float64(payload.Square),
+		})
+	}
+
+	if !CheckEnoughResourcesAmount(m, userId, payload.X, payload.Y, requirements) {
+		return errors.New("not enough resources for construction in cell")
+	}
+
+	return CreateBuilding(m, userId, payload, buildingType, requirements)
 }
 
-func CreateBuilding(m *mongo.Database, userId primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingType) error {
+func CreateBuilding(m *mongo.Database, userId primitive.ObjectID, payload ConstructBuildingPayload, buildingType BuildingType, requirements []ResourceAmount) error {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(3*time.Second))
 	defer cancel()
 
 	if err := AddMoney(m, userId, (-1)*buildingType.Cost*float64(payload.Square)); err != nil {
+		return err
+	}
+
+	if err := AddCivilSavings(m, payload.X, payload.Y, buildingType.Cost*float64(payload.Square)); err != nil {
+		return err
+	}
+
+	for i := range requirements {
+		requirements[i].Amount = (-1) * requirements[i].Amount
+	}
+
+	if err := AddResourceArray(m, userId, payload.X, payload.Y, requirements); err != nil {
 		return err
 	}
 

@@ -64,6 +64,7 @@
     "46": "You can't pay off someone else's loan",
     "47": "You can't delete someone else's loan",
     "48": "Are you crazy? This loan is not overdue",
+    "49": "Not enough resources for construction in cell",
     "100001": "Database error",
     "100002": "Can't read request POST body",
     "100003": "Can't parse POST data",

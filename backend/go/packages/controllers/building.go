@@ -91,6 +91,8 @@ func ConstructBuilding(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"code": 27, "text": err.Error()})
 		} else if strings.Contains(err.Error(), "not enough money") {
 			c.JSON(http.StatusOK, gin.H{"code": 24, "text": err.Error()})
+		} else if strings.Contains(err.Error(), "not enough resources for construction in cell") {
+			c.JSON(http.StatusOK, gin.H{"code": 49, "text": err.Error()})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"code": 100001, "text": err.Error()})
 		}
