@@ -205,6 +205,11 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 		if err != nil {
 			log.Println("Can't get float from Google sheet Cost field: ", err)
 		}
+		var requirements []ResourceAmount
+		if err := json.Unmarshal([]byte(row[5].(string)), &requirements); err != nil {
+			log.Println("Error while unmarshalling Requirements:", err)
+			return err
+		}
 		buildTime, err := strconv.ParseInt(row[6].(string), 10, 64)
 		if err != nil {
 			log.Println("Can't get time.Duration from Google sheet BuildTime field: ", err)
@@ -223,7 +228,7 @@ func buildingTypesImport(m *mongo.Database, rows [][]interface{}) error {
 			Title:            row[2].(string),
 			Description:      row[3].(string),
 			Cost:             float64(cost),
-			Requirements:     row[5].(string),
+			Requirements:     requirements,
 			BuildTime:        time.Second * time.Duration(buildTime),
 			BuildingGroup:    row[7].(string),
 			BuildingSubGroup: row[8].(string),
