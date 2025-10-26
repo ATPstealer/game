@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   minio:
     container_name: minio
@@ -11,9 +9,74 @@ services:
     ports:
       - "9000:9000"  # API
       - "9001:9001"  # Console
+    networks:
+      - app-net
     volumes:
       - minio-data:/data
     restart: unless-stopped
+  mongodb:
+    image: mongo:6.0.18
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: MONGO_ROOT_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD: MONGO_ROOT_PASSWORD
+    ports:
+      - "27017:27017"
+    networks:
+      - app-net
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+  api:
+    container_name: api
+    build:
+      context: ../../backend/go
+      dockerfile: Dockerfile-api
+    env_file:
+      - ./api.env
+    ports:
+      - "8001:8001"
+    networks:
+      - app-net
+    restart: unless-stopped
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ../../frontend/vue
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - app-net
+    restart: unless-stopped
+
+  scheduler:
+    container_name: scheduler
+    build:
+      context: ../../backend/go
+      dockerfile: Dockerfile-scheduler
+    env_file:
+      - ./api.env
+    networks:
+      - app-net
+    restart: unless-stopped
+
+  transform:
+    container_name: transform
+    build:
+      context: ../../backend/go
+      dockerfile: Dockerfile-transform
+    env_file:
+      - ./api.env
+    networks:
+      - app-net
+    restart: no
 
 volumes:
   minio-data:
+  mongo-data:
+
+networks:
+  app-net:
